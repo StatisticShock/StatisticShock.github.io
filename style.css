@@ -1,0 +1,154 @@
+/* FONTS */
+@font-face {
+    font-family: OpenSans;
+    src: url(font/OpenSans.ttf);
+}
+
+@font-face {
+    font-family: Hylia Serif;
+    src: url(font/HyliaSerifBeta-Regular.otf);
+}
+
+
+/* THE ACTUAL THING */
+body {
+    font-family: OpenSans;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    color: black;
+    background-color: #e5e5e5;
+}
+
+/* .container {
+    background-image: url(images/nazuna-kou.jpg);
+    background-size:cover;
+} */
+
+header {
+    font-family: Hylia Serif;
+    font-size: x-large;
+    background-color: black;
+    color: white;
+    /* -webkit-text-stroke: 2px black; */
+    padding: 10px 20px;
+    text-align: center;
+    align-items: center;
+    z-index: 1;
+}
+
+
+/* Navbar on hover */
+nav {
+    position: sticky;
+    top: 0;
+    padding: 10px 20px;
+    background-color: rgba(70,70,70,0.5);
+    backdrop-filter: blur(1px);
+    color: white;
+    z-index: 2;
+}
+
+.menu-item {
+    text-decoration: none;
+    margin-right: 15px;
+    color: white;
+    position: relative;
+}
+
+.menu-item::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 0;
+    height: 2px;
+    background-color: white;
+    transition: 0.3s ease;
+}
+
+.menu-item:hover::after {
+    width: 100%;
+    color: black;
+}
+
+section {
+    padding: 0px 20px;
+}
+
+.grid-container {
+    display: grid;
+    gap: 30px;
+    grid-auto-rows: 50px;
+    grid-auto-columns: 50px;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    max-width: 80%;
+}
+
+
+/* Item on hover */
+.shortcut-item {
+    text-decoration: none;
+    position: relative;
+}
+
+.shortcut-item img {
+    height: 50px;
+    transition: .2s;
+    border-radius: 0.5em;
+}
+
+.shortcut-item img:hover {
+    transform: scale(1.5);
+    border-bottom-left-radius: 0;
+}
+
+.shortcut-item::after {
+    content: "";
+    transition: 0.3s ease;
+}
+
+.shortcut-item:hover::after {
+    font-size: 80%;
+    position: absolute;
+    content: attr(alt);
+    display: inline-block;
+    left: -12px;
+    top: 65px;
+    padding: 5px;
+    background-color: rgba(250,30,78,255);
+    color: black;
+    width: max-content;
+    text-align: center;
+    border-top-right-radius: 3ex;
+    border-bottom-left-radius: 3ex;
+    border-bottom-right-radius: 3ex;
+    padding: 0.5em 1em 0.5em 1em;
+}
+
+
+/* Spacing */
+#gaming-stores, #anime, #cloud-storage, #productivity {
+    padding-top: 50px;
+}
+
+#shortcuts {
+    width: calc(70% - 50px);
+    border: double black;
+}
+
+aside {
+    background-color: aqua;
+    width: 30%;
+    display: flex;
+    align-items: center;
+    height: 1000px;
+    float: right;
+    border: double black;
+}
+
+
+
+footer {
+    text-align: center;
+}
