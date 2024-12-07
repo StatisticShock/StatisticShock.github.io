@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-3">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="home.svg" type="image/x-icon">
-    <title>StatisticShock's Index</title>
+    <link rel="shortcut icon" href="icons/favicon.svg" type="image/x-icon">
+    <title>Index</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,12 +12,21 @@
         <h1>StatisticShock's Index</h1>
     </header>
     <nav class="menu">
+
         <a href="#shortcuts" class="menu-item">ATALHOS</a>
+        <a href="#gaming" class="menu-item">GAMING</a>
         <a href="#about" class="menu-item">SOBRE</a>
     </nav>
     <div class="container">
         <aside>
-            <p>VAGO</p>
+            <a class="card" href="https://www.speedtest.net/pt" target="_blank">
+                <div class="speedometer-container">
+                    <div id="logo"> <span class="speedometer"></span>
+                        <span id="needle" class="needle" style="transform:rotate(-135deg);"></span>
+                    </div>
+                    <div id="internet-speed-text">A velocidade da sua conexão é<p id="internet-speed">...</p></div>
+                </div>
+            </a>
         </aside>
         <section id="shortcuts">
             <h2>ATALHOS</h2>
@@ -35,6 +44,12 @@
                     </a>
                     <a class="shortcut-item" href="https://x.com/home" alt="X (Twitter)">
                         <img src="icons/x.ico">
+                    </a>
+                    <a class="shortcut-item" href="https://www.tiktok.com/" alt="TikTok">
+                        <img src="icons/tiktok.ico">
+                    </a>
+                    <a class="shortcut-item" href="https://www.youtube.com/" alt="YouTube">
+                        <img src="icons/youtube.ico">
                     </a>
                 </div>
             </section>
@@ -86,6 +101,26 @@
                     </a>
                 </div>
             </section>
+            <section id="stores">
+                <p>Lojas</p>
+                <div class="grid-container">
+                    <a class="shortcut-item" href="https://pt.aliexpress.com/" alt="Aliexpress">
+                        <img src="icons/aliexpress.ico">
+                    </a>
+                    <a class="shortcut-item" href="https://www.temu.com/br" alt="Temu">
+                        <img src="icons/temu.ico">
+                    </a>
+                    <a class="shortcut-item" href="https://www.amazon.com.br/" alt="Amazon">
+                        <img src="icons/amazon.ico">
+                    </a>
+                    <a class="shortcut-item" href="https://www.magazineluiza.com.br/" alt="Magazine Luiza">
+                        <img src="icons/magalu.ico">
+                    </a>
+                    <a class="shortcut-item" href="https://www.ebay.com/" alt="ebay">
+                        <img src="icons/ebay.ico">
+                    </a>
+                </div>
+            </section>
             <section id="cloud-storage">
                 <p>Armazenamento em nuvem</p>
                 <div class="grid-container">
@@ -98,10 +133,13 @@
                     <a class="shortcut-item" href="https://photos.google.com/" alt="Google Photos">
                         <img src="icons/photos.ico">
                     </a>
-                    <a class="shortcut-item" href="https://github.com/" alt="GitHub">
-                        <img src="icons/github.ico">
-                    </a>
                 </div>
+            </section>
+            <section id="code">
+                <p>Coding</p>
+                <a class="shortcut-item" href="https://github.com/" alt="GitHub">
+                    <img src="icons/github.ico">
+                </a>
             </section>
             <section id="productivity">
                 <p>Produtividade</p>
@@ -109,8 +147,36 @@
                     <a class="shortcut-item" href="https://fibergridtelecomunicacoes.sgp.tsmx.com.br/accounts/central/login" alt="Fibergrid (Internet)">
                         <img src="icons/fibergrid.ico">
                     </a>
+                    <a class="shortcut-item" href="https://portalrh.absis.com.br/idg/Home/Menu" alt="Absis">
+                        <img src="icons/absis.ico">
+                    </a>
+                    <a class="shortcut-item" href="https://meucorreios.correios.com.br/app/index.php" alt="Meu Correios">
+                        <img src="icons/correios.ico">
+                    </a>
                 </div>
             </section>
+        </section>
+        <section id="gaming">
+            <h2>GAMING</h2>
+            <!-- From Uiverse.io by joe-watson-sbf -->
+            <div id="gamecard">
+                <div class="gamecard">
+                    <a href="https://retroachievements.org/user/assdeper" id="ra"><span>RetroAchievements</span></a>
+                </div>
+                <div class="gamecard">
+                    <a href="https://r-roms.github.io/" id="rroms"><span>r/Roms</span></a>
+                </div>
+                <div class="gamecard">
+                    <a href="https://fitgirl-repacks.site/" id="fitgirl"><span>FitGirl Repacks</span></a>
+                </div>
+                <div class="gamecard">
+                    <a href="https://www.reddit.com/r/Piracy/" id="rpiracy"><span>r/Piracy</span></a>
+                </div>
+                <div class="gamecard">
+                    <a href="https://docs.google.com/spreadsheets/d/1jNHIzwtyUZluNiJlVO9JWz3i3Syxy5Zn0VhCyA1gqK8" id="zelda-tracker"><span>Zelda Tracker</span></a>
+                </div>
+            </div>
+            <!-- From Uiverse.io by joe-watson-sbf -->
         </section>
         <section id="about">
             <h2>SOBRE</h2>
