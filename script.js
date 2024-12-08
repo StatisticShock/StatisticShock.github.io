@@ -20,11 +20,32 @@ function resizeAside () {
    card.style.height = shortcuts.offsetHeight + 'px';
 }
 
-// To make the gamecard occupy 50% of the screen on hover
-const gamecard = document.querySelector('#gamecard');
-const childCount = gamecard.children.length;
+// To make 2B sit on the navbar
 
-gamecard.style.setProperty('--gamecard-count', childCount);
+window.addEventListener('load', twoB_Resize);
+window.addEventListener('resize', twoB_Resize);
+
+function twoB_Resize () {
+    const twoB = document.getElementById('twoB');
+    const twoB_Ass = Math.floor(parseFloat(getComputedStyle(twoB).height) * 493 / 920);
+    const twoB_Pussy = Math.floor(parseFloat(getComputedStyle(twoB).width) * 182 / 356);
+    const header = document.getElementById('header');
+    const aside = document.querySelector('aside')
+
+    twoB.style.top = (- twoB_Ass) + 'px';
+    twoB.style.right = (aside.offsetWidth / 2 - twoB_Pussy) + 'px';
+}
+
+// To make the gamecard occupy 50% of the screen on hover
+document.querySelectorAll('.gamecard-container').forEach(gamecard_container => {
+    var childCount = Math.max(gamecard_container.children.length, 2);
+
+    gamecard_container.style.setProperty('--gamecard-count', childCount);
+});
+
+document.querySelectorAll('.gamecard-text > span p').forEach(element => {
+    element.style.marginLeft = - (element.offsetWidth / 2 - 20) + 'px';
+});
 
 //To add an internet speed tester
 const imageAddr = "https://upload.wikimedia.org/wikipedia/commons/2/2d/Snake_River_%285mb%29.jpg"; 

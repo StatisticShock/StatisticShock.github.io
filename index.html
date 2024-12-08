@@ -8,14 +8,14 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
+    <header id="header">
         <h1>StatisticShock's Index</h1>
     </header>
     <nav class="menu">
-
         <a href="#shortcuts" class="menu-item">ATALHOS</a>
         <a href="#gaming" class="menu-item">GAMING</a>
         <a href="#about" class="menu-item">SOBRE</a>
+        <div id="twoB"><img src="images/2b.png"></div>
     </nav>
     <div class="container">
         <aside>
@@ -137,9 +137,14 @@
             </section>
             <section id="code">
                 <p>Coding</p>
-                <a class="shortcut-item" href="https://github.com/" alt="GitHub">
-                    <img src="icons/github.ico">
-                </a>
+                <div class="grid-container">
+                    <a class="shortcut-item" href="https://github.com/" alt="GitHub">
+                        <img src="icons/github.ico">
+                    </a>
+                    <a class="shortcut-item" href="https://stackoverflow.com/" alt="StackOverflow">
+                        <img src="icons/so.ico">
+                    </a>
+                </div>
             </section>
             <section id="productivity">
                 <p>Produtividade</p>
@@ -159,21 +164,35 @@
         <section id="gaming">
             <h2>GAMING</h2>
             <!-- From Uiverse.io by joe-watson-sbf -->
-            <div id="gamecard">
-                <div class="gamecard">
-                    <a href="https://retroachievements.org/user/assdeper" id="ra"><span>RetroAchievements</span></a>
+            <div class="gamecard-text">
+                <span><p>Links</p></span>
+                <div class="gamecard-container">
+                    <div class="gamecard">
+                        <a href="https://retroachievements.org/user/assdeper" id="ra"><b>RetroAchievements</b></a>
+                    </div>
+                    <div class="gamecard">
+                        <a href="https://r-roms.github.io/" id="rroms"><b>r/Roms Megathread</b></a>
+                    </div>
+                    <div class="gamecard">
+                        <a href="https://fitgirl-repacks.site/" id="fitgirl"><b>FitGirl Repacks</b></a>
+                    </div>
+                    <div class="gamecard">
+                        <a href="https://www.google.com/search?client=firefox-b-d&q=site%3Areddit.com%2Fr%2Fpiracy%2F" id="rpiracy"><b>r/Piracy Search</b></a>
+                    </div>
                 </div>
-                <div class="gamecard">
-                    <a href="https://r-roms.github.io/" id="rroms"><span>r/Roms</span></a>
-                </div>
-                <div class="gamecard">
-                    <a href="https://fitgirl-repacks.site/" id="fitgirl"><span>FitGirl Repacks</span></a>
-                </div>
-                <div class="gamecard">
-                    <a href="https://www.reddit.com/r/Piracy/" id="rpiracy"><span>r/Piracy</span></a>
-                </div>
-                <div class="gamecard">
-                    <a href="https://docs.google.com/spreadsheets/d/1jNHIzwtyUZluNiJlVO9JWz3i3Syxy5Zn0VhCyA1gqK8" id="zelda-tracker"><span>Zelda Tracker</span></a>
+            </div>
+            <div class="gamecard-text">
+                <span><p>Trackers</p></span>
+                <div class="gamecard-container">
+                    <div class="gamecard">
+                        <a href="https://docs.google.com/spreadsheets/d/1jNHIzwtyUZluNiJlVO9JWz3i3Syxy5Zn0VhCyA1gqK8" id="zelda-tracker"><b>Zelda Tracker</b></a>
+                    </div>
+                    <div class="gamecard">
+                        <a href="https://docs.google.com/spreadsheets/d/1_ncbpgu4W73Xgre8ShWDOR707zvUY2CY_7vxmmhodu8" id="pokemon-tracker"><b>Pokémon Tracker</b></a>
+                    </div>
+                    <div class="gamecard">
+                        <a href="https://docs.google.com/spreadsheets/d/1raLufRI9VZQz__vWuYPL0zJkDeMc1vZI6Zl3m3DBE7k" id="castlevania-tracker"><b>Castlevania Tracker</b></a>
+                    </div>
                 </div>
             </div>
             <!-- From Uiverse.io by joe-watson-sbf -->

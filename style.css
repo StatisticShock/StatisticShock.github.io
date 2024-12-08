@@ -37,6 +37,8 @@ body {
     background-size:cover;
 } */
 
+/* Styling the header */
+
 header {
     font-family: Hylia Serif;
     font-size: x-large;
@@ -46,7 +48,21 @@ header {
     padding: 10px 20px;
     text-align: center;
     align-items: center;
-    z-index: 1;
+    height: fit-content;
+    z-index: 2;
+}
+
+#twoB {
+    position: absolute;
+    height: 300px;
+    /* border: solid white; */
+    z-index: 3;
+}
+
+#twoB img {
+    height: 100%;
+    position: sticky;
+    top: 0;
 }
 
 
@@ -58,7 +74,7 @@ nav {
     background-color: rgba(70,70,70,0.5);
     backdrop-filter: blur(1px);
     color: white;
-    z-index: 2;
+    z-index: 1;
 }
 
 .menu-item {
@@ -107,7 +123,7 @@ h2 {
 }
 
 
-/* Item on hover */
+/* Shortcut item on hover */
 .shortcut-item {
     text-decoration: none;
     position: relative;
@@ -258,57 +274,115 @@ aside:hover {
 
 /* Game Card */
 /* From Uiverse.io by joe-watson-sbf */ 
-#gamecard {
-    width: 1fr;
-    height: 300px;
-    display: flex;
-    gap: 5px;
-    padding: 0;
-  }
-  
-  .gamecard, .gamecard a{
-    height: 100%;
-    flex: 1;
-    overflow: hidden;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: .3s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.gamecard-text {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+}
 
-  .gamecard {
-    background-image: var(--pink-purple);
-    white-space: nowrap;
-  }
+    .gamecard-text > span {
+        /* border: solid white; */
+        gap: 15px;
+        border-radius: 10px;
+        background-image: var(--pink-purple);
+        align-content: center;
+        align-items: center;
+        margin: 5px 0px;
+    }
 
-  .gamecard a {
-    background: #212121;
-  }
+    .gamecard-text > span p {
+        /* border: solid white; */
+        width: max-content;
+        height: fit-content;
+        text-transform: uppercase;
+        transform: rotate(-90deg);
+    }
 
-  .gamecard:hover {
-    flex: calc(var(--gamecard-count) - 1);
-    background-size: cover;
-    background-position: center;
-    text-shadow: 0px 0px 2px black;
-    box-shadow: 0px 0px 30px 1px var(--pink-custom);
-  }
+    .gamecard-container {
+        width: 1fr;
+        height: 300px;
+        display: flex;
+        gap: 5px;
+        padding: 5px;
+    }
+    
+    .gamecard, .gamecard a{
+        height: 100%;
+        flex: 1;
+        overflow: hidden;
+        cursor: pointer;
+        border-radius: 10px;
+        transition: .3s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-  .gamecard a:hover {
-    transform: scale(98%);
-  }
+    .gamecard {
+        background-image: var(--pink-purple);
+        white-space: nowrap;
+    }
 
-  
-  .gamecard a span {
-    width: 100%;
-    padding: .5em;
-    text-align: center;
-    text-transform: uppercase;
-    transition: all .3s;
-    color: var(--pink-custom);
-    letter-spacing: .1em;
-  }
+    .gamecard > a {
+        background: #1a1a1a;
+        transition: ease .3s;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+    }
+
+    .gamecard:hover {
+        flex: calc(var(--gamecard-count) - 1);
+        background-size: cover;
+        background-position: center;
+        text-shadow: 0px 0px 5px black;
+        box-shadow: 0px 0px 30px 1px var(--pink-custom);
+    }
+
+    .gamecard a:hover {
+        transform: scale(98%);
+        font-size: 40px;
+    }
+
+        #ra {
+            background-image: url(images/ra-ps.png);
+            background-size:contain;
+        }
+
+        #rroms {
+            background-image: url(images/rroms.png);
+            background-blend-mode: ;
+        }
+
+        #fitgirl {
+            background-image: url(images/fitgirl-ps.png);
+        }
+
+        #rpiracy {
+            background-image: url(images/rpiracy.png);
+            background-blend-mode: hard-light;
+        }
+
+        #pokemon-tracker {
+            background-image: url(images/pokemon-ps.png);
+        }
+
+        #zelda-tracker {
+            background-image: url(images/botw-ps.png);
+        }
+
+        #castlevania-tracker {
+            background-image: url(images/castlevania-ps.png);
+        }
+    
+    .gamecard a b {
+        width: 100%;
+        padding: .5em;
+        text-align: center;
+        transition: all .3s;
+        color: var(--pink-custom);
+        letter-spacing: .1em;
+    }
 
 footer {
     text-align: center;
