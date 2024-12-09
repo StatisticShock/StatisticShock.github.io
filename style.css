@@ -351,7 +351,6 @@ aside:hover {
 
         #rroms {
             background-image: url(images/rroms.png);
-            background-blend-mode: ;
         }
 
         #fitgirl {
@@ -360,7 +359,12 @@ aside:hover {
 
         #rpiracy {
             background-image: url(images/rpiracy.png);
-            background-blend-mode: hard-light;
+            background-blend-mode: lighten;
+        }
+
+        #pkmds {
+            background-size: contain;
+            background-image: url(images/pokemon.png);
         }
 
         #pokemon-tracker {
