@@ -130,17 +130,17 @@ h2 {
     height: 40px;
     width: 40px;
     color: black;
-}
 
-.shortcut-item img {
-    height: 50px; 
-    transition: .2s;
-    border-radius: 0.5em;
-}
+    & img {
+        height: 50px; 
+        transition: .2s;
+        border-radius: 0.5em;
+    }
 
-.shortcut-item img:hover {
-    transform: scale(1.5);
-    border-bottom-left-radius: 0;
+    & img:hover {
+        transform: scale(1.5);
+        border-bottom-left-radius: 0;
+    }   
 }
 
 .shortcut-item::after {
@@ -240,6 +240,10 @@ aside:hover {
     .speedometer-container div {
         text-align: center;
     }
+    #miku-container img {
+        width: 100%;
+        padding-top: 30px;
+    }
 
     /* Speedometer */
     #logo {
@@ -278,9 +282,8 @@ aside:hover {
 .gamecard-text {
     display: grid;
     grid-template-columns: 40px 1fr;
-}
 
-    .gamecard-text > span {
+    & > span {
         /* border: solid white; */
         gap: 15px;
         border-radius: 10px;
@@ -290,7 +293,7 @@ aside:hover {
         margin: 5px 0px;
     }
 
-    .gamecard-text > span p {
+    & > span > p {
         /* border: solid white; */
         width: max-content;
         height: fit-content;
@@ -298,14 +301,15 @@ aside:hover {
         transform: rotate(-90deg);
     }
 
-    .gamecard-container {
+    & .gamecard-container {
         width: 1fr;
         height: 300px;
         display: flex;
         gap: 5px;
         padding: 5px;
     }
-    
+}
+
     .gamecard, .gamecard a{
         height: 100%;
         flex: 1;

@@ -33,7 +33,7 @@ function twoB_Resize () {
     const aside = document.querySelector('aside')
 
     twoB.style.top = (- twoB_Ass) + 'px';
-    twoB.style.right = (aside.offsetWidth / 2 - twoB_Pussy) + 'px';
+    twoB.style.right = (aside.offsetWidth - twoB_Pussy) + 'px';
 }
 
 // To make the gamecard occupy 50% of the screen on hover
@@ -75,6 +75,7 @@ function measureConnectionSpeed() {
     
     download.onerror = function (err, msg) {
       wholeTextField.textContent = "Inválida";
+      window.reload();
     }
     
     startTime = (new Date()).getTime();
@@ -98,3 +99,34 @@ function measureConnectionSpeed() {
         needle.style.transform = 'rotate(' + (speed / 300 * 270 - 135) + 'deg)';
     }
 }
+
+//To add a card in the anime figures section
+async function loadHTML() {
+    try {
+        const response = await fetch('https://pt.myfigurecollection.net/profile/HikariKun');
+        if (response.ok) {
+            const htmlContent = await response.text();
+        } else {
+            console.error('Erro ao carregar a página:', response.status);
+        }
+    } catch (error) {
+        console.error('Erro de rede:', error);
+    }
+}
+
+    // window.addEventListener('load', loadHTML)
+
+//To make sheets open in edge
+function redirectToEdge () {
+    const links = document.querySelectorAll('a');
+    links.forEach(link => {
+        var hyperlink = link.href
+
+        if (hyperlink.match(/docs\.google\.com/)) {
+            link.href = 'microsoft-edge:' + hyperlink
+            link.target = ''
+        }
+    });
+}
+
+    window.addEventListener('load', redirectToEdge)
