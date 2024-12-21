@@ -137,7 +137,8 @@ async function loadHTML() {
             console.error('Erro ao carregar a página:', response.status);
         }
 
-        const div = document.querySelector('#anime-figures-card').innerHTML = htmlContent;
+        const div = document.querySelector('#anime-figures-card');
+        div.innerHTML = htmlContent;
     } catch (error) {
         console.error('Erro de rede:', error);
     }
