@@ -20,6 +20,21 @@ function resizeAside () {
    card.style.height = shortcuts.offsetHeight + 'px';
 }
 
+// To make the header have different backgrounds
+window.addEventListener('load', setHeaderBackground);
+
+function setHeaderBackground () {
+    const bgs = [
+        'grand_blue.jpg',
+        'sam_integralista.jpg'
+    ];
+    var headerIndex = Math.floor(Math.random() * bgs.length);
+
+    const header = document.getElementById('header');
+
+    header.style.backgroundImage = 'url(headers/' + bgs[headerIndex] + ')';
+}
+
 // To make 2B sit on the navbar
 
 window.addEventListener('load', twoB_Resize);
@@ -29,11 +44,23 @@ function twoB_Resize () {
     const twoB = document.getElementById('twoB');
     const twoB_Ass = Math.floor(parseFloat(getComputedStyle(twoB).height) * 493 / 920);
     const twoB_Pussy = Math.floor(parseFloat(getComputedStyle(twoB).width) * 182 / 356);
-    const header = document.getElementById('header');
     const aside = document.querySelector('aside')
 
     twoB.style.top = (- twoB_Ass) + 'px';
     twoB.style.right = (aside.offsetWidth - twoB_Pussy) + 'px';
+}
+
+// To make Ai sit on top of the navbar
+window.addEventListener('load', ohto_Resize);
+window.addEventListener('resize', ohto_Resize);
+
+function ohto_Resize () {
+    const ohto = document.getElementById('ohto');
+    const ohto_panties = getComputedStyle(ohto).height;
+    const ohto_mouth = Math.floor(getComputedStyle(ohto).width / 2);
+    
+    ohto.style.top = '-' + ohto_panties;
+    ohto.style.left = getComputedStyle(document.getElementById('twoB')).right;
 }
 
 // To make the gamecard occupy 50% of the screen on hover
@@ -75,7 +102,7 @@ function measureConnectionSpeed() {
     
     download.onerror = function (err, msg) {
       wholeTextField.textContent = "Inválida";
-      window.reload();
+      window.reload;
     }
     
     startTime = (new Date()).getTime();
