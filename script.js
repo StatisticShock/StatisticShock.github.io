@@ -144,7 +144,7 @@ async function loadHTML() {
     }
 }
 
-    window.addEventListener('load', loadHTML)
+    // window.addEventListener('load', loadHTML)
 
 //To make sheets open in edge
 function redirectToEdge () {
