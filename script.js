@@ -138,6 +138,7 @@ async function loadHTML() {
         }
         
         const div = document.querySelector('#anime-figures-card');
+        console.log(htmlContent);
         div.innerHTML = htmlContent;
     } catch (error) {
         console.error('Erro de rede:', error);
