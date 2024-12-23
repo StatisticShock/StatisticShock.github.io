@@ -127,26 +127,6 @@ function measureConnectionSpeed() {
     }
 }
 
-//To add a card in the anime figures section
-async function loadHTML() {
-    try {
-        const response = await fetch('https://pt.myfigurecollection.net/profile/HikariKun');
-        if (response.ok) {
-            var htmlContent = await response.text();
-        } else {
-            console.error('Erro ao carregar a página:', response.status);
-        }
-        
-        const div = document.querySelector('#anime-figures-card');
-        console.log(htmlContent);
-        div.innerHTML = htmlContent;
-    } catch (error) {
-        console.error('Erro de rede:', error);
-    }
-}
-
-    window.addEventListener('load', loadHTML)
-
 //To make sheets open in edge
 function redirectToEdge () {
     const links = document.querySelectorAll('a');
