@@ -1,4 +1,4 @@
-0// Open in new tab
+// Open in new tab
 document.querySelectorAll('.shortcut-item').forEach(element => {
     element.target = '_blank';
 });
@@ -19,6 +19,17 @@ function resizeAside () {
    aside.style.height = shortcuts.offsetHeight + 'px';
    card.style.height = shortcuts.offsetHeight + 'px';
 }
+
+// To make the gamecard occupy 50% of the screen on hover
+document.querySelectorAll('.gamecard-container').forEach(gamecard_container => {
+    var childCount = Math.max(gamecard_container.children.length, 2);
+
+    gamecard_container.style.setProperty('--gamecard-count', childCount);
+});
+
+document.querySelectorAll('.gamecard-text > span p').forEach(element => {
+    element.style.marginLeft = - (element.offsetWidth / 2 - 20) + 'px';
+});
 
 // To make the header have different backgrounds
 window.addEventListener('load', setHeaderBackground);
@@ -62,17 +73,6 @@ function ohto_Resize () {
     ohto.style.top = '-' + ohto_panties;
     ohto.style.left = getComputedStyle(document.getElementById('twoB')).right;
 }
-
-// To make the gamecard occupy 50% of the screen on hover
-document.querySelectorAll('.gamecard-container').forEach(gamecard_container => {
-    var childCount = Math.max(gamecard_container.children.length, 2);
-
-    gamecard_container.style.setProperty('--gamecard-count', childCount);
-});
-
-document.querySelectorAll('.gamecard-text > span p').forEach(element => {
-    element.style.marginLeft = - (element.offsetWidth / 2 - 20) + 'px';
-});
 
 //To add an internet speed tester
 const imageAddr = "https://upload.wikimedia.org/wikipedia/commons/2/2d/Snake_River_%285mb%29.jpg"; 
@@ -140,4 +140,75 @@ function redirectToEdge () {
     });
 }
 
-    window.addEventListener('load', redirectToEdge)
+    window.addEventListener('load', redirectToEdge);
+
+//To make the popups appear on click
+const popUpShortcuts = [
+    ['reddit-google','reddit-search-pop-up']
+];
+
+for (i = 0; i < popUpShortcuts.length; i++) {
+    var shortcut = document.getElementById(popUpShortcuts[i][0]);
+    var popUp = document.getElementById(popUpShortcuts[i][1]);
+
+    shortcut.onclick = () => {
+        var display = popUp.style.display;
+        
+        if ((display == '') || (display == 'none')) {
+            popUp.style.display = 'block';
+        } else {
+            popUp.style.display = 'none';
+        };
+    }
+    
+}
+
+    //To make the Close Button work
+    document.querySelectorAll('.close-button').forEach((button) => {
+        var parent = button.parentElement.parentElement;
+        button.onclick = () => {
+            parent.style.display = 'none';
+            setDefaults();
+        };
+    })
+
+// To make the reddit search work
+function redditSearch () {
+    const keywords =    document.getElementById('keywords');
+    const subreddit =   document.getElementById('subreddit');
+    const from =        document.getElementById('from-date');
+    const to =          document.getElementById('to-date');
+
+    if ((new Date(from.value) >= new Date(to.value)) && from.value && to.value) return;
+
+    let string = 'https://www.google.com/search?q=';
+
+    if (keywords.value) {
+        string = string + keywords.value.replace(' ','+');
+
+        if (subreddit.value) {
+            string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + subreddit.value;
+        } else {
+            string = string + '+site%3Ahttps%3A%2F%2Freddit.com';
+        }
+
+        if (from.value) {
+            string = string + '+after%3A' + from.value;
+        }
+
+        if (to.value) {
+            string = string + '+before%3A' + to.value;
+        }
+
+        window.open(string, '_blank').focus();
+    };
+}
+
+document.getElementById('reddit-search-ok').onclick = redditSearch;
+
+window.addEventListener('load', setDefaults); // To make the defaults load within the window
+function setDefaults () {
+    document.getElementById('keywords').value = '';
+    document.getElementById('to-date').valueAsDate = new Date();
+    document.getElementById('from-date').valueAsDate = new Date(new Date().getFullYear() - 1, new Date().getMonth(), new Date().getDate())
+}

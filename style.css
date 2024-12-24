@@ -32,6 +32,60 @@ body {
     background-position: -5px -5px
 }
 
+.pop-up {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #1a1a1a;
+    border-radius: 20px;
+    border: 1px solid white;
+    width: fit-content;
+    height: fit-content;
+    padding: 2em;
+    padding-top: 50px;
+    z-index: 5;
+    align-items:last baseline;
+
+    & > div {
+        position: absolute;
+        top: 10px;
+        padding: 0%;
+        /* border: 1px solid white; */
+        width: 100%;
+        left: 0em;
+
+        & button {
+            position: absolute;
+            height: 30px;
+            width: 30px;
+            top: 0px;
+            margin: 0%;
+            right: 1em;
+            border-radius: 100%;
+        }
+
+        & > div {
+            padding-left: 1em;
+
+            & img {
+                height: 30px;
+            }
+        }
+    }
+
+    & > span {
+        display: flex;
+        gap: 10px;
+    }
+
+    & button {
+        border-radius: 10px;
+        cursor: pointer;
+    }
+}
+
 /* .container {
     background-image: url(images/nazuna-kou.jpg);
     background-size:cover;
@@ -183,14 +237,19 @@ h2 {
     padding: 0.5em 1em 0.5em 1em;
 }
 
+/* Reddit Search */
+#reddit-search-pop-up {
+    
+    
+}
 
 /* Spacing */
-#about, #gaming-stores, #anime, #cloud-storage, #productivity, #code {
+#about, #gaming-stores, #anime, #cloud-storage, #productivity, #code, #search {
     padding-top: 50px;
 }
 
 #shortcuts {
-    width: calc(75% - 110px);
+    width: calc(80% - 110px);
     /* border: solid black; */
 }
 
