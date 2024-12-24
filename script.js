@@ -209,6 +209,7 @@ document.getElementById('reddit-search-ok').onclick = redditSearch;
 window.addEventListener('load', setDefaults); // To make the defaults load within the window
 function setDefaults () {
     document.getElementById('keywords').value = '';
+    document.getElementById('subreddit').value = '';
     document.getElementById('to-date').valueAsDate = new Date();
     document.getElementById('from-date').valueAsDate = new Date(new Date().getFullYear() - 1, new Date().getMonth(), new Date().getDate())
 }
