@@ -7,6 +7,21 @@ document.querySelectorAll('.gamecard').forEach(element => {
     element.firstElementChild.target = '_blank';
 });
 
+//To make sheets open in edge
+function redirectToEdge () {
+    const links = document.querySelectorAll('a');
+    links.forEach(link => {
+        var hyperlink = link.href
+
+        if (hyperlink.match(/docs\.google\.com/)) {
+            link.href = 'microsoft-edge:' + hyperlink
+            link.target = ''
+        }
+    });
+}
+
+    window.addEventListener('load', redirectToEdge);
+
 //To make aside the same height of Shortcut-Items
 window.addEventListener('load', resizeAside);
 window.addEventListener('resize', resizeAside);
@@ -126,21 +141,6 @@ function measureConnectionSpeed() {
         needle.style.transform = 'rotate(' + (speed / 300 * 270 - 135) + 'deg)';
     }
 }
-
-//To make sheets open in edge
-function redirectToEdge () {
-    const links = document.querySelectorAll('a');
-    links.forEach(link => {
-        var hyperlink = link.href
-
-        if (hyperlink.match(/docs\.google\.com/)) {
-            link.href = 'microsoft-edge:' + hyperlink
-            link.target = ''
-        }
-    });
-}
-
-    window.addEventListener('load', redirectToEdge);
 
 //To make the popups appear on click
 const popUpShortcuts = [

@@ -237,12 +237,6 @@ h2 {
     padding: 0.5em 1em 0.5em 1em;
 }
 
-/* Reddit Search */
-#reddit-search-pop-up {
-    
-    
-}
-
 /* Spacing */
 #about, #gaming-stores, #anime, #cloud-storage, #productivity, #code, #search {
     padding-top: 50px;
@@ -454,6 +448,11 @@ aside:hover {
 
         #castlevania-tracker {
             background-image: url(images/castlevania-ps.png);
+        }
+
+        #zelda-dungeon {
+            background-image: url(images/zelda.jpg);
+            background-position: bottom;
         }
     
     .gamecard a b {
