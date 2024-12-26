@@ -73,6 +73,12 @@ body {
                 height: 30px;
             }
         }
+
+        & img {
+            -moz-user-select: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
     }
 
     & > span {
@@ -84,7 +90,33 @@ body {
         border-radius: 10px;
         cursor: pointer;
     }
+
+    & button:hover {
+        border: 2px var(--pink-custom) solid;
+    }
+
+    & input {
+        border-radius: 10px;
+    }
+
+    & input:focus {
+        outline: none;
+        border: 2px solid var(--pink-custom);
+    }
 }
+
+#reddit-search-pop-up {
+
+    & span img {
+        height: 20px;
+        -webkit-filter: invert(100%);
+        filter: invert(100%);
+    }
+}
+
+    #keywords, #subreddit {
+        width: 100%;
+    }
 
 /* .container {
     background-image: url(images/nazuna-kou.jpg);
@@ -275,22 +307,6 @@ aside:hover {
     transform: scale(0.98);
     border-radius: 20px;
 }
-
-/* Styling the contents of the card */
-.speedometer-container {
-    padding: 15%;
-    display: grid;
-    grid-row: 80px 80px;
-    grid-column: 80px;
-    height : min-content;
-    width: 90%;
-    color: white;
-    position: sticky;
-    top: 30px;
-}
-    a {
-        text-decoration: none;
-    }
 
 
 /* Game Card */

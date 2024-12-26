@@ -159,6 +159,13 @@ function redditSearch () {
     };
 }
 
+// To make the inputbox draggable
+function dragPopUp () {
+    document.querySelectorAll('.pop-up').forEach(popUp => {
+        // popUp.draggable = true;
+    })
+}
+
 document.getElementById('reddit-search-ok').onclick = redditSearch;
 
 // To make the defaults load within the window
@@ -178,6 +185,7 @@ window.addEventListener('load', onLoadFunctions, true); function onLoadFunctions
     setDefaults();
     adjustGamecard();
     rotateGamecardText(0);
+    dragPopUp();
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     resizeAside();
