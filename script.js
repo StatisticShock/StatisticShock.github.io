@@ -1,11 +1,18 @@
-// Open in new tab
-document.querySelectorAll('.shortcut-item').forEach(element => {
-    element.target = '_blank';
-});
+//Add jQuery
+var script = document.createElement('script');
+script.src = 'https://code.jquery.com/jquery-3.7.1.min.js'; // Check https://jquery.com/ for the current version
+document.getElementsByTagName('head')[0].appendChild(script);
 
-document.querySelectorAll('.gamecard').forEach(element => {
-    element.firstElementChild.target = '_blank';
-});
+// Open in new tab
+function openLinksInNewTab () {
+    document.querySelectorAll('.shortcut-item').forEach(element => {
+        element.target = '_blank';
+    });
+
+    document.querySelectorAll('.gamecard').forEach(element => {
+        element.firstElementChild.target = '_blank';
+    });
+}
 
 //To make sheets open in edge
 function redirectToEdge () {
@@ -20,12 +27,7 @@ function redirectToEdge () {
     });
 }
 
-    window.addEventListener('load', redirectToEdge);
-
-//To make aside the same height of Shortcut-Items
-window.addEventListener('load', resizeAside);
-window.addEventListener('resize', resizeAside);
-
+//To make aside the same height of Shortcut-Item
 function resizeAside () {
    const aside = document.querySelector('aside');
    const card = document.querySelector('.card');
@@ -36,19 +38,35 @@ function resizeAside () {
 }
 
 // To make the gamecard occupy 50% of the screen on hover
-document.querySelectorAll('.gamecard-container').forEach(gamecard_container => {
-    var childCount = Math.max(gamecard_container.children.length, 2);
 
-    gamecard_container.style.setProperty('--gamecard-count', childCount);
-});
+function adjustGamecard() {
+    document.querySelectorAll('.gamecard-container').forEach(gamecard_container => {
+        var childCount = Math.max(gamecard_container.children.length, 2);
 
-document.querySelectorAll('.gamecard-text > span p').forEach(element => {
-    element.style.marginLeft = - (element.offsetWidth / 2 - 20) + 'px';
-});
+        gamecard_container.style.setProperty('--gamecard-count', childCount);
+    });
 
+    document.querySelectorAll('.gamecard-text > span p').forEach(element => {
+        element.style.marginLeft = - (element.offsetWidth / 2 - 20) + 'px';
+    });
+}
+
+function rotateGamecardText (counter) {
+    document.querySelectorAll('.gamecard > a > span').forEach(element => {
+        var elementId = '#' + element.parentElement.id;
+        if ($(elementId)[0].firstChild.scrollWidth > $(elementId).width()) {
+            element.style.transform = 'rotate(-90deg)'
+        } else {
+            element.style.transform = ''
+        }
+    })
+
+    if (counter == 0) {
+        setTimeout(rotateGamecardText,100);
+        console.log(counter)
+    };
+}
 // To make the header have different backgrounds
-window.addEventListener('load', setHeaderBackground);
-
 function setHeaderBackground () {
     const bgs = [
         'grand_blue.jpg',
@@ -61,12 +79,8 @@ function setHeaderBackground () {
     header.style.backgroundImage = 'url(headers/' + bgs[headerIndex] + ')';
 }
 
-// To make 2B sit on the navbar
-
-window.addEventListener('load', twoB_Resize);
-window.addEventListener('resize', twoB_Resize);
-
-function twoB_Resize () {
+// To make 2B and Ai sit on the navbar
+function figuresSitDown () {
     const twoB = document.getElementById('twoB');
     const twoB_Ass = Math.floor(parseFloat(getComputedStyle(twoB).height) * 493 / 920);
     const twoB_Pussy = Math.floor(parseFloat(getComputedStyle(twoB).width) * 182 / 356);
@@ -74,72 +88,13 @@ function twoB_Resize () {
 
     twoB.style.top = (- twoB_Ass) + 'px';
     twoB.style.right = (aside.offsetWidth - twoB_Pussy) + 'px';
-}
 
-// To make Ai sit on top of the navbar
-window.addEventListener('load', ohto_Resize);
-window.addEventListener('resize', ohto_Resize);
-
-function ohto_Resize () {
     const ohto = document.getElementById('ohto');
     const ohto_panties = getComputedStyle(ohto).height;
     const ohto_mouth = Math.floor(getComputedStyle(ohto).width / 2);
     
     ohto.style.top = '-' + ohto_panties;
     ohto.style.left = getComputedStyle(document.getElementById('twoB')).right;
-}
-
-//To add an internet speed tester
-const imageAddr = "https://upload.wikimedia.org/wikipedia/commons/2/2d/Snake_River_%285mb%29.jpg"; 
-const downloadSize = 5_245_329; //bytes
-const textField = document.querySelector('#internet-speed');
-const wholeTextField = document.querySelector('#internet-speed-text');
-
-setInterval(initiateSpeedDetection, 15000);
-
-function initiateSpeedDetection() { //Initiates the process
-   window.setTimeout(measureConnectionSpeed, 1);
-};    
-
-if (window.addEventListener) {
-    window.addEventListener('load', initiateSpeedDetection, false);
-} else if (window.attachEvent) {
-    window.attachEvent('onload', initiateSpeedDetection);
-}
-
-function measureConnectionSpeed() {
-    var startTime, endTime;
-    var download = new Image();
-    download.onload = function () {
-        endTime = (new Date()).getTime();
-        showResults();
-    }
-    
-    download.onerror = function (err, msg) {
-      wholeTextField.textContent = "Inválida";
-      window.reload;
-    }
-    
-    startTime = (new Date()).getTime();
-    var cacheBuster = "?nnn=" + startTime;
-    download.src = imageAddr + cacheBuster; //I need to test if cached buster in needed
-    
-    function showResults() {
-        var duration = (endTime - startTime) / 1000;
-        var bitsLoaded = downloadSize * 8;
-        var speedBps = (bitsLoaded / duration).toFixed(2);
-        var speedKbps = (speedBps / 1024).toFixed(2);
-        var speedMbps = (speedKbps / 1024).toFixed(2);
-        textField.textContent = speedMbps + ' Mbps';
-        rotateSpeedometer(speedMbps);
-    }
-
-    // To rotate the speedometer
-    function rotateSpeedometer (speed) {
-        var needle = document.getElementById('needle')
-
-        needle.style.transform = 'rotate(' + (speed / 300 * 270 - 135) + 'deg)';
-    }
 }
 
 //To make the popups appear on click
@@ -206,10 +161,26 @@ function redditSearch () {
 
 document.getElementById('reddit-search-ok').onclick = redditSearch;
 
-window.addEventListener('load', setDefaults); // To make the defaults load within the window
+// To make the defaults load within the window
 function setDefaults () {
     document.getElementById('keywords').value = '';
     document.getElementById('subreddit').value = '';
     document.getElementById('to-date').valueAsDate = new Date();
     document.getElementById('from-date').valueAsDate = new Date(new Date().getFullYear() - 1, new Date().getMonth(), new Date().getDate())
 }
+
+window.addEventListener('load', onLoadFunctions, true); function onLoadFunctions () {
+    openLinksInNewTab();
+    redirectToEdge();
+    resizeAside();
+    setHeaderBackground();
+    figuresSitDown();
+    setDefaults();
+    adjustGamecard();
+    rotateGamecardText(0);
+};
+window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
+    resizeAside();
+    figuresSitDown();
+    rotateGamecardText(0);
+};
