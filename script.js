@@ -63,7 +63,6 @@ function rotateGamecardText (counter) {
 
     if (counter == 0) {
         setTimeout(rotateGamecardText,100);
-        console.log(counter)
     };
 }
 // To make the header have different backgrounds
