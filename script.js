@@ -212,7 +212,6 @@ async function addImages () {
                 splitData.push(row.split(/;/));
                 console.log(row.split(/;/));
             });
-            console.log(splitData);
             return splitData
         } catch (error) {
             console.error(error.message)
@@ -236,10 +235,6 @@ async function addImages () {
     var owned = [];
     var ordered = [];
 
-    console.log('Data One:', dataOne);
-    console.log('Data Two', dataTwo);
-    console.log('Data:', data);
-
     for (i = 1; i < data.length; i++) { // Loop through the values of dataObject
         
         if (data[i].status == 'Owned') {
@@ -249,8 +244,6 @@ async function addImages () {
         }
 
     }
-
-    console.log(owned, ordered);
     
     owned.forEach(item => {
         createElement(item, 'owned')
@@ -315,7 +308,6 @@ async function addImages () {
     }
 
     resizeAllMasonryItems();
-    console.log('should work');
 };
 
 window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions () {
