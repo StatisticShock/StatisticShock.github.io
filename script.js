@@ -207,7 +207,9 @@ async function addImages () {
             const responseWithNoQuotation = response.replaceAll('"','',true);
             const data = responseWithNoQuotation.split(/\r?\n/); //Puts each line of the csv in a single line
             var splitData = [];
-    
+            
+            console.log(data);
+
             data.forEach(row => {   //Splits each line by ';' characters
                 splitData.push(row.split(/;/));
                 console.log(row.split(/;/));
