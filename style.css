@@ -107,9 +107,6 @@ body {
 }
 
 #reddit-search-pop-up {
-    & p {
-        line-height: 20px;
-    }
     & span img {
         height: 20px;
         -webkit-filter: invert(100%);
@@ -273,7 +270,7 @@ h2 {
 }
 
 /* Spacing */
-#shortcuts p {
+#shortcuts > p {
     padding-top: 50px;
 }
 
