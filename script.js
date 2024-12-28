@@ -92,12 +92,12 @@ function setHeaderBackground () {
     header.style.backgroundImage = 'url(headers/' + bgs[headerIndex] + ')';
 }
 
-// To make 2B and Ai sit on the navbar
+// To make 2B and Ai sit on the navbar (and makke the MFC toggle sit under 2B)
 function figuresSitDown () {
     const twoB = document.getElementById('twoB');
     const twoB_Ass = Math.floor(parseFloat(getComputedStyle(twoB).height) * 493 / 920);
     const twoB_Pussy = Math.floor(parseFloat(getComputedStyle(twoB).width) * 182 / 356);
-    const aside = document.querySelector('aside')
+    const aside = document.querySelector('aside');
 
     twoB.style.top = (- twoB_Ass) + 'px';
     twoB.style.right = (aside.offsetWidth / 2 - twoB_Pussy) + 'px';
@@ -108,29 +108,67 @@ function figuresSitDown () {
     
     ohto.style.top = '-' + ohto_panties;
     ohto.style.left = getComputedStyle(document.getElementById('twoB')).right;
+
+    const toggleSwitch = document.getElementById('mfc-switch');
+    
+    toggleSwitch.style.right = parseFloat(twoB.style.right) + parseFloat(twoB.offsetWidth) / 2 + 'px';
+    toggleSwitch.style.transform = 'translate(50%, 0)'
+}
+
+//To make all switches work
+function makeSwitchesSlide () {
+    document.querySelectorAll('.switch > .slider').forEach((slider) => {
+        var parent = slider.parentElement;
+        var input = parent.querySelector('input');
+
+        var uncheckedPosition = getComputedStyle(slider, '::before').left;
+        var checkedPosition   = parseFloat(parent.offsetWidth) - parseFloat(uncheckedPosition) * 3 - parseFloat(getComputedStyle(slider, ':before').width) + 'px';
+
+        slider.style.setProperty('--total-transition', checkedPosition);
+        input.style.setProperty('--total-transition', checkedPosition);
+        console.log(uncheckedPosition, checkedPosition, getComputedStyle(slider, '::before').width);
+    })
+}
+
+//To make MFC toggle switch work
+function toggleSwitch () {
+    $('#mfc-switch  > input').click(() => {
+        if ($('#mfc-switch > input').is(':checked')) {
+            $('#owned').css('transform','translateX(-100%)');
+            $('#ordered').css('transform','translateX(0%)');
+            $('.card').attr('href','https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=0&categoryId=-1&output=3&sort=category&order=asc&_tb=user');
+        } else {
+            $('#owned').css('transform','translateX(0%)');
+            $('#ordered').css('transform','translateX(100%)');
+            $('.card').attr('href','https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=0&categoryId=-1&output=3&sort=category&order=asc&_tb=user');
+        };
+    });
+    $('#ordered').css('transform','translateX(100%)');  // Put it to the right so it doesn't appear on page load
+    $('#ordered').css('display','grid');                // Make it "visible"
+    resizeAllMasonryItems()                             // Resize the hidden entries
 }
 
 //To make the popups appear on click
-const popUpShortcuts = [
-    ['reddit-google','reddit-search-pop-up']
-];
-
-for (i = 0; i < popUpShortcuts.length; i++) {
-    var shortcut = document.getElementById(popUpShortcuts[i][0]);
-    var popUp = document.getElementById(popUpShortcuts[i][1]);
-
-    shortcut.onclick = () => {
-        var display = popUp.style.display;
-        
-        if ((display == '') || (display == 'none')) {
-            popUp.style.display = 'block';
-        } else {
-            popUp.style.display = 'none';
-        };
+function formatPopUps () {
+    const popUpShortcuts = [
+        ['reddit-google','reddit-search-pop-up']
+    ];
+    
+    for (i = 0; i < popUpShortcuts.length; i++) {
+        var shortcut = document.getElementById(popUpShortcuts[i][0]);
+        var popUp = document.getElementById(popUpShortcuts[i][1]);
+    
+        shortcut.onclick = () => {
+            var display = popUp.style.display;
+            
+            if ((display == '') || (display == 'none')) {
+                popUp.style.display = 'block';
+            } else {
+                popUp.style.display = 'none';
+            };
+        }        
     }
     
-}
-
     //To make the Close Button work
     document.querySelectorAll('.close-button').forEach((button) => {
         var parent = button.parentElement.parentElement;
@@ -139,6 +177,8 @@ for (i = 0; i < popUpShortcuts.length; i++) {
             setDefaults();
         };
     })
+    
+}
 
 // To make the reddit search work
 function redditSearch () {
@@ -200,6 +240,36 @@ function shuffle (arr) {
     return arr;
 }
 
+function resizeMasonryItem(item){
+    /* Get the grid object, its row-gap, and the size of its implicit rows */
+    var grid = document.getElementsByClassName('pinterest-grid')[0],
+        rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap')),
+        rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
+  
+    /*
+     * Spanning for any brick = S
+     * Grid's row-gap = G
+     * Size of grid's implicitly create row-track = R
+     * Height of item content = H
+     * Net height of the item = H1 = H + G
+     * Net height of the implicit row-track = T = G + R
+     * S = H1 / T
+     */
+    var rowSpan = Math.ceil((item.offsetHeight+rowGap)/(rowHeight+rowGap));
+  
+    /* Set the spanning as calculated above (S) */
+    item.style.gridRowEnd = 'span '+rowSpan;
+}
+
+function resizeAllMasonryItems(){
+    // Get all item class objects in one list
+    var allItems = document.getElementsByClassName('pinterest-grid-item');
+  
+    for(var i=0;i<allItems.length;i++){
+      resizeMasonryItem(allItems[i]);
+    }
+}
+
 async function addImages () {
     async function getCSVData(url) {
         try {
@@ -207,12 +277,9 @@ async function addImages () {
             const responseWithNoQuotation = response.replaceAll('"','',true);
             const data = responseWithNoQuotation.split(/\r?\n/); //Puts each line of the csv in a single line
             var splitData = [];
-            
-            console.log(data);
 
             data.forEach(row => {   //Splits each line by ';' characters
                 splitData.push(row.split(/;/));
-                console.log(row.split(/;/));
             });
             return splitData
         } catch (error) {
@@ -255,7 +322,7 @@ async function addImages () {
         createElement(item, 'ordered')
     });
 
-    document.querySelector('#ordered').style.display = 'none'
+    // document.querySelector('#ordered').style.display = 'none'
     
     function createElement (item, cardName) {
         var div = document.createElement('div');
@@ -279,36 +346,6 @@ async function addImages () {
         div.append(item.title);
     }
 
-    function resizeMasonryItem(item){
-        /* Get the grid object, its row-gap, and the size of its implicit rows */
-        var grid = document.getElementsByClassName('pinterest-grid')[0],
-            rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap')),
-            rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
-      
-        /*
-         * Spanning for any brick = S
-         * Grid's row-gap = G
-         * Size of grid's implicitly create row-track = R
-         * Height of item content = H
-         * Net height of the item = H1 = H + G
-         * Net height of the implicit row-track = T = G + R
-         * S = H1 / T
-         */
-        var rowSpan = Math.ceil((item.offsetHeight+rowGap)/(rowHeight+rowGap));
-      
-        /* Set the spanning as calculated above (S) */
-        item.style.gridRowEnd = 'span '+rowSpan;
-    }
-
-    function resizeAllMasonryItems(){
-        // Get all item class objects in one list
-        var allItems = document.getElementsByClassName('pinterest-grid-item');
-      
-        for(var i=0;i<allItems.length;i++){
-          resizeMasonryItem(allItems[i]);
-        }
-    }
-
     resizeAllMasonryItems();
 };
 
@@ -323,6 +360,9 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     rotateGamecardText(0);
     dragPopUp();
     await addImages();
+    toggleSwitch();
+    makeSwitchesSlide();
+    formatPopUps();
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     resizeAside();
