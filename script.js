@@ -201,7 +201,6 @@ function shuffle (arr) {
 }
 
 async function addImages () {
-
     async function getCSVData(url) {
         try {
             const response = await fetch(url).then((res) => res.text());
@@ -311,7 +310,7 @@ async function addImages () {
     resizeAllMasonryItems();
 };
 
-window.addEventListener('load', onLoadFunctions, true); function onLoadFunctions () {
+window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions () {
     openLinksInNewTab();
     redirectToEdge();
     setHeaderBackground();
@@ -321,8 +320,8 @@ window.addEventListener('load', onLoadFunctions, true); function onLoadFunctions
     adjustGamecard();
     rotateGamecardText(0);
     dragPopUp();
-    addImages();
-    console.log('test')
+    await addImages();
+    console.log('test2')
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     resizeAside();
