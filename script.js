@@ -235,6 +235,7 @@ async function addImages () {
     var ordered = [];
 
     console.log('Data One:', dataOne);
+    console.log('Data Two', dataTwo);
     console.log('Data:', data);
 
     for (i = 1; i < data.length; i++) { // Loop through the values of dataObject
