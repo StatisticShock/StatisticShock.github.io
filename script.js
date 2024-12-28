@@ -228,9 +228,9 @@ async function addImages () {
         return object;
     }
 
-    var data = await getCSVData('myFigureCollection.csv');
-    data = data.map(arrayToObject);
-    data = shuffle(data);
+    var dataOne = await getCSVData('myFigureCollection.csv');
+    var dataTwo = dataOne.map(arrayToObject);
+    var data = shuffle(dataTwo);
     var owned = [];
     var ordered = [];
 
