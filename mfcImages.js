@@ -120,3 +120,4 @@ async function addImages () {
 };
 
 addImages();
+console.log('teste');
