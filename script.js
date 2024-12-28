@@ -209,7 +209,7 @@ async function addImages () {
             var splitData = [];
     
             data.forEach(row => {   //Splits each line by ';' characters
-                splitData.push(row.split(/;/));
+                splitData.push([row.split(/;/)]);
             });
             return splitData
         } catch (error) {
