@@ -200,35 +200,36 @@ function shuffle (arr) {
     return arr;
 }
 
-async function getCSVData(url) {
-    try {
-        const response = await fetch(url).then((res) => res.text());
-        const responseWithNoQuotation = response.replaceAll('"','',true);
-        const data = responseWithNoQuotation.split(/\r\n/); //Puts each line of the csv in a single line
-        var splitData = [];
-
-        data.forEach(row => {   //Splits each line by ';' characters
-            splitData.push(row.split(/;/));
-        });
-
-        return splitData
-    } catch (error) {
-        console.error(error.message)
-    }
-}
-
-function arrayToObject (array) {
-    var object = {
-        "id": array[0],
-        "title": array[1],
-        "category": array[3],
-        "status": array[8],
-        "tracking":array[17]
-    }
-    return object;
-}
-
 async function addImages () {
+
+    async function getCSVData(url) {
+        try {
+            const response = await fetch(url).then((res) => res.text());
+            const responseWithNoQuotation = response.replaceAll('"','',true);
+            const data = responseWithNoQuotation.split(/\r\n/); //Puts each line of the csv in a single line
+            var splitData = [];
+    
+            data.forEach(row => {   //Splits each line by ';' characters
+                splitData.push(row.split(/;/));
+            });
+    
+            return splitData
+        } catch (error) {
+            console.error(error.message)
+        }
+    }
+
+    function arrayToObject (array) {
+        var object = {
+            "id": array[0],
+            "title": array[1],
+            "category": array[3],
+            "status": array[8],
+            "tracking":array[17]
+        }
+        return object;
+    }
+
     var data = await getCSVData('myFigureCollection.csv');
     data = data.map(arrayToObject);
     data = shuffle(data);
