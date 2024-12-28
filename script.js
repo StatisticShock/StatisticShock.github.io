@@ -28,13 +28,27 @@ function redirectToEdge () {
 }
 
 //To make aside the same height of Shortcut-Item
-function resizeAside () {
+function resizeAside (counter) {
    const aside = document.querySelector('aside');
    const card = document.querySelector('.card');
+   const pinterest = document.querySelector('#owned');
    const shortcuts = document.querySelector('#shortcuts');
 
-   aside.style.height = shortcuts.offsetHeight + 'px';
-   card.style.height = shortcuts.offsetHeight + 'px';
+   aside.style.height = 'fit-content';
+   card.style.height = 'fit-content';
+   shortcuts.style.height = 'fit-content';
+
+   var maxHeight = Math.max(pinterest.offsetHeight, shortcuts.offsetHeight);
+
+   aside.style.height = maxHeight + 'px';
+   card.style.height = maxHeight + 'px';
+   shortcuts.style.height = maxHeight + 'px';
+
+   if (counter == 0) {
+      setTimeout(() => {
+        resizeAside(1);
+      },750)
+   } 
 }
 
 // To make the gamecard occupy 50% of the screen on hover
@@ -86,7 +100,7 @@ function figuresSitDown () {
     const aside = document.querySelector('aside')
 
     twoB.style.top = (- twoB_Ass) + 'px';
-    twoB.style.right = (aside.offsetWidth - twoB_Pussy) + 'px';
+    twoB.style.right = (aside.offsetWidth / 2 - twoB_Pussy) + 'px';
 
     const ohto = document.getElementById('ohto');
     const ohto_panties = getComputedStyle(ohto).height;
@@ -178,9 +192,9 @@ function setDefaults () {
 window.addEventListener('load', onLoadFunctions, true); function onLoadFunctions () {
     openLinksInNewTab();
     redirectToEdge();
-    resizeAside();
     setHeaderBackground();
     figuresSitDown();
+    resizeAside(0)
     setDefaults();
     adjustGamecard();
     rotateGamecardText(0);

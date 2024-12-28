@@ -29,7 +29,8 @@ body {
     background-color: #313131;
     background-image: radial-gradient(rgba(255, 255, 255, 0.171) 2px, transparent 0);
     background-size: 30px 30px;
-    background-position: -5px -5px
+    background-position: -5px -5px;
+    overflow-x: hidden;
 }
 
 .pop-up {
@@ -270,19 +271,19 @@ h2 {
 }
 
 /* Spacing */
-#about, #gaming-stores, #anime, #cloud-storage, #productivity, #code, #search {
+#shortcuts p {
     padding-top: 50px;
 }
 
 #shortcuts {
-    width: calc(80% - 110px);
+    width: calc(77% - 110px);
     /* border: solid black; */
 }
 
 /* Speed test card */
 aside {
-    width: 25%;
-    height: 1000px;
+    width: 33%;
+    height: 2000px;
     background-image: var(--pink-purple);
     border-radius: 20px;
     transition: all .3s;
@@ -291,12 +292,54 @@ aside {
 }
   
 .card {
+    position: relative;
     width: 100%;
-    height: 1000px;
+    height: 100%;
     background-color: #1a1a1a;
     border-radius: 10px;
     transition: all .2s;
-    display: flex;
+    display: block;
+    text-decoration: none;
+
+    & .pinterest-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        grid-auto-rows: 10px;
+        grid-gap: 10px;
+        gap: 10px;
+        padding: 10px;
+        margin-right: 20px;
+
+
+        & > .pinterest-grid-item {
+            grid-row-end: span 8;
+            display: inline-block;
+            width: 100%;
+            height: fit-content;
+            font-size: 10px;
+            text-decoration: none;
+            background-color: #1a1a1a;
+            border: #1a1a1a 2px solid;
+            border-radius: 10px;
+            padding: 2%;
+            transition: ease .3s;
+
+            & img {
+                position: relative;
+                top: -2px;
+                left: -2px;
+                border: 2px solid blue;
+                width: 100%;
+                height: auto;
+                border-radius: 10px;
+            }
+        }
+
+        & .pinterest-grid-item:hover {
+            transform: scale(150%);
+            z-index: 6;
+        }
+    }
 }
 
 aside:hover {
