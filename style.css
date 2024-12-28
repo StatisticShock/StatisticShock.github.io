@@ -270,7 +270,7 @@ h2 {
 }
 
 /* Spacing */
-#shortcuts > p {
+#shortcuts > section > p {
     padding-top: 50px;
 }
 
