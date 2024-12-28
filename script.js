@@ -322,6 +322,7 @@ window.addEventListener('load', onLoadFunctions, true); function onLoadFunctions
     rotateGamecardText(0);
     dragPopUp();
     addImages();
+    console.log('test')
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     resizeAside();
