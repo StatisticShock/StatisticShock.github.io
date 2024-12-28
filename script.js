@@ -211,7 +211,6 @@ async function addImages () {
             data.forEach(row => {   //Splits each line by ';' characters
                 splitData.push(row.split(/;/));
             });
-            console.log('Split Data:', splitData);
             return splitData
         } catch (error) {
             console.error(error.message)
@@ -244,6 +243,8 @@ async function addImages () {
         }
 
     }
+
+    console.log(owned, ordered);
     
     owned.forEach(item => {
         createElement(item, 'owned')
@@ -308,6 +309,7 @@ async function addImages () {
     }
 
     resizeAllMasonryItems();
+    console.log('should work');
 };
 
 window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions () {
@@ -321,7 +323,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     rotateGamecardText(0);
     dragPopUp();
     await addImages();
-    console.log('test2')
+    console.log('test3')
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     resizeAside();
