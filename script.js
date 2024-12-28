@@ -211,6 +211,7 @@ async function addImages () {
             data.forEach(row => {   //Splits each line by ';' characters
                 splitData.push([row.split(/;/)]);
             });
+            console.log(splitData);
             return splitData
         } catch (error) {
             console.error(error.message)
