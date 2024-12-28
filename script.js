@@ -205,7 +205,7 @@ async function addImages () {
         try {
             const response = await fetch(url).then((res) => res.text());
             const responseWithNoQuotation = response.replaceAll('"','',true);
-            const data = responseWithNoQuotation.split(/\r\n/); //Puts each line of the csv in a single line
+            const data = responseWithNoQuotation.split(/\r?\n/); //Puts each line of the csv in a single line
             var splitData = [];
     
             data.forEach(row => {   //Splits each line by ';' characters
@@ -321,7 +321,6 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     rotateGamecardText(0);
     dragPopUp();
     await addImages();
-    console.log('test3')
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     resizeAside();
