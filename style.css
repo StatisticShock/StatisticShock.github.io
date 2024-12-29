@@ -381,6 +381,7 @@ aside {
 
 
         & > .pinterest-grid-item {
+            position: static;
             grid-row-end: span 8;
             display: inline-block;
             width: 100%;
@@ -402,6 +403,21 @@ aside {
                 height: auto;
                 border-radius: 10px;
             }
+
+            & .pinterest-grid-price {
+                position: absolute;
+                display: none;
+                padding: 5px;
+                background-color: #1a1a1a;
+                border-radius: 10px;
+                top: 0px;
+                z-index: 6;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        & .pinterest-grid-item:hover .pinterest-grid-price {
+            display: block;
         }
     }
 

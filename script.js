@@ -130,7 +130,6 @@ function makeSwitchesSlide () {
 
         slider.style.setProperty('--total-transition', checkedPosition);
         input.style.setProperty('--total-transition', checkedPosition);
-        console.log(uncheckedPosition, checkedPosition, getComputedStyle(slider, '::before').width);
     })
 }
 
@@ -233,6 +232,7 @@ function setDefaults () {
     document.getElementById('from-date').valueAsDate = new Date(new Date().getFullYear() - 1, new Date().getMonth(), new Date().getDate())
 }
 
+
 function shuffle (arr) {
     var j, x, index;
     for (index = arr.length - 1; index > 0; index--) {
@@ -244,6 +244,7 @@ function shuffle (arr) {
     return arr;
 }
 
+// To add MFC images in the aside
 function resizeMasonryItem(item){
     /* Get the grid object, its row-gap, and the size of its implicit rows */
     var grid = document.getElementsByClassName('pinterest-grid')[0],
@@ -297,7 +298,8 @@ async function addImages () {
             "title": array[1],
             "category": array[3],
             "status": array[8],
-            "tracking":array[17]
+            "tracking":array[17],
+            "price": array[14]
         }
         return object;
     }
@@ -325,33 +327,57 @@ async function addImages () {
     ordered.forEach(item => {
         createElement(item, 'ordered')
     });
-
-    // document.querySelector('#ordered').style.display = 'none'
     
-    function createElement (item, cardName) {
-        var div = document.createElement('div');
-        var img = document.createElement('img');
+    function createElement (item, cardName) { //To create the necessary elements
+        var div  = document.createElement('div');   //The container
+        var span = document.createElement('span');  // The price "pop-up"
+        var img  = document.createElement('img');
 
         div.setAttribute('alt', item.title);
-        div.setAttribute('class', 'pinterest-grid-item')
+        div.setAttribute('class', 'pinterest-grid-item');
+        span.innerHTML = 'R$ ' + item.price.replace('.',',');
+        span.setAttribute('class', 'pinterest-grid-price');
         img.setAttribute('src', 'https://static.myfigurecollection.net/upload/items/2/' + item.id + '-' + item.tracking + '.jpg');
         
         if (item.category == 'Prepainted') {
-            img.setAttribute('style', 'border: 2px solid green;');
             div.style.color = 'green';
+            span.style.border = '2px solid green';
+            img.style.border = '2px solid green';
         } else if (item.category == 'Action/Dolls') {
-            img.setAttribute('style', 'border: 2px solid blue;');
             div.style.color = 'blue';
+            span.style.border = '2px solid blue';
+            img.style.border = '2px solid blue';
+        } else {
+            div.style.color = 'orange';
+            span.style.border = '2px solid orange';
+            img.style.border = '2px solid orange';
         }
 
         div.append(img);
-        const card = $('#' + cardName);
+        div.append(span);
+        var card = $('#' + cardName);
         card.append(div);
         div.append(item.title);
     }
 
     resizeAllMasonryItems();
 };
+
+function priceFollowCursor () {
+    const card = document.querySelector('.card');
+    const prices = card.querySelectorAll('.pinterest-grid-price')
+
+    card.addEventListener('mousemove', (event) => {
+        const rect = card.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        
+        prices.forEach((price) => {
+            price.style.left =      x + 'px';
+            price.style.top  = 60 + y + 'px';
+        })
+    });
+}
 
 window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions () {
     openLinksInNewTab();
@@ -373,3 +399,6 @@ window.addEventListener('resize', onResizeFunctions, true); function onResizeFun
     figuresSitDown();
     rotateGamecardText(0);
 };
+window.addEventListener('mousemove', onMouseMoveFunctions, true); function onMouseMoveFunctions () {
+    priceFollowCursor();
+}
