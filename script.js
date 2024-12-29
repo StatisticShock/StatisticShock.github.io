@@ -6,11 +6,15 @@ document.getElementsByTagName('head')[0].appendChild(script);
 // Open in new tab
 function openLinksInNewTab () {
     document.querySelectorAll('.shortcut-item').forEach(element => {
-        element.target = '_blank';
+        if (element.href.match(/docs\.google\.com/) == null) {
+            element.target = '_blank';
+        }
     });
 
     document.querySelectorAll('.gamecard').forEach(element => {
-        element.firstElementChild.target = '_blank';
+        if (element.firstElementChild.href.match(/docs\.google\.com/) == null) {
+            element.firstElementChild.target = '_blank';
+        }
     });
 }
 
