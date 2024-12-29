@@ -162,7 +162,15 @@ img {
     }
 }
 
-    #keywords, #subreddit {
+#wikipedia-pop-up {
+    & span img {
+        height: 20px;
+        -webkit-filter: invert(100%);
+        filter: invert(100%);
+    } 
+}
+
+    #keywords-reddit, #subreddit {
         width: 100%;
     }
 

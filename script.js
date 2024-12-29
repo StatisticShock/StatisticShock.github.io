@@ -154,13 +154,15 @@ function toggleSwitch () {
 //To make the popups appear on click
 function formatPopUps () {
     const popUpShortcuts = [
-        ['reddit-google','reddit-search-pop-up']
+        ['reddit-google','reddit-search-pop-up'],
+        ['wikipedia', 'wikipedia-pop-up']
     ];
     
-    for (i = 0; i < popUpShortcuts.length; i++) {
-        var shortcut = document.getElementById(popUpShortcuts[i][0]);
-        var popUp = document.getElementById(popUpShortcuts[i][1]);
-    
+    popUpShortcuts.forEach((array) => {
+        var shortcut = document.getElementById(array[0]);
+        var popUp = document.getElementById(array[1]);
+        var popUpClass = document.querySelectorAll('.pop-up');
+
         shortcut.onclick = () => {
             var display = popUp.style.display;
             
@@ -169,8 +171,14 @@ function formatPopUps () {
             } else {
                 popUp.style.display = 'none';
             };
-        }        
-    }
+
+            popUpClass.forEach((element) => {
+                if (element != popUp) {
+                    element.style.display = 'none'
+                };
+            });
+        }
+    });
     
     //To make the Close Button work
     document.querySelectorAll('.close-button').forEach((button) => {
@@ -185,7 +193,7 @@ function formatPopUps () {
 
 // To make the reddit search work
 function redditSearch () {
-    const keywords =    document.getElementById('keywords');
+    const keywords =    document.getElementById('keywords-reddit');
     const subreddit =   document.getElementById('subreddit');
     const from =        document.getElementById('from-date');
     const to =          document.getElementById('to-date');
@@ -215,6 +223,19 @@ function redditSearch () {
     };
 }
 
+//To make the wikipedia search work
+function wikipediaSearch () {
+    const keywords = document.getElementById('keywords-wikipedia');
+
+    let string = 'https://pt.wikipedia.org/w/index.php?search=';
+
+    if (keywords.value) {
+        string = string + keywords.value.replace(' ','+');
+
+        window.open(string, '_blank').focus();
+    }
+}
+
 // To make the inputbox draggable
 function dragPopUp () {
     document.querySelectorAll('.pop-up').forEach(popUp => {
@@ -223,13 +244,16 @@ function dragPopUp () {
 }
 
 document.getElementById('reddit-search-ok').onclick = redditSearch;
+document.getElementById('wikipedia-ok').onclick = wikipediaSearch;
 
 // To make the defaults load within the window
 function setDefaults () {
-    document.getElementById('keywords').value = '';
+    document.getElementById('keywords-reddit').value = '';
     document.getElementById('subreddit').value = '';
     document.getElementById('to-date').valueAsDate = new Date();
     document.getElementById('from-date').valueAsDate = new Date(new Date().getFullYear() - 1, new Date().getMonth(), new Date().getDate())
+
+    document.getElementById('keywords-wikipedia').value = '';
 }
 
 
