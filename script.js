@@ -218,6 +218,10 @@ function redditSearch () {
     const from =        document.getElementById('from-date');
     const to =          document.getElementById('to-date');
 
+    var subredditStrings = subreddit.value.split(/ \/ /).filter((text) => {
+        if (text != '') return true;
+    });
+
     if ((new Date(from.value) >= new Date(to.value)) && from.value && to.value) return;
 
     let string = 'https://www.google.com/search?q=';
@@ -225,10 +229,16 @@ function redditSearch () {
     if (keywords.value) {
         string = string + keywords.value.replace(' ','+');
 
-        if (subreddit.value) {
-            string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + subreddit.value;
+        if (subredditStrings[0]) {
+            subredditStrings.forEach((text) => {
+                if (subredditStrings.indexOf(text) > 0) {
+                    string = string + '+OR+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + text.replaceAll(' ','_');
+                } else {
+                    string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + text.replaceAll(' ','_');
+                }
+            })
         } else {
-            string = string + '+site%3Ahttps%3A%2F%2Freddit.com';
+            string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2F'
         }
 
         if (from.value) {
