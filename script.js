@@ -154,30 +154,50 @@ function toggleSwitch () {
 //To make the popups appear on click
 function formatPopUps () {
     const popUpShortcuts = [
-        ['reddit-google','reddit-search-pop-up'],
-        ['wikipedia', 'wikipedia-pop-up']
+        {button: 'reddit-google', popUpContainer: 'reddit-search-pop-up'},
+        {button: 'wikipedia', popUpContainer: 'wikipedia-pop-up'}
     ];
     
-    popUpShortcuts.forEach((array) => {
-        var shortcut = document.getElementById(array[0]);
-        var popUp = document.getElementById(array[1]);
+    popUpShortcuts.forEach((object) => {
+        var buttonElement = document.getElementById(object.button);
+        var popUpElement = document.getElementById(object.popUpContainer);
         var popUpClass = document.querySelectorAll('.pop-up');
+        var floatingLabelElement = popUpElement.querySelectorAll('.floating-label')
 
-        shortcut.onclick = () => {
-            var display = popUp.style.display;
+        buttonElement.onclick = () => {
+            var display = popUpElement.style.display;
             
             if ((display == '') || (display == 'none')) {
-                popUp.style.display = 'block';
+                popUpElement.style.display = 'block';   //Makes the popUp appear
             } else {
-                popUp.style.display = 'none';
+                popUpElement.style.display = 'none';    //Makes the popUp disappear
             };
 
-            popUpClass.forEach((element) => {
-                if (element != popUp) {
+            popUpClass.forEach((element) => {   //Makes every other popUp disappear once the shorcut button is clicked
+                if (element != popUpElement) {
                     element.style.display = 'none'
                 };
             });
+
+            floatingLabelElement.forEach((label) => {
+                var siblings = Array.from(label.parentElement.children);
+                var input = siblings[siblings.indexOf(label) - 1]; //Gets the imediate predecessor sibling
+                var rect = popUpElement.getBoundingClientRect();
+                var inputRect = input.getBoundingClientRect();
+    
+                var left = inputRect.left - rect.left;
+                label.style.left = left +'px';
+
+                input.setAttribute('placeholder', ' ')
+            })
         }
+
+        popUpElement.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();     //Makes the form not submit
+                popUpElement.querySelector('.ok-button').click();
+            }
+        });
     });
     
     //To make the Close Button work

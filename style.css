@@ -103,6 +103,24 @@ img {
     & input:focus {
         outline: none;
         border: 2px solid var(--pink-custom);
+        position: relative;
+    }
+
+    & input ~ .floating-label {
+        position: absolute;
+        color: grey;
+        font-size: 13.3333px;
+        pointer-events: none;
+        transition: ease all 0.3s;
+        transform: translate(5px);       
+    }
+
+    & input:focus ~ .floating-label, & input:not(:placeholder-shown) ~ .floating-label {
+        position: absolute;
+        width: fit-content;
+        font-size: 10px;
+        transform: translate(5px, -100%);
+        /* background-color: #1a1a1a; */
     }
 }
 

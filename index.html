@@ -80,7 +80,7 @@
                         <img src="icons/wikipedia.ico">
                     </a>
                 </div>
-                <div class="pop-up" id="reddit-search-pop-up">
+                <form class="pop-up" id="reddit-search-pop-up">
                     <div class="pop-up-header">
                         <div>
                             <img src="icons/google.ico">
@@ -88,25 +88,25 @@
                         </div>
                         <button type="button" class="close-button">&times;</button>
                     </div>
-                    <span><img src="icons/key-multiple.svg"><input id="keywords-reddit" placeholder="Palavras-chave"></span>
+                    <span><img src="icons/key-multiple.svg"><input id="keywords-reddit"><span class='floating-label'>Palavras-chave</span></span>
                     <p></p>
-                    <span><img src="icons/r.svg"><input id="subreddit" placeholder="Subreddit"></span>
+                    <span><img src="icons/r.svg"><input id="subreddit"><span class='floating-label'>Subreddit</span></span>
                     <p></p>
-                    <span><input type="date" id="from-date">a<input type="date" id="to-date"></span>
+                    <span><input type="date" id="from-date"><span class='floating-label'>Data início</span>a<input type="date" id="to-date"><span class='floating-label'>Data fim</span></span>
                     <p></p>
                     <button type="button" class="ok-button" id="reddit-search-ok">OK</button>
-                </div>
-                <div class="pop-up" id="wikipedia-pop-up">
+                </form>
+                <form class="pop-up" id="wikipedia-pop-up">
                     <div class-="pop-up-header">
                         <div>
                             <img src="icons/wikipedia.ico">
                         </div>
                         <button type="button" class="close-button">&times;</button>
                     </div>
-                    <span><img src="icons/key-multiple.svg"><input id="keywords-wikipedia" placeholder="Palavras-chave"></span>
+                    <span><img src="icons/key-multiple.svg"><input id="keywords-wikipedia"><span class='floating-label'>Palavras-chave</span></span>
                     <p></p>
                     <button type="button" class="ok-button" id="wikipedia-ok">OK</button>
-                </div>
+                </form>
             </section>
             <section id="anime">
                 <p>Anime e Mangá</p>
