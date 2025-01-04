@@ -319,7 +319,7 @@ function resizeMasonryItem(item) {
 }
 function resizeAllMasonryItems() {
     // Get all item class objects in one list
-    var allItems = document.querySelectorAll('pinterest-grid-item');
+    var allItems = document.querySelectorAll('.pinterest-grid-item');
     for (var i = 0; i < allItems.length; i++) {
         resizeMasonryItem(allItems[i]);
     }
@@ -377,12 +377,13 @@ function addImages() {
         function createElement(item, cardName) {
             var div = document.createElement('div'); //The container
             var span = document.createElement('span'); // The price "pop-up"
-            var img = document.createElement('img');
+            var img = new Image();
             div.setAttribute('alt', item.title);
             div.setAttribute('class', 'pinterest-grid-item');
             span.innerHTML = 'R$ ' + item.price.replace('.', ',');
             span.setAttribute('class', 'pinterest-grid-price');
-            img.setAttribute('src', 'https://static.myfigurecollection.net/upload/items/2/' + item.id + '-' + item.tracking + '.jpg');
+            img.crossOrigin = 'anonymous';
+            img.src = './images/mfc/' + item.id + '-' + item.tracking + '.jpg';
             if (item.category == 'Prepainted') {
                 div.style.color = 'green';
                 span.style.border = '2px solid green';
@@ -429,7 +430,7 @@ function addImages() {
                     ordered.forEach(function (item) {
                         createElement(item, 'ordered');
                     });
-                    resizeAllMasonryItems();
+                    setTimeout(resizeAllMasonryItems, 500);
                     return [2 /*return*/];
             }
         });

@@ -324,7 +324,7 @@ function resizeMasonryItem (item: HTMLElement): void {
      * Net height of the implicit row-track = T = G + R
      * S = H1 / T
      */
-    let rowSpan = Math.ceil((item.offsetHeight+rowGap)/(rowHeight+rowGap));
+    let rowSpan = Math.ceil((item.offsetHeight + rowGap)/(rowHeight + rowGap));
   
     /* Set the spanning as calculated above (S) */
     item.style.gridRowEnd = 'span '+rowSpan;
@@ -332,9 +332,9 @@ function resizeMasonryItem (item: HTMLElement): void {
 
 function resizeAllMasonryItems (): void {
     // Get all item class objects in one list
-    var allItems = document.querySelectorAll('pinterest-grid-item') as NodeListOf<HTMLElement>;
+    let allItems = document.querySelectorAll('.pinterest-grid-item') as NodeListOf<HTMLElement>;
   
-    for(var i=0;i<allItems.length;i++){
+    for(let i=0;i<allItems.length;i++){
       resizeMasonryItem(allItems[i]);
     }
 }
@@ -415,13 +415,14 @@ async function addImages () {
     function createElement (item: imgMFCItem, cardName: string) { //To create the necessary elements
         var div  = document.createElement('div');   //The container
         var span = document.createElement('span');  // The price "pop-up"
-        var img  = document.createElement('img');
+        let img = new Image();
 
         div.setAttribute('alt', item.title);
         div.setAttribute('class', 'pinterest-grid-item');
         span.innerHTML = 'R$ ' + item.price.replace('.',',');
         span.setAttribute('class', 'pinterest-grid-price');
-        img.setAttribute('src', 'https://static.myfigurecollection.net/upload/items/2/' + item.id + '-' + item.tracking + '.jpg');
+        img.crossOrigin = 'anonymous';
+        img.src = './images/mfc/' + item.id + '-' + item.tracking + '.jpg';
         
         if (item.category == 'Prepainted') {
             div.style.color = 'green';
@@ -444,7 +445,7 @@ async function addImages () {
         div.append(item.title);
     }
 
-    resizeAllMasonryItems();
+    setTimeout(resizeAllMasonryItems,500);
 };
 
 function priceFollowCursor () {
