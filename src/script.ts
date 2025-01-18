@@ -96,7 +96,7 @@ function setHeaderBackground (): void {
 
     let header: HTMLElement = document.getElementById('header')!;
 
-    header.style.backgroundImage = 'url(headers/' + bgs[headerIndex] + ')';
+    header.style.backgroundImage = 'url(images/headers/' + bgs[headerIndex] + ')';
 }
 
 // To make 2B and Ai sit on the navbar (and makke the MFC toggle sit under 2B)
@@ -118,6 +118,7 @@ function figuresSitDown (): void {
 
     let toggleSwitch: HTMLElement = document.getElementById('mfc-switch')!;
     
+    toggleSwitch.style.width = twoB.style.width;
     toggleSwitch.style.right = parseFloat(twoB.style.right) + twoB.offsetWidth / 2 + 'px';
     toggleSwitch.style.transform = 'translate(50%, 0)'
 }
@@ -339,7 +340,7 @@ function resizeAllMasonryItems (): void {
     }
 }
 
-function shuffle (arr: Array<any>): Array<any> {
+function shuffle (arr: Array<any>): Array<any> { //Intended to shuffle any array
     var j, x, index;
     for (index = arr.length - 1; index > 0; index--) {
         j = Math.floor(Math.random() * (index + 1));
@@ -368,22 +369,50 @@ async function addImages () {
     }
 
     interface imgMFCItem {
-        id:       string,
-        title:    string,
+        id: string,
+        title: string,
+        root: string,
         category: string,
-        status:   string,
-        tracking: string,
-        price:    string
+        releaseDate: string,
+        releasePrice: string,
+        scale: string,
+        barcode: string,
+        status: string,
+        count: string,
+        score: string,
+        paymentDate: string,
+        shippingDate: string,
+        collectingDate: string,
+        price: string,
+        shop: string,
+        shippingMethod: string,
+        trackingNumber: string,
+        wishability: string,
+        note: string,
     }
 
     function arrayToObject (array: Array<string>): imgMFCItem {
         var object: imgMFCItem = {
-            id:       array[0],
-            title:    array[1],
-            category: array[3],
-            status:   array[8],
-            tracking: array[17],
-            price:    array[14]
+            id:             array[0],
+            title:          array[1],
+            root:           array[2],
+            category:       array[3],
+            releaseDate:    array[4],
+            releasePrice:   array[5],
+            scale:          array[6],
+            barcode:        array[7],
+            status:         array[8],
+            count:          array[9],
+            score:          array[10],
+            paymentDate:    array[11],
+            shippingDate:   array[12],
+            collectingDate: array[13],
+            price:          array[14],
+            shop:           array[15],
+            shippingMethod: array[16],
+            trackingNumber: array[17],
+            wishability:    array[18],
+            note:           array[19],
         }
         return object;
     }
@@ -422,7 +451,7 @@ async function addImages () {
         span.innerHTML = 'R$ ' + item.price.replace('.',',');
         span.setAttribute('class', 'pinterest-grid-price');
         img.crossOrigin = 'anonymous';
-        img.src = './images/mfc/' + item.id + '-' + item.tracking + '.jpg';
+        img.src = './images/mfc/' + item.id + '-' + item.trackingNumber + '.jpg';
         
         if (item.category == 'Prepainted') {
             div.style.color = 'green';
