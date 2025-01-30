@@ -7,8 +7,6 @@ img {
     width: 100%;
 }
 
-#one, #two {
-    position: relative;
+#one {
     width: 50%;
-    top: 90%
 }
