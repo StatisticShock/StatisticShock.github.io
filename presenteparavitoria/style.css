@@ -1,0 +1,79 @@
+body, button {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-transform: uppercase;
+}
+
+body {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    --color: #faa7d8;
+    --position-one: -45deg;
+    --position-two: 45deg;
+    --desloc: -50px;
+    background: linear-gradient(var(--position-one), var(--color) 25%, transparent 25%) var(--desloc) 0,
+                linear-gradient(var(--position-two), var(--color) 25%, transparent 25%) var(--desloc) 0,
+                linear-gradient(var(--position-one), transparent 75%, var(--color) 75%) var(--desloc) 0,
+                linear-gradient(var(--position-two), transparent 75%, var(--color) 75%) var(--desloc) 0;
+    background-color: #e5e5f7;
+    background-size: 10px 40px;
+    transition: ease-in-out 4s;
+}
+
+.container > p {
+    background-color: grey;
+}
+
+.card, .inner-card {
+    text-align: center;
+    align-items: center;
+    width: 75vw;
+    aspect-ratio: 3/4;
+    position: absolute;
+    border-radius: 2cap;
+}
+
+.card {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 5px double rgb(175, 95, 109);
+    color: rgb(175, 95, 109);
+    background-color: rgb(224, 153, 61);
+}
+
+.inner-card {
+    height: 100%;
+    width: 100%;
+
+    & p {
+        position: relative;
+        font-size: 1.5em;
+        top: 20%;
+    }
+
+    & button {
+        font-size: 1em;
+        position: absolute;
+        top: 70%;
+        transition: ease-in-out 0.2s;
+        width: 35%;
+        aspect-ratio: 4/3;
+        border-radius: 3em;
+        cursor: pointer;
+    }
+
+    & #yes {
+        left: 10%;
+        color: green;
+        border: 2px solid green;
+        background-color: aquamarine;
+    }
+
+    & #no {
+        right: 10%;
+        color: red;
+        border: 2px solid red;
+        background-color: #faa7d8;
+    }
+}
