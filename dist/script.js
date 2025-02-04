@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,6 +34,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+// Import custom functions from "./functions.Js"
+import CustomFunctions from "./functions.js";
 // Open in new tab
 function openLinksInNewTab() {
     var shortcuts = document.querySelectorAll('.shortcut-item');
@@ -151,27 +152,31 @@ function makeSwitchesSlide() {
     });
 }
 //To make MFC toggle switch work
-function toggleSwitch() {
+function mfcToggleSwitch() {
     var input = document.querySelector('#mfc-switch > input');
     var owned = document.getElementById('owned');
     var ordered = document.getElementById('ordered');
     var card = document.querySelector('.card');
+    var cardWidth = card.scrollWidth;
+    //scroll to the left on page load
+    card.scrollTo({ left: 0 });
     input.onclick = function () {
         if (input.checked) {
-            owned.style.transform = 'translateX(-100%)';
-            ordered.style.transform = 'translateX(0%)';
-            card.setAttribute('href', 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=0&categoryId=-1&output=3&sort=category&order=asc&_tb=user');
+            card.scrollTo({ left: cardWidth / 2 + 1, behavior: 'smooth' });
         }
         else {
-            owned.style.transform = 'translateX(0%)';
-            ordered.style.transform = 'translateX(100%)';
-            card.setAttribute('href', 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=0&categoryId=-1&output=3&sort=category&order=asc&_tb=user');
+            card.scrollTo({ left: 0, behavior: 'smooth' });
         }
         ;
     };
-    ordered.style.transform = 'translateX(100%)'; // Put it to the right so it doesn't appear on page load
-    ordered.style.display = 'grid'; // Make it "visible"
-    resizeAllMasonryItems(); // Resize the hidden entries
+    card.onscroll = function () {
+        if (card.scrollLeft == 0) { // Make sure it triggers only once it is in default position
+            input.checked = false;
+        }
+        else if (card.scrollLeft == card.scrollWidth / 2) { // Makes sure it triggers only once it reaches second page
+            input.checked = true;
+        }
+    };
 }
 //To make the popups appear on click
 function formatPopUps() {
@@ -281,10 +286,55 @@ function wikipediaSearch() {
     }
 }
 // To make the inputbox draggable
-function dragPopUp() {
-    document.querySelectorAll('.pop-up').forEach(function (popUp) {
-        // popUp.draggable = true;
+function dragPopUps() {
+    var popUps = document.querySelectorAll('.pop-up');
+    var isDragging = false;
+    var offsetX, offsetY;
+    popUps.forEach(function (popUp) {
+        popUp.addEventListener('mousedown', startDragging);
+        popUp.addEventListener('touchstart', startDragging);
+        popUp.addEventListener('mousemove', drag);
+        popUp.addEventListener('touchmove', drag);
+        popUp.addEventListener('mouseup', stopDragging);
+        popUp.addEventListener('touchend', stopDragging);
     });
+    function startDragging(event) {
+        var e;
+        if (event instanceof MouseEvent) {
+            e = event;
+        }
+        else {
+            e = event.touches[0];
+        }
+        ;
+        if (event.target === this) {
+            isDragging = true;
+            offsetX = e.clientX - this.offsetLeft;
+            offsetY = e.clientY - this.offsetTop;
+        }
+    }
+    ;
+    function drag(event) {
+        var e;
+        if (event instanceof MouseEvent) {
+            e = event;
+        }
+        else {
+            e = event.touches[0];
+        }
+        ;
+        if (isDragging) {
+            var rect = this.getBoundingClientRect();
+            var x = e.clientX - offsetX;
+            var y = e.clientY - offsetY;
+            this.style.left = x + 'px';
+            this.style.top = y + 'px';
+        }
+    }
+    ;
+    function stopDragging() {
+        isDragging = false;
+    }
 }
 document.getElementById('reddit-search-ok').onclick = redditSearch;
 document.getElementById('wikipedia-ok').onclick = wikipediaSearch;
@@ -301,43 +351,32 @@ function setDefaults() {
     var keywordsWikipedia = document.getElementById('keywords-wikipedia');
     keywordsWikipedia.value = '';
 }
-// To add MFC images in the aside
-function resizeMasonryItem(item) {
-    /* Get the grid object, its row-gap, and the size of its implicit rows */
-    var grid = document.getElementsByClassName('pinterest-grid')[0], rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap')), rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
-    /*
-     * Spanning for any brick = S
-     * Grid's row-gap = G
-     * Size of grid's implicitly create row-track = R
-     * Height of item content = H
-     * Net height of the item = H1 = H + G
-     * Net height of the implicit row-track = T = G + R
-     * S = H1 / T
-     */
-    var rowSpan = Math.ceil((item.offsetHeight + rowGap) / (rowHeight + rowGap));
-    /* Set the spanning as calculated above (S) */
-    item.style.gridRowEnd = 'span ' + rowSpan;
-}
-function resizeAllMasonryItems() {
-    // Get all item class objects in one list
-    var allItems = document.querySelectorAll('.pinterest-grid-item');
-    for (var i = 0; i < allItems.length; i++) {
-        resizeMasonryItem(allItems[i]);
-    }
-}
-function shuffle(arr) {
-    var j, x, index;
-    for (index = arr.length - 1; index > 0; index--) {
-        j = Math.floor(Math.random() * (index + 1));
-        x = arr[index];
-        arr[index] = arr[j];
-        arr[j] = x;
-    }
-    ;
-    return arr;
-}
+// To add MFC images in the aside and do 
 function addImages() {
     return __awaiter(this, void 0, void 0, function () {
+        function resizeMasonryItem(item) {
+            /* Get the grid object, its row-gap, and the size of its implicit rows */
+            var grid = document.getElementsByClassName('pinterest-grid')[0], rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap')), rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
+            /*
+             * Spanning for any brick = S
+             * Grid's row-gap = G
+             * Size of grid's implicitly create row-track = R
+             * Height of item content = H
+             * Net height of the item = H1 = H + G
+             * Net height of the implicit row-track = T = G + R
+             * S = H1 / T
+             */
+            var rowSpan = Math.ceil((item.offsetHeight + rowGap) / (rowHeight + rowGap));
+            /* Set the spanning as calculated above (S) */
+            item.style.gridRowEnd = 'span ' + rowSpan;
+        }
+        function resizeAllMasonryItems() {
+            // Get all item class objects in one list
+            var allItems = document.querySelectorAll('.pinterest-grid-item');
+            for (var i = 0; i < allItems.length; i++) {
+                resizeMasonryItem(allItems[i]);
+            }
+        }
         function getCSVData(url) {
             return __awaiter(this, void 0, void 0, function () {
                 var response, responseWithNoQuotation, data_1, splitData_1, error_1;
@@ -390,33 +429,69 @@ function addImages() {
             return object;
         }
         function createElement(item, cardName) {
-            var div = document.createElement('div'); //The container
-            var span = document.createElement('span'); // The price "pop-up"
-            var img = new Image();
+            var div = document.createElement('div'); // The container
+            var img = new Image(); // The image
+            var card = document.getElementById(cardName);
             div.setAttribute('alt', item.title);
             div.setAttribute('class', 'pinterest-grid-item');
-            span.innerHTML = 'R$ ' + item.price.replace('.', ',');
-            span.setAttribute('class', 'pinterest-grid-price');
-            img.crossOrigin = 'anonymous';
-            img.src = './images/mfc/' + item.id + '-' + item.trackingNumber + '.jpg';
+            div.setAttribute('price', 'R$ ' + item.price.replace('.', ','));
+            img.src = "./images/mfc/".concat(item.id, ".jpg");
             if (item.category == 'Prepainted') {
                 div.style.color = 'green';
-                span.style.border = '2px solid green';
-                img.style.border = '2px solid green';
             }
             else if (item.category == 'Action/Dolls') {
                 div.style.color = 'blue';
-                span.style.border = '2px solid blue';
-                img.style.border = '2px solid blue';
             }
             else {
                 div.style.color = 'orange';
-                span.style.border = '2px solid orange';
-                img.style.border = '2px solid orange';
             }
+            img.style.border = "3px solid ".concat(div.style.color);
+            var imgBorder = img.style.border.split(' ')[0];
+            img.style.width = "calc(100% - ".concat(imgBorder, " * 2)");
+            img.onclick = function () {
+                var popUp = document.querySelector('#mfc-pop-up');
+                var title = popUp.querySelector('.pop-up-title');
+                var popUpImgAnchor = popUp.querySelector('#pop-up-img');
+                var popUpImg = popUpImgAnchor.childNodes[0];
+                var rating = popUp.querySelector('#mfc-item-rating');
+                var ratingBefore = popUp.querySelector('#mfc-item-rating-before');
+                var price = popUp.querySelector('#mfc-item-price');
+                var collectingDate = popUp.querySelector('#mfc-item-collecting-date');
+                var a = popUp.querySelector('.pop-up-header > div > a');
+                title.innerHTML = item.title;
+                popUpImgAnchor.href = "https://pt.myfigurecollection.net/item/".concat(item.id);
+                popUpImg.src = img.src;
+                price.innerHTML = "R$ ".concat(item.price.replace('.', ','));
+                if (CustomFunctions.isParent(div, document.getElementById('owned'))) {
+                    a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
+                    collectingDate.parentElement.style.display = '';
+                    rating.style.display = '';
+                    collectingDate.innerHTML = CustomFunctions.revertArray(item.collectingDate.split('-')).join('/');
+                    rating.innerHTML = '⭐'.repeat(Number(item.score.split('/')[0]));
+                    ratingBefore.innerHTML = item.score;
+                }
+                else if (CustomFunctions.isParent(div, document.getElementById('ordered'))) {
+                    collectingDate.parentElement.style.display = 'none';
+                    rating.style.display = 'none';
+                    a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
+                }
+                popUp.style.display = 'block';
+                popUp.addEventListener('mousemove', displayScoreAsNumber);
+                popUp.addEventListener('touchstart', displayScoreAsNumber);
+                var timerId = 0;
+                function displayScoreAsNumber(event) {
+                    clearTimeout(timerId);
+                    timerId = setTimeout(function () {
+                        if (event.target === rating) {
+                            ratingBefore.style.display = 'block';
+                        }
+                    }, 1000);
+                    if (event.target !== rating) {
+                        ratingBefore.style.display = 'none';
+                    }
+                }
+            };
             div.append(img);
-            div.append(span);
-            var card = document.getElementById(cardName);
             card.append(div);
             div.append(item.title);
         }
@@ -428,7 +503,7 @@ function addImages() {
                 case 1:
                     dataOne = _a.sent();
                     dataTwo = dataOne.map(arrayToObject);
-                    data = shuffle(dataTwo);
+                    data = CustomFunctions.shuffle(dataTwo);
                     owned = [];
                     ordered = [];
                     for (i = 1; i < data.length; i++) { // Loop through the values of dataObject
@@ -445,6 +520,32 @@ function addImages() {
                     ordered.forEach(function (item) {
                         createElement(item, 'ordered');
                     });
+                    (function priceFollowCursor() {
+                        var aside = document.querySelector('aside');
+                        var items = aside.querySelectorAll('.pinterest-grid-item');
+                        var span = document.createElement('span'); // Creates the "pop-up"
+                        span.setAttribute('class', 'pinterest-grid-price');
+                        span.style.display = 'none';
+                        aside.appendChild(span);
+                        items.forEach(function (item) {
+                            var img = item.firstChild;
+                            item.addEventListener('mouseenter', function () {
+                                span.style.display = 'block';
+                                span.innerHTML = item.getAttribute('price');
+                                span.style.border = img.style.border;
+                            });
+                            item.addEventListener('mouseleave', function () {
+                                span.style.display = 'none';
+                            });
+                            item.addEventListener('mousemove', function (event) {
+                                var rect = aside.getBoundingClientRect();
+                                var x = event.clientX - rect.left;
+                                var y = event.clientY - rect.top;
+                                span.style.top = y + 20 + 'px';
+                                span.style.left = x + 0 + 'px';
+                            });
+                        });
+                    })();
                     setTimeout(resizeAllMasonryItems, 500);
                     return [2 /*return*/];
             }
@@ -452,19 +553,6 @@ function addImages() {
     });
 }
 ;
-function priceFollowCursor() {
-    var card = document.querySelector('.card');
-    var prices = card.querySelectorAll('.pinterest-grid-price');
-    card.addEventListener('mousemove', function (event) {
-        var rect = card.getBoundingClientRect();
-        var x = event.clientX - rect.left;
-        var y = event.clientY - rect.top;
-        prices.forEach(function (price) {
-            price.style.left = x + 'px';
-            price.style.top = 55 + y + 'px';
-        });
-    });
-}
 window.addEventListener('load', onLoadFunctions, true);
 function onLoadFunctions() {
     return __awaiter(this, void 0, void 0, function () {
@@ -479,11 +567,11 @@ function onLoadFunctions() {
                     setDefaults();
                     adjustGamecard();
                     rotateGamecardText(0);
-                    dragPopUp();
+                    dragPopUps();
                     return [4 /*yield*/, addImages()];
                 case 1:
                     _a.sent();
-                    toggleSwitch();
+                    mfcToggleSwitch();
                     makeSwitchesSlide();
                     formatPopUps();
                     return [2 /*return*/];
@@ -500,7 +588,6 @@ function onResizeFunctions() {
 }
 ;
 window.addEventListener('mousemove', onMouseMoveFunctions, true);
-function onMouseMoveFunctions() {
-    priceFollowCursor();
+function onMouseMoveFunctions(event) {
+    // console.log(event.target);
 }
-//# sourceMappingURL=script.js.map

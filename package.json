@@ -3,6 +3,7 @@
   "version": "1.1.0",
   "main": "./dist/script.js",
   "devDependencies": {
+    "@types/node": "^22.13.1",
     "typescript": "^5.7.2"
   },
   "scripts": {
@@ -11,5 +12,9 @@
   "author": "StatisticShock",
   "license": "ISC",
   "description": "",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "puppeteer": "^24.1.1"
+  }
 }

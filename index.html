@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="icons/favicon.svg" type="image/x-icon">
-    <title>IndeX</title>
+    <link rel="shortcut icon" href="images/icons/favicon.svg" type="image/x-icon">
+    <title>Index</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,8 +15,8 @@
         <a href="#shortcuts" class="menu-item">ATALHOS</a>
         <a href="#gaming" class="menu-item">GAMING</a>
         <a href="#about" class="menu-item">SOBRE</a>
-        <div id="twoB"><img src="images/2b.png"></div>
-        <div id="ohto"><img src="images/Ohto Ai Flamengo.png"></div>
+        <div id="twoB"><img src="images/pageImages/2b.png"></div>
+        <div id="ohto"><img src="images/pageImages/Ohto Ai Flamengo.png"></div>
         <label id="mfc-switch" class="switch">
             <input type="checkbox">
             <div class="slider"></div>
@@ -24,33 +24,51 @@
     </nav>
     <div class="container">
         <aside>
-            <a class="card" href="https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=0&categoryId=-1&output=3&sort=category&order=asc&_tb=user" target="_blank">
+            <div class="card">
                 <span id="owned" class="pinterest-grid"></span>
-                <span id="ordered" class="pinterest-grid" style="display: none;"></span>
-            </a>
+                <span id="ordered" class="pinterest-grid"></span>
+            </div>
         </aside>
+        <div class="pop-up" id="mfc-pop-up">
+            <div class="pop-up-header">
+                <div>
+                    <a target="_blank">
+                        <img src="images/icons/mfc.ico">
+                    </a>
+                </div>
+                <button type="button" class="close-button">&times;</button>
+            </div>
+            <a id="pop-up-img" target="_blank"><img></a>
+            <span class="pop-up-title"></span>
+            <div class="data-container">
+                <p id="mfc-item-rating-before"></p>
+                <p id="mfc-item-rating" rating=""></p>
+                <p>Valor pago&nbsp;<span id="mfc-item-price"></span></p>
+                <p>Data de aquisição&nbsp;<span id="mfc-item-collecting-date"></span></p>
+            </div>
+        </div>
         <section id="shortcuts">
             <h2>ATALHOS</h2>
             <section id="social-media">
                 <p>Redes Sociais</p>
                 <div class="grid-container">
                     <a class="shortcut-item" href="https://www.reddit.com/" alt="Reddit">
-                        <img src="icons/reddit.ico">
+                        <img src="images/icons/reddit.ico">
                     </a>
                     <a class="shortcut-item" href="https://www.facebook.com/" alt="Facebook">
-                        <img src="icons/fb.ico">
+                        <img src="images/icons/fb.ico">
                     </a>
                     <a class="shortcut-item" href="https://www.instagram.com/" alt="Instagram">
-                        <img src="icons/insta.ico">
+                        <img src="images/icons/insta.ico">
                     </a>
                     <a class="shortcut-item" href="https://x.com/home" alt="X (Twitter)">
-                        <img src="icons/x.ico">
+                        <img src="images/icons/x.ico">
                     </a>
                     <a class="shortcut-item" href="https://www.tiktok.com/" alt="TikTok">
-                        <img src="icons/tiktok.ico">
+                        <img src="images/icons/tiktok.ico">
                     </a>
                     <a class="shortcut-item" href="https://discord.com/" alt="Discord">
-                        <img src="icons/discord.ico">
+                        <img src="images/icons/discord.ico">
                     </a>
                 </div>
             </section>
@@ -58,13 +76,13 @@
                 <p>Streaming</p>
                 <div class="grid-container">
                     <a class="shortcut-item" href="https://www.youtube.com/" alt="YouTube">
-                        <img src="icons/youtube.ico">
+                        <img src="images/icons/youtube.ico">
                     </a>
                     <a class="shortcut-item" href="https://music.youtube.com/" alt="YouTube Music">
-                        <img src="icons/ytm.ico">
+                        <img src="images/icons/ytm.ico">
                     </a>
                     <a class="shortcut-item" href="https://www.twitch.tv/" alt="Twitch">
-                        <img src="icons/twitch.ico">
+                        <img src="images/icons/twitch.ico">
                     </a>
                 </div>
             </section>
@@ -72,23 +90,23 @@
                 <p>Pesquisa</p>
                 <div class="grid-container">
                     <a class="shortcut-item" id="reddit-google" alt="Reddit Google Search" style="cursor: pointer;">
-                        <img src="icons/google-reddit.ico">
+                        <img src="images/icons/google-reddit.ico">
                     </a>
                     <a class="shortcut-item" id="wikipedia" alt="Wikipedia Search" style="cursor: pointer;">
-                        <img src="icons/wikipedia.ico">
+                        <img src="images/icons/wikipedia.ico">
                     </a>
                 </div>
                 <form class="pop-up" id="reddit-search-pop-up">
                     <div class="pop-up-header">
                         <div>
-                            <img src="icons/google.ico">
-                            <img src="icons/reddit-icon.ico">
+                            <img src="images/icons/google.ico">
+                            <img src="images/icons/reddit-icon.ico">
                         </div>
                         <button type="button" class="close-button">&times;</button>
                     </div>
-                    <span><img src="icons/key-multiple.svg"><input id="keywords-reddit"><span class='floating-label'>Palavras-chave</span></span>
+                    <span><img src="images/icons/key-multiple.svg"><input id="keywords-reddit"><span class='floating-label'>Palavras-chave</span></span>
                     <p></p>
-                    <span><img src="icons/r.svg"><input id="subreddit"><span class='floating-label'>Subreddit</span></span>
+                    <span><img src="images/icons/r.svg"><input id="subreddit"><span class='floating-label'>Subreddit</span></span>
                     <p></p>
                     <span><input type="date" id="from-date"><span class='floating-label'>Data início</span>a<input type="date" id="to-date"><span class='floating-label'>Data fim</span></span>
                     <p></p>
@@ -97,11 +115,11 @@
                 <form class="pop-up" id="wikipedia-pop-up">
                     <div class-="pop-up-header">
                         <div>
-                            <img src="icons/wikipedia.ico">
+                            <img src="images/icons/wikipedia.ico">
                         </div>
                         <button type="button" class="close-button">&times;</button>
                     </div>
-                    <span><img src="icons/key-multiple.svg"><input id="keywords-wikipedia"><span class='floating-label'>Palavras-chave</span></span>
+                    <span><img src="images/icons/key-multiple.svg"><input id="keywords-wikipedia"><span class='floating-label'>Palavras-chave</span></span>
                     <p></p>
                     <button type="button" class="ok-button" id="wikipedia-ok">OK</button>
                 </form>
@@ -110,10 +128,10 @@
                 <p>Anime e Mangá</p>
                 <div class="grid-container">
                     <a class="shortcut-item" href="https://myanimelist.net/profile/HikariMontgomery" alt="MyAnimeList">
-                        <img src="icons/mal.ico">
+                        <img src="images/icons/mal.ico">
                     </a>
                     <a class="shortcut-item" href="https://betteranime.net/" alt="Better Anime">
-                        <img src="icons/betteranime.ico">
+                        <img src="images/icons/betteranime.ico">
                     </a>
                 </div>
             </section>
@@ -121,22 +139,22 @@
                 <p>Anime Figures</p>
                 <div class="grid-container">
                     <a class="shortcut-item" href="https://pt.myfigurecollection.net/profile/HikariKun" alt="MyFigureCollection">
-                        <img src="icons/mfc.ico">
+                        <img src="images/icons/mfc.ico">
                     </a>
                     <a class="shortcut-item" href="https://www.amiami.com/eng/search/list/?s_st_condition_flg=1&s_sortkey=preowned" alt="AmiAmi">
-                        <img src="icons/amiami.ico">
+                        <img src="images/icons/amiami.ico">
                     </a>
                     <a class="shortcut-item" href="https://buyee.jp/item/search/category/2084023782?sort=end&order=a&store=1&aucminprice=1&aucmaxprice=2300&item_status=1" alt="JDirectItems Auction">
-                        <img src="icons/buyee.ico">
+                        <img src="images/icons/buyee.ico">
                     </a>
                     <a class="shortcut-item" href="https://buyee.jp/mercari/search?items=40&price_max=2300&lang=en&page=1&price_min=300&category_id=81&currencyCode=BRL&searchType=filter" alt="Mercari Japan">
-                        <img src="icons/buyee.ico">
+                        <img src="images/icons/buyee.ico">
                     </a>
                     <a class="shortcut-item" href="https://solarisjapan.com/" alt="Solaris Japan">
-                        <img src="icons/sj.ico">
+                        <img src="images/icons/sj.ico">
                     </a>
                     <a class="shortcut-item" href="https://www.nin-nin-game.com/en/" alt="Nin-Nin Game">
-                        <img src="icons/nng.ico">
+                        <img src="images/icons/nng.ico">
                     </a>
                 </div>
             </section>
@@ -144,16 +162,16 @@
                 <p>Lojas Gamer</p>
                 <div class="grid-container">
                     <a class="shortcut-item" href="https://www.pichau.com.br" alt="Pichau">
-                        <img src="icons/pichau.ico">
+                        <img src="images/icons/pichau.ico">
                     </a>
                     <a class="shortcut-item" href="https://www.kabum.com.br/" alt="KaBuM!">
-                        <img src="icons/kabum.ico">
+                        <img src="images/icons/kabum.ico">
                     </a>
                     <a class="shortcut-item" href="https://www.terabyteshop.com.br/" alt="TerabyteShop">
-                        <img src="icons/terabyte.ico">
+                        <img src="images/icons/terabyte.ico">
                     </a>
                     <a class="shortcut-item" href="https://meupc.net/perfil/assdeper/builds" alt="MeuPC.net">
-                        <img src="icons/meupc.ico">
+                        <img src="images/icons/meupc.ico">
                     </a>
                 </div>
             </section>
@@ -161,25 +179,25 @@
                 <p>Lojas</p>
                 <div class="grid-container">
                     <a class="shortcut-item" href="https://pt.aliexpress.com/" alt="Aliexpress">
-                        <img src="icons/aliexpress.ico">
+                        <img src="images/icons/aliexpress.ico">
                     </a>
                     <a class="shortcut-item" href="https://shopee.com.br/" alt="Shopee">
-                        <img src="icons/shopee.ico">
+                        <img src="images/icons/shopee.ico">
                     </a>
                     <a class="shortcut-item" href="https://www.temu.com/br" alt="Temu">
-                        <img src="icons/temu.ico">
+                        <img src="images/icons/temu.ico">
                     </a>
                     <a class="shortcut-item" href="https://www.amazon.com.br/" alt="Amazon">
-                        <img src="icons/amazon.ico">
+                        <img src="images/icons/amazon.ico">
                     </a>
                     <a class="shortcut-item" href="https://www.magazineluiza.com.br/" alt="Magazine Luiza">
-                        <img src="icons/magalu.ico">
+                        <img src="images/icons/magalu.ico">
                     </a>
                     <a class="shortcut-item" href="https://www.ebay.com/" alt="ebay">
-                        <img src="icons/ebay.ico">
+                        <img src="images/icons/ebay.ico">
                     </a>
                     <a class="shortcut-item" href="https://www.banggood.com/pt/" alt="Banggood">
-                        <img src="icons/bggd.ico">
+                        <img src="images/icons/bggd.ico">
                     </a>
                 </div>
             </section>
@@ -187,13 +205,13 @@
                 <p>Armazenamento em nuvem</p>
                 <div class="grid-container">
                     <a class="shortcut-item" href="https://drive.google.com/drive/" alt="Google Drive">
-                        <img src="icons/drive.ico">
+                        <img src="images/icons/drive.ico">
                     </a>
                     <a class="shortcut-item" href="https://mega.nz/" alt="Mega">
-                        <img src="icons/mega.ico">
+                        <img src="images/icons/mega.ico">
                     </a>
                     <a class="shortcut-item" href="https://photos.google.com/" alt="Google Photos">
-                        <img src="icons/photos.ico">
+                        <img src="images/icons/photos.ico">
                     </a>
                 </div>
             </section>
@@ -201,13 +219,13 @@
                 <p>Coding</p>
                 <div class="grid-container">
                     <a class="shortcut-item" href="https://github.com/" alt="GitHub">
-                        <img src="icons/github.ico">
+                        <img src="images/icons/github.ico">
                     </a>
                     <a class="shortcut-item" href="https://stackoverflow.com/" alt="StackOverflow">
-                        <img src="icons/so.ico">
+                        <img src="images/icons/so.ico">
                     </a>
                     <a class="shortcut-item" href="https://uiverse.io/" alt="Uiverse">
-                        <img src="icons/uiverse.ico">
+                        <img src="images/icons/uiverse.ico">
                     </a>
                 </div>
             </section>
@@ -215,13 +233,13 @@
                 <p>Produtividade</p>
                 <div class="grid-container">
                     <a class="shortcut-item" href="https://fibergridtelecomunicacoes.sgp.tsmx.com.br/accounts/central/login" alt="Fibergrid (Internet)">
-                        <img src="icons/fibergrid.ico">
+                        <img src="images/icons/fibergrid.ico">
                     </a>
                     <a class="shortcut-item" href="https://meucorreios.correios.com.br/app/index.php" alt="Meu Correios">
-                        <img src="icons/correios.ico">
+                        <img src="images/icons/correios.ico">
                     </a>
                     <a class="shortcut-item" href="https://docs.google.com/spreadsheets/d/1P01ekAqQPAnsFVh-LzSmBqhasxFwY3XwZooei1MNgrI" alt="Controle de Gastos">
-                        <img src="icons/sheets.ico">
+                        <img src="images/icons/sheets.ico">
                     </a>
                 </div>
             </section>
@@ -281,6 +299,6 @@
     <footer>
         <p>&copy; No right reserved.</p>
     </footer>
-    <script src="./dist/script.js"></script>
+    <script type="module" src="./dist/script.js"></script>
 </body>
 </html>

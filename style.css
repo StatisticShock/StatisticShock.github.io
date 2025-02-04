@@ -172,6 +172,57 @@ img {
     }
 }
 
+#mfc-pop-up {
+    width: 25vw;
+    font-size: 0.9em;
+    
+    & #pop-up-img > img {
+        max-width: 20vw;
+        max-height: 50vh;
+        position: relative;
+        left: 50%;
+        transform: translate(-50%,0);
+        border-radius: 10px;
+    }
+
+    & .pop-up-title {
+        text-align: center ;
+    }
+
+    & .data-container {
+        position: relative;
+
+        & p {
+            width: 100%;
+            /* border: 1px solid white; */
+
+            & span {
+                position: absolute;
+                left: 65%;
+                color: white;
+            }
+        }
+
+        & #mfc-item-rating {
+            position: relative;
+            text-align: center;
+            transition: ease-in 0.3s;
+        }
+
+        & #mfc-item-rating-before {
+            position: absolute;
+            display: none;
+            width: fit-content;
+            background-color: #313131;
+            left: 50%;
+            transform: translate(-50%,-150%);
+            padding: 5px;
+            border-radius: 5px;
+            z-index: 6;
+        }
+    }
+}
+
 #reddit-search-pop-up {
     & span img {
         height: 20px;
@@ -286,7 +337,7 @@ nav {
 }
 
 section {
-    padding: 0px 20px;
+    margin: 0px 20px;
 }
 
 h2 {
@@ -357,100 +408,85 @@ h2 {
 
 #shortcuts {
     position: relative;
-    width: 67%;
-    /* border: solid black; */
+    width: calc(67vw - 40px);
+    /* border: 2px solid white; */
 }
 
 /* Speed test card */
 aside {
     position: relative;
-    width: 33%;
+    width: 33vw;
     height: 2000px;
-    background-image: var(--pink-purple);
     border-radius: 20px;
     transition: all .3s;
     float: right;
     text-wrap:wrap;
-}
-  
-.card {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background-color: #1a1a1a;
-    border-radius: 10px;
-    transition: all .2s;
-    display: block;
-    text-decoration: none;
-    overflow-x:hidden;
 
-    & .pinterest-grid {
-        position: absolute;
+    & .card {
+        width: 100%;
+        height: 100%;
+        background-color: #1a1a1a;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all .2s;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
-        grid-auto-rows: 5px;
-        grid-gap: 5px;
-        gap: 10px;
-        padding: 10px;
-        margin-right: 10px;
-
-
-        & > .pinterest-grid-item {
-            position: static;
-            grid-row-end: span 8;
-            display: inline-block;
-            width: 100%;
-            height: fit-content;
-            font-size: 65%;
-            text-decoration: none;
-            background-color: #1a1a1a;
-            border: #1a1a1a 2px solid;
-            border-radius: 10px;
-            padding: 2%;
-            transition: ease .3s;
-            overflow-x: hidden;
-
-            & img {
-                position: relative;
-                top: -2px;
-                left: -2px;
-                border: 2px solid blue;
+        grid-auto-flow: column;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        gap: 50px;
+    
+        & .pinterest-grid {
+            width: 31vw;
+            scroll-snap-align: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+            grid-auto-rows: 5px;
+            grid-gap: 5px;
+            gap: 10px;
+            margin: 10px;
+            transition: ease 0.4s;
+    
+            & > .pinterest-grid-item {
+                border: 1px solid white;
+                position: static;
+                display: inline-block;
                 width: 100%;
-                height: auto;
-                border-radius: 10px;
-            }
-
-            & .pinterest-grid-price {
-                position: absolute;
-                display: none;
-                padding: 5px;
+                height: fit-content;
+                font-size: 65%;
+                text-decoration: none;
                 background-color: #1a1a1a;
+                border: #1a1a1a 2px solid;
                 border-radius: 10px;
-                top: 0px;
-                z-index: 6;
-                transform: translate(-50%, 0);
+                padding: 2%;
+                transition: ease .3s;
+                overflow-x: hidden;
+    
+                & img {
+                    position: relative;
+                    width: 100%;
+                    height: auto;
+                    border-radius: 10px;
+                    cursor: pointer;
+                }
             }
         }
-
-        & .pinterest-grid-item:hover .pinterest-grid-price {
-            display: block;
-        }
     }
 
-    #ordered, #owned {
-        transition: ease 0.4s;
+    & .pinterest-grid-price {
+        /* It is the pop up that shows each figure price */
+        background-color: #1a1a1a;
+        transform: translateX(-25%);
+        position: absolute;
+        width: max-content;
+        height: fit-content;
+        border-radius: 0.75em;
+        top: 0px;
+        left: 0px;
     }
 }
-
-aside:hover {
-    box-shadow: 0px 0px 30px 1px var(--pink-custom);
-}
-
-.card:hover {
-    transform: scale(0.98);
-    border-radius: 20px;
-}
-
 
 /* Game Card */
 /* From Uiverse.io by joe-watson-sbf */ 
@@ -531,42 +567,42 @@ aside:hover {
     }
 
         #ra {
-            background-image: url(images/ra-ps.png);
+            background-image: url(images/pageImages/ra-ps.png);
             background-size:contain;
         }
 
         #rroms {
-            background-image: url(images/rroms.png);
+            background-image: url(images/pageImages/rroms.png);
         }
 
         #fitgirl {
-            background-image: url(images/fitgirl-ps.png);
+            background-image: url(images/pageImages/fitgirl-ps.png);
         }
 
         #rpiracy {
-            background-image: url(images/rpiracy.png);
+            background-image: url(images/pageImages/rpiracy.png);
             background-blend-mode: lighten;
         }
 
         #pkmds {
             background-size: contain;
-            background-image: url(images/pokemon.png);
+            background-image: url(images/pageImages/pokemon.png);
         }
 
         #zelda-tracker {
-            background-image: url(images/botw-ps.png);
+            background-image: url(images/pageImages/botw-ps.png);
         }
 
         #pokemon-tracker {
-            background-image: url(images/pokemon-ps.png);
+            background-image: url(images/pageImages/pokemon-ps.png);
         }
 
         #castlevania-tracker {
-            background-image: url(images/castlevania-ps.png);
+            background-image: url(images/pageImages/castlevania-ps.png);
         }
 
         #zelda-dungeon {
-            background-image: url(images/zelda.jpg);
+            background-image: url(images/pageImages/zelda.jpg);
             background-position: bottom;
         }
     
