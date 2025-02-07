@@ -27,7 +27,7 @@ body {
     /* Add your background pattern here */
     color: white;
     background-color: #313131;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 2px, transparent 0);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1.5px, transparent 0);
     background-size: 30px 30px;
     background-position: -5px -5px;
     overflow-x: hidden;
@@ -47,7 +47,7 @@ img {
     transform: translate(-50%, -50%);
     background-color: #1a1a1a;
     border-radius: 20px;
-    border: 1px solid white;
+    border: 2px solid white;
     width: fit-content;
     height: fit-content;
     padding: 2em;
@@ -122,6 +122,10 @@ img {
         transform: translate(5px, -100%);
         /* background-color: #1a1a1a; */
     }
+
+    & img {
+        pointer-events: fill;
+    }
 }
 
 /* From Uiverse.io by gharsh11032000 */ 
@@ -173,16 +177,17 @@ img {
 }
 
 #mfc-pop-up {
-    width: 25vw;
-    font-size: 0.9em;
+    height: 70vmin;
+    aspect-ratio: 3/4;
+    font-size: 2vmin;
     
     & #pop-up-img > img {
-        max-width: 20vw;
-        max-height: 50vh;
+        max-width: 90%;
+        max-height: 60%;
         position: relative;
         left: 50%;
         transform: translate(-50%,0);
-        border-radius: 10px;
+        border-radius: 10px;        
     }
 
     & .pop-up-title {
@@ -252,9 +257,12 @@ img {
 
 header {
     font-family: Hylia Serif;
-    font-size: 27px;
+    text-shadow: 2px 2px black;
+    font-size: 3vw;
+    height: 10vh;
     background-color: black;
     background-size: cover;
+    background-position: center;
     color: white;
     /* -webkit-text-stroke: 1px black; */
     padding: 10px 20px;
@@ -266,6 +274,7 @@ header {
 
 #twoB {
     position: absolute;
+    max-height: 35vw;
     height: 300px;
     z-index: 3;
     pointer-events: none;
@@ -279,9 +288,9 @@ header {
 
 #ohto {
     position: absolute;
+    max-height: 20vw;
     height: 170px;
     z-index: 1;
-    pointer-events: none;
 
     & img {
         height: 100%;
@@ -412,7 +421,7 @@ h2 {
     /* border: 2px solid white; */
 }
 
-/* Speed test card */
+/* MFC Card */
 aside {
     position: relative;
     width: 33vw;
@@ -455,8 +464,9 @@ aside {
                 display: inline-block;
                 width: 100%;
                 height: fit-content;
-                font-size: 65%;
+                font-size: .75em;
                 text-decoration: none;
+                text-align: center;
                 background-color: #1a1a1a;
                 border: #1a1a1a 2px solid;
                 border-radius: 10px;
@@ -579,11 +589,6 @@ aside {
             background-image: url(images/pageImages/fitgirl-ps.png);
         }
 
-        #rpiracy {
-            background-image: url(images/pageImages/rpiracy.png);
-            background-blend-mode: lighten;
-        }
-
         #pkmds {
             background-size: contain;
             background-image: url(images/pageImages/pokemon.png);
@@ -614,6 +619,52 @@ aside {
         color: var(--pink-custom);
         letter-spacing: .1em;
     }
+
+/* To make the loaders spin */
+@keyframes loading {
+    from {
+        transform: rotate(0turn);
+    }
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+.loader {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    width: 25%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate(-50%, -100%) rotate(45deg);
+
+    & .orb {
+        position: absolute;
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 100%;
+
+        --delay: calc(var(--index) * 1s / (var(--count) * 2));
+        opacity: calc((var(--count) + 1 - var(--index)) * (1 / var(--count)));
+
+        animation: loading 1.5s var(--delay) ease-in-out infinite;
+    }
+
+    & .orb::after {
+        position: absolute;
+        content: '';
+        top: 0;
+        left: 0;
+        width: 10px;
+        aspect-ratio: 1;
+        background-color: var(--pink-custom);
+        box-shadow: 0px 0px 20px 5px var(--pink-custom);
+        border-radius: 50%;
+    }
+}
 
 footer {
     text-align: center;

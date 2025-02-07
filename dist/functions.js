@@ -13,18 +13,21 @@ var CustomFunctions = /** @class */ (function () {
         return arr;
     };
     ;
-    CustomFunctions.revertArray = function (arr) {
-        var output = [];
-        for (var i = arr.length - 1; i >= 0; i--) { //Loops from the last item to the first
-            output.push(arr[i]); //Pushes everything back to the output
-        }
-        return output;
-    };
-    ;
     CustomFunctions.isParent = function (element, parent) {
         return parent.contains(element);
     };
     ;
+    CustomFunctions.randomIntFromInterval = function (min, max) {
+        if (min > max) {
+            console.error('Tá chapado?');
+            return -1;
+        }
+        else if (min == max) {
+            return max;
+        }
+        else
+            return Math.floor(Math.random() * (max - min + 1) + min);
+    };
     return CustomFunctions;
 }());
 export default CustomFunctions;

@@ -10,17 +10,16 @@ export default class CustomFunctions {
         return arr;
     };
 
-    static revertArray (arr: Array<any>): Array<any> {
-        let output: Array<any> = [];
-
-        for (let i: number = arr.length - 1; i >= 0; i--) { //Loops from the last item to the first
-            output.push(arr[i]);                        //Pushes everything back to the output
-        }
-
-        return output;
-    };
-
     static isParent (element: HTMLElement, parent: HTMLElement): boolean {
         return parent.contains(element);
     };
+
+    static randomIntFromInterval(min: number, max: number) { // min and max included
+        if (min > max) {
+            console.error('Tá chapado?');
+            return -1;
+        } else if (min == max) {
+            return max;
+        } else return Math.floor(Math.random() * (max - min + 1) + min);
+    }
 }

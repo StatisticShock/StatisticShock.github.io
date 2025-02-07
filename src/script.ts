@@ -1,6 +1,29 @@
 // Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
 
+// To make loaders work
+function createLoaders (count: number): void {
+    let loaders: NodeListOf<HTMLDivElement> = document.querySelectorAll('.loader');
+
+    loaders.forEach(loader => {
+        for (let i: number = 1; i <= count; i++) { //Create for loop to add the correct number of orbs
+            let orb: HTMLDivElement = document.createElement('div');
+            orb.setAttribute('class', 'orb');
+            orb.setAttribute('style', `--index: ${i}; --count: ${count};`);
+            loader.appendChild(orb);
+        }
+    });
+}
+
+// Stop image dragging
+function stopImageDrag ():void {
+    let images: HTMLCollectionOf<HTMLImageElement> = document.getElementsByTagName('img');
+
+    Array.from(images).forEach((img) => {
+        img.setAttribute('draggable', 'false')
+    });
+}
+
 // Open in new tab
 function openLinksInNewTab (): void {
     let shortcuts: NodeListOf<HTMLAnchorElement> = document.querySelectorAll('.shortcut-item');
@@ -91,15 +114,18 @@ function rotateGamecardText (counter: number): void {
 }
 // To make the header have different backgrounds
 function setHeaderBackground (): void {
-    const bgs = [
-        'grand_blue.jpg',
-        'sam_integralista.jpg'
-    ];
-    let headerIndex: number = Math.floor(Math.random() * bgs.length);
+    let filePath: string = 'images/headers/'
 
-    let header: HTMLElement = document.getElementById('header')!;
+    fetch(`${filePath}headers.json`)
+        .then((res) => res.json())
+        .then((json) => {
+            let jsonLength: number = json.length;
+            let index: number = CustomFunctions.randomIntFromInterval(1, jsonLength);
+            let src: string = filePath + json[index-1];
 
-    header.style.backgroundImage = 'url(images/headers/' + bgs[headerIndex] + ')';
+            const header: HTMLElement = document.querySelector('#header')!;
+            header.style.backgroundImage = `url('${src}')`;
+        });
 }
 
 // To make 2B and Ai sit on the navbar (and makke the MFC toggle sit under 2B)
@@ -289,6 +315,18 @@ function wikipediaSearch (): void {
     }
 }
 
+// To make MFC pop-up adjust
+function mfcPopUpAdjust (): void {
+    let mfc: HTMLDivElement = document.querySelector('#mfc-pop-up')!;
+
+    // To make it have the proper aspect ratio
+    let a
+
+    let fontSize: number = parseFloat(getComputedStyle(mfc).fontSize);
+
+    // alert(fontSize);
+}
+
 // To make the inputbox draggable
 function dragPopUps (): void {
     let popUps: NodeListOf<HTMLElement> = document.querySelectorAll('.pop-up')
@@ -305,14 +343,19 @@ function dragPopUps (): void {
     })
     function startDragging (this: HTMLElement, event: MouseEvent | TouchEvent): void {
         let e: MouseEvent | Touch;
-        
+
         if (event instanceof MouseEvent) {
             e = event;
         } else {
             e = event.touches[0];
         };
-        
-        if (event.target === this) {
+
+        let target = e.target as HTMLElement;
+
+        if ((target === this || CustomFunctions.isParent(target, this)) &&
+            !(target instanceof HTMLImageElement) &&
+            !(target instanceof HTMLParagraphElement) &&
+            !(target instanceof HTMLSpanElement)) {
             isDragging = true;
             offsetX = e.clientX - this.offsetLeft;
             offsetY = e.clientY - this.offsetTop;
@@ -334,6 +377,7 @@ function dragPopUps (): void {
             this.style.left = x + 'px';
             this.style.top  = y + 'px';
         }
+        event.preventDefault();
     }; function stopDragging (): void {
         isDragging = false;
     }
@@ -388,7 +432,7 @@ async function addImages (): Promise<void> {
       
         for(let i=0;i<allItems.length;i++){
           resizeMasonryItem(allItems[i]);
-        }
+        };
     }
     
     async function getCSVData(url: string) {
@@ -428,6 +472,7 @@ async function addImages (): Promise<void> {
         trackingNumber: string,
         wishability: string,
         note: string,
+        character: string,
     }
 
     function arrayToObject (array: Array<string>): imgMFCItem {
@@ -452,15 +497,17 @@ async function addImages (): Promise<void> {
             trackingNumber: array[17],
             wishability:    array[18],
             note:           array[19],
+            character:      array[20],
         }
         return object;
     }
 
-    let dataOne = await getCSVData('myFigureCollection.csv') as Array<Array<string>>;
+    let dataOne = await getCSVData('myFigureCollectionOutput.csv') as Array<Array<string>>;
     let dataTwo = dataOne.map(arrayToObject);
     let data = CustomFunctions.shuffle(dataTwo);
-    let owned = [];
-    let ordered = [];
+    let owned:   Array<imgMFCItem> = [];
+    let ordered: Array<imgMFCItem> = [];
+    let wished:  Array<imgMFCItem> = [];
 
     for (let i = 1; i < data.length; i++) { // Loop through the values of dataObject
         
@@ -468,6 +515,8 @@ async function addImages (): Promise<void> {
             owned.push(data[i]);
         } else if (data[i].status == 'Ordered') {
             ordered.push(data[i]);
+        } else if (data[i].status == 'Wished') {
+            wished.push(data[i]);
         }
 
     }
@@ -477,7 +526,11 @@ async function addImages (): Promise<void> {
     });
 
     ordered.forEach(item => {
-        createElement(item, 'ordered')
+        createElement(item, 'ordered-wished')
+    });
+
+    wished.forEach(item => {
+        createElement(item, 'ordered-wished')
     });
     
     function createElement (item: imgMFCItem, cardName: string) { //To create the necessary elements
@@ -490,10 +543,14 @@ async function addImages (): Promise<void> {
         div.setAttribute('price', 'R$ ' + item.price.replace('.',','));
         img.src = `./images/mfc/${item.id}.jpg`;
 
+        if (item.status == 'Wished') {
+            div.style.backgroundColor = 'rgba(255, 255, 255, 0.5)'
+        };
+
         if (item.category == 'Prepainted') {
             div.style.color = 'green';
         } else if (item.category == 'Action/Dolls') {
-            div.style.color = 'blue';
+            div.style.color = '#0080ff';
         } else {
             div.style.color = 'orange';
         }
@@ -520,17 +577,24 @@ async function addImages (): Promise<void> {
             popUpImg.src                = img.src;
             price.innerHTML             = `R$ ${item.price.replace('.',',')}`;
             
-            if (CustomFunctions.isParent(div, document.getElementById('owned')!)) {
+            if (item.status == 'Owned') {
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
                 collectingDate.parentElement!.style.display = '';
                 rating.style.display                        = '';
-                collectingDate.innerHTML    = CustomFunctions.revertArray(item.collectingDate.split('-')).join('/');
+                price.parentElement!.style.display          = '';
+                collectingDate.innerHTML    = item.collectingDate.split('-').reverse().join('/');
                 rating.innerHTML            = '⭐'.repeat(Number(item.score.split('/')[0]));
                 ratingBefore.innerHTML      = item.score;
-            } else if (CustomFunctions.isParent(div, document.getElementById('ordered')!)) {
+            } else if (item.status == 'Ordered') {
                 collectingDate.parentElement!.style.display = 'none';
                 rating.style.display                        = 'none';
-                a.href                     = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
+                price.parentElement!.style.display          = '';
+                a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
+            } else if (item.status == 'Wished') {
+                collectingDate.parentElement!.style.display = 'none';
+                rating.style.display                        = 'none';
+                price.parentElement!.style.display          = 'none';
+                a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
             }
             
             popUp.style.display = 'block';
@@ -555,8 +619,10 @@ async function addImages (): Promise<void> {
 
         div.append(img);
         card.append(div);
-        div.append(item.title);
+        div.append(item.character);
     }
+
+    
 
     (function priceFollowCursor (): void {
         let aside = document.querySelector('aside') as HTMLElement;
@@ -572,7 +638,7 @@ async function addImages (): Promise<void> {
     
             item.addEventListener('mouseenter', () => {
                 span.style.display = 'block';
-                span.innerHTML = item.getAttribute('price')!;
+                span.innerHTML = (item.getAttribute('price')! == 'R$ 0,00') ? 'Desejado' : item.getAttribute('price')!;
                 span.style.border = img.style.border;
             })
             item.addEventListener('mouseleave', () => {
@@ -589,10 +655,20 @@ async function addImages (): Promise<void> {
         });
     })();
 
-    setTimeout(resizeAllMasonryItems,500);
+    setTimeout(resizeAllMasonryItems, 500);
+    setTimeout(() => { //Should run immeditialy after "resizeAllMasonryItems"
+        let loader: HTMLDivElement = document.querySelector('aside > .card > .loader')!;
+        let pinterestGrids: NodeListOf<HTMLSpanElement> = document.querySelectorAll('aside > .card > .pinterest-grid');
+        
+        loader.style.display = 'none';
+        pinterestGrids.forEach((grid) => {
+            grid.style.opacity = '1'
+        });
+    }, 1000);
 };
 
 window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions () {
+    createLoaders(8);
     openLinksInNewTab();
     redirectToEdge();
     setHeaderBackground();
@@ -601,17 +677,20 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     setDefaults();
     adjustGamecard();
     rotateGamecardText(0);
-    dragPopUps();
     await addImages();
     mfcToggleSwitch();
     makeSwitchesSlide();
     formatPopUps();
+    mfcPopUpAdjust();
+    dragPopUps();
+    stopImageDrag();
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     resizeAside();
     figuresSitDown();
     rotateGamecardText(0);
+    mfcPopUpAdjust ()
 };
 window.addEventListener('mousemove', onMouseMoveFunctions, true); function onMouseMoveFunctions (event: Event) {
     // console.log(event.target);
-}
+};

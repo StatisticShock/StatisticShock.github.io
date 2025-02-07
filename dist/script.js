@@ -36,6 +36,25 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 // Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
+// To make loaders work
+function createLoaders(count) {
+    var loaders = document.querySelectorAll('.loader');
+    loaders.forEach(function (loader) {
+        for (var i = 1; i <= count; i++) { //Create for loop to add the correct number of orbs
+            var orb = document.createElement('div');
+            orb.setAttribute('class', 'orb');
+            orb.setAttribute('style', "--index: ".concat(i, "; --count: ").concat(count, ";"));
+            loader.appendChild(orb);
+        }
+    });
+}
+// Stop image dragging
+function stopImageDrag() {
+    var images = document.getElementsByTagName('img');
+    Array.from(images).forEach(function (img) {
+        img.setAttribute('draggable', 'false');
+    });
+}
 // Open in new tab
 function openLinksInNewTab() {
     var shortcuts = document.querySelectorAll('.shortcut-item');
@@ -113,13 +132,16 @@ function rotateGamecardText(counter) {
 }
 // To make the header have different backgrounds
 function setHeaderBackground() {
-    var bgs = [
-        'grand_blue.jpg',
-        'sam_integralista.jpg'
-    ];
-    var headerIndex = Math.floor(Math.random() * bgs.length);
-    var header = document.getElementById('header');
-    header.style.backgroundImage = 'url(images/headers/' + bgs[headerIndex] + ')';
+    var filePath = 'images/headers/';
+    fetch("".concat(filePath, "headers.json"))
+        .then(function (res) { return res.json(); })
+        .then(function (json) {
+        var jsonLength = json.length;
+        var index = CustomFunctions.randomIntFromInterval(1, jsonLength);
+        var src = filePath + json[index - 1];
+        var header = document.querySelector('#header');
+        header.style.backgroundImage = "url('".concat(src, "')");
+    });
 }
 // To make 2B and Ai sit on the navbar (and makke the MFC toggle sit under 2B)
 function figuresSitDown() {
@@ -285,6 +307,14 @@ function wikipediaSearch() {
         (_a = window.open(string, '_blank')) === null || _a === void 0 ? void 0 : _a.focus();
     }
 }
+// To make MFC pop-up adjust
+function mfcPopUpAdjust() {
+    var mfc = document.querySelector('#mfc-pop-up');
+    // To make it have the proper aspect ratio
+    var a;
+    var fontSize = parseFloat(getComputedStyle(mfc).fontSize);
+    // alert(fontSize);
+}
 // To make the inputbox draggable
 function dragPopUps() {
     var popUps = document.querySelectorAll('.pop-up');
@@ -307,7 +337,11 @@ function dragPopUps() {
             e = event.touches[0];
         }
         ;
-        if (event.target === this) {
+        var target = e.target;
+        if ((target === this || CustomFunctions.isParent(target, this)) &&
+            !(target instanceof HTMLImageElement) &&
+            !(target instanceof HTMLParagraphElement) &&
+            !(target instanceof HTMLSpanElement)) {
             isDragging = true;
             offsetX = e.clientX - this.offsetLeft;
             offsetY = e.clientY - this.offsetTop;
@@ -330,6 +364,7 @@ function dragPopUps() {
             this.style.left = x + 'px';
             this.style.top = y + 'px';
         }
+        event.preventDefault();
     }
     ;
     function stopDragging() {
@@ -376,6 +411,7 @@ function addImages() {
             for (var i = 0; i < allItems.length; i++) {
                 resizeMasonryItem(allItems[i]);
             }
+            ;
         }
         function getCSVData(url) {
             return __awaiter(this, void 0, void 0, function () {
@@ -425,6 +461,7 @@ function addImages() {
                 trackingNumber: array[17],
                 wishability: array[18],
                 note: array[19],
+                character: array[20],
             };
             return object;
         }
@@ -436,11 +473,15 @@ function addImages() {
             div.setAttribute('class', 'pinterest-grid-item');
             div.setAttribute('price', 'R$ ' + item.price.replace('.', ','));
             img.src = "./images/mfc/".concat(item.id, ".jpg");
+            if (item.status == 'Wished') {
+                div.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+            }
+            ;
             if (item.category == 'Prepainted') {
                 div.style.color = 'green';
             }
             else if (item.category == 'Action/Dolls') {
-                div.style.color = 'blue';
+                div.style.color = '#0080ff';
             }
             else {
                 div.style.color = 'orange';
@@ -462,18 +503,26 @@ function addImages() {
                 popUpImgAnchor.href = "https://pt.myfigurecollection.net/item/".concat(item.id);
                 popUpImg.src = img.src;
                 price.innerHTML = "R$ ".concat(item.price.replace('.', ','));
-                if (CustomFunctions.isParent(div, document.getElementById('owned'))) {
+                if (item.status == 'Owned') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                     collectingDate.parentElement.style.display = '';
                     rating.style.display = '';
-                    collectingDate.innerHTML = CustomFunctions.revertArray(item.collectingDate.split('-')).join('/');
+                    price.parentElement.style.display = '';
+                    collectingDate.innerHTML = item.collectingDate.split('-').reverse().join('/');
                     rating.innerHTML = '⭐'.repeat(Number(item.score.split('/')[0]));
                     ratingBefore.innerHTML = item.score;
                 }
-                else if (CustomFunctions.isParent(div, document.getElementById('ordered'))) {
+                else if (item.status == 'Ordered') {
                     collectingDate.parentElement.style.display = 'none';
                     rating.style.display = 'none';
+                    price.parentElement.style.display = '';
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
+                }
+                else if (item.status == 'Wished') {
+                    collectingDate.parentElement.style.display = 'none';
+                    rating.style.display = 'none';
+                    price.parentElement.style.display = 'none';
+                    a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                 }
                 popUp.style.display = 'block';
                 popUp.addEventListener('mousemove', displayScoreAsNumber);
@@ -493,19 +542,20 @@ function addImages() {
             };
             div.append(img);
             card.append(div);
-            div.append(item.title);
+            div.append(item.character);
         }
-        var dataOne, dataTwo, data, owned, ordered, i;
+        var dataOne, dataTwo, data, owned, ordered, wished, i;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    return [4 /*yield*/, getCSVData('myFigureCollection.csv')];
+                    return [4 /*yield*/, getCSVData('myFigureCollectionOutput.csv')];
                 case 1:
                     dataOne = _a.sent();
                     dataTwo = dataOne.map(arrayToObject);
                     data = CustomFunctions.shuffle(dataTwo);
                     owned = [];
                     ordered = [];
+                    wished = [];
                     for (i = 1; i < data.length; i++) { // Loop through the values of dataObject
                         if (data[i].status == 'Owned') {
                             owned.push(data[i]);
@@ -513,12 +563,18 @@ function addImages() {
                         else if (data[i].status == 'Ordered') {
                             ordered.push(data[i]);
                         }
+                        else if (data[i].status == 'Wished') {
+                            wished.push(data[i]);
+                        }
                     }
                     owned.forEach(function (item) {
                         createElement(item, 'owned');
                     });
                     ordered.forEach(function (item) {
-                        createElement(item, 'ordered');
+                        createElement(item, 'ordered-wished');
+                    });
+                    wished.forEach(function (item) {
+                        createElement(item, 'ordered-wished');
                     });
                     (function priceFollowCursor() {
                         var aside = document.querySelector('aside');
@@ -531,7 +587,7 @@ function addImages() {
                             var img = item.firstChild;
                             item.addEventListener('mouseenter', function () {
                                 span.style.display = 'block';
-                                span.innerHTML = item.getAttribute('price');
+                                span.innerHTML = (item.getAttribute('price') == 'R$ 0,00') ? 'Desejado' : item.getAttribute('price');
                                 span.style.border = img.style.border;
                             });
                             item.addEventListener('mouseleave', function () {
@@ -547,6 +603,14 @@ function addImages() {
                         });
                     })();
                     setTimeout(resizeAllMasonryItems, 500);
+                    setTimeout(function () {
+                        var loader = document.querySelector('aside > .card > .loader');
+                        var pinterestGrids = document.querySelectorAll('aside > .card > .pinterest-grid');
+                        loader.style.display = 'none';
+                        pinterestGrids.forEach(function (grid) {
+                            grid.style.opacity = '1';
+                        });
+                    }, 1000);
                     return [2 /*return*/];
             }
         });
@@ -559,6 +623,7 @@ function onLoadFunctions() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    createLoaders(8);
                     openLinksInNewTab();
                     redirectToEdge();
                     setHeaderBackground();
@@ -567,13 +632,15 @@ function onLoadFunctions() {
                     setDefaults();
                     adjustGamecard();
                     rotateGamecardText(0);
-                    dragPopUps();
                     return [4 /*yield*/, addImages()];
                 case 1:
                     _a.sent();
                     mfcToggleSwitch();
                     makeSwitchesSlide();
                     formatPopUps();
+                    mfcPopUpAdjust();
+                    dragPopUps();
+                    stopImageDrag();
                     return [2 /*return*/];
             }
         });
@@ -585,9 +652,11 @@ function onResizeFunctions() {
     resizeAside();
     figuresSitDown();
     rotateGamecardText(0);
+    mfcPopUpAdjust();
 }
 ;
 window.addEventListener('mousemove', onMouseMoveFunctions, true);
 function onMouseMoveFunctions(event) {
     // console.log(event.target);
 }
+;
