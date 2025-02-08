@@ -27,7 +27,7 @@ body {
     /* Add your background pattern here */
     color: white;
     background-color: #313131;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 1.5px, transparent 0);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 2px, transparent 0);
     background-size: 30px 30px;
     background-position: -5px -5px;
     overflow-x: hidden;
@@ -257,7 +257,6 @@ img {
 
 header {
     font-family: Hylia Serif;
-    text-shadow: 0.1vw 0.1vh black;
     width: 100%;
     aspect-ratio: 5;
     cursor: pointer;
@@ -273,6 +272,7 @@ header {
     z-index: 2;
 
     & h1 {
+        text-shadow: 0.3vh 0.3vh black;
         font-size: 5.5vw;
         width: fit-content;
         margin: 0px;
