@@ -276,6 +276,8 @@ header {
         font-size: 5.5vw;
         width: fit-content;
         margin: 0px;
+        pointer-events: none;
+        user-select: none;
     }
 }
 

@@ -123,6 +123,11 @@ function setHeaderBackground (): void {
             let index: number = CustomFunctions.randomIntFromInterval(1, json.length);
             let src: string = filePath + json[index-1];
 
+            json.forEach((imgSrc: string) => {
+                let img = new Image();
+                img.src = filePath + imgSrc;
+            });
+
             const header: HTMLElement = document.querySelector('#header')!;
             const h1: HTMLElement = header.querySelector('h1')!;
             header.style.backgroundImage = `url('${src}')`;
@@ -144,8 +149,6 @@ function setHeaderBackground (): void {
                 })
                 let indexArr: number = CustomFunctions.randomIntFromInterval(1, arr.length);
                 src = filePath + arr[indexArr-1];
-
-                console.log(src);
 
                 header.style.backgroundImage = `url('${src}')`;
             }

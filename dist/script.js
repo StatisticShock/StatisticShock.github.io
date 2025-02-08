@@ -137,6 +137,10 @@ function setHeaderBackground() {
         .then(function (json) {
         var index = CustomFunctions.randomIntFromInterval(1, json.length);
         var src = filePath + json[index - 1];
+        json.forEach(function (imgSrc) {
+            var img = new Image();
+            img.src = filePath + imgSrc;
+        });
         var header = document.querySelector('#header');
         var h1 = header.querySelector('h1');
         header.style.backgroundImage = "url('".concat(src, "')");
@@ -159,7 +163,6 @@ function setHeaderBackground() {
             });
             var indexArr = CustomFunctions.randomIntFromInterval(1, arr.length);
             src = filePath + arr[indexArr - 1];
-            console.log(src);
             header.style.backgroundImage = "url('".concat(src, "')");
         };
     });
