@@ -8,8 +8,9 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 
 
-const url: string = '../myFigureCollection.csv'
-const outputUrl: string = '../myFigureCollectionOutput.csv'
+const csv: string = '../myFigureCollection.csv'
+const csvOutput: string = '../myFigureCollectionOutput.csv'
+const outputUrl: string = csvOutput;
 
 function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -126,20 +127,52 @@ async function fetchItemData(url: string) {
 }
 
 async function processFigures(): Promise<void> {
-    let response: string = await fsPromises.readFile(url, 'utf-8');
-    let arr: Array<string> = response.split(/\r?\n/);
+    let csvResponse: string = await fsPromises.readFile(csv, 'utf-8');
+    let csvArr: Array<string> = csvResponse.split(/\r?\n/); //Gets each row of the csv file as a string
+
+
+    // Get each character ID and Name in ouput file to avoid teching data my output alread have
+    let csvOutputResponse: string | null;
+    let charactersNamesInOutput: Array<Array<string>> = [[]];
+
+    try {
+        csvOutputResponse = await fsPromises.readFile(csvOutput, 'utf-8');
+    } catch {
+        csvOutputResponse = null;
+    }
+
+    if (csvOutputResponse !== null) {
+        let csvOutputArr: Array<string> = csvOutputResponse.split(/\r?\n/); //Gets each row of the csv file as a string
+        charactersNamesInOutput = csvOutputArr.map((row) => {
+            console.log(row.split('";"').length);
+            let characterName = row.split('";"')[20] == undefined ? '' : row.split('";"')[20].replaceAll('"','');
+            let characterId = row.split('";"')[0].replaceAll('"','');
+            return [characterId, characterName];
+        });
+    };
     
-    let data: Array<Array<string>>   = await getCSVData(url);
-    let dataArray: Array<imgMFCItem> = data.map(arrayToObject); 
+    //To get the actual data
+    let data: string[][] = await getCSVData(csv);
+    let dataArray: imgMFCItem[] = data.map(arrayToObject); 
     let fet: Array<string | number>;
     let imgPath: string;
 
-    arr[0] = arr[0] + `;"Character"`;
+    csvArr[0] = csvArr[0] + `;"Character"`;
 
     await (async function () {for (let i = 1; i < dataArray.length; i++) {
-        fet = await fetchItemData(`https://pt.myfigurecollection.net/item/${dataArray[i].id}`);
-        console.log(fet[0]);
-        arr[i] = arr[i] + `;"${fet[0]}"`;
+        let characterDataAlreadyInOutput: string[][] = charactersNamesInOutput.filter((row) => { //Tests if entry exists in CSV output
+            return row[0] == dataArray[i].id;
+        });
+
+        if (characterDataAlreadyInOutput.length == 0 || characterDataAlreadyInOutput[0][1] == '') { // If entry doesn't exist in CSV output, fetch it
+            fet = await fetchItemData(`https://pt.myfigurecollection.net/item/${dataArray[i].id}`);
+            console.log(`Fetched ${fet[0]} from ID`, dataArray[i].id);
+        } else {                                        // Else, gets its name directly from the output
+            fet = [characterDataAlreadyInOutput[0][1], ''];
+            console.log(`${fet[0]} from ID`,dataArray[i].id,'already in CSV output');
+        }
+        
+        csvArr[i] = csvArr[i] + `;"${fet[0]}"`;
         imgPath = `../images/mfc/${dataArray[i].id}.jpg`;
 
         if (!fs.existsSync(imgPath)) {
@@ -149,7 +182,7 @@ async function processFigures(): Promise<void> {
         };
     };})();
 
-    fs.writeFileSync(outputUrl, arr.join(String.fromCharCode(10)));
+    fs.writeFileSync(outputUrl, csvArr.join(String.fromCharCode(10)));
 };
 
 processFigures();

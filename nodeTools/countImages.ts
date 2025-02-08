@@ -14,7 +14,7 @@ fs.readdir(filePath, (err, files) => {
                 let dimensions = sizeOf(filePath + fileName);
                 let aspectRatio: number = dimensions.width / dimensions.height;
 
-                if (aspectRatio >= 5) {
+                if (aspectRatio >= 4.5) {
                     arr.push(fileName);
                 } else {
                     fs.unlink(filePath + fileName, (err) => {

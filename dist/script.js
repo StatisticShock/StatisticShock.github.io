@@ -34,7 +34,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-// Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
 // To make loaders work
 function createLoaders(count) {
@@ -136,11 +135,33 @@ function setHeaderBackground() {
     fetch("".concat(filePath, "headers.json"))
         .then(function (res) { return res.json(); })
         .then(function (json) {
-        var jsonLength = json.length;
-        var index = CustomFunctions.randomIntFromInterval(1, jsonLength);
+        var index = CustomFunctions.randomIntFromInterval(1, json.length);
         var src = filePath + json[index - 1];
         var header = document.querySelector('#header');
+        var h1 = header.querySelector('h1');
         header.style.backgroundImage = "url('".concat(src, "')");
+        header.onclick = function (event) {
+            var _a;
+            var target = null;
+            if (event instanceof MouseEvent) {
+                target = event.target;
+            }
+            else if (event instanceof TouchEvent) {
+                target = event.touches[0].target;
+            }
+            if (typeof window.getSelection() !== undefined) {
+                if (((_a = window.getSelection()) === null || _a === void 0 ? void 0 : _a.toString()) !== '')
+                    return;
+            }
+            ;
+            var arr = json.filter(function (headerImg) {
+                return headerImg != src.split('/')[2];
+            });
+            var indexArr = CustomFunctions.randomIntFromInterval(1, arr.length);
+            src = filePath + arr[indexArr - 1];
+            console.log(src);
+            header.style.backgroundImage = "url('".concat(src, "')");
+        };
     });
 }
 // To make 2B and Ai sit on the navbar (and makke the MFC toggle sit under 2B)
@@ -415,7 +436,7 @@ function addImages() {
         }
         function getCSVData(url) {
             return __awaiter(this, void 0, void 0, function () {
-                var response, responseWithNoQuotation, data_1, splitData_1, error_1;
+                var response, data_1, splitData_1, error_1;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -423,11 +444,10 @@ function addImages() {
                             return [4 /*yield*/, fetch(url).then(function (res) { return res.text(); })];
                         case 1:
                             response = _a.sent();
-                            responseWithNoQuotation = response.replaceAll('"', '');
-                            data_1 = responseWithNoQuotation.split(/\r?\n/);
+                            data_1 = response.split(/\r?\n/);
                             splitData_1 = [];
                             data_1.forEach(function (row) {
-                                splitData_1.push(row.split(/;/));
+                                splitData_1.push(row.split('";"').map(function (item) { return item.replaceAll('"', ''); }));
                             });
                             return [2 /*return*/, splitData_1];
                         case 2:
@@ -473,10 +493,6 @@ function addImages() {
             div.setAttribute('class', 'pinterest-grid-item');
             div.setAttribute('price', 'R$ ' + item.price.replace('.', ','));
             img.src = "./images/mfc/".concat(item.id, ".jpg");
-            if (item.status == 'Wished') {
-                div.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-            }
-            ;
             if (item.category == 'Prepainted') {
                 div.style.color = 'green';
             }
@@ -486,9 +502,11 @@ function addImages() {
             else {
                 div.style.color = 'orange';
             }
-            img.style.border = "3px solid ".concat(div.style.color);
+            img.style.border = "4px solid ".concat(div.style.color);
             var imgBorder = img.style.border.split(' ')[0];
             img.style.width = "calc(100% - ".concat(imgBorder, " * 2)");
+            div.style.border = item.status == 'Wished' ? "1px solid black" : 'none';
+            div.style.boxShadow = item.status == 'Wished' ? "0 0 5px ".concat(div.style.border.split('1px solid ')[1]) : 'none';
             img.onclick = function () {
                 var popUp = document.querySelector('#mfc-pop-up');
                 var title = popUp.querySelector('.pop-up-title');
@@ -502,6 +520,7 @@ function addImages() {
                 title.innerHTML = item.title;
                 popUpImgAnchor.href = "https://pt.myfigurecollection.net/item/".concat(item.id);
                 popUpImg.src = img.src;
+                popUpImg.style.border = "".concat(imgBorder, " solid ").concat(div.style.color);
                 price.innerHTML = "R$ ".concat(item.price.replace('.', ','));
                 if (item.status == 'Owned') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
@@ -513,16 +532,18 @@ function addImages() {
                     ratingBefore.innerHTML = item.score;
                 }
                 else if (item.status == 'Ordered') {
+                    a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                     collectingDate.parentElement.style.display = 'none';
                     rating.style.display = 'none';
                     price.parentElement.style.display = '';
-                    a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                 }
                 else if (item.status == 'Wished') {
-                    collectingDate.parentElement.style.display = 'none';
-                    rating.style.display = 'none';
-                    price.parentElement.style.display = 'none';
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
+                    collectingDate.parentElement.style.display = 'none';
+                    rating.style.display = '';
+                    price.parentElement.style.display = 'none';
+                    rating.innerHTML = '⭐'.repeat(Number(item.wishability.split('/')[0]));
+                    ratingBefore.innerHTML = item.wishability + '/5';
                 }
                 popUp.style.display = 'block';
                 popUp.addEventListener('mousemove', displayScoreAsNumber);

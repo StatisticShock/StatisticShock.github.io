@@ -5,8 +5,9 @@ import { promises as fsPromises } from 'fs';
 import fs from 'fs';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-const url = '../myFigureCollection.csv';
-const outputUrl = '../myFigureCollectionOutput.csv';
+const csv = '../myFigureCollection.csv';
+const csvOutput = '../myFigureCollectionOutput.csv';
+const outputUrl = csvOutput;
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -88,18 +89,47 @@ async function fetchItemData(url) {
         return [character, imgSrc];
 }
 async function processFigures() {
-    let response = await fsPromises.readFile(url, 'utf-8');
-    let arr = response.split(/\r?\n/);
-    let data = await getCSVData(url);
+    let csvResponse = await fsPromises.readFile(csv, 'utf-8');
+    let csvArr = csvResponse.split(/\r?\n/); //Gets each row of the csv file as a string
+    // Get each character ID and Name in ouput file to avoid teching data my output alread have
+    let csvOutputResponse;
+    let charactersNamesInOutput = [[]];
+    try {
+        csvOutputResponse = await fsPromises.readFile(csvOutput, 'utf-8');
+    }
+    catch {
+        csvOutputResponse = null;
+    }
+    if (csvOutputResponse !== null) {
+        let csvOutputArr = csvOutputResponse.split(/\r?\n/); //Gets each row of the csv file as a string
+        charactersNamesInOutput = csvOutputArr.map((row) => {
+            console.log(row.split('";"').length);
+            let characterName = row.split('";"')[20] == undefined ? '' : row.split('";"')[20].replaceAll('"', '');
+            let characterId = row.split('";"')[0].replaceAll('"', '');
+            return [characterId, characterName];
+        });
+    }
+    ;
+    //To get the actual data
+    let data = await getCSVData(csv);
     let dataArray = data.map(arrayToObject);
     let fet;
     let imgPath;
-    arr[0] = arr[0] + `;"Character"`;
+    csvArr[0] = csvArr[0] + `;"Character"`;
     await (async function () {
         for (let i = 1; i < dataArray.length; i++) {
-            fet = await fetchItemData(`https://pt.myfigurecollection.net/item/${dataArray[i].id}`);
-            console.log(fet[0]);
-            arr[i] = arr[i] + `;"${fet[0]}"`;
+            let characterDataAlreadyInOutput = charactersNamesInOutput.filter((row) => {
+                return row[0] == dataArray[i].id;
+            });
+            if (characterDataAlreadyInOutput.length == 0 || characterDataAlreadyInOutput[0][1] == '') { // If entry doesn't exist in CSV output, fetch it
+                fet = await fetchItemData(`https://pt.myfigurecollection.net/item/${dataArray[i].id}`);
+                console.log(`Fetched ${fet[0]} from ID`, dataArray[i].id);
+            }
+            else { // Else, gets its name directly from the output
+                fet = [characterDataAlreadyInOutput[0][1], ''];
+                console.log(`${fet[0]} from ID`, dataArray[i].id, 'already in CSV output');
+            }
+            csvArr[i] = csvArr[i] + `;"${fet[0]}"`;
             imgPath = `../images/mfc/${dataArray[i].id}.jpg`;
             if (!fs.existsSync(imgPath)) {
                 await downloadImage(`${fet[1]}`, imgPath);
@@ -111,7 +141,7 @@ async function processFigures() {
         }
         ;
     })();
-    fs.writeFileSync(outputUrl, arr.join(String.fromCharCode(10)));
+    fs.writeFileSync(outputUrl, csvArr.join(String.fromCharCode(10)));
 }
 ;
 processFigures();

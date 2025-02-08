@@ -1,4 +1,5 @@
 // Import custom functions from "./functions.Js"
+import { Target } from "puppeteer";
 import CustomFunctions from "./functions.js";
 
 // To make loaders work
@@ -119,12 +120,35 @@ function setHeaderBackground (): void {
     fetch(`${filePath}headers.json`)
         .then((res) => res.json())
         .then((json) => {
-            let jsonLength: number = json.length;
-            let index: number = CustomFunctions.randomIntFromInterval(1, jsonLength);
+            let index: number = CustomFunctions.randomIntFromInterval(1, json.length);
             let src: string = filePath + json[index-1];
 
             const header: HTMLElement = document.querySelector('#header')!;
+            const h1: HTMLElement = header.querySelector('h1')!;
             header.style.backgroundImage = `url('${src}')`;
+
+            header.onclick = (event: MouseEvent | TouchEvent) => {
+                let target: EventTarget | null = null;
+                if (event instanceof MouseEvent) {
+                    target = event.target;
+                } else if (event instanceof TouchEvent) {
+                    target = event.touches[0].target;
+                }
+
+                if (typeof window.getSelection() !== undefined) {
+                    if (window.getSelection()?.toString() !== '') return;
+                };
+
+                let arr: Array<string> = json.filter((headerImg: string) => {
+                    return headerImg != src.split('/')[2];
+                })
+                let indexArr: number = CustomFunctions.randomIntFromInterval(1, arr.length);
+                src = filePath + arr[indexArr-1];
+
+                console.log(src);
+
+                header.style.backgroundImage = `url('${src}')`;
+            }
         });
 }
 
@@ -438,12 +462,11 @@ async function addImages (): Promise<void> {
     async function getCSVData(url: string) {
         try {
             let response = await fetch(url).then((res) => res.text());
-            let responseWithNoQuotation = response.replaceAll('"','');
-            let data = responseWithNoQuotation.split(/\r?\n/); //Puts each line of the csv in a single line
+            let data = response.split(/\r?\n/); //Puts each line of the csv in a single line
             let splitData: Array<Array<string>> = [];
 
             data.forEach(row => {   //Splits each line by ';' characters
-                splitData.push(row.split(/;/));
+                splitData.push(row.split('";"').map((item) => {return item.replaceAll('"','')}));
             });
             return splitData
         } catch (error: any) {
@@ -543,10 +566,6 @@ async function addImages (): Promise<void> {
         div.setAttribute('price', 'R$ ' + item.price.replace('.',','));
         img.src = `./images/mfc/${item.id}.jpg`;
 
-        if (item.status == 'Wished') {
-            div.style.backgroundColor = 'rgba(255, 255, 255, 0.5)'
-        };
-
         if (item.category == 'Prepainted') {
             div.style.color = 'green';
         } else if (item.category == 'Action/Dolls') {
@@ -555,11 +574,14 @@ async function addImages (): Promise<void> {
             div.style.color = 'orange';
         }
 
-        img.style.border = `3px solid ${div.style.color}`;
+        img.style.border = `4px solid ${div.style.color}`;
 
         let imgBorder = img.style.border.split(' ')[0];
 
         img.style.width = `calc(100% - ${imgBorder} * 2)`
+
+        div.style.border = item.status == 'Wished' ? `1px solid black` : 'none'
+        div.style.boxShadow = item.status == 'Wished' ? `0 0 5px ${div.style.border.split('1px solid ')[1]}` : 'none'
 
         img.onclick = () => { //Format a pop-up for each item once it's image is clicked
             let popUp          = document.querySelector('#mfc-pop-up')              as HTMLDivElement;
@@ -575,6 +597,7 @@ async function addImages (): Promise<void> {
             title.innerHTML             = item.title;
             popUpImgAnchor.href         = `https://pt.myfigurecollection.net/item/${item.id}`;
             popUpImg.src                = img.src;
+            popUpImg.style.border       = `${imgBorder} solid ${div.style.color}`            
             price.innerHTML             = `R$ ${item.price.replace('.',',')}`;
             
             if (item.status == 'Owned') {
@@ -586,15 +609,17 @@ async function addImages (): Promise<void> {
                 rating.innerHTML            = '⭐'.repeat(Number(item.score.split('/')[0]));
                 ratingBefore.innerHTML      = item.score;
             } else if (item.status == 'Ordered') {
-                collectingDate.parentElement!.style.display = 'none';
-                rating.style.display                        = 'none';
-                price.parentElement!.style.display          = '';
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
-            } else if (item.status == 'Wished') {
                 collectingDate.parentElement!.style.display = 'none';
                 rating.style.display                        = 'none';
-                price.parentElement!.style.display          = 'none';
+                price.parentElement!.style.display          = '';    
+            } else if (item.status == 'Wished') {
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
+                collectingDate.parentElement!.style.display = 'none';
+                rating.style.display                        = '';
+                price.parentElement!.style.display          = 'none';
+                rating.innerHTML            = '⭐'.repeat(Number(item.wishability.split('/')[0]));
+                ratingBefore.innerHTML      = item.wishability + '/5';
             }
             
             popUp.style.display = 'block';
@@ -621,8 +646,6 @@ async function addImages (): Promise<void> {
         card.append(div);
         div.append(item.character);
     }
-
-    
 
     (function priceFollowCursor (): void {
         let aside = document.querySelector('aside') as HTMLElement;

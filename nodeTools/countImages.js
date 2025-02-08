@@ -11,7 +11,7 @@ fs.readdir(filePath, (err, files) => {
             if (fileName !== 'headers.json') { //Ignore the JSON itself
                 let dimensions = sizeOf(filePath + fileName);
                 let aspectRatio = dimensions.width / dimensions.height;
-                if (aspectRatio >= 5) {
+                if (aspectRatio >= 4.5) {
                     arr.push(fileName);
                 }
                 else {

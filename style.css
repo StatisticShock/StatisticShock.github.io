@@ -257,19 +257,26 @@ img {
 
 header {
     font-family: Hylia Serif;
-    text-shadow: 2px 2px black;
-    font-size: 3vw;
-    height: 10vh;
+    text-shadow: 0.1vw 0.1vh black;
+    width: 100%;
+    aspect-ratio: 5;
+    cursor: pointer;
     background-color: black;
     background-size: cover;
     background-position: center;
     color: white;
     /* -webkit-text-stroke: 1px black; */
-    padding: 10px 20px;
-    text-align: center;
+    display: flex;
+    justify-content: center;
     align-items: center;
     height: fit-content;
     z-index: 2;
+
+    & h1 {
+        font-size: 5.5vw;
+        width: fit-content;
+        margin: 0px;
+    }
 }
 
 #twoB {
