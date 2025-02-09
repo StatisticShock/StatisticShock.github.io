@@ -499,6 +499,7 @@ async function addImages (): Promise<void> {
         wishability: string,
         note: string,
         character: string,
+        characterInJapanese: string,
     }
 
     function arrayToObject (array: Array<string>): imgMFCItem {
@@ -524,6 +525,7 @@ async function addImages (): Promise<void> {
             wishability:    array[18],
             note:           array[19],
             character:      array[20],
+            characterInJapanese: array[21],
         }
         return object;
     }
@@ -534,6 +536,10 @@ async function addImages (): Promise<void> {
     let owned:   Array<imgMFCItem> = [];
     let ordered: Array<imgMFCItem> = [];
     let wished:  Array<imgMFCItem> = [];
+
+    let jDirectLink = Array.from(document.querySelectorAll('#anime-figures .shortcut-item') as NodeListOf<HTMLAnchorElement>).filter((shortcutItem) => {
+        return shortcutItem.getAttribute('alt') == 'JDirectItems Auction';
+    })[0].href
 
     for (let i = 1; i < data.length; i++) { // Loop through the values of dataObject
         
@@ -560,7 +566,7 @@ async function addImages (): Promise<void> {
     });
     
     function createElement (item: imgMFCItem, cardName: string) { //To create the necessary elements
-        var div  = document.createElement('div');   // The container
+        let div  = document.createElement('div');   // The container
         let img  = new Image()                      // The image
         let card = document.getElementById(cardName) as HTMLElement;
 
@@ -587,27 +593,32 @@ async function addImages (): Promise<void> {
         div.style.boxShadow = item.status == 'Wished' ? `0 0 5px ${div.style.border.split('1px solid ')[1]}` : 'none'
 
         img.onclick = () => { //Format a pop-up for each item once it's image is clicked
-            let popUp          = document.querySelector('#mfc-pop-up')              as HTMLDivElement;
-            let title          = popUp.querySelector('.pop-up-title')               as HTMLSpanElement;
-            let popUpImgAnchor = popUp.querySelector('#pop-up-img')                 as HTMLAnchorElement;
-            let popUpImg       = popUpImgAnchor.childNodes[0]                       as HTMLImageElement;
-            let rating         = popUp.querySelector('#mfc-item-rating')            as HTMLParagraphElement;
-            let ratingBefore   = popUp.querySelector('#mfc-item-rating-before')     as HTMLParagraphElement;
-            let price          = popUp.querySelector('#mfc-item-price')             as HTMLSpanElement;
-            let collectingDate = popUp.querySelector('#mfc-item-collecting-date')   as HTMLSpanElement;
-            let a              = popUp.querySelector('.pop-up-header > div > a')    as HTMLAnchorElement;
+            let popUp          = document.querySelector('#mfc-pop-up')               as HTMLDivElement;
+            let title          = popUp.querySelector('.pop-up-title')                as HTMLSpanElement;
+            let popUpImgAnchor = popUp.querySelector('#pop-up-img')                  as HTMLAnchorElement;
+            let popUpImg       = popUpImgAnchor.childNodes[0]                        as HTMLImageElement;
+            let rating         = popUp.querySelector('#mfc-item-rating')             as HTMLParagraphElement;
+            let ratingBefore   = popUp.querySelector('#mfc-item-rating-before')      as HTMLParagraphElement;
+            let price          = popUp.querySelector('#mfc-item-price')              as HTMLSpanElement;
+            let collectingDate = popUp.querySelector('#mfc-item-collecting-date')    as HTMLSpanElement;
+            let originalName   = popUp.querySelector('#mfc-character-original-name') as HTMLSpanElement;
+            let a              = popUp.querySelector('.pop-up-header > div > a')     as HTMLAnchorElement;
+
+            let characterLink  = jDirectLink.replace('search/',`search/query/${item.characterInJapanese}/`);
 
             title.innerHTML             = item.title;
             popUpImgAnchor.href         = `https://pt.myfigurecollection.net/item/${item.id}`;
             popUpImg.src                = img.src;
             popUpImg.style.border       = `${imgBorder} solid ${div.style.color}`            
             price.innerHTML             = `R$ ${item.price.replace('.',',')}`;
+            originalName.innerHTML      = item.status == 'Wished' ? `<a target="_blank" href="${characterLink}">${item.characterInJapanese}</a>` : '';
             
             if (item.status == 'Owned') {
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
                 collectingDate.parentElement!.style.display = '';
                 rating.style.display                        = '';
                 price.parentElement!.style.display          = '';
+                originalName.parentElement!.style.display   = 'none';
                 collectingDate.innerHTML    = item.collectingDate.split('-').reverse().join('/');
                 rating.innerHTML            = '⭐'.repeat(Number(item.score.split('/')[0]));
                 ratingBefore.innerHTML      = item.score;
@@ -615,12 +626,14 @@ async function addImages (): Promise<void> {
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
                 collectingDate.parentElement!.style.display = 'none';
                 rating.style.display                        = 'none';
-                price.parentElement!.style.display          = '';    
+                price.parentElement!.style.display          = '';
+                originalName.parentElement!.style.display   = 'none';   
             } else if (item.status == 'Wished') {
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
                 collectingDate.parentElement!.style.display = 'none';
                 rating.style.display                        = '';
                 price.parentElement!.style.display          = 'none';
+                originalName.parentElement!.style.display   = '';
                 rating.innerHTML            = '⭐'.repeat(Number(item.wishability.split('/')[0]));
                 ratingBefore.innerHTML      = item.wishability + '/5';
             }

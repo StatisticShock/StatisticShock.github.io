@@ -11,12 +11,13 @@ import * as cheerio from 'cheerio';
 const csv: string = '../myFigureCollection.csv'
 const csvOutput: string = '../myFigureCollectionOutput.csv'
 const outputUrl: string = csvOutput;
+const sleepTime: number = 875;
 
-function sleep(ms: number): Promise<void> {
+function sleep (ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function getCSVData(url: string) {
+async function getCSVData (url: string) {
     try {
         let response = await fsPromises.readFile(url, 'utf-8');
         let responseWithNoQuotation = response.replaceAll('"','');
@@ -83,7 +84,7 @@ function arrayToObject (array: Array<string>): imgMFCItem {
     return object;
 }
 
-async function downloadImage(url: string, filename: string) {
+async function downloadImage (url: string, filename: string) {
     try {
         const response = await axios({
             url,
@@ -100,33 +101,38 @@ async function downloadImage(url: string, filename: string) {
     }
 }
 
-async function fetchItemData(url: string) {
-    const res: Response = await fetch(url);
-    const text: string = await res.text(); // Wait for text() to resolve
-    
-    const $ = cheerio.load(text);          // Loads the text as a page
+async function fetchItemData (url: string) {
+    const resItem: Response = await fetch(url);
+    const textItem: string = await resItem.text();          // Wait for text() to resolve
+    const $ = cheerio.load(textItem);                       // Loads the text as a page
+    const dataContentItem = $('.data.row > .data-field');   // Similar to a document.querySelector()
 
-    const dataContent = $('.data.row > .data-field'); // SImilar to a document.querySelector()
-    
-    if (dataContent.length == 0) {console.error(`Couldn't fetch ${url} sucessfully.`)}
+    if (dataContentItem.length == 0) {
+        console.error(`Couldn't fetch ${url} sucessfully.`);
+    }
 
     let character: string;
+    let characterSwitch: Array<string>;
 
-    dataContent.each((i, el) => {
+    dataContentItem.each((i, el) => {
         if ($(el).children('.data-label').text().includes('Personage') || $(el).children('.data-label').text().includes('Título')) { // Tests if the header "Personagem", "Personagens" ou "Título" existe
             character = $(el).children('.data-value').text();
+            characterSwitch = $(el).find('.data-value a span').map((i, el) => $(el).attr('switch')).get();
+            console.log("characterSwitches", characterSwitch);
         };
     });
 
+    let characterJp: string = characterSwitch == undefined ? '' : characterSwitch.join(', ');
+
     const imgSrc: string = $('.item-picture .main img').attr('src');
 
-    await sleep(825); // Sleeps by 825ms
+    await sleep(sleepTime);
 
-    if (character == undefined) return [res.status,'']
-    else return [character, imgSrc];
+    if (character == undefined) return [resItem.status, '', '']
+    else return [character, imgSrc, characterJp];
 }
 
-async function processFigures(): Promise<void> {
+async function processFigures (): Promise<void> {
     let csvResponse: string = await fsPromises.readFile(csv, 'utf-8');
     let csvArr: Array<string> = csvResponse.split(/\r?\n/); //Gets each row of the csv file as a string
 
@@ -144,10 +150,11 @@ async function processFigures(): Promise<void> {
     if (csvOutputResponse !== null) {
         let csvOutputArr: Array<string> = csvOutputResponse.split(/\r?\n/); //Gets each row of the csv file as a string
         charactersNamesInOutput = csvOutputArr.map((row) => {
-            console.log(row.split('";"').length);
-            let characterName = row.split('";"')[20] == undefined ? '' : row.split('";"')[20].replaceAll('"','');
-            let characterId = row.split('";"')[0].replaceAll('"','');
-            return [characterId, characterName];
+            let rowArr: Array<string>         = row.split('";"').map((item) => item = item.replaceAll('"',''));
+            let characterName: string         = (rowArr[20] == undefined) || (rowArr[20] == 'undefined') ? ''    : rowArr[20];
+            let originalCharacterName: string = (rowArr[21] == undefined) || (rowArr[21] == 'undefined') ? '503' : rowArr[21];
+            let characterId: string           = (rowArr[0] == undefined)  || (rowArr[0] == 'undefined')  ? ''    : rowArr[0];
+            return [characterId, characterName, originalCharacterName];
         });
     };
     
@@ -157,22 +164,22 @@ async function processFigures(): Promise<void> {
     let fet: Array<string | number>;
     let imgPath: string;
 
-    csvArr[0] = csvArr[0] + `;"Character"`;
+    csvArr[0] = csvArr[0] + `;"Character";"Original Character Name"`;
 
     await (async function () {for (let i = 1; i < dataArray.length; i++) {
-        let characterDataAlreadyInOutput: string[][] = charactersNamesInOutput.filter((row) => { //Tests if entry exists in CSV output
+        let characterDataAlreadyInOutput: string[][] = charactersNamesInOutput.filter((row) => {    // Tests if entry exists in CSV output
             return row[0] == dataArray[i].id;
         });
 
-        if (characterDataAlreadyInOutput.length == 0 || characterDataAlreadyInOutput[0][1] == '') { // If entry doesn't exist in CSV output, fetch it
+        if (characterDataAlreadyInOutput.length == 0 || characterDataAlreadyInOutput[0][1] == '' || characterDataAlreadyInOutput[0][1] == '503' || characterDataAlreadyInOutput[0][2] == '503') { // If entry doesn't exist in CSV output, fetch it
             fet = await fetchItemData(`https://pt.myfigurecollection.net/item/${dataArray[i].id}`);
             console.log(`Fetched ${fet[0]} from ID`, dataArray[i].id);
-        } else {                                        // Else, gets its name directly from the output
-            fet = [characterDataAlreadyInOutput[0][1], ''];
+        } else {                                                                                    // Else, gets its name directly from the output
+            fet = [characterDataAlreadyInOutput[0][1], '', characterDataAlreadyInOutput[0][2]];
             console.log(`${fet[0]} from ID`,dataArray[i].id,'already in CSV output');
         }
         
-        csvArr[i] = csvArr[i] + `;"${fet[0]}"`;
+        csvArr[i] = csvArr[i] + `;"${fet[0]}";"${fet[2]}"`;
         imgPath = `../images/mfc/${dataArray[i].id}.jpg`;
 
         if (!fs.existsSync(imgPath)) {

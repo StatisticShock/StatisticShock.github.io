@@ -485,6 +485,7 @@ function addImages() {
                 wishability: array[18],
                 note: array[19],
                 character: array[20],
+                characterInJapanese: array[21],
             };
             return object;
         }
@@ -519,17 +520,21 @@ function addImages() {
                 var ratingBefore = popUp.querySelector('#mfc-item-rating-before');
                 var price = popUp.querySelector('#mfc-item-price');
                 var collectingDate = popUp.querySelector('#mfc-item-collecting-date');
+                var originalName = popUp.querySelector('#mfc-character-original-name');
                 var a = popUp.querySelector('.pop-up-header > div > a');
+                var characterLink = jDirectLink.replace('search/', "search/query/".concat(item.characterInJapanese, "/"));
                 title.innerHTML = item.title;
                 popUpImgAnchor.href = "https://pt.myfigurecollection.net/item/".concat(item.id);
                 popUpImg.src = img.src;
                 popUpImg.style.border = "".concat(imgBorder, " solid ").concat(div.style.color);
                 price.innerHTML = "R$ ".concat(item.price.replace('.', ','));
+                originalName.innerHTML = item.status == 'Wished' ? "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(item.characterInJapanese, "</a>") : '';
                 if (item.status == 'Owned') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                     collectingDate.parentElement.style.display = '';
                     rating.style.display = '';
                     price.parentElement.style.display = '';
+                    originalName.parentElement.style.display = 'none';
                     collectingDate.innerHTML = item.collectingDate.split('-').reverse().join('/');
                     rating.innerHTML = '⭐'.repeat(Number(item.score.split('/')[0]));
                     ratingBefore.innerHTML = item.score;
@@ -539,12 +544,14 @@ function addImages() {
                     collectingDate.parentElement.style.display = 'none';
                     rating.style.display = 'none';
                     price.parentElement.style.display = '';
+                    originalName.parentElement.style.display = 'none';
                 }
                 else if (item.status == 'Wished') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                     collectingDate.parentElement.style.display = 'none';
                     rating.style.display = '';
                     price.parentElement.style.display = 'none';
+                    originalName.parentElement.style.display = '';
                     rating.innerHTML = '⭐'.repeat(Number(item.wishability.split('/')[0]));
                     ratingBefore.innerHTML = item.wishability + '/5';
                 }
@@ -568,7 +575,7 @@ function addImages() {
             card.append(div);
             div.append(item.character);
         }
-        var dataOne, dataTwo, data, owned, ordered, wished, i;
+        var dataOne, dataTwo, data, owned, ordered, wished, jDirectLink, i;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -580,6 +587,9 @@ function addImages() {
                     owned = [];
                     ordered = [];
                     wished = [];
+                    jDirectLink = Array.from(document.querySelectorAll('#anime-figures .shortcut-item')).filter(function (shortcutItem) {
+                        return shortcutItem.getAttribute('alt') == 'JDirectItems Auction';
+                    })[0].href;
                     for (i = 1; i < data.length; i++) { // Loop through the values of dataObject
                         if (data[i].status == 'Owned') {
                             owned.push(data[i]);
