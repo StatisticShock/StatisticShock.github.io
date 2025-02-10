@@ -239,7 +239,6 @@ function formatPopUps() {
         }
         ;
     });
-    console.log(popUpShortcuts);
     popUpShortcuts.forEach(function (object) {
         var popUpClass = document.querySelectorAll('.pop-up');
         var floatingLabelElement = object.popUpContainer.querySelectorAll('.floating-label');

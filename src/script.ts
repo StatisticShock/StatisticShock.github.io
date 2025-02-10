@@ -240,8 +240,6 @@ function formatPopUps (): void {
             popUpShortcuts.push({button: openButton, popUpContainer: form});
         };
     });
-    
-    console.log(popUpShortcuts);
 
     popUpShortcuts.forEach((object) => {
         let popUpClass           = document.querySelectorAll('.pop-up')                      as NodeListOf<HTMLElement>;
