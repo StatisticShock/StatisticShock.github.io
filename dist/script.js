@@ -226,26 +226,34 @@ function mfcToggleSwitch() {
 }
 //To make the popups appear on click
 function formatPopUps() {
-    var popUpShortcuts = [
-        { button: 'reddit-google', popUpContainer: 'reddit-search-pop-up' },
-        { button: 'wikipedia', popUpContainer: 'wikipedia-pop-up' }
-    ];
+    var popUpShortcuts = [];
+    document.querySelectorAll('form.pop-up').forEach(function (form) {
+        if (form.classList.length < 2)
+            return;
+        var otherClass = Array.from(form.classList).filter(function (className) {
+            return className !== 'pop-up';
+        })[0];
+        var openButton = Array.from(document.querySelectorAll(".".concat(otherClass))).find(function (el) { return el.classList.contains('shortcut-item'); });
+        if (openButton) {
+            popUpShortcuts.push({ button: openButton, popUpContainer: form });
+        }
+        ;
+    });
+    console.log(popUpShortcuts);
     popUpShortcuts.forEach(function (object) {
-        var buttonElement = document.getElementById(object.button);
-        var popUpElement = document.getElementById(object.popUpContainer);
         var popUpClass = document.querySelectorAll('.pop-up');
-        var floatingLabelElement = popUpElement.querySelectorAll('.floating-label');
-        buttonElement.onclick = function () {
-            var display = popUpElement.style.display;
+        var floatingLabelElement = object.popUpContainer.querySelectorAll('.floating-label');
+        object.button.onclick = function () {
+            var display = object.popUpContainer.style.display;
             if ((display == '') || (display == 'none')) {
-                popUpElement.style.display = 'block'; //Makes the popUp appear
+                object.popUpContainer.style.display = 'block'; //Makes the popUp appear
             }
             else {
-                popUpElement.style.display = 'none'; //Makes the popUp disappear
+                object.popUpContainer.style.display = 'none'; //Makes the popUp disappear
             }
             ;
             popUpClass.forEach(function (element) {
-                if (element != popUpElement) {
+                if (element != object.popUpContainer) {
                     element.style.display = 'none';
                 }
                 ;
@@ -254,17 +262,17 @@ function formatPopUps() {
                 var parent = label.parentElement;
                 var siblings = Array.from(parent.children);
                 var input = siblings[siblings.indexOf(label) - 1]; //Gets the imediate predecessor sibling
-                var rect = popUpElement.getBoundingClientRect();
+                var rect = object.popUpContainer.getBoundingClientRect();
                 var inputRect = input.getBoundingClientRect();
                 var left = inputRect.left - rect.left;
                 label.style.left = left + 'px';
                 input.setAttribute('placeholder', ' ');
             });
         };
-        popUpElement.addEventListener('keydown', function (e) {
+        object.popUpContainer.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault(); //Makes the form not submit
-                var okButton = popUpElement.querySelector('.ok-button');
+                var okButton = object.popUpContainer.querySelector('.ok-button');
                 okButton.click();
             }
         });
@@ -281,7 +289,8 @@ function formatPopUps() {
 }
 // To make the reddit search work
 function redditSearchTrigger() {
-    document.getElementById('reddit-search-ok').onclick = redditSearch;
+    var okButtonReddit = document.querySelector('.pop-up.reddit-google .ok-button');
+    okButtonReddit.onclick = redditSearch;
     function redditSearch() {
         var _a;
         var keywords = document.getElementById('keywords-reddit');
@@ -323,7 +332,8 @@ function redditSearchTrigger() {
 }
 //To make the wikipedia search work
 function wikipediaSearchTrigger() {
-    document.getElementById('wikipedia-ok').onclick = wikipediaSearch;
+    var okButtonWikipedia = document.querySelector('.pop-up.wikipedia .ok-button');
+    okButtonWikipedia.onclick = wikipediaSearch;
     function wikipediaSearch() {
         var _a;
         var keywords = document.getElementById('keywords-wikipedia');
@@ -336,7 +346,7 @@ function wikipediaSearchTrigger() {
 }
 // To make MFC pop-up adjust
 function mfcPopUpAdjust() {
-    var mfc = document.querySelector('#mfc-pop-up');
+    var mfc = document.querySelector('.pop-up.mfc');
     // To make it have the proper aspect ratio
     var a;
     var fontSize = parseFloat(getComputedStyle(mfc).fontSize);
@@ -368,7 +378,8 @@ function dragPopUps() {
         if ((target === this || CustomFunctions.isParent(target, this)) &&
             !(target instanceof HTMLImageElement) &&
             !(target instanceof HTMLParagraphElement) &&
-            !(target instanceof HTMLSpanElement)) {
+            !(target instanceof HTMLSpanElement) &&
+            !(target instanceof HTMLInputElement)) {
             isDragging = true;
             offsetX = e.clientX - this.offsetLeft;
             offsetY = e.clientY - this.offsetTop;
@@ -513,7 +524,7 @@ function addImages() {
             div.style.border = item.status == 'Wished' ? "1px solid black" : 'none';
             div.style.boxShadow = item.status == 'Wished' ? "0 0 5px ".concat(div.style.border.split('1px solid ')[1]) : 'none';
             img.onclick = function () {
-                var popUp = document.querySelector('#mfc-pop-up');
+                var popUp = document.querySelector('.pop-up.mfc');
                 var title = popUp.querySelector('.pop-up-title');
                 var popUpImgAnchor = popUp.querySelector('#pop-up-img');
                 var popUpImg = popUpImgAnchor.childNodes[0];
@@ -524,7 +535,6 @@ function addImages() {
                 var originalName = popUp.querySelector('#mfc-character-original-name');
                 var a = popUp.querySelector('.pop-up-header > div > a');
                 var characterLink = "https://buyee.jp/item/search/query/".concat(item.characterInJapanese, "/category/2084023782?sort=end&order=a&store=1");
-                console.log(characterLink);
                 title.innerHTML = item.title;
                 popUpImgAnchor.href = "https://pt.myfigurecollection.net/item/".concat(item.id);
                 popUpImg.src = img.src;

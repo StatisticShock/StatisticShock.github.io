@@ -176,7 +176,7 @@ img {
     }
 }
 
-#mfc-pop-up {
+.pop-up.mfc {
     height: 70vmin;
     aspect-ratio: 3/4;
     font-size: 2vmin;
@@ -228,30 +228,25 @@ img {
     }
 }
 
-#reddit-search-pop-up {
+.pop-up.reddit-google {
     & span img {
         height: 20px;
         -webkit-filter: invert(100%);
         filter: invert(100%);
     }
+
+    & #keywords-reddit, & #subreddit {
+        width: 100%;
+    }
 }
 
-#wikipedia-pop-up {
+.pop-up.wikipedia {
     & span img {
         height: 20px;
         -webkit-filter: invert(100%);
         filter: invert(100%);
     } 
 }
-
-    #keywords-reddit, #subreddit {
-        width: 100%;
-    }
-
-/* .container {
-    background-image: url(images/nazuna-kou.jpg);
-    background-size:cover;
-} */
 
 /* Styling the header */
 

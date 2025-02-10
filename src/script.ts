@@ -224,28 +224,40 @@ function mfcToggleSwitch (): void {
 
 //To make the popups appear on click
 function formatPopUps (): void {
-    const popUpShortcuts = [
-        {button: 'reddit-google', popUpContainer: 'reddit-search-pop-up'},
-        {button: 'wikipedia', popUpContainer: 'wikipedia-pop-up'}
-    ];
-    
-    popUpShortcuts.forEach((object) => {
-        let buttonElement        = document.getElementById(object.button)           as HTMLElement;
-        let popUpElement         = document.getElementById(object.popUpContainer)   as HTMLElement;
-        let popUpClass           = document.querySelectorAll('.pop-up')             as NodeListOf<HTMLElement>;
-        let floatingLabelElement = popUpElement.querySelectorAll('.floating-label') as NodeListOf<HTMLElement>;
+    type popUpInterface = {button: HTMLAnchorElement, popUpContainer: HTMLFormElement}
+    const popUpShortcuts: Array<popUpInterface> = [];
 
-        buttonElement.onclick = () => {
-            let display: string = popUpElement.style.display;
+    (document.querySelectorAll('form.pop-up') as NodeListOf<HTMLFormElement>).forEach((form) => {
+        if (form.classList.length < 2) return;
+
+        let otherClass: string = Array.from(form.classList).filter((className) => {
+            return className !== 'pop-up';
+        })[0];
+
+        let openButton = Array.from(document.querySelectorAll(`.${otherClass}`)).find((el) => el.classList.contains('shortcut-item')) as HTMLAnchorElement;
+
+        if (openButton) {
+            popUpShortcuts.push({button: openButton, popUpContainer: form});
+        };
+    });
+    
+    console.log(popUpShortcuts);
+
+    popUpShortcuts.forEach((object) => {
+        let popUpClass           = document.querySelectorAll('.pop-up')                      as NodeListOf<HTMLElement>;
+        let floatingLabelElement = object.popUpContainer.querySelectorAll('.floating-label') as NodeListOf<HTMLElement>;
+
+        object.button.onclick = () => {
+            let display: string = object.popUpContainer.style.display;
             
             if ((display == '') || (display == 'none')) {
-                popUpElement.style.display = 'block';   //Makes the popUp appear
+                object.popUpContainer.style.display = 'block';   //Makes the popUp appear
             } else {
-                popUpElement.style.display = 'none';    //Makes the popUp disappear
+                object.popUpContainer.style.display = 'none';    //Makes the popUp disappear
             };
 
             popUpClass.forEach((element) => {   //Makes every other popUp disappear once the shorcut button is clicked
-                if (element != popUpElement) {
+                if (element != object.popUpContainer) {
                     element.style.display = 'none'
                 };
             });
@@ -254,7 +266,7 @@ function formatPopUps (): void {
                 let parent = label.parentElement as HTMLElement;
                 var siblings = Array.from(parent.children) as Array<HTMLElement>;
                 var input = siblings[siblings.indexOf(label) - 1] as HTMLInputElement; //Gets the imediate predecessor sibling
-                var rect = popUpElement.getBoundingClientRect();
+                var rect = object.popUpContainer.getBoundingClientRect();
                 var inputRect = input.getBoundingClientRect();
     
                 var left = inputRect.left - rect.left;
@@ -264,10 +276,10 @@ function formatPopUps (): void {
             })
         }
 
-        popUpElement.addEventListener('keydown', function (e) {
+        object.popUpContainer.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();     //Makes the form not submit
-                let okButton = popUpElement.querySelector('.ok-button') as HTMLButtonElement;
+                let okButton = object.popUpContainer.querySelector('.ok-button') as HTMLButtonElement;
                 okButton.click();
             }
         });
@@ -286,7 +298,8 @@ function formatPopUps (): void {
 
 // To make the reddit search work
 function redditSearchTrigger (): void {
-    document.getElementById('reddit-search-ok')!.onclick = redditSearch;
+    let okButtonReddit: HTMLButtonElement = document.querySelector('.pop-up.reddit-google .ok-button')!;
+    okButtonReddit.onclick = redditSearch;
 
     function redditSearch (): void {
         const keywords = document.getElementById('keywords-reddit') as HTMLInputElement;
@@ -332,7 +345,8 @@ function redditSearchTrigger (): void {
 
 //To make the wikipedia search work
 function wikipediaSearchTrigger (): void {
-    document.getElementById('wikipedia-ok')!.onclick = wikipediaSearch;
+    let okButtonWikipedia: HTMLButtonElement = document.querySelector('.pop-up.wikipedia .ok-button')!;
+    okButtonWikipedia.onclick = wikipediaSearch;
 
     function wikipediaSearch (): void {
         let keywords = document.getElementById('keywords-wikipedia') as HTMLInputElement;
@@ -349,7 +363,7 @@ function wikipediaSearchTrigger (): void {
 
 // To make MFC pop-up adjust
 function mfcPopUpAdjust (): void {
-    let mfc: HTMLDivElement = document.querySelector('#mfc-pop-up')!;
+    let mfc: HTMLDivElement = document.querySelector('.pop-up.mfc')!;
 
     // To make it have the proper aspect ratio
     let a
@@ -387,7 +401,8 @@ function dragPopUps (): void {
         if ((target === this || CustomFunctions.isParent(target, this)) &&
             !(target instanceof HTMLImageElement) &&
             !(target instanceof HTMLParagraphElement) &&
-            !(target instanceof HTMLSpanElement)) {
+            !(target instanceof HTMLSpanElement) &&
+            !(target instanceof HTMLInputElement)) {
             isDragging = true;
             offsetX = e.clientX - this.offsetLeft;
             offsetY = e.clientY - this.offsetTop;
@@ -595,7 +610,7 @@ async function addImages (): Promise<void> {
         div.style.boxShadow = item.status == 'Wished' ? `0 0 5px ${div.style.border.split('1px solid ')[1]}` : 'none'
 
         img.onclick = () => { //Format a pop-up for each item once it's image is clicked
-            let popUp          = document.querySelector('#mfc-pop-up')               as HTMLDivElement;
+            let popUp          = document.querySelector('.pop-up.mfc')               as HTMLDivElement;
             let title          = popUp.querySelector('.pop-up-title')                as HTMLSpanElement;
             let popUpImgAnchor = popUp.querySelector('#pop-up-img')                  as HTMLAnchorElement;
             let popUpImg       = popUpImgAnchor.childNodes[0]                        as HTMLImageElement;
@@ -607,7 +622,6 @@ async function addImages (): Promise<void> {
             let a              = popUp.querySelector('.pop-up-header > div > a')     as HTMLAnchorElement;
 
             let characterLink  = `https://buyee.jp/item/search/query/${item.characterInJapanese}/category/2084023782?sort=end&order=a&store=1`;
-            console.log(characterLink);
 
             title.innerHTML             = item.title;
             popUpImgAnchor.href         = `https://pt.myfigurecollection.net/item/${item.id}`;
