@@ -280,55 +280,58 @@ function formatPopUps() {
     });
 }
 // To make the reddit search work
-function redditSearch() {
-    var _a;
-    var keywords = document.getElementById('keywords-reddit');
-    var subreddit = document.getElementById('subreddit');
-    var from = document.getElementById('from-date');
-    var to = document.getElementById('to-date');
-    var subredditStrings = subreddit.value.split(/ \/ /).filter(function (text) {
-        if (text != '')
-            return true;
-    });
-    if ((new Date(from.value) >= new Date(to.value)) && from.value && to.value)
-        return;
-    var string = 'https://www.google.com/search?q=';
-    if (keywords.value) {
-        string = string + keywords.value.replace(' ', '+');
-        if (subredditStrings[0]) {
-            subredditStrings.forEach(function (text) {
-                if (subredditStrings.indexOf(text) > 0) {
-                    string = string + '+OR+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + text.replaceAll(' ', '_');
-                }
-                else {
-                    string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + text.replaceAll(' ', '_');
-                }
-            });
-        }
-        else {
-            string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2F';
-        }
-        if (from.value) {
-            string = string + '+after%3A' + from.value;
-        }
-        if (to.value) {
-            string = string + '+before%3A' + to.value;
-        }
-        if (window.open(string, '_blank')) {
+function redditSearchTrigger() {
+    document.getElementById('reddit-search-ok').onclick = redditSearch;
+    function redditSearch() {
+        var _a;
+        var keywords = document.getElementById('keywords-reddit');
+        var subreddit = document.getElementById('subreddit');
+        var from = document.getElementById('from-date');
+        var to = document.getElementById('to-date');
+        var subredditStrings = subreddit.value.split(/ \/ /).filter(function (text) {
+            if (text != '')
+                return true;
+        });
+        if ((new Date(from.value) >= new Date(to.value)) && from.value && to.value)
+            return;
+        var string = 'https://www.google.com/search?q=';
+        if (keywords.value) {
+            string = string + keywords.value.replace(' ', '+');
+            if (subredditStrings[0]) {
+                subredditStrings.forEach(function (text) {
+                    if (subredditStrings.indexOf(text) > 0) {
+                        string = string + '+OR+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + text.replaceAll(' ', '_');
+                    }
+                    else {
+                        string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + text.replaceAll(' ', '_');
+                    }
+                });
+            }
+            else {
+                string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2F';
+            }
+            if (from.value) {
+                string = string + '+after%3A' + from.value;
+            }
+            if (to.value) {
+                string = string + '+before%3A' + to.value;
+            }
             (_a = window.open(string, '_blank')) === null || _a === void 0 ? void 0 : _a.focus();
         }
         ;
     }
-    ;
 }
 //To make the wikipedia search work
-function wikipediaSearch() {
-    var _a;
-    var keywords = document.getElementById('keywords-wikipedia');
-    var string = 'https://pt.wikipedia.org/w/index.php?search=';
-    if (keywords.value) {
-        string = string + keywords.value.replace(' ', '+');
-        (_a = window.open(string, '_blank')) === null || _a === void 0 ? void 0 : _a.focus();
+function wikipediaSearchTrigger() {
+    document.getElementById('wikipedia-ok').onclick = wikipediaSearch;
+    function wikipediaSearch() {
+        var _a;
+        var keywords = document.getElementById('keywords-wikipedia');
+        var string = 'https://pt.wikipedia.org/w/index.php?search=';
+        if (keywords.value) {
+            string = string + keywords.value.replace(' ', '+');
+            (_a = window.open(string, '_blank')) === null || _a === void 0 ? void 0 : _a.focus();
+        }
     }
 }
 // To make MFC pop-up adjust
@@ -395,8 +398,6 @@ function dragPopUps() {
         isDragging = false;
     }
 }
-document.getElementById('reddit-search-ok').onclick = redditSearch;
-document.getElementById('wikipedia-ok').onclick = wikipediaSearch;
 // To make the defaults load within the window
 function setDefaults() {
     var keywordsReddit = document.getElementById('keywords-reddit');
@@ -522,7 +523,8 @@ function addImages() {
                 var collectingDate = popUp.querySelector('#mfc-item-collecting-date');
                 var originalName = popUp.querySelector('#mfc-character-original-name');
                 var a = popUp.querySelector('.pop-up-header > div > a');
-                var characterLink = jDirectLink.replace('search/', "search/query/".concat(item.characterInJapanese, "/"));
+                var characterLink = "https://buyee.jp/item/search/query/".concat(item.characterInJapanese, "/category/2084023782?sort=end&order=a&store=1");
+                console.log(characterLink);
                 title.innerHTML = item.title;
                 popUpImgAnchor.href = "https://pt.myfigurecollection.net/item/".concat(item.id);
                 popUpImg.src = img.src;
@@ -675,6 +677,8 @@ function onLoadFunctions() {
                     mfcPopUpAdjust();
                     dragPopUps();
                     stopImageDrag();
+                    redditSearchTrigger();
+                    wikipediaSearchTrigger();
                     return [2 /*return*/];
             }
         });

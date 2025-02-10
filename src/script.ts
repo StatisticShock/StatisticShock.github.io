@@ -230,9 +230,9 @@ function formatPopUps (): void {
     ];
     
     popUpShortcuts.forEach((object) => {
-        let buttonElement = document.getElementById(object.button) as HTMLElement;
-        let popUpElement = document.getElementById(object.popUpContainer) as HTMLElement;
-        let popUpClass = document.querySelectorAll('.pop-up') as NodeListOf<HTMLElement>;
+        let buttonElement        = document.getElementById(object.button)           as HTMLElement;
+        let popUpElement         = document.getElementById(object.popUpContainer)   as HTMLElement;
+        let popUpClass           = document.querySelectorAll('.pop-up')             as NodeListOf<HTMLElement>;
         let floatingLabelElement = popUpElement.querySelectorAll('.floating-label') as NodeListOf<HTMLElement>;
 
         buttonElement.onclick = () => {
@@ -282,63 +282,68 @@ function formatPopUps (): void {
             setDefaults();
         };
     })
-    
 }
 
 // To make the reddit search work
-function redditSearch (): void {
-    const keywords = document.getElementById('keywords-reddit') as HTMLInputElement;
-    const subreddit = document.getElementById('subreddit') as HTMLInputElement;
-    const from = document.getElementById('from-date') as HTMLInputElement;
-    const to = document.getElementById('to-date') as HTMLInputElement;
+function redditSearchTrigger (): void {
+    document.getElementById('reddit-search-ok')!.onclick = redditSearch;
 
-    var subredditStrings = subreddit.value.split(/ \/ /).filter((text) => {
-        if (text != '') return true;
-    }) as Array<string>;
-
-    if ((new Date(from.value) >= new Date(to.value)) && from.value && to.value) return;
-
-    let string = 'https://www.google.com/search?q=';
-
-    if (keywords.value) {
-        string = string + keywords.value.replace(' ','+');
-
-        if (subredditStrings[0]) {
-            subredditStrings.forEach((text) => {
-                if (subredditStrings.indexOf(text) > 0) {
-                    string = string + '+OR+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + text.replaceAll(' ','_');
-                } else {
-                    string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + text.replaceAll(' ','_');
-                }
-            })
-        } else {
-            string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2F'
-        }
-
-        if (from.value) {
-            string = string + '+after%3A' + from.value;
-        }
-
-        if (to.value) {
-            string = string + '+before%3A' + to.value;
-        }
-
-        if (window.open(string, '_blank')) {
-            window.open(string, '_blank')?.focus()
+    function redditSearch (): void {
+        const keywords = document.getElementById('keywords-reddit') as HTMLInputElement;
+        const subreddit = document.getElementById('subreddit') as HTMLInputElement;
+        const from = document.getElementById('from-date') as HTMLInputElement;
+        const to = document.getElementById('to-date') as HTMLInputElement;
+    
+        var subredditStrings = subreddit.value.split(/ \/ /).filter((text) => {
+            if (text != '') return true;
+        }) as Array<string>;
+    
+        if ((new Date(from.value) >= new Date(to.value)) && from.value && to.value) return;
+    
+        let string = 'https://www.google.com/search?q=';
+    
+        if (keywords.value) {
+            string = string + keywords.value.replace(' ','+');
+    
+            if (subredditStrings[0]) {
+                subredditStrings.forEach((text) => {
+                    if (subredditStrings.indexOf(text) > 0) {
+                        string = string + '+OR+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + text.replaceAll(' ','_');
+                    } else {
+                        string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + text.replaceAll(' ','_');
+                    }
+                })
+            } else {
+                string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2F'
+            }
+    
+            if (from.value) {
+                string = string + '+after%3A' + from.value;
+            }
+    
+            if (to.value) {
+                string = string + '+before%3A' + to.value;
+            }
+    
+            window.open(string, '_blank')?.focus();
         };
-    };
+    }
 }
 
 //To make the wikipedia search work
-function wikipediaSearch (): void {
-    let keywords = document.getElementById('keywords-wikipedia') as HTMLInputElement;
+function wikipediaSearchTrigger (): void {
+    document.getElementById('wikipedia-ok')!.onclick = wikipediaSearch;
 
-    let string = 'https://pt.wikipedia.org/w/index.php?search=';
-
-    if (keywords.value) {
-        string = string + keywords.value.replace(' ','+');
-
-        window.open(string, '_blank')?.focus();
+    function wikipediaSearch (): void {
+        let keywords = document.getElementById('keywords-wikipedia') as HTMLInputElement;
+    
+        let string = 'https://pt.wikipedia.org/w/index.php?search=';
+    
+        if (keywords.value) {
+            string = string + keywords.value.replace(' ','+');
+    
+            window.open(string, '_blank')?.focus();
+        }
     }
 }
 
@@ -409,9 +414,6 @@ function dragPopUps (): void {
         isDragging = false;
     }
 }
-
-document.getElementById('reddit-search-ok')!.onclick = redditSearch;
-document.getElementById('wikipedia-ok')!.onclick = wikipediaSearch;
 
 // To make the defaults load within the window
 function setDefaults (): void {
@@ -604,7 +606,8 @@ async function addImages (): Promise<void> {
             let originalName   = popUp.querySelector('#mfc-character-original-name') as HTMLSpanElement;
             let a              = popUp.querySelector('.pop-up-header > div > a')     as HTMLAnchorElement;
 
-            let characterLink  = jDirectLink.replace('search/',`search/query/${item.characterInJapanese}/`);
+            let characterLink  = `https://buyee.jp/item/search/query/${item.characterInJapanese}/category/2084023782?sort=end&order=a&store=1`;
+            console.log(characterLink);
 
             title.innerHTML             = item.title;
             popUpImgAnchor.href         = `https://pt.myfigurecollection.net/item/${item.id}`;
@@ -723,6 +726,9 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     mfcPopUpAdjust();
     dragPopUps();
     stopImageDrag();
+    redditSearchTrigger();
+    wikipediaSearchTrigger();
+    
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     resizeAside();
