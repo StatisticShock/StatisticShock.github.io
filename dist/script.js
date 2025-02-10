@@ -361,8 +361,8 @@ function dragPopUps() {
         popUp.addEventListener('touchstart', startDragging);
         popUp.addEventListener('mousemove', drag);
         popUp.addEventListener('touchmove', drag);
-        popUp.addEventListener('mouseup', stopDragging);
-        popUp.addEventListener('touchend', stopDragging);
+        document.addEventListener('mouseup', stopDragging);
+        document.addEventListener('touchend', stopDragging);
     });
     function startDragging(event) {
         var e;

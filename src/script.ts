@@ -382,8 +382,8 @@ function dragPopUps (): void {
         popUp.addEventListener('touchstart', startDragging);
         popUp.addEventListener('mousemove', drag);
         popUp.addEventListener('touchmove', drag);
-        popUp.addEventListener('mouseup', stopDragging);
-        popUp.addEventListener('touchend', stopDragging);
+        document.addEventListener('mouseup', stopDragging);
+        document.addEventListener('touchend', stopDragging);
     })
     function startDragging (this: HTMLElement, event: MouseEvent | TouchEvent): void {
         let e: MouseEvent | Touch;
