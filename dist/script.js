@@ -34,7 +34,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+// Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
+import MyAnimeList from "./myAnimeList.js";
 // To make loaders work
 function createLoaders(count) {
     var loaders = document.querySelectorAll('.loader');
@@ -688,6 +690,7 @@ function onLoadFunctions() {
                     stopImageDrag();
                     redditSearchTrigger();
                     wikipediaSearchTrigger();
+                    MyAnimeList.scrappleDataFromMyAnimeList();
                     return [2 /*return*/];
             }
         });

@@ -1,6 +1,6 @@
 // Import custom functions from "./functions.Js"
-import { Target } from "puppeteer";
 import CustomFunctions from "./functions.js";
+import MyAnimeList from "./myAnimeList.js";
 
 // To make loaders work
 function createLoaders (count: number): void {
@@ -740,7 +740,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     stopImageDrag();
     redditSearchTrigger();
     wikipediaSearchTrigger();
-    
+    MyAnimeList.scrappleDataFromMyAnimeList();
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     resizeAside();
