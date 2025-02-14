@@ -1,6 +1,5 @@
 // Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
-import MyAnimeList from "./myAnimeList.js";
 
 // To make loaders work
 function createLoaders (count: number): void {
@@ -515,6 +514,7 @@ async function addImages (): Promise<void> {
         note: string,
         character: string,
         characterInJapanese: string,
+        origin: string,
     }
 
     function arrayToObject (array: Array<string>): imgMFCItem {
@@ -541,6 +541,7 @@ async function addImages (): Promise<void> {
             note:           array[19],
             character:      array[20],
             characterInJapanese: array[21],
+            origin:         array[22]
         }
         return object;
     }
@@ -617,9 +618,11 @@ async function addImages (): Promise<void> {
             let price          = popUp.querySelector('#mfc-item-price')              as HTMLSpanElement;
             let collectingDate = popUp.querySelector('#mfc-item-collecting-date')    as HTMLSpanElement;
             let originalName   = popUp.querySelector('#mfc-character-original-name') as HTMLSpanElement;
+            let originName     = popUp.querySelector('#mfc-character-origin')        as HTMLSpanElement;
             let a              = popUp.querySelector('.pop-up-header > div > a')     as HTMLAnchorElement;
 
             let characterLink  = `https://buyee.jp/item/search/query/${item.characterInJapanese}/category/2084023782?sort=end&order=a&store=1`;
+            let originLink     = `https://buyee.jp/item/search/query/${item.origin}/category/2084023782?sort=end&order=a&store=1`;
 
             title.innerHTML             = item.title;
             popUpImgAnchor.href         = `https://pt.myfigurecollection.net/item/${item.id}`;
@@ -627,13 +630,16 @@ async function addImages (): Promise<void> {
             popUpImg.style.border       = `${imgBorder} solid ${div.style.color}`            
             price.innerHTML             = `R$ ${item.price.replace('.',',')}`;
             originalName.innerHTML      = item.status == 'Wished' ? `<a target="_blank" href="${characterLink}">${item.characterInJapanese}</a>` : '';
-            
+            originName.innerHTML        = item.status == 'Wished' ? `<a target="_blank" href="${originLink}">${item.origin}</a>` : '';
+
             if (item.status == 'Owned') {
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
                 collectingDate.parentElement!.style.display = '';
                 rating.style.display                        = '';
                 price.parentElement!.style.display          = '';
                 originalName.parentElement!.style.display   = 'none';
+                originName.parentElement!.style.display     = 'none';
+
                 collectingDate.innerHTML    = item.collectingDate.split('-').reverse().join('/');
                 rating.innerHTML            = '⭐'.repeat(Number(item.score.split('/')[0]));
                 ratingBefore.innerHTML      = item.score;
@@ -642,13 +648,17 @@ async function addImages (): Promise<void> {
                 collectingDate.parentElement!.style.display = 'none';
                 rating.style.display                        = 'none';
                 price.parentElement!.style.display          = '';
-                originalName.parentElement!.style.display   = 'none';   
+                originalName.parentElement!.style.display   = 'none';
+                originName.parentElement!.style.display     = 'none';
+
             } else if (item.status == 'Wished') {
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
                 collectingDate.parentElement!.style.display = 'none';
                 rating.style.display                        = '';
                 price.parentElement!.style.display          = 'none';
-                originalName.parentElement!.style.display   = '';
+                originalName.parentElement!.style.display   = item.characterInJapanese == '' ? 'none' : '';
+                originName.parentElement!.style.display     = item.origin == 'オリジナル' ? 'none' : '';
+
                 rating.innerHTML            = '⭐'.repeat(Number(item.wishability.split('/')[0]));
                 ratingBefore.innerHTML      = item.wishability + '/5';
             }
@@ -740,7 +750,6 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     stopImageDrag();
     redditSearchTrigger();
     wikipediaSearchTrigger();
-    MyAnimeList.scrappleDataFromMyAnimeList();
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     resizeAside();

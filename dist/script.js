@@ -36,7 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 // Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
-import MyAnimeList from "./myAnimeList.js";
 // To make loaders work
 function createLoaders(count) {
     var loaders = document.querySelectorAll('.loader');
@@ -499,6 +498,7 @@ function addImages() {
                 note: array[19],
                 character: array[20],
                 characterInJapanese: array[21],
+                origin: array[22]
             };
             return object;
         }
@@ -534,20 +534,24 @@ function addImages() {
                 var price = popUp.querySelector('#mfc-item-price');
                 var collectingDate = popUp.querySelector('#mfc-item-collecting-date');
                 var originalName = popUp.querySelector('#mfc-character-original-name');
+                var originName = popUp.querySelector('#mfc-character-origin');
                 var a = popUp.querySelector('.pop-up-header > div > a');
                 var characterLink = "https://buyee.jp/item/search/query/".concat(item.characterInJapanese, "/category/2084023782?sort=end&order=a&store=1");
+                var originLink = "https://buyee.jp/item/search/query/".concat(item.origin, "/category/2084023782?sort=end&order=a&store=1");
                 title.innerHTML = item.title;
                 popUpImgAnchor.href = "https://pt.myfigurecollection.net/item/".concat(item.id);
                 popUpImg.src = img.src;
                 popUpImg.style.border = "".concat(imgBorder, " solid ").concat(div.style.color);
                 price.innerHTML = "R$ ".concat(item.price.replace('.', ','));
                 originalName.innerHTML = item.status == 'Wished' ? "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(item.characterInJapanese, "</a>") : '';
+                originName.innerHTML = item.status == 'Wished' ? "<a target=\"_blank\" href=\"".concat(originLink, "\">").concat(item.origin, "</a>") : '';
                 if (item.status == 'Owned') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                     collectingDate.parentElement.style.display = '';
                     rating.style.display = '';
                     price.parentElement.style.display = '';
                     originalName.parentElement.style.display = 'none';
+                    originName.parentElement.style.display = 'none';
                     collectingDate.innerHTML = item.collectingDate.split('-').reverse().join('/');
                     rating.innerHTML = '⭐'.repeat(Number(item.score.split('/')[0]));
                     ratingBefore.innerHTML = item.score;
@@ -558,13 +562,15 @@ function addImages() {
                     rating.style.display = 'none';
                     price.parentElement.style.display = '';
                     originalName.parentElement.style.display = 'none';
+                    originName.parentElement.style.display = 'none';
                 }
                 else if (item.status == 'Wished') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                     collectingDate.parentElement.style.display = 'none';
                     rating.style.display = '';
                     price.parentElement.style.display = 'none';
-                    originalName.parentElement.style.display = '';
+                    originalName.parentElement.style.display = item.characterInJapanese == '' ? 'none' : '';
+                    originName.parentElement.style.display = item.origin == 'オリジナル' ? 'none' : '';
                     rating.innerHTML = '⭐'.repeat(Number(item.wishability.split('/')[0]));
                     ratingBefore.innerHTML = item.wishability + '/5';
                 }
@@ -690,7 +696,6 @@ function onLoadFunctions() {
                     stopImageDrag();
                     redditSearchTrigger();
                     wikipediaSearchTrigger();
-                    MyAnimeList.scrappleDataFromMyAnimeList();
                     return [2 /*return*/];
             }
         });

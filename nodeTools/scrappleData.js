@@ -77,11 +77,17 @@ async function fetchItemData(url) {
     }
     let character;
     let characterSwitch;
+    let originSwitch;
     dataContentItem.each((i, el) => {
-        if ($(el).children('.data-label').text().includes('Personage') || $(el).children('.data-label').text().includes('Título')) { // Tests if the header "Personagem", "Personagens" ou "Título" existe
+        if ($(el).children('.data-label').text().includes('Personage') || $(el).children('.data-label').text().includes('Título')) { // Tests if the header "Personagem", "Personagens" or "Título" exists
             character = $(el).children('.data-value').text();
             characterSwitch = $(el).find('.data-value a span').map((i, el) => $(el).attr('switch')).get();
             console.log("characterSwitches", characterSwitch);
+        }
+        ;
+        if ($(el).children('.data-label').text().includes('Origem')) { // Tests if the header "Origem" exists
+            originSwitch = $(el).find('.data-value a span').attr('switch');
+            console.log("originSwitches", [originSwitch]);
         }
         ;
     });
@@ -91,7 +97,7 @@ async function fetchItemData(url) {
     if (character == undefined)
         return [resItem.status, '', ''];
     else
-        return [character, imgSrc, characterJp];
+        return [character, imgSrc, characterJp, originSwitch];
 }
 async function processFigures() {
     let csvResponse = await fsPromises.readFile(csv, 'utf-8');
@@ -112,7 +118,8 @@ async function processFigures() {
             let characterName = (rowArr[20] == undefined) || (rowArr[20] == 'undefined') ? '' : rowArr[20];
             let originalCharacterName = (rowArr[21] == undefined) || (rowArr[21] == 'undefined') ? '503' : rowArr[21];
             let characterId = (rowArr[0] == undefined) || (rowArr[0] == 'undefined') ? '' : rowArr[0];
-            return [characterId, characterName, originalCharacterName];
+            let originName = (rowArr[22] == undefined) || (rowArr[22] == 'undefined') ? '503' : rowArr[22];
+            return [characterId, characterName, originalCharacterName, originName];
         });
     }
     ;
@@ -121,21 +128,25 @@ async function processFigures() {
     let dataArray = data.map(arrayToObject);
     let fet;
     let imgPath;
-    csvArr[0] = csvArr[0] + `;"Character";"Original Character Name"`;
+    csvArr[0] = `${csvArr[0]};"Character";"Original Character Name";"Origin"`;
     await (async function () {
         for (let i = 1; i < dataArray.length; i++) {
             let characterDataAlreadyInOutput = charactersNamesInOutput.filter((row) => {
                 return row[0] == dataArray[i].id;
             });
-            if (characterDataAlreadyInOutput.length == 0 || characterDataAlreadyInOutput[0][1] == '' || characterDataAlreadyInOutput[0][1] == '503' || characterDataAlreadyInOutput[0][2] == '503') { // If entry doesn't exist in CSV output, fetch it
+            if (characterDataAlreadyInOutput.length == 0 ||
+                characterDataAlreadyInOutput[0][1] == '' ||
+                characterDataAlreadyInOutput[0][1] == '503' ||
+                characterDataAlreadyInOutput[0][2] == '503' ||
+                characterDataAlreadyInOutput[0][3] == '503') { // If entry doesn't exist in CSV output, fetch it
                 fet = await fetchItemData(`https://pt.myfigurecollection.net/item/${dataArray[i].id}`);
                 console.log(`Fetched ${fet[0]} from ID`, dataArray[i].id);
             }
             else { // Else, gets its name directly from the output
-                fet = [characterDataAlreadyInOutput[0][1], '', characterDataAlreadyInOutput[0][2]];
+                fet = [characterDataAlreadyInOutput[0][1], '', characterDataAlreadyInOutput[0][2], characterDataAlreadyInOutput[0][3]];
                 console.log(`${fet[0]} from ID`, dataArray[i].id, 'already in CSV output');
             }
-            csvArr[i] = csvArr[i] + `;"${fet[0]}";"${fet[2]}"`;
+            csvArr[i] = csvArr[i] + `;"${fet[0]}";"${fet[2]}";"${fet[3]}"`;
             imgPath = `../images/mfc/${dataArray[i].id}.jpg`;
             if (!fs.existsSync(imgPath)) {
                 await downloadImage(`${fet[1]}`, imgPath);
