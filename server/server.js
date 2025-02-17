@@ -20,7 +20,7 @@ const corsHeaders = {
     origin: 'https://statisticshock.github.io/',
     optionsSuccessStatus: 200
 };
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)(corsHeaders));
 app.get("/animelist/:username/:offset?", async (req, res) => {
     let { username, offset } = req.params;
     if (!offset)
