@@ -17,20 +17,7 @@ const allowedOrigins = [
     "https://statisticshock-github-io-server.onrender.com"
 ];
 const corsHeaders = {
-    origin: (origin, callback) => {
-        console.log("Incoming request from:", origin); // Debugging
-        if (!origin) {
-            console.log("Blocked: Null origin");
-            callback(new Error("CORS error: Null origin not allowed"), false);
-        }
-        else if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-        }
-        else {
-            console.log("Blocked: Unknown origin", origin);
-            callback(new Error("CORS error: Origin not allowed"), false);
-        }
-    },
+    origin: 'https://statisticshock.github.io/',
     optionsSuccessStatus: 200
 };
 app.use((0, cors_1.default)());
