@@ -15,15 +15,20 @@ const allowedOrigins = [
 ];
 const corsHeaders = {
     origin: (origin, callback) => {
-        if (allowedOrigins.includes(origin)) {
-            // Allow if origin is in the list or is null (for file:// access)
+        console.log("Incoming request from:", origin); // Debugging
+
+        if (!origin) {
+            console.log("Blocked: Null origin");
+            callback(new Error("CORS error: Null origin not allowed"), false);
+        } else if (allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            callback(new Error("Not allowed by CORS"));
+            console.log("Blocked: Unknown origin", origin);
+            callback(new Error("CORS error: Origin not allowed"), false);
         }
     },
     optionsSuccessStatus: 200
-}
+};
 
 app.use(cors(corsHeaders));
 
