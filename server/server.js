@@ -33,7 +33,7 @@ const corsHeaders = {
     },
     optionsSuccessStatus: 200
 };
-app.use((0, cors_1.default)(corsHeaders));
+app.use((0, cors_1.default)());
 app.get("/animelist/:username/:offset?", async (req, res) => {
     let { username, offset } = req.params;
     if (!offset)
