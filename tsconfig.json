@@ -112,6 +112,7 @@
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
   "exclude": [
-    "nodeTools"
+    "nodeTools",
+    "server"
   ]
 }

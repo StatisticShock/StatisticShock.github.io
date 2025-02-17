@@ -52,7 +52,7 @@ img {
     height: fit-content;
     padding: 2em;
     padding-top: 50px;
-    z-index: 5;
+    z-index: 2;
     align-items:last baseline;
 
     & > div {
@@ -205,6 +205,19 @@ img {
                 position: absolute;
                 left: 65%;
                 color: white;
+
+                & a {
+                    color: var(--pink-custom);
+                    text-decoration: none;
+                }
+
+                & a:hover {
+                    text-decoration: underline overline dotted var(--pink-custom);
+                }
+
+                & a:visited {
+                    color: pink;
+                }
             }
         }
 
@@ -276,33 +289,6 @@ header {
     }
 }
 
-#twoB {
-    position: absolute;
-    max-height: 35vw;
-    height: 300px;
-    z-index: 3;
-    pointer-events: none;
-
-    & img {
-        height: 100%;
-        position: sticky;
-        top: 0;
-    }
-}
-
-#ohto {
-    position: absolute;
-    max-height: 20vw;
-    height: 170px;
-    z-index: 1;
-
-    & img {
-        height: 100%;
-        position: sticky;
-        top: 0;
-    }
-}
-
 nav {
     position: sticky;
     top: 0;
@@ -310,7 +296,7 @@ nav {
     background-color: rgba(70,70,70,0.5);
     backdrop-filter: blur(1px);
     color: white;
-    z-index: 1;
+    z-index: 2;
     font-size: 70%;
 
     #mfc-switch {
@@ -318,6 +304,33 @@ nav {
         translate: 0 -50%;
         right: 100px;
         width: 100px;
+    }
+
+    & #ohto {
+        position: absolute;
+        max-height: 20vw;
+        height: 170px;
+        z-index: 2;
+    
+        & img {
+            height: 100%;
+            position: sticky;
+            top: 0;
+        }
+    }
+
+    & #twoB {
+        position: absolute;
+        max-height: 35vw;
+        height: 300px;
+        z-index: 3;
+        pointer-events: none;
+    
+        & img {
+            height: 100%;
+            position: sticky;
+            top: 0;
+        }
     }
 }
 
@@ -415,7 +428,7 @@ h2 {
     color: black;
     content: attr(alt);
     display: inline-block;
-    z-index: 2;
+    z-index: 1;
     padding: 5px;
     background-color: var(--pink-custom);
     width: max-content;
@@ -467,7 +480,7 @@ aside {
             width: 31vw;
             scroll-snap-align: center;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             grid-auto-rows: 5px;
             grid-gap: 5px;
             gap: 10px;
@@ -499,18 +512,6 @@ aside {
                 }
             }
         }
-    }
-
-    & .pinterest-grid-price {
-        /* It is the pop up that shows each figure price */
-        background-color: #1a1a1a;
-        transform: translateX(-25%);
-        position: absolute;
-        width: max-content;
-        height: fit-content;
-        border-radius: 0.75em;
-        top: 0px;
-        left: 0px;
     }
 }
 
@@ -636,6 +637,98 @@ aside {
         letter-spacing: .1em;
     }
 
+/* MyAnimeList */
+#my-anime-list {
+    position: relative;
+
+    & .card {
+        position: relative;
+        width: 100%;
+        height: 300px;
+        --height: 300px;
+        border-radius: 20px;
+        text-decoration: none;
+        background-image: var(--pink-purple);
+
+        & .inner-card {
+            height: inherit;
+            transition: all .2s;
+            display: grid;
+            grid-auto-flow: column;
+            overflow-x:  scroll;
+            overflow-y: hidden;
+            overscroll-behavior-x: contain;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            gap: 1.5vw;
+            padding: 0 40vw;
+            touch-action: none;
+
+            & a {
+                height: inherit;
+                aspect-ratio: 3/4;
+                scroll-snap-align: center;
+                transition: 0.3s ease;
+                z-index: 0;
+                border-radius: 20px;
+                background-color: #1a1a1a;
+                text-decoration: none;
+
+                & img {
+                    height: 100%;
+                    width: 100%;
+                    border-radius: 20px;
+                }
+
+                & .paragraph-container {
+                    position: relative;
+                    top: calc(-100% - 4px);
+                    height: 100%;
+                    /* border: 1px solid wheat; */
+                    margin: 1em;
+                    font-size: 0.75em;
+
+                    & p {
+                        width: 100%;
+                        color: white;
+                        pointer-events: none;
+                    }
+                }
+            }
+
+            & a:hover img {
+                opacity: 0.25;
+            }
+        }
+
+        & .nav-button {
+            position:absolute;
+            height: 100%;
+            width: 4vw;
+            top: 0;
+            z-index: 2;
+            background-color: #1a1a1a;
+            border: 3px double white;
+            color: white;
+            font-size: 2vw;
+        }
+
+        & .nav-button:hover {
+            background-color: #313131;
+            cursor: pointer;
+        }
+
+        & #left {
+            left: 0px;
+        }
+
+        & #right {
+            right: 0px;
+        }
+    }
+}
+
 /* To make the loaders spin */
 @keyframes loading {
     from {
@@ -649,13 +742,13 @@ aside {
 .loader {
     position: absolute;
     left: 50%;
-    top: 10%;
     width: 25%;
+    max-width: calc(var(--height) / 2);
     aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    transform: translate(-50%, -100%) rotate(45deg);
+    transform: translate(-50%, 50%) rotate(45deg);
 
     & .orb {
         position: absolute;
@@ -680,6 +773,19 @@ aside {
         box-shadow: 0px 0px 20px 5px var(--pink-custom);
         border-radius: 50%;
     }
+}
+
+.follower {
+    pointer-events: none;
+    background-color: #1a1a1a;
+    transform: translateX(-25%);
+    position: absolute;
+    width: max-content;
+    height: fit-content;
+    border-radius: 0.75em;
+    padding: 5px;
+    top: 0px;
+    left: 0px;
 }
 
 footer {

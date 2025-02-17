@@ -1,5 +1,7 @@
 // Import custom functions from "./functions.Js"
+import { off } from "process";
 import CustomFunctions from "./functions.js";
+import { imageType } from "image-size/dist/types/index.js";
 
 // To make loaders work
 function createLoaders (count: number): void {
@@ -414,7 +416,6 @@ function dragPopUps (): void {
         };
 
         if (isDragging) {
-            let rect = this.getBoundingClientRect();
             let x: number = e.clientX - offsetX;
             let y: number = e.clientY - offsetY;
 
@@ -693,7 +694,8 @@ async function addImages (): Promise<void> {
         let items = aside.querySelectorAll('.pinterest-grid-item') as NodeListOf<HTMLDivElement>;
     
         let span = document.createElement('span') as HTMLSpanElement; // Creates the "pop-up"
-        span.setAttribute('class', 'pinterest-grid-price');
+        span.classList.add('pinterest-grid-price');
+        span.classList.add('follower');
         span.style.display = 'none';
         aside.appendChild(span);
     
@@ -720,6 +722,7 @@ async function addImages (): Promise<void> {
     })();
 
     setTimeout(resizeAllMasonryItems, 500);
+    setTimeout(resizeAllMasonryItems, 1000);
     setTimeout(() => { //Should run immeditialy after "resizeAllMasonryItems"
         let loader: HTMLDivElement = document.querySelector('aside > .card > .loader')!;
         let pinterestGrids: NodeListOf<HTMLSpanElement> = document.querySelectorAll('aside > .card > .pinterest-grid');
@@ -731,6 +734,107 @@ async function addImages (): Promise<void> {
     }, 1000);
 };
 
+// To add a MyAnimeList card
+async function scrappleMyAnimeList (): Promise<void> {
+    type malJson = {
+        data: [{
+            node: {
+                id: number,
+                main_picture: {
+                    medium: string,
+                    large: string
+                },
+                title: string
+            },
+            list_status: {
+                is_rewatching: boolean,
+                num_episodes_watched: number,
+                score: number,
+                status: string,
+                updated_at: string,
+            }
+        }],
+        paging: {
+            next: string
+        }
+    };
+
+    async function scrappleDataFromMAL (offset: number): Promise<malJson> {
+        const data: malJson = await fetch(`http://localhost:5050/animelist/HikariMontgomery/${offset}`)
+        .then(response => response.json());
+
+        return data;
+    };
+
+    let output: malJson = await scrappleDataFromMAL(0);
+    const mal: HTMLDivElement = document.querySelector('#my-anime-list .inner-card')!;
+
+    output.data.forEach((anime) => {
+        let img: HTMLImageElement = new Image();
+        img.src = anime.node.main_picture.large;
+        let a: HTMLAnchorElement = document.createElement('a');
+        a.appendChild(img);
+        a.target = '_blank';
+        a.href = `https://myanimelist.net/anime/${anime.node.id}/`
+        let div: HTMLDivElement = document.createElement('div');
+        div.classList.add('paragraph-container');
+        let p: HTMLParagraphElement = document.createElement('p');
+        p.innerHTML = `${anime.node.title}&nbsp;`;
+        div.style.display = 'none';
+
+        if (anime.list_status.score !== 0) {
+            let p2: HTMLParagraphElement = document.createElement('p');
+            p2.innerHTML = '⭐'.repeat(anime.list_status.score);
+            p.appendChild(p2);
+        }
+        
+        div.appendChild(p);
+        a.appendChild(div);
+        
+        mal.appendChild(a);
+
+        a.addEventListener('mouseenter', showAnimeData, true);
+        a.addEventListener('touchstart', showAnimeData, true);
+        a.addEventListener('mouseleave', hideAnimeData, true);
+        a.addEventListener('touchend', hideAnimeData, true);
+
+        function showAnimeData (): void {
+            div.style.display = '';
+        };
+
+        function hideAnimeData (): void {
+            div.style.display = 'none';
+        };
+    });
+
+    (function makeCarouselSlide (): void {
+        let card: HTMLDivElement = document.querySelector('#my-anime-list .card')!;
+        let innerCard: HTMLDivElement = card.querySelector('.inner-card')!;
+        let leftButton: HTMLButtonElement = card.querySelector('#left')!;
+        let rightButton: HTMLButtonElement = card.querySelector('#right')!;
+
+        innerCard.addEventListener('load', scrollFunctions, true); function scrollFunctions (): void {
+            leftButton.onclick = () => {
+                let width: number  = innerCard.scrollWidth;
+                innerCard.scrollBy({left: - width / 10, behavior: "smooth"});
+            };
+
+            rightButton.onclick = () => {
+                let width: number  = innerCard.scrollWidth;
+                innerCard.scrollBy({left: width / 10, behavior: "smooth"});
+            }
+        };
+    })()
+
+    setTimeout(() => { //Should run immeditialy after output.data.forEach
+        let loader: HTMLDivElement = document.querySelector('#my-anime-list .loader')!;
+        let innerCard: HTMLDivElement = document.querySelector('#my-anime-list .inner-card')!;
+        
+        loader.style.display = 'none';
+        innerCard.style.opacity = '1';
+
+    }, 1000);
+}
 window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions () {
     createLoaders(8);
     openLinksInNewTab();
@@ -750,6 +854,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     stopImageDrag();
     redditSearchTrigger();
     wikipediaSearchTrigger();
+    await scrappleMyAnimeList();
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     resizeAside();

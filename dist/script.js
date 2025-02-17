@@ -34,7 +34,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-// Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
 // To make loaders work
 function createLoaders(count) {
@@ -396,7 +395,6 @@ function dragPopUps() {
         }
         ;
         if (isDragging) {
-            var rect = this.getBoundingClientRect();
             var x = e.clientX - offsetX;
             var y = e.clientY - offsetY;
             this.style.left = x + 'px';
@@ -633,7 +631,8 @@ function addImages() {
                         var aside = document.querySelector('aside');
                         var items = aside.querySelectorAll('.pinterest-grid-item');
                         var span = document.createElement('span'); // Creates the "pop-up"
-                        span.setAttribute('class', 'pinterest-grid-price');
+                        span.classList.add('pinterest-grid-price');
+                        span.classList.add('follower');
                         span.style.display = 'none';
                         aside.appendChild(span);
                         items.forEach(function (item) {
@@ -656,6 +655,7 @@ function addImages() {
                         });
                     })();
                     setTimeout(resizeAllMasonryItems, 500);
+                    setTimeout(resizeAllMasonryItems, 1000);
                     setTimeout(function () {
                         var loader = document.querySelector('aside > .card > .loader');
                         var pinterestGrids = document.querySelectorAll('aside > .card > .pinterest-grid');
@@ -670,6 +670,94 @@ function addImages() {
     });
 }
 ;
+// To add a MyAnimeList card
+function scrappleMyAnimeList() {
+    return __awaiter(this, void 0, void 0, function () {
+        function scrappleDataFromMAL(offset) {
+            return __awaiter(this, void 0, void 0, function () {
+                var data;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, fetch("http://localhost:5050/animelist/HikariMontgomery/".concat(offset))
+                                .then(function (response) { return response.json(); })];
+                        case 1:
+                            data = _a.sent();
+                            return [2 /*return*/, data];
+                    }
+                });
+            });
+        }
+        var output, mal;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    ;
+                    return [4 /*yield*/, scrappleDataFromMAL(0)];
+                case 1:
+                    output = _a.sent();
+                    mal = document.querySelector('#my-anime-list .inner-card');
+                    output.data.forEach(function (anime) {
+                        var img = new Image();
+                        img.src = anime.node.main_picture.large;
+                        var a = document.createElement('a');
+                        a.appendChild(img);
+                        a.target = '_blank';
+                        a.href = "https://myanimelist.net/anime/".concat(anime.node.id, "/");
+                        var div = document.createElement('div');
+                        div.classList.add('paragraph-container');
+                        var p = document.createElement('p');
+                        p.innerHTML = "".concat(anime.node.title, "&nbsp;");
+                        div.style.display = 'none';
+                        if (anime.list_status.score !== 0) {
+                            var p2 = document.createElement('p');
+                            p2.innerHTML = '⭐'.repeat(anime.list_status.score);
+                            p.appendChild(p2);
+                        }
+                        div.appendChild(p);
+                        a.appendChild(div);
+                        mal.appendChild(a);
+                        a.addEventListener('mouseenter', showAnimeData, true);
+                        a.addEventListener('touchstart', showAnimeData, true);
+                        a.addEventListener('mouseleave', hideAnimeData, true);
+                        a.addEventListener('touchend', hideAnimeData, true);
+                        function showAnimeData() {
+                            div.style.display = '';
+                        }
+                        ;
+                        function hideAnimeData() {
+                            div.style.display = 'none';
+                        }
+                        ;
+                    });
+                    (function makeCarouselSlide() {
+                        var card = document.querySelector('#my-anime-list .card');
+                        var innerCard = card.querySelector('.inner-card');
+                        var leftButton = card.querySelector('#left');
+                        var rightButton = card.querySelector('#right');
+                        innerCard.addEventListener('load', scrollFunctions, true);
+                        function scrollFunctions() {
+                            leftButton.onclick = function () {
+                                var width = innerCard.scrollWidth;
+                                innerCard.scrollBy({ left: -width / 10, behavior: "smooth" });
+                            };
+                            rightButton.onclick = function () {
+                                var width = innerCard.scrollWidth;
+                                innerCard.scrollBy({ left: width / 10, behavior: "smooth" });
+                            };
+                        }
+                        ;
+                    })();
+                    setTimeout(function () {
+                        var loader = document.querySelector('#my-anime-list .loader');
+                        var innerCard = document.querySelector('#my-anime-list .inner-card');
+                        loader.style.display = 'none';
+                        innerCard.style.opacity = '1';
+                    }, 1000);
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
 window.addEventListener('load', onLoadFunctions, true);
 function onLoadFunctions() {
     return __awaiter(this, void 0, void 0, function () {
@@ -696,6 +784,9 @@ function onLoadFunctions() {
                     stopImageDrag();
                     redditSearchTrigger();
                     wikipediaSearchTrigger();
+                    return [4 /*yield*/, scrappleMyAnimeList()];
+                case 2:
+                    _a.sent();
                     return [2 /*return*/];
             }
         });
