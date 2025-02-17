@@ -784,7 +784,7 @@ async function scrappleMyAnimeList (): Promise<void> {
 
         if (anime.list_status.score !== 0) {
             let p2: HTMLParagraphElement = document.createElement('p');
-            p2.innerHTML = '⭐'.repeat(anime.list_status.score);
+            p2.innerHTML = `${'⭐'.repeat(anime.list_status.score)} (${anime.list_status.score}/10)`;
             p.appendChild(p2);
         }
         

@@ -710,7 +710,7 @@ function scrappleMyAnimeList() {
                         div.style.display = 'none';
                         if (anime.list_status.score !== 0) {
                             var p2 = document.createElement('p');
-                            p2.innerHTML = '⭐'.repeat(anime.list_status.score);
+                            p2.innerHTML = "".concat('⭐'.repeat(anime.list_status.score), " (").concat(anime.list_status.score, "/10)");
                             p.appendChild(p2);
                         }
                         div.appendChild(p);

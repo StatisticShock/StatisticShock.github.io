@@ -296,7 +296,7 @@ nav {
     background-color: rgba(70,70,70,0.5);
     backdrop-filter: blur(1px);
     color: white;
-    z-index: 2;
+    z-index: 3;
     font-size: 70%;
 
     #mfc-switch {
@@ -323,7 +323,7 @@ nav {
         position: absolute;
         max-height: 35vw;
         height: 300px;
-        z-index: 3;
+        z-index: 4;
         pointer-events: none;
     
         & img {
