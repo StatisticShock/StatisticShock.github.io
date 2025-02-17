@@ -17,7 +17,11 @@ const allowedOrigins = [
     "https://statisticshock-github-io-server.onrender.com"
 ];
 const corsHeaders = {
-    origin: 'https://statisticshock.github.io/',
+    origin: [
+        'https://statisticshock.github.io',
+        'http://127.0.0.1:5500',
+        'http://localhost:3000'
+    ],
     optionsSuccessStatus: 200
 };
 app.use((0, cors_1.default)(corsHeaders));
