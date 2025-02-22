@@ -595,7 +595,6 @@ function addImages() {
                                 anchorChild.onclick = function (event) {
                                     event.preventDefault();
                                     void navigator.clipboard.writeText(itemLink.textContent);
-                                    alert("".concat(itemLink.textContent, " copiado para a \u00E1rea de transfer\u00EAncia"));
                                 };
                             };
                             for (_i = 0, links_2 = links_1; _i < links_2.length; _i++) {
