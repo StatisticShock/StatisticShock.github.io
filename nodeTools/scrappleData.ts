@@ -6,10 +6,10 @@ import { promises as fsPromises } from 'fs';
 import fs from 'fs';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import readline from 'readline';
 
-
-const csv: string = '../myFigureCollection.csv'
-const csvOutput: string = '../myFigureCollectionOutput.csv'
+const csv: string = '../mfc.csv'
+const csvOutput: string = '../mfcOutput.csv'
 const outputUrl: string = csvOutput;
 const sleepTime: number = 875;
 
@@ -33,7 +33,7 @@ async function getCSVData (url: string) {
     }
 }
 
-interface imgMFCItem {
+type imgMFCItem = {
     id: string,
     title: string,
     root: string,
@@ -56,6 +56,7 @@ interface imgMFCItem {
     note: string,
     character?: string,
     imgSrc?: string,
+    classification?: string,
 }
 
 function arrayToObject (array: Array<string>): imgMFCItem {    
@@ -114,28 +115,35 @@ async function fetchItemData (url: string) {
     let character: string;
     let characterSwitch: Array<string>;
     let originSwitch: string;
+    let classification: string;
 
     dataContentItem.each((i, el) => {
         if ($(el).children('.data-label').text().includes('Personage') || $(el).children('.data-label').text().includes('Título')) { // Tests if the header "Personagem", "Personagens" or "Título" exists
             character = $(el).children('.data-value').text();
-            characterSwitch = $(el).find('.data-value a span').map((i, el) => $(el).attr('switch')).get();
+            characterSwitch = $(el).find('.data-value a span').map((i, el) => $(el).attr('switch')).get()[0] == '' ? $(el).find('.data-value a span').map((i, el) => $(el).text()).get() : $(el).find('.data-value a span').map((i, el) => $(el).attr('switch')).get();
             console.log("characterSwitches", characterSwitch);
         };
 
         if ($(el).children('.data-label').text().includes('Origem')) { // Tests if the header "Origem" exists
-            originSwitch = $(el).find('.data-value a span').attr('switch');
+            originSwitch = $(el).find('.data-value a span').attr('switch') == '' ? $(el).find('.data-value a span').text() : $(el).find('.data-value a span').attr('switch');
             console.log("originSwitches", [originSwitch]);
+        };
+
+        if ($(el).children('.data-label').text().includes('Classificação')) { // Tests if the header "Classificação" exists
+            classification = $(el).find('.data-value a span').text();
+            console.log("classification", [classification]);
         };
     });
 
     let characterJp: string = characterSwitch == undefined ? '' : characterSwitch.join(', ');
+    classification = classification == undefined ? '' : classification;
 
     const imgSrc: string = $('.item-picture .main img').attr('src');
 
     await sleep(sleepTime);
 
-    if (character == undefined) return [resItem.status, '', '']
-    else return [character, imgSrc, characterJp, originSwitch];
+    if (character == undefined) return [resItem.status, '', '', '', '']
+    else return [character, imgSrc, characterJp, originSwitch, classification];
 }
 
 async function processFigures (): Promise<void> {
@@ -159,9 +167,10 @@ async function processFigures (): Promise<void> {
             let rowArr: Array<string>         = row.split('";"').map((item) => item = item.replaceAll('"',''));
             let characterName: string         = (rowArr[20] == undefined) || (rowArr[20] == 'undefined') ? ''    : rowArr[20];
             let originalCharacterName: string = (rowArr[21] == undefined) || (rowArr[21] == 'undefined') ? '503' : rowArr[21];
-            let characterId: string           = (rowArr[0] == undefined)  || (rowArr[0] == 'undefined')  ? ''    : rowArr[0];
+            let characterId: string           = (rowArr[0]  == undefined) || (rowArr[0]  == 'undefined') ? ''    : rowArr[0];
             let originName: string            = (rowArr[22] == undefined) || (rowArr[22] == 'undefined') ? '503' : rowArr[22];
-            return [characterId, characterName, originalCharacterName, originName];
+            let itemClassification: string    = (rowArr[23] == undefined) || (rowArr[23] == 'undefined') ? '503' : rowArr[23];
+            return [characterId, characterName, originalCharacterName, originName, itemClassification];
         });
     };
     
@@ -171,7 +180,7 @@ async function processFigures (): Promise<void> {
     let fet: Array<string | number>;
     let imgPath: string;
 
-    csvArr[0] = `${csvArr[0]};"Character";"Original Character Name";"Origin"`;
+    csvArr[0] = `${csvArr[0]};"Character";"Original Character Name";"Origin";"Classification"`;
 
     await (async function () {for (let i = 1; i < dataArray.length; i++) {
         let characterDataAlreadyInOutput: string[][] = charactersNamesInOutput.filter((row) => {    // Tests if entry exists in CSV output
@@ -182,15 +191,24 @@ async function processFigures (): Promise<void> {
             characterDataAlreadyInOutput[0][1] == '' ||
             characterDataAlreadyInOutput[0][1] == '503' ||
             characterDataAlreadyInOutput[0][2] == '503' ||
-            characterDataAlreadyInOutput[0][3] == '503') { // If entry doesn't exist in CSV output, fetch it
+            characterDataAlreadyInOutput[0][3] == '503' ||
+            characterDataAlreadyInOutput[0][4] == '503') { // If entry doesn't exist in CSV output, fetch it. THIS LINE MUST BE CHANGED TO VERIFIFY EVERYTHING THAT IS ADDED TO MFCO.csv VIA CODE
             fet = await fetchItemData(`https://pt.myfigurecollection.net/item/${dataArray[i].id}`);
-            console.log(`Fetched ${fet[0]} from ID`, dataArray[i].id);
-        } else {                                                                                    // Else, gets its name directly from the output
-            fet = [characterDataAlreadyInOutput[0][1], '', characterDataAlreadyInOutput[0][2], characterDataAlreadyInOutput[0][3]];
-            console.log(`${fet[0]} from ID`,dataArray[i].id,'already in CSV output');
+            console.log(String.fromCharCode(10), `Fetched ${fet[0]} from ID`, dataArray[i].id);
+        } else {    // Else, gets its name directly from the output
+            // CHANGE THIS LINE EACH TIME AN ITEM IS ADDED TO THE CSV FILE. CURRENTLY, THERE ARE 24 ITEMS BY LINE IN mfco.csv
+            fet = [
+                characterDataAlreadyInOutput[0][1],
+                '',
+                characterDataAlreadyInOutput[0][2],
+                characterDataAlreadyInOutput[0][3],
+                characterDataAlreadyInOutput[0][4]
+            ];
+            
+            console.log(String.fromCharCode(10), `${fet[0]} from ID`,dataArray[i].id,'already in CSV output');
         }
         
-        csvArr[i] = csvArr[i] + `;"${fet[0]}";"${fet[2]}";"${fet[3]}"`;
+        csvArr[i] = csvArr[i] + `;"${fet[0]}";"${fet[2]}";"${fet[3]}";"${fet[4]}"`;
         imgPath = `../images/mfc/${dataArray[i].id}.jpg`;
 
         if (!fs.existsSync(imgPath)) {
@@ -203,4 +221,13 @@ async function processFigures (): Promise<void> {
     fs.writeFileSync(outputUrl, csvArr.join(String.fromCharCode(10)));
 };
 
-processFigures();
+await processFigures();
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+rl.question(String.fromCharCode(10) + "Hit 'Enter' key to close...", () => {
+    rl.close();
+});

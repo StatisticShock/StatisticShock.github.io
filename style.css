@@ -180,10 +180,11 @@ img {
     height: 70vmin;
     aspect-ratio: 3/4;
     font-size: 2vmin;
+    z-index: 4;
     
     & #pop-up-img > img {
         max-width: 90%;
-        max-height: 60%;
+        max-height: 55%;
         position: relative;
         left: 50%;
         transform: translate(-50%,0);
@@ -199,11 +200,12 @@ img {
 
         & p {
             width: 100%;
+            margin-bottom: -5px;
             /* border: 1px solid white; */
 
             & span {
                 position: absolute;
-                left: 65%;
+                left: 30%;
                 color: white;
 
                 & a {
@@ -301,13 +303,16 @@ nav {
 
     #mfc-switch {
         top: 50%;
+        right: 0;
         translate: 0 -50%;
-        right: 100px;
+        right: 0px;
         width: 100px;
     }
 
     & #ohto {
         position: absolute;
+        top: -90px;
+        left: 10px;
         max-height: 20vw;
         height: 170px;
         z-index: 2;
@@ -321,6 +326,8 @@ nav {
 
     & #twoB {
         position: absolute;
+        top: -90px;
+        right: 10px;
         max-height: 35vw;
         height: 300px;
         z-index: 4;
@@ -705,13 +712,13 @@ aside {
         & .nav-button {
             position:absolute;
             height: 100%;
-            width: 4vw;
+            width: fit-content;
             top: 0;
             z-index: 2;
             background-color: #1a1a1a;
             border: 3px double white;
             color: white;
-            font-size: 2vw;
+            font-size: 3vw;
         }
 
         & .nav-button:hover {

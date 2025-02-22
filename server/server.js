@@ -10,12 +10,7 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
 const API_URL = "https://api.myanimelist.net/v2/users/";
-const ACCESS_TOKEN = process.env.MAL_ACCESS_TOKEN; // Store in .env
-const allowedOrigins = [
-    "https://statisticshock.github.io",
-    "http://127.0.0.1:5500", // Allow local testing
-    "https://statisticshock-github-io-server.onrender.com"
-];
+const ACCESS_TOKEN = process.env.MAL_ACCESS_TOKEN;
 const corsHeaders = {
     origin: [
         'https://statisticshock.github.io',

@@ -1,7 +1,5 @@
 // Import custom functions from "./functions.Js"
-import { off } from "process";
 import CustomFunctions from "./functions.js";
-import { imageType } from "image-size/dist/types/index.js";
 
 // To make loaders work
 function createLoaders (count: number): void {
@@ -516,6 +514,7 @@ async function addImages (): Promise<void> {
         character: string,
         characterInJapanese: string,
         origin: string,
+        classification: string,
     }
 
     function arrayToObject (array: Array<string>): imgMFCItem {
@@ -542,12 +541,13 @@ async function addImages (): Promise<void> {
             note:           array[19],
             character:      array[20],
             characterInJapanese: array[21],
-            origin:         array[22]
+            origin:         array[22],
+            classification: array[23]
         }
         return object;
     }
 
-    let dataOne = await getCSVData('myFigureCollectionOutput.csv') as Array<Array<string>>;
+    let dataOne = await getCSVData('mfcOutput.csv') as Array<Array<string>>;
     let dataTwo = dataOne.map(arrayToObject);
     let data = CustomFunctions.shuffle(dataTwo);
     let owned:   Array<imgMFCItem> = [];
@@ -620,10 +620,12 @@ async function addImages (): Promise<void> {
             let collectingDate = popUp.querySelector('#mfc-item-collecting-date')    as HTMLSpanElement;
             let originalName   = popUp.querySelector('#mfc-character-original-name') as HTMLSpanElement;
             let originName     = popUp.querySelector('#mfc-character-origin')        as HTMLSpanElement;
+            let classification = popUp.querySelector('#mfc-classification')          as HTMLSpanElement;
             let a              = popUp.querySelector('.pop-up-header > div > a')     as HTMLAnchorElement;
 
-            let characterLink  = `https://buyee.jp/item/search/query/${item.characterInJapanese}/category/2084023782?sort=end&order=a&store=1`;
-            let originLink     = `https://buyee.jp/item/search/query/${item.origin}/category/2084023782?sort=end&order=a&store=1`;
+            let characterLink      = `https://buyee.jp/item/search/query/${item.characterInJapanese}/category/2084023782?sort=end&order=a&store=1`;
+            let originLink         = `https://buyee.jp/item/search/query/${item.origin}/category/2084023782?sort=end&order=a&store=1`;
+            let classificationLink = `https://buyee.jp/item/search/query/${item.classification.replaceAll('#','')}/category/2084023782?sort=end&order=a&store=1`;
 
             title.innerHTML             = item.title;
             popUpImgAnchor.href         = `https://pt.myfigurecollection.net/item/${item.id}`;
@@ -632,6 +634,7 @@ async function addImages (): Promise<void> {
             price.innerHTML             = `R$ ${item.price.replace('.',',')}`;
             originalName.innerHTML      = item.status == 'Wished' ? `<a target="_blank" href="${characterLink}">${item.characterInJapanese}</a>` : '';
             originName.innerHTML        = item.status == 'Wished' ? `<a target="_blank" href="${originLink}">${item.origin}</a>` : '';
+            classification.innerHTML    = item.status == 'Wished' ? `<a target="_blank" href="${classificationLink}">${item.classification}</a>` : '';
 
             if (item.status == 'Owned') {
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
@@ -640,6 +643,7 @@ async function addImages (): Promise<void> {
                 price.parentElement!.style.display          = '';
                 originalName.parentElement!.style.display   = 'none';
                 originName.parentElement!.style.display     = 'none';
+                classification.parentElement!.style.display = 'none';
 
                 collectingDate.innerHTML    = item.collectingDate.split('-').reverse().join('/');
                 rating.innerHTML            = '⭐'.repeat(Number(item.score.split('/')[0]));
@@ -651,6 +655,7 @@ async function addImages (): Promise<void> {
                 price.parentElement!.style.display          = '';
                 originalName.parentElement!.style.display   = 'none';
                 originName.parentElement!.style.display     = 'none';
+                classification.parentElement!.style.display = 'none';
 
             } else if (item.status == 'Wished') {
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
@@ -659,9 +664,31 @@ async function addImages (): Promise<void> {
                 price.parentElement!.style.display          = 'none';
                 originalName.parentElement!.style.display   = item.characterInJapanese == '' ? 'none' : '';
                 originName.parentElement!.style.display     = item.origin == 'オリジナル' ? 'none' : '';
+                classification.parentElement!.style.display = item.classification == '' ? 'none' : '';
 
                 rating.innerHTML            = '⭐'.repeat(Number(item.wishability.split('/')[0]));
                 ratingBefore.innerHTML      = item.wishability + '/5';
+            }
+
+            if (navigator.userAgent.includes('Android') || navigator.userAgent.includes('like Mac OS')) {
+                console.log('Running on mobile');
+                //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
+                const links: HTMLAnchorElement[] = [originalName, originName, classification] as HTMLAnchorElement[];
+            
+                const updateLinks = async () => {
+                    for (const itemLink of links) {
+                        let anchorChild: HTMLAnchorElement = itemLink.firstElementChild! as HTMLAnchorElement;
+                        anchorChild.href = '';
+                        anchorChild.target = '';
+                        anchorChild.onclick = (event) => {
+                            event.preventDefault();
+                            void navigator.clipboard.writeText(itemLink.textContent!);
+                            alert(`${itemLink.textContent} copiado para a área de transferência`);
+                        };
+                    };
+                };
+            
+                updateLinks();
             }
             
             popUp.style.display = 'block';

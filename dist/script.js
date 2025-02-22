@@ -34,6 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+// Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
 // To make loaders work
 function createLoaders(count) {
@@ -496,11 +497,13 @@ function addImages() {
                 note: array[19],
                 character: array[20],
                 characterInJapanese: array[21],
-                origin: array[22]
+                origin: array[22],
+                classification: array[23]
             };
             return object;
         }
         function createElement(item, cardName) {
+            var _this = this;
             var div = document.createElement('div'); // The container
             var img = new Image(); // The image
             var card = document.getElementById(cardName);
@@ -533,9 +536,11 @@ function addImages() {
                 var collectingDate = popUp.querySelector('#mfc-item-collecting-date');
                 var originalName = popUp.querySelector('#mfc-character-original-name');
                 var originName = popUp.querySelector('#mfc-character-origin');
+                var classification = popUp.querySelector('#mfc-classification');
                 var a = popUp.querySelector('.pop-up-header > div > a');
                 var characterLink = "https://buyee.jp/item/search/query/".concat(item.characterInJapanese, "/category/2084023782?sort=end&order=a&store=1");
                 var originLink = "https://buyee.jp/item/search/query/".concat(item.origin, "/category/2084023782?sort=end&order=a&store=1");
+                var classificationLink = "https://buyee.jp/item/search/query/".concat(item.classification.replaceAll('#', ''), "/category/2084023782?sort=end&order=a&store=1");
                 title.innerHTML = item.title;
                 popUpImgAnchor.href = "https://pt.myfigurecollection.net/item/".concat(item.id);
                 popUpImg.src = img.src;
@@ -543,6 +548,7 @@ function addImages() {
                 price.innerHTML = "R$ ".concat(item.price.replace('.', ','));
                 originalName.innerHTML = item.status == 'Wished' ? "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(item.characterInJapanese, "</a>") : '';
                 originName.innerHTML = item.status == 'Wished' ? "<a target=\"_blank\" href=\"".concat(originLink, "\">").concat(item.origin, "</a>") : '';
+                classification.innerHTML = item.status == 'Wished' ? "<a target=\"_blank\" href=\"".concat(classificationLink, "\">").concat(item.classification, "</a>") : '';
                 if (item.status == 'Owned') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                     collectingDate.parentElement.style.display = '';
@@ -550,6 +556,7 @@ function addImages() {
                     price.parentElement.style.display = '';
                     originalName.parentElement.style.display = 'none';
                     originName.parentElement.style.display = 'none';
+                    classification.parentElement.style.display = 'none';
                     collectingDate.innerHTML = item.collectingDate.split('-').reverse().join('/');
                     rating.innerHTML = '⭐'.repeat(Number(item.score.split('/')[0]));
                     ratingBefore.innerHTML = item.score;
@@ -561,6 +568,7 @@ function addImages() {
                     price.parentElement.style.display = '';
                     originalName.parentElement.style.display = 'none';
                     originName.parentElement.style.display = 'none';
+                    classification.parentElement.style.display = 'none';
                 }
                 else if (item.status == 'Wished') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
@@ -569,8 +577,36 @@ function addImages() {
                     price.parentElement.style.display = 'none';
                     originalName.parentElement.style.display = item.characterInJapanese == '' ? 'none' : '';
                     originName.parentElement.style.display = item.origin == 'オリジナル' ? 'none' : '';
+                    classification.parentElement.style.display = item.classification == '' ? 'none' : '';
                     rating.innerHTML = '⭐'.repeat(Number(item.wishability.split('/')[0]));
                     ratingBefore.innerHTML = item.wishability + '/5';
+                }
+                if (navigator.userAgent.includes('Android') || navigator.userAgent.includes('like Mac OS')) {
+                    console.log('Running on mobile');
+                    //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
+                    var links_1 = [originalName, originName, classification];
+                    var updateLinks = function () { return __awaiter(_this, void 0, void 0, function () {
+                        var _loop_1, _i, links_2, itemLink;
+                        return __generator(this, function (_a) {
+                            _loop_1 = function (itemLink) {
+                                var anchorChild = itemLink.firstElementChild;
+                                anchorChild.href = '';
+                                anchorChild.target = '';
+                                anchorChild.onclick = function (event) {
+                                    event.preventDefault();
+                                    void navigator.clipboard.writeText(itemLink.textContent);
+                                    alert("".concat(itemLink.textContent, " copiado para a \u00E1rea de transfer\u00EAncia"));
+                                };
+                            };
+                            for (_i = 0, links_2 = links_1; _i < links_2.length; _i++) {
+                                itemLink = links_2[_i];
+                                _loop_1(itemLink);
+                            }
+                            ;
+                            return [2 /*return*/];
+                        });
+                    }); };
+                    updateLinks();
                 }
                 popUp.style.display = 'block';
                 popUp.addEventListener('mousemove', displayScoreAsNumber);
@@ -596,7 +632,7 @@ function addImages() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    return [4 /*yield*/, getCSVData('myFigureCollectionOutput.csv')];
+                    return [4 /*yield*/, getCSVData('mfcOutput.csv')];
                 case 1:
                     dataOne = _a.sent();
                     dataTwo = dataOne.map(arrayToObject);
