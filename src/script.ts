@@ -683,7 +683,6 @@ async function addImages (): Promise<void> {
                         anchorChild.onclick = (event) => {
                             event.preventDefault();
                             void navigator.clipboard.writeText(itemLink.textContent!);
-                            alert(`${itemLink.textContent} copiado para a área de transferência`);
                         };
                     };
                 };
