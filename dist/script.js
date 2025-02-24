@@ -595,7 +595,6 @@ function addImages() {
                                 anchorChild.onclick = function (event) {
                                     event.preventDefault();
                                     void navigator.clipboard.writeText(itemLink.textContent);
-                                    alert("".concat(itemLink.textContent, " copiado para a \u00E1rea de transfer\u00EAncia"));
                                 };
                             };
                             for (_i = 0, links_2 = links_1; _i < links_2.length; _i++) {
@@ -692,6 +691,9 @@ function addImages() {
                     })();
                     setTimeout(resizeAllMasonryItems, 500);
                     setTimeout(resizeAllMasonryItems, 1000);
+                    window.addEventListener('resize', function () {
+                        setTimeout(resizeAllMasonryItems, 500);
+                    });
                     setTimeout(function () {
                         var loader = document.querySelector('aside > .card > .loader');
                         var pinterestGrids = document.querySelectorAll('aside > .card > .pinterest-grid');
@@ -831,10 +833,12 @@ function onLoadFunctions() {
 ;
 window.addEventListener('resize', onResizeFunctions, true);
 function onResizeFunctions() {
-    resizeAside();
-    figuresSitDown();
-    rotateGamecardText(0);
-    mfcPopUpAdjust();
+    setTimeout(function () {
+        resizeAside();
+        figuresSitDown();
+        rotateGamecardText(0);
+        mfcPopUpAdjust();
+    }, 500);
 }
 ;
 window.addEventListener('mousemove', onMouseMoveFunctions, true);

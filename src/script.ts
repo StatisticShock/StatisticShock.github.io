@@ -683,7 +683,6 @@ async function addImages (): Promise<void> {
                         anchorChild.onclick = (event) => {
                             event.preventDefault();
                             void navigator.clipboard.writeText(itemLink.textContent!);
-                            alert(`${itemLink.textContent} copiado para a área de transferência`);
                         };
                     };
                 };
@@ -750,6 +749,9 @@ async function addImages (): Promise<void> {
 
     setTimeout(resizeAllMasonryItems, 500);
     setTimeout(resizeAllMasonryItems, 1000);
+    window.addEventListener('resize', () => {
+        setTimeout(resizeAllMasonryItems,500);
+    });
     setTimeout(() => { //Should run immeditialy after "resizeAllMasonryItems"
         let loader: HTMLDivElement = document.querySelector('aside > .card > .loader')!;
         let pinterestGrids: NodeListOf<HTMLSpanElement> = document.querySelectorAll('aside > .card > .pinterest-grid');
@@ -884,10 +886,12 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     await scrappleMyAnimeList();
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
-    resizeAside();
-    figuresSitDown();
-    rotateGamecardText(0);
-    mfcPopUpAdjust ()
+    setTimeout( () => {
+        resizeAside();
+        figuresSitDown();
+        rotateGamecardText(0);
+        mfcPopUpAdjust ();
+    }, 500);
 };
 window.addEventListener('mousemove', onMouseMoveFunctions, true); function onMouseMoveFunctions (event: Event) {
     // console.log(event.target);
