@@ -692,7 +692,10 @@ function addImages() {
                     setTimeout(resizeAllMasonryItems, 500);
                     setTimeout(resizeAllMasonryItems, 1000);
                     window.addEventListener('resize', function () {
-                        setTimeout(resizeAllMasonryItems, 500);
+                        setTimeout(function () {
+                            resizeAllMasonryItems;
+                            resizeAside;
+                        }, 500);
                     });
                     setTimeout(function () {
                         var loader = document.querySelector('aside > .card > .loader');

@@ -750,7 +750,10 @@ async function addImages (): Promise<void> {
     setTimeout(resizeAllMasonryItems, 500);
     setTimeout(resizeAllMasonryItems, 1000);
     window.addEventListener('resize', () => {
-        setTimeout(resizeAllMasonryItems,500);
+        setTimeout(() => {
+            resizeAllMasonryItems;
+            resizeAside;
+        },500);
     });
     setTimeout(() => { //Should run immeditialy after "resizeAllMasonryItems"
         let loader: HTMLDivElement = document.querySelector('aside > .card > .loader')!;
