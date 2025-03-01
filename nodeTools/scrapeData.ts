@@ -25,7 +25,7 @@ const links = [
     ['Wished','https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=0&categoryId=-1&output=2&sort=category&order=asc&_tb=user'],
 ];
 
-async function downloadImage(url: string, path: string) {
+async function downloadImage(url: string, path: string): Promise<void> {
     const response = await fetch(url);
 
     if (!response.ok) throw new Error(`Failed to download: ${response.statusText}`);
@@ -33,49 +33,64 @@ async function downloadImage(url: string, path: string) {
     await streamPipeline(response.body as any, fs.createWriteStream(path));
 }
 
-async function scrapeImages() {
+async function scrapeImages(): Promise<void> {
     let imgLinks: string[] = [];
+    async function downloadNewImages(): Promise<void> {
+        for (const [type, link] of links) {
+            const response = await fetch(link);
+            const html = await response.text();
+            const $ = cheerio.load(html);
 
-    for (const [type, link] of links) {
-        const response = await fetch(link);
-        const html = await response.text();
-        const $ = cheerio.load(html);
+            $('.item-icon a img').each((i, el) => {
+                const imgSrc = $(el).attr('src');
+                if (imgSrc) {
+                    imgLinks.push(imgSrc.replace('/0/', '/2/'));
+                }
+            });
+        }
 
-        $('.item-icon a img').each((i, el) => {
-            const imgSrc = $(el).attr('src');
-            if (imgSrc) {
-                imgLinks.push(imgSrc.replace('/0/', '/2/'));
-            }
+        for (const imgLink of imgLinks) {
+            let response = await fetch(imgLink);
+            let finalLink: string;
+
+            if (response.status === 404) {
+                finalLink = imgLink.replace('/2/', '/1/');
+            } else {
+                finalLink = imgLink;
+            };
+
+            let path: string = 'temp/' + finalLink.split(/\/[1-2]\//)[1];
+            const [exists] = await publicBucket.file(path.replace('temp/','')).exists();
+            if (exists) {
+                console.log(path.replace('temp/','') + ' already uploaded.')
+                continue;
+            } else {
+                await downloadImage(finalLink, path);
+                publicBucket.upload(path);
+                console.log(path.replace('temp/','') + ' uploaded to bucket.')
+                await sleep(1000);
+                fs.unlink(path, (err) => {
+                    if (err) {
+                        console.error(err);
+                    };
+                });
+            };
+        };
+    }
+
+    async function deleteOldImages(): Promise<void> {
+        let imageFilesToKeep = imgLinks.map((link) => link.replace(/https\:\/\/static\.myfigurecollection\.net\/upload\/items\/[1-2]\//,''));
+        
+        const [imageFiles] = await publicBucket.getFiles();
+        const imageFilesToDelete = imageFiles.filter((x) => !imageFilesToKeep.includes(x.name))
+        imageFilesToDelete.forEach((fileToDelete) => {
+            console.log(`Deleting ${fileToDelete.name}...`)
+            fileToDelete.delete();
         });
     }
 
-    for (const imgLink of imgLinks) {
-        let response = await fetch(imgLink);
-        let finalLink: string;
-
-        if (response.status === 404) {
-            finalLink = imgLink.replace('/2/', '/1/');
-        } else {
-            finalLink = imgLink;
-        };
-
-        let path: string = 'temp/' + finalLink.split(/\/[1-2]\//)[1];
-        const [exists] = await publicBucket.file(path.replace('temp/','')).exists();
-        if (exists) {
-            console.log(path.replace('temp/','') + ' already uploaded.')
-            continue;
-        } else {
-            await downloadImage(finalLink, path);
-            publicBucket.upload(path);
-            console.log(path.replace('temp/','') + ' uploaded to bucket.')
-            await sleep(1000);
-            fs.unlink(path, (err) => {
-                if (err) {
-                    console.error(err);
-                };
-            });
-        };
-    };    
+    await downloadNewImages();
+    await deleteOldImages();
 }
 
 type mfc = {
@@ -99,7 +114,7 @@ async function fetchJson(): Promise<Array<mfc>> {
 async function fetchData(): Promise<void> {
     console.log('Starting to fetch items...')
     let json: Array<mfc> = await fetchJson();
-    if (json instanceof Array) {console.log('JSON file sucessfully loaded')}
+    if (json instanceof Array) {console.log('JSON file sucessfully loaded')} else {console.log("Couldn't fetch JSON file.")}
     let changes: boolean = false;
     let figuresIdsToKeep: string[] = [];
 
