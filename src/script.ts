@@ -792,7 +792,7 @@ async function scrappleMyAnimeList (): Promise<void> {
     };
 
     async function scrappleDataFromMAL (offset: number): Promise<malJson> {
-        const data: malJson = await fetch(`https://statisticshock-github-io-server.onrender.com/animelist/HikariMontgomery/${offset}`)
+        const data: malJson = await fetch(`https://statisticshock-github-io.onrender.com/animelist/HikariMontgomery/${offset}`)
         .then(response => response.json());
 
         return data;

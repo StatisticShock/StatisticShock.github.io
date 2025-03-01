@@ -39,4 +39,4 @@ app.get("/animelist/:username/:offset?", async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-app.listen(PORT, () => console.log(`Server running on https://statisticshock-github-io-server.onrender.com:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on https://statisticshock-github-io.onrender.com`));
