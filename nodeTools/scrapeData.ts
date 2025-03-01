@@ -172,7 +172,7 @@ async function fetchData(): Promise<void> {
                         characterJap = $$(element).find('.data-value a span').map((i, item) => $$(item).attr('switch')).get().join(', ')
                     };
                     if ($$(element).find('.data-label').text().includes('Origem')) {
-                        origin = $$(element).find('.data-value a').attr('switch');
+                        origin = $$(element).find('.data-value a span').attr('switch');
                     }
                 };
 
