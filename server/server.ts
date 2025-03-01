@@ -1,12 +1,17 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from 'cors';
+import { Storage } from "@google-cloud/storage";
+
+
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const API_URL = "https://api.myanimelist.net/v2/users/";
 const ACCESS_TOKEN = process.env.MAL_ACCESS_TOKEN;
+const serviceAccount = JSON.parse(process.env.GOOGLE_JSON_KEY);
+const storage = new Storage({credentials: serviceAccount})
 
 const corsHeaders = {
     origin: [
@@ -40,5 +45,18 @@ app.get("/animelist/:username/:offset?", async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+app.get("/figurecollection/", async (req, res) => {
+    try {
+        const bucket = storage.bucket('statisticshock_github_io');
+        const file = bucket.file('mfc.json');
+
+        const json = JSON.parse((await file.download()).toString())
+        res.json(json)
+
+    } catch (err) {
+        console.error(err);
+    }
+})
 
 app.listen(PORT, () => console.log(`Server running on https://statisticshock-github-io.onrender.com`));

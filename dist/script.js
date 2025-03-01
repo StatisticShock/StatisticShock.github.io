@@ -448,60 +448,6 @@ function addImages() {
             }
             ;
         }
-        function getCSVData(url) {
-            return __awaiter(this, void 0, void 0, function () {
-                var response, data_1, splitData_1, error_1;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            _a.trys.push([0, 2, , 3]);
-                            return [4 /*yield*/, fetch(url).then(function (res) { return res.text(); })];
-                        case 1:
-                            response = _a.sent();
-                            data_1 = response.split(/\r?\n/);
-                            splitData_1 = [];
-                            data_1.forEach(function (row) {
-                                splitData_1.push(row.split('";"').map(function (item) { return item.replaceAll('"', ''); }));
-                            });
-                            return [2 /*return*/, splitData_1];
-                        case 2:
-                            error_1 = _a.sent();
-                            console.error(error_1.message);
-                            return [3 /*break*/, 3];
-                        case 3: return [2 /*return*/];
-                    }
-                });
-            });
-        }
-        function arrayToObject(array) {
-            var object = {
-                id: array[0],
-                title: array[1],
-                root: array[2],
-                category: array[3],
-                releaseDate: array[4],
-                releasePrice: array[5],
-                scale: array[6],
-                barcode: array[7],
-                status: array[8],
-                count: array[9],
-                score: array[10],
-                paymentDate: array[11],
-                shippingDate: array[12],
-                collectingDate: array[13],
-                price: array[14],
-                shop: array[15],
-                shippingMethod: array[16],
-                trackingNumber: array[17],
-                wishability: array[18],
-                note: array[19],
-                character: array[20],
-                characterInJapanese: array[21],
-                origin: array[22],
-                classification: array[23]
-            };
-            return object;
-        }
         function createElement(item, cardName) {
             var _this = this;
             var div = document.createElement('div'); // The container
@@ -627,41 +573,13 @@ function addImages() {
             card.append(div);
             div.append(item.character);
         }
-        var dataOne, dataTwo, data, owned, ordered, wished, jDirectLink, i;
+        var result;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    return [4 /*yield*/, getCSVData('mfcOutput.csv')];
+                case 0: return [4 /*yield*/, fetch('https://statisticshock-github-io.onrender.com/figurecollection/')];
                 case 1:
-                    dataOne = _a.sent();
-                    dataTwo = dataOne.map(arrayToObject);
-                    data = CustomFunctions.shuffle(dataTwo);
-                    owned = [];
-                    ordered = [];
-                    wished = [];
-                    jDirectLink = Array.from(document.querySelectorAll('#anime-figures .shortcut-item')).filter(function (shortcutItem) {
-                        return shortcutItem.getAttribute('alt') == 'JDirectItems Auction';
-                    })[0].href;
-                    for (i = 1; i < data.length; i++) { // Loop through the values of dataObject
-                        if (data[i].status == 'Owned') {
-                            owned.push(data[i]);
-                        }
-                        else if (data[i].status == 'Ordered') {
-                            ordered.push(data[i]);
-                        }
-                        else if (data[i].status == 'Wished') {
-                            wished.push(data[i]);
-                        }
-                    }
-                    owned.forEach(function (item) {
-                        createElement(item, 'owned');
-                    });
-                    ordered.forEach(function (item) {
-                        createElement(item, 'ordered-wished');
-                    });
-                    wished.forEach(function (item) {
-                        createElement(item, 'ordered-wished');
-                    });
+                    result = _a.sent();
+                    console.log(result);
                     (function priceFollowCursor() {
                         var aside = document.querySelector('aside');
                         var items = aside.querySelectorAll('.pinterest-grid-item');

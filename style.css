@@ -207,6 +207,11 @@ img {
                 position: absolute;
                 left: 30%;
                 color: white;
+                display: inline-block;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                width: 65%;
 
                 & a {
                     color: var(--pink-custom);

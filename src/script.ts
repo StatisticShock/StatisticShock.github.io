@@ -474,113 +474,11 @@ async function addImages (): Promise<void> {
           resizeMasonryItem(allItems[i]);
         };
     }
+
     
-    async function getCSVData(url: string) {
-        try {
-            let response = await fetch(url).then((res) => res.text());
-            let data = response.split(/\r?\n/); //Puts each line of the csv in a single line
-            let splitData: Array<Array<string>> = [];
 
-            data.forEach(row => {   //Splits each line by ';' characters
-                splitData.push(row.split('";"').map((item) => {return item.replaceAll('"','')}));
-            });
-            return splitData
-        } catch (error: any) {
-            console.error(error.message)
-        }
-    }
-
-    interface imgMFCItem {
-        id: string,
-        title: string,
-        root: string,
-        category: string,
-        releaseDate: string,
-        releasePrice: string,
-        scale: string,
-        barcode: string,
-        status: string,
-        count: string,
-        score: string,
-        paymentDate: string,
-        shippingDate: string,
-        collectingDate: string,
-        price: string,
-        shop: string,
-        shippingMethod: string,
-        trackingNumber: string,
-        wishability: string,
-        note: string,
-        character: string,
-        characterInJapanese: string,
-        origin: string,
-        classification: string,
-    }
-
-    function arrayToObject (array: Array<string>): imgMFCItem {
-        var object: imgMFCItem = {
-            id:             array[0],
-            title:          array[1],
-            root:           array[2],
-            category:       array[3],
-            releaseDate:    array[4],
-            releasePrice:   array[5],
-            scale:          array[6],
-            barcode:        array[7],
-            status:         array[8],
-            count:          array[9],
-            score:          array[10],
-            paymentDate:    array[11],
-            shippingDate:   array[12],
-            collectingDate: array[13],
-            price:          array[14],
-            shop:           array[15],
-            shippingMethod: array[16],
-            trackingNumber: array[17],
-            wishability:    array[18],
-            note:           array[19],
-            character:      array[20],
-            characterInJapanese: array[21],
-            origin:         array[22],
-            classification: array[23]
-        }
-        return object;
-    }
-
-    let dataOne = await getCSVData('mfcOutput.csv') as Array<Array<string>>;
-    let dataTwo = dataOne.map(arrayToObject);
-    let data = CustomFunctions.shuffle(dataTwo);
-    let owned:   Array<imgMFCItem> = [];
-    let ordered: Array<imgMFCItem> = [];
-    let wished:  Array<imgMFCItem> = [];
-
-    let jDirectLink = Array.from(document.querySelectorAll('#anime-figures .shortcut-item') as NodeListOf<HTMLAnchorElement>).filter((shortcutItem) => {
-        return shortcutItem.getAttribute('alt') == 'JDirectItems Auction';
-    })[0].href
-
-    for (let i = 1; i < data.length; i++) { // Loop through the values of dataObject
-        
-        if (data[i].status == 'Owned') {
-            owned.push(data[i]);
-        } else if (data[i].status == 'Ordered') {
-            ordered.push(data[i]);
-        } else if (data[i].status == 'Wished') {
-            wished.push(data[i]);
-        }
-
-    }
-    
-    owned.forEach(item => {
-        createElement(item, 'owned')
-    });
-
-    ordered.forEach(item => {
-        createElement(item, 'ordered-wished')
-    });
-
-    wished.forEach(item => {
-        createElement(item, 'ordered-wished')
-    });
+    let result = await fetch('https://statisticshock-github-io.onrender.com/figurecollection/')
+    console.log(result);
     
     function createElement (item: imgMFCItem, cardName: string) { //To create the necessary elements
         let div  = document.createElement('div');   // The container
