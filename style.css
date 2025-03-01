@@ -197,7 +197,7 @@ img {
 
     & .data-container {
         position: relative;
-
+        top: 10%;
         & p {
             width: 100%;
             margin-bottom: -5px;
@@ -417,6 +417,7 @@ h2 {
 .shortcut-item:hover {
     & img {
         transform: scale(1.5);
+        border-bottom-left-radius: 0;
     }
 
     & span {
@@ -522,6 +523,10 @@ aside {
                     border-radius: 10px;
                     cursor: pointer;
                 }
+            }
+
+            & > .pinterest-grid-item.wished {
+                box-shadow: 0 0 5px black;
             }
         }
     }

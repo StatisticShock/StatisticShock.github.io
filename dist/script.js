@@ -86,7 +86,7 @@ function redirectToEdge() {
 function resizeAside(counter) {
     var aside = document.querySelector('aside');
     var card = document.querySelector('.card');
-    var pinterest = document.querySelector('#owned');
+    var pinterest = document.querySelector('#owned-ordered');
     var shortcuts = document.querySelector('#shortcuts');
     aside.style.height = 'fit-content';
     card.style.height = 'fit-content';
@@ -448,15 +448,21 @@ function addImages() {
             }
             ;
         }
-        function createElement(item, cardName) {
+        function createElement(item) {
             var _this = this;
             var div = document.createElement('div'); // The container
             var img = new Image(); // The image
-            var card = document.getElementById(cardName);
+            var card;
+            if (item.type !== 'Wished') {
+                card = document.getElementById('owned-ordered');
+            }
+            else {
+                card = document.getElementById('wished');
+                div.classList.add('wished');
+            }
             div.setAttribute('alt', item.title);
-            div.setAttribute('class', 'pinterest-grid-item');
-            div.setAttribute('price', 'R$ ' + item.price.replace('.', ','));
-            img.src = "./images/mfc/".concat(item.id, ".jpg");
+            div.classList.add('pinterest-grid-item');
+            img.src = item.img;
             if (item.category == 'Prepainted') {
                 div.style.color = 'green';
             }
@@ -469,63 +475,54 @@ function addImages() {
             img.style.border = "4px solid ".concat(div.style.color);
             var imgBorder = img.style.border.split(' ')[0];
             img.style.width = "calc(100% - ".concat(imgBorder, " * 2)");
-            div.style.border = item.status == 'Wished' ? "1px solid black" : 'none';
-            div.style.boxShadow = item.status == 'Wished' ? "0 0 5px ".concat(div.style.border.split('1px solid ')[1]) : 'none';
             img.onclick = function () {
                 var popUp = document.querySelector('.pop-up.mfc');
                 var title = popUp.querySelector('.pop-up-title');
                 var popUpImgAnchor = popUp.querySelector('#pop-up-img');
                 var popUpImg = popUpImgAnchor.childNodes[0];
-                var rating = popUp.querySelector('#mfc-item-rating');
-                var ratingBefore = popUp.querySelector('#mfc-item-rating-before');
-                var price = popUp.querySelector('#mfc-item-price');
-                var collectingDate = popUp.querySelector('#mfc-item-collecting-date');
                 var originalName = popUp.querySelector('#mfc-character-original-name');
                 var originName = popUp.querySelector('#mfc-character-origin');
                 var classification = popUp.querySelector('#mfc-classification');
                 var a = popUp.querySelector('.pop-up-header > div > a');
-                var characterLink = "https://buyee.jp/item/search/query/".concat(item.characterInJapanese, "/category/2084023782?sort=end&order=a&store=1");
-                var originLink = "https://buyee.jp/item/search/query/".concat(item.origin, "/category/2084023782?sort=end&order=a&store=1");
-                var classificationLink = "https://buyee.jp/item/search/query/".concat(item.classification.replaceAll('#', ''), "/category/2084023782?sort=end&order=a&store=1");
+                var characterLink = '';
+                var originLink = '';
+                var classificationLink = '';
+                if (item.characterJap) {
+                    characterLink = "https://buyee.jp/item/search/query/".concat(item.characterJap, "/category/2084023782?sort=end&order=a&store=1");
+                }
+                else {
+                    characterLink = "https://buyee.jp/item/search/query/".concat(item.character, "/category/2084023782?sort=end&order=a&store=1");
+                }
+                ;
+                if (item.origin !== 'オリジナル') {
+                    originLink = "https://buyee.jp/item/search/query/".concat(item.origin, "/category/2084023782?sort=end&order=a&store=1");
+                }
+                else {
+                    originName.parentElement.style.display = 'none';
+                }
+                ;
+                if (item.classification) {
+                    classificationLink = "https://buyee.jp/item/search/query/".concat(item.classification.replaceAll('#', ''), "/category/2084023782?sort=end&order=a&store=1");
+                }
+                else {
+                    classification.parentElement.style.display = 'none';
+                }
+                ;
                 title.innerHTML = item.title;
-                popUpImgAnchor.href = "https://pt.myfigurecollection.net/item/".concat(item.id);
+                popUpImgAnchor.href = item.href;
                 popUpImg.src = img.src;
                 popUpImg.style.border = "".concat(imgBorder, " solid ").concat(div.style.color);
-                price.innerHTML = "R$ ".concat(item.price.replace('.', ','));
-                originalName.innerHTML = item.status == 'Wished' ? "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(item.characterInJapanese, "</a>") : '';
-                originName.innerHTML = item.status == 'Wished' ? "<a target=\"_blank\" href=\"".concat(originLink, "\">").concat(item.origin, "</a>") : '';
-                classification.innerHTML = item.status == 'Wished' ? "<a target=\"_blank\" href=\"".concat(classificationLink, "\">").concat(item.classification, "</a>") : '';
-                if (item.status == 'Owned') {
+                originalName.innerHTML = item.characterJap !== '' ? "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(item.characterJap, "</a>") : "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(item.character, "</a>");
+                originName.innerHTML = "<a target=\"_blank\" href=\"".concat(originLink, "\">").concat(item.origin, "</a>");
+                classification.innerHTML = "<a target=\"_blank\" href=\"".concat(classificationLink, "\">").concat(item.classification, "</a>");
+                if (item.type == 'Owned') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
-                    collectingDate.parentElement.style.display = '';
-                    rating.style.display = '';
-                    price.parentElement.style.display = '';
-                    originalName.parentElement.style.display = 'none';
-                    originName.parentElement.style.display = 'none';
-                    classification.parentElement.style.display = 'none';
-                    collectingDate.innerHTML = item.collectingDate.split('-').reverse().join('/');
-                    rating.innerHTML = '⭐'.repeat(Number(item.score.split('/')[0]));
-                    ratingBefore.innerHTML = item.score;
                 }
-                else if (item.status == 'Ordered') {
+                else if (item.type == 'Ordered') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
-                    collectingDate.parentElement.style.display = 'none';
-                    rating.style.display = 'none';
-                    price.parentElement.style.display = '';
-                    originalName.parentElement.style.display = 'none';
-                    originName.parentElement.style.display = 'none';
-                    classification.parentElement.style.display = 'none';
                 }
-                else if (item.status == 'Wished') {
+                else if (item.type == 'Wished') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
-                    collectingDate.parentElement.style.display = 'none';
-                    rating.style.display = '';
-                    price.parentElement.style.display = 'none';
-                    originalName.parentElement.style.display = item.characterInJapanese == '' ? 'none' : '';
-                    originName.parentElement.style.display = item.origin == 'オリジナル' ? 'none' : '';
-                    classification.parentElement.style.display = item.classification == '' ? 'none' : '';
-                    rating.innerHTML = '⭐'.repeat(Number(item.wishability.split('/')[0]));
-                    ratingBefore.innerHTML = item.wishability + '/5';
                 }
                 if (navigator.userAgent.includes('Android') || navigator.userAgent.includes('like Mac OS')) {
                     console.log('Running on mobile');
@@ -554,59 +551,22 @@ function addImages() {
                     updateLinks();
                 }
                 popUp.style.display = 'block';
-                popUp.addEventListener('mousemove', displayScoreAsNumber);
-                popUp.addEventListener('touchstart', displayScoreAsNumber);
-                var timerId = 0;
-                function displayScoreAsNumber(event) {
-                    clearTimeout(timerId);
-                    timerId = setTimeout(function () {
-                        if (event.target === rating) {
-                            ratingBefore.style.display = 'block';
-                        }
-                    }, 1000);
-                    if (event.target !== rating) {
-                        ratingBefore.style.display = 'none';
-                    }
-                }
             };
             div.append(img);
             card.append(div);
             div.append(item.character);
         }
-        var result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, fetch('https://statisticshock-github-io.onrender.com/figurecollection/')];
-                case 1:
-                    result = _a.sent();
+        var result, _a, _b;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _b = (_a = CustomFunctions).shuffle;
+                    return [4 /*yield*/, fetch('https://statisticshock-github-io.onrender.com/figurecollection/')];
+                case 1: return [4 /*yield*/, (_c.sent()).json()];
+                case 2:
+                    result = _b.apply(_a, [_c.sent()]);
                     console.log(result);
-                    (function priceFollowCursor() {
-                        var aside = document.querySelector('aside');
-                        var items = aside.querySelectorAll('.pinterest-grid-item');
-                        var span = document.createElement('span'); // Creates the "pop-up"
-                        span.classList.add('pinterest-grid-price');
-                        span.classList.add('follower');
-                        span.style.display = 'none';
-                        aside.appendChild(span);
-                        items.forEach(function (item) {
-                            var img = item.firstChild;
-                            item.addEventListener('mouseenter', function () {
-                                span.style.display = 'block';
-                                span.innerHTML = (item.getAttribute('price') == 'R$ 0,00') ? 'Desejado' : item.getAttribute('price');
-                                span.style.border = img.style.border;
-                            });
-                            item.addEventListener('mouseleave', function () {
-                                span.style.display = 'none';
-                            });
-                            item.addEventListener('mousemove', function (event) {
-                                var rect = aside.getBoundingClientRect();
-                                var x = event.clientX - rect.left;
-                                var y = event.clientY - rect.top;
-                                span.style.top = y + 20 + 'px';
-                                span.style.left = x + 0 + 'px';
-                            });
-                        });
-                    })();
+                    result.map(createElement);
                     setTimeout(resizeAllMasonryItems, 500);
                     setTimeout(resizeAllMasonryItems, 1000);
                     window.addEventListener('resize', function () {

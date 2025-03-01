@@ -59,9 +59,9 @@ function redirectToEdge (): void {
 //To make aside the same height of Shortcut-Item
 function resizeAside (counter?: number): void {
    let aside = document.querySelector('aside')!;
-   let card = document.querySelector('.card')             as HTMLDivElement;
-   let pinterest = document.querySelector('#owned')       as HTMLDivElement;
-   let shortcuts = document.querySelector('#shortcuts')   as HTMLElement;
+   let card = document.querySelector('.card')               as HTMLDivElement;
+   let pinterest = document.querySelector('#owned-ordered') as HTMLDivElement;
+   let shortcuts = document.querySelector('#shortcuts')     as HTMLElement;
 
    aside.style.height = 'fit-content';
    card.style.height = 'fit-content';
@@ -475,20 +475,39 @@ async function addImages (): Promise<void> {
         };
     }
 
-    
+    type mfc = {
+        id: string,
+        href: string,
+        img: string,
+        character: string,
+        characterJap: string,
+        origin: string,
+        classification: string,
+        category: string,
+        type: string,
+        title: string,
+    }
 
-    let result = await fetch('https://statisticshock-github-io.onrender.com/figurecollection/')
-    console.log(result);
+    let result = CustomFunctions.shuffle(await (await fetch('https://statisticshock-github-io.onrender.com/figurecollection/')).json());
+    console.log(result)
+    result.map(createElement);
     
-    function createElement (item: imgMFCItem, cardName: string) { //To create the necessary elements
+    function createElement (item: mfc) { //To create the necessary elements
         let div  = document.createElement('div');   // The container
         let img  = new Image()                      // The image
-        let card = document.getElementById(cardName) as HTMLElement;
+        let card: HTMLElement;
+
+        if (item.type !== 'Wished') {
+            card = document.getElementById('owned-ordered') as HTMLElement;
+        } else {
+            card = document.getElementById('wished') as HTMLElement;
+            div.classList.add('wished');
+        }
+        
 
         div.setAttribute('alt', item.title);
-        div.setAttribute('class', 'pinterest-grid-item');
-        div.setAttribute('price', 'R$ ' + item.price.replace('.',','));
-        img.src = `./images/mfc/${item.id}.jpg`;
+        div.classList.add('pinterest-grid-item');
+        img.src = item.img;
 
         if (item.category == 'Prepainted') {
             div.style.color = 'green';
@@ -504,68 +523,51 @@ async function addImages (): Promise<void> {
 
         img.style.width = `calc(100% - ${imgBorder} * 2)`
 
-        div.style.border = item.status == 'Wished' ? `1px solid black` : 'none'
-        div.style.boxShadow = item.status == 'Wished' ? `0 0 5px ${div.style.border.split('1px solid ')[1]}` : 'none'
-
         img.onclick = () => { //Format a pop-up for each item once it's image is clicked
             let popUp          = document.querySelector('.pop-up.mfc')               as HTMLDivElement;
             let title          = popUp.querySelector('.pop-up-title')                as HTMLSpanElement;
             let popUpImgAnchor = popUp.querySelector('#pop-up-img')                  as HTMLAnchorElement;
             let popUpImg       = popUpImgAnchor.childNodes[0]                        as HTMLImageElement;
-            let rating         = popUp.querySelector('#mfc-item-rating')             as HTMLParagraphElement;
-            let ratingBefore   = popUp.querySelector('#mfc-item-rating-before')      as HTMLParagraphElement;
-            let price          = popUp.querySelector('#mfc-item-price')              as HTMLSpanElement;
-            let collectingDate = popUp.querySelector('#mfc-item-collecting-date')    as HTMLSpanElement;
             let originalName   = popUp.querySelector('#mfc-character-original-name') as HTMLSpanElement;
             let originName     = popUp.querySelector('#mfc-character-origin')        as HTMLSpanElement;
             let classification = popUp.querySelector('#mfc-classification')          as HTMLSpanElement;
             let a              = popUp.querySelector('.pop-up-header > div > a')     as HTMLAnchorElement;
 
-            let characterLink      = `https://buyee.jp/item/search/query/${item.characterInJapanese}/category/2084023782?sort=end&order=a&store=1`;
-            let originLink         = `https://buyee.jp/item/search/query/${item.origin}/category/2084023782?sort=end&order=a&store=1`;
-            let classificationLink = `https://buyee.jp/item/search/query/${item.classification.replaceAll('#','')}/category/2084023782?sort=end&order=a&store=1`;
+            let characterLink: string = '';
+            let originLink: string = '';
+            let classificationLink: string = '';
+
+
+            if (item.characterJap) {
+                characterLink = `https://buyee.jp/item/search/query/${item.characterJap}/category/2084023782?sort=end&order=a&store=1`;
+            } else {
+                characterLink = `https://buyee.jp/item/search/query/${item.character}/category/2084023782?sort=end&order=a&store=1`;
+            };
+            if (item.origin !== 'オリジナル') {
+                originLink = `https://buyee.jp/item/search/query/${item.origin}/category/2084023782?sort=end&order=a&store=1`;
+            } else {
+                originName.parentElement!.style.display = 'none';
+            };
+            if (item.classification) {
+                classificationLink = `https://buyee.jp/item/search/query/${item.classification.replaceAll('#','')}/category/2084023782?sort=end&order=a&store=1`;
+            } else {
+                classification.parentElement!.style.display = 'none';
+            };
 
             title.innerHTML             = item.title;
-            popUpImgAnchor.href         = `https://pt.myfigurecollection.net/item/${item.id}`;
+            popUpImgAnchor.href         = item.href;
             popUpImg.src                = img.src;
             popUpImg.style.border       = `${imgBorder} solid ${div.style.color}`            
-            price.innerHTML             = `R$ ${item.price.replace('.',',')}`;
-            originalName.innerHTML      = item.status == 'Wished' ? `<a target="_blank" href="${characterLink}">${item.characterInJapanese}</a>` : '';
-            originName.innerHTML        = item.status == 'Wished' ? `<a target="_blank" href="${originLink}">${item.origin}</a>` : '';
-            classification.innerHTML    = item.status == 'Wished' ? `<a target="_blank" href="${classificationLink}">${item.classification}</a>` : '';
+            originalName.innerHTML      = item.characterJap !== '' ? `<a target="_blank" href="${characterLink}">${item.characterJap}</a>` : `<a target="_blank" href="${characterLink}">${item.character}</a>`;
+            originName.innerHTML        = `<a target="_blank" href="${originLink}">${item.origin}</a>`;
+            classification.innerHTML    = `<a target="_blank" href="${classificationLink}">${item.classification}</a>`;
 
-            if (item.status == 'Owned') {
+            if (item.type == 'Owned') {
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
-                collectingDate.parentElement!.style.display = '';
-                rating.style.display                        = '';
-                price.parentElement!.style.display          = '';
-                originalName.parentElement!.style.display   = 'none';
-                originName.parentElement!.style.display     = 'none';
-                classification.parentElement!.style.display = 'none';
-
-                collectingDate.innerHTML    = item.collectingDate.split('-').reverse().join('/');
-                rating.innerHTML            = '⭐'.repeat(Number(item.score.split('/')[0]));
-                ratingBefore.innerHTML      = item.score;
-            } else if (item.status == 'Ordered') {
+            } else if (item.type == 'Ordered') {
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
-                collectingDate.parentElement!.style.display = 'none';
-                rating.style.display                        = 'none';
-                price.parentElement!.style.display          = '';
-                originalName.parentElement!.style.display   = 'none';
-                originName.parentElement!.style.display     = 'none';
-                classification.parentElement!.style.display = 'none';
-
-            } else if (item.status == 'Wished') {
+            } else if (item.type == 'Wished') {
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
-                collectingDate.parentElement!.style.display = 'none';
-                rating.style.display                        = '';
-                price.parentElement!.style.display          = 'none';
-                originalName.parentElement!.style.display   = item.characterInJapanese == '' ? 'none' : '';
-                originName.parentElement!.style.display     = item.origin == 'オリジナル' ? 'none' : '';
-                classification.parentElement!.style.display = item.classification == '' ? 'none' : '';
-
-                rating.innerHTML            = '⭐'.repeat(Number(item.wishability.split('/')[0]));
-                ratingBefore.innerHTML      = item.wishability + '/5';
             }
 
             if (navigator.userAgent.includes('Android') || navigator.userAgent.includes('like Mac OS')) {
@@ -589,61 +591,12 @@ async function addImages (): Promise<void> {
             }
             
             popUp.style.display = 'block';
-
-            popUp.addEventListener('mousemove', displayScoreAsNumber);
-            popUp.addEventListener('touchstart', displayScoreAsNumber);
-            
-            let timerId:any = 0;
-
-            function displayScoreAsNumber (event: Event): void {
-                clearTimeout(timerId);
-                timerId = setTimeout(() => {
-                    if (event.target === rating) {
-                        ratingBefore.style.display = 'block';
-                    }
-                }, 1000);
-                if (event.target !== rating) {
-                    ratingBefore.style.display = 'none';
-                }
-            }
         }
 
         div.append(img);
         card.append(div);
         div.append(item.character);
     }
-
-    (function priceFollowCursor (): void {
-        let aside = document.querySelector('aside') as HTMLElement;
-        let items = aside.querySelectorAll('.pinterest-grid-item') as NodeListOf<HTMLDivElement>;
-    
-        let span = document.createElement('span') as HTMLSpanElement; // Creates the "pop-up"
-        span.classList.add('pinterest-grid-price');
-        span.classList.add('follower');
-        span.style.display = 'none';
-        aside.appendChild(span);
-    
-        items.forEach((item) => {
-            let img = item.firstChild as HTMLImageElement;
-    
-            item.addEventListener('mouseenter', () => {
-                span.style.display = 'block';
-                span.innerHTML = (item.getAttribute('price')! == 'R$ 0,00') ? 'Desejado' : item.getAttribute('price')!;
-                span.style.border = img.style.border;
-            })
-            item.addEventListener('mouseleave', () => {
-                span.style.display = 'none';
-            })
-            item.addEventListener('mousemove', (event) => {
-                let rect = aside.getBoundingClientRect();
-                let x = event.clientX - rect.left;
-                let y = event.clientY - rect.top;
-                
-                span.style.top  = y + 20 + 'px';
-                span.style.left = x +  0 + 'px';
-            });
-        });
-    })();
 
     setTimeout(resizeAllMasonryItems, 500);
     setTimeout(resizeAllMasonryItems, 1000);
