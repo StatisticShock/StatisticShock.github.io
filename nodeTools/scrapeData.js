@@ -50,15 +50,17 @@ async function scrapeImages() {
         }
         ;
         let path = 'temp/' + finalLink.split(/\/[1-2]\//)[1];
-        if (publicBucket.file(path.replace('temp/', ''))) {
+        const [exists] = await publicBucket.file(path.replace('temp/', '')).exists();
+        if (exists) {
             console.log(path.replace('temp/', '') + ' already uploaded.');
             continue;
         }
         else {
             await downloadImage(finalLink, path);
             publicBucket.upload(path);
-            await sleep(100);
-            await fs.unlink(path, (err) => {
+            console.log(path.replace('temp/', '') + ' uploaded to bucket.');
+            await sleep(1000);
+            fs.unlink(path, (err) => {
                 if (err) {
                     console.error(err);
                 }
@@ -69,13 +71,16 @@ async function scrapeImages() {
     }
     ;
 }
-scrapeImages().catch(console.error);
 async function fetchJson() {
     let json = JSON.parse(await fetch('https://statisticshock-github-io.onrender.com/figurecollection/').then(res => res.text()));
     return json;
 }
 async function fetchData() {
+    console.log('Starting to fetch items...');
     let json = await fetchJson();
+    if (json instanceof Array) {
+        console.log('JSON file sucessfully loaded');
+    }
     let changes = false;
     let figuresIdsToKeep = [];
     for (const [typeOfFigure, link] of links) {
@@ -86,10 +91,16 @@ async function fetchData() {
         for (const el of itemIcons.toArray()) {
             const elementId = $(el).find('a').attr('href').replace('/item/', '');
             figuresIdsToKeep.push(elementId);
-            const correspondantMfcObj = json.filter((mfcObj) => {
-                return mfcObj.id === elementId;
-            });
-            if (correspondantMfcObj.length > 0) {
+            let index = json.findIndex((obj) => obj.id === elementId);
+            if (index > 0) {
+                if (json[index].type !== typeOfFigure) {
+                    changes = true;
+                    json[index].type = typeOfFigure;
+                }
+                ;
+            }
+            ;
+            if (json.some((mfcObj) => mfcObj.id === elementId)) {
                 continue;
             }
             else {
@@ -145,6 +156,7 @@ async function fetchData() {
             ;
         }
         ;
+        await sleep(1000);
     }
     ;
     let outputJson = json.filter((obj) => {
@@ -159,4 +171,20 @@ async function fetchData() {
     }
 }
 ;
-fetchData().catch(console.error);
+setInterval(() => {
+    console.log('Memory usage:', process.memoryUsage().heapUsed / 1024 / 1024, 'MB');
+}, 5000);
+async function main() {
+    try {
+        await fetchData();
+        await scrapeImages();
+    }
+    catch (err) {
+        console.error('Error in script:', err);
+    }
+    finally {
+        console.log('Closing conections...');
+        setTimeout(() => process.exit(0), 3000); // Closes everything
+    }
+}
+main();

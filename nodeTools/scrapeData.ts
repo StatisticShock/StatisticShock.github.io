@@ -60,15 +60,16 @@ async function scrapeImages() {
         };
 
         let path: string = 'temp/' + finalLink.split(/\/[1-2]\//)[1];
-
-        if (publicBucket.file(path.replace('temp/',''))) {
+        const [exists] = await publicBucket.file(path.replace('temp/','')).exists();
+        if (exists) {
             console.log(path.replace('temp/','') + ' already uploaded.')
             continue;
         } else {
             await downloadImage(finalLink, path);
             publicBucket.upload(path);
-            await sleep(100);
-            await fs.unlink(path, (err) => {
+            console.log(path.replace('temp/','') + ' uploaded to bucket.')
+            await sleep(1000);
+            fs.unlink(path, (err) => {
                 if (err) {
                     console.error(err);
                 };
@@ -76,8 +77,6 @@ async function scrapeImages() {
         };
     };    
 }
-
-scrapeImages().catch(console.error);
 
 type mfc = {
     id: string,
@@ -98,7 +97,9 @@ async function fetchJson(): Promise<Array<mfc>> {
 }
 
 async function fetchData(): Promise<void> {
+    console.log('Starting to fetch items...')
     let json: Array<mfc> = await fetchJson();
+    if (json instanceof Array) {console.log('JSON file sucessfully loaded')}
     let changes: boolean = false;
     let figuresIdsToKeep: string[] = [];
 
@@ -112,10 +113,17 @@ async function fetchData(): Promise<void> {
         for (const el of itemIcons.toArray()) {
             const elementId: string = $(el).find('a').attr('href').replace('/item/','');
             figuresIdsToKeep.push(elementId);
-            const correspondantMfcObj = json.filter((mfcObj) => {
-                return mfcObj.id === elementId;
-            })
-            if (correspondantMfcObj.length > 0) {
+
+            let index: number = json.findIndex((obj) => obj.id === elementId);
+            
+            if (index > 0) {
+                if (json[index].type !== typeOfFigure) {
+                    changes = true;
+                    json[index].type = typeOfFigure;
+                };
+            };
+
+            if (json.some((mfcObj) => mfcObj.id === elementId)) {
                 continue;
             } else {
                 changes = true;
@@ -151,7 +159,6 @@ async function fetchData(): Promise<void> {
                     if ($$(element).find('.data-label').text().includes('Origem')) {
                         origin = $$(element).find('.data-value a').attr('switch');
                     }
-                    sleep(3000);
                 };
 
                 const itemData : mfc = {
@@ -170,6 +177,8 @@ async function fetchData(): Promise<void> {
                 json.push(itemData);
             };
         };
+
+        await sleep(1000);
     };
 
     let outputJson = json.filter((obj) => {
@@ -185,4 +194,20 @@ async function fetchData(): Promise<void> {
     }
 };
 
-fetchData().catch(console.error);
+setInterval(() => {
+    console.log('Memory usage:', process.memoryUsage().heapUsed / 1024 / 1024, 'MB');
+}, 5000);
+
+async function main() {
+    try {
+        await fetchData();
+        await scrapeImages();
+    } catch (err) {
+        console.error('Error in script:', err);
+    } finally {
+        console.log('Closing conections...');
+        setTimeout(() => process.exit(0), 3000); // Closes everything
+    }
+}
+
+main();
