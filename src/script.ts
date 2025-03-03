@@ -543,7 +543,7 @@ async function addImages (): Promise<void> {
             } else {
                 characterLink = `https://buyee.jp/item/search/query/${item.character}/category/2084023782?sort=end&order=a&store=1`;
             };
-            if (item.origin !== 'オリジナル') {
+            if (item.origin !== 'オリジナル' && item.origin !== undefined) {
                 originLink = `https://buyee.jp/item/search/query/${item.origin}/category/2084023782?sort=end&order=a&store=1`;
             } else {
                 originName.parentElement!.style.display = 'none';

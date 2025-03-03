@@ -494,7 +494,7 @@ function addImages() {
                     characterLink = "https://buyee.jp/item/search/query/".concat(item.character, "/category/2084023782?sort=end&order=a&store=1");
                 }
                 ;
-                if (item.origin !== 'オリジナル') {
+                if (item.origin !== 'オリジナル' && item.origin !== undefined) {
                     originLink = "https://buyee.jp/item/search/query/".concat(item.origin, "/category/2084023782?sort=end&order=a&store=1");
                 }
                 else {
