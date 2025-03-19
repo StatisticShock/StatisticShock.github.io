@@ -3,7 +3,8 @@ import * as cheerio from 'cheerio';
 import dotenv from 'dotenv';
 import * as fs from 'fs'
 import { pipeline } from 'stream';
-import { promisify } from 'util'
+import util from 'util';
+import * as pathImport from 'path';
 
 dotenv.config();
 const serviceAccount = JSON.parse(process.env.GOOGLE_JSON_KEY);
@@ -11,9 +12,23 @@ const storage = new Storage({ credentials: serviceAccount });
 const bucket = storage.bucket('statisticshock_github_io');
 const mfcJsonGoogle = bucket.file('mfc.json');
 const publicBucket = storage.bucket('statisticshock_github_io_public');
-const streamPipeline = promisify(pipeline);
+const streamPipeline = util.promisify(pipeline);
 
-const mfcLink: string = 'https://pt.myfigurecollection.net'
+// To log to a .log file
+const dirName = 'logs';
+const logDir = pathImport.resolve(dirName);
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir);
+}
+const date = new Date();
+const formattedDate = date.toLocaleDateString().split('/')[2] + '-' + date.toLocaleDateString().split('/')[1] + '-' + date.toLocaleDateString().split('/')[0];
+const logFile = fs.createWriteStream(pathImport.join(logDir, `debug_${formattedDate}.log`), { flags: 'a' });
+const log = function (message: string | number) {
+    console.log(message);
+    logFile.write(message + '\n');
+};
+
+const mfcLink: string = 'https://pt.myfigurecollection.net';
 
 async function sleep(ms: number): Promise<void> {
     return new Promise(res => setTimeout(res, ms));
@@ -28,7 +43,7 @@ const links = [
 async function downloadImage(url: string, path: string): Promise<void> {
     const response = await fetch(url);
 
-    if (!response.ok) throw new Error(`Failed to download: ${response.statusText}`);
+    if (!response.ok) log(`Failed to download: ${response.statusText}`);
 
     await streamPipeline(response.body as any, fs.createWriteStream(path));
 }
@@ -59,19 +74,19 @@ async function scrapeImages(): Promise<void> {
                 finalLink = imgLink;
             };
 
-            let path: string = 'temp/' + finalLink.split(/\/[1-2]\//)[1];
+            let path: string = 'temp/' + finalLink.split(/\/[1-2]\//)[1].split('-')[0] + '.jpg';
             const [exists] = await publicBucket.file(path.replace('temp/','')).exists();
             if (exists) {
-                console.log(path.replace('temp/','') + ' already uploaded.')
+                log(path.replace('temp/','') + ' already uploaded.')
                 continue;
             } else {
                 await downloadImage(finalLink, path);
                 publicBucket.upload(path);
-                console.log(path.replace('temp/','') + ' uploaded to bucket.')
+                log(path.replace('temp/','') + ' uploaded to bucket.')
                 await sleep(1000);
                 fs.unlink(path, (err) => {
                     if (err) {
-                        console.error(err);
+                        log(err.message);
                     };
                 });
             };
@@ -79,12 +94,12 @@ async function scrapeImages(): Promise<void> {
     }
 
     async function deleteOldImages(): Promise<void> {
-        let imageFilesToKeep = imgLinks.map((link) => link.replace(/https\:\/\/static\.myfigurecollection\.net\/upload\/items\/[1-2]\//,''));
+        let imageFilesToKeep = imgLinks.map((link) => link.replace(/https\:\/\/static\.myfigurecollection\.net\/upload\/items\/[1-2]\//,'').split('-')[0] + '.jpg');
         
         const [imageFiles] = await publicBucket.getFiles();
         const imageFilesToDelete = imageFiles.filter((x) => !imageFilesToKeep.includes(x.name))
         imageFilesToDelete.forEach((fileToDelete) => {
-            console.log(`Deleting ${fileToDelete.name}...`)
+            log(`Deleting ${fileToDelete.name}...`)
             fileToDelete.delete();
         });
     }
@@ -129,6 +144,8 @@ async function fetchData(): Promise<void> {
             const elementId: string = $(el).find('a').attr('href').replace('/item/','');
             figuresIdsToKeep.push(elementId);
 
+            await sleep(1000);
+
             let index: number = json.findIndex((obj) => obj.id === elementId);
             
             if (index > 0) {
@@ -142,11 +159,11 @@ async function fetchData(): Promise<void> {
                 continue;
             } else {
                 changes = true;
-                console.log('Fetching ' + $(el).find('a img').attr('alt'));
+                log('Fetching ' + $(el).find('a img').attr('alt'));
 
                 let id: string = elementId;
                 let href: string = `${mfcLink}/item/${elementId}`;
-                let img: string = $(el).find('a img').attr('src').replace('https://static.myfigurecollection.net/upload/items/0/','https://storage.googleapis.com/statisticshock_github_io_public/');
+                let img: string = $(el).find('a img').attr('src').replace('https://static.myfigurecollection.net/upload/items/0/','https://storage.googleapis.com/statisticshock_github_io_public/').split('-')[0] + '.jpg';
                 let character: string;
                 let characterJap: string;
                 let origin: string;
@@ -205,7 +222,7 @@ async function fetchData(): Promise<void> {
 
     if (changes) {
         mfcJsonGoogle.save(JSON.stringify(outputJson, null, 2));
-        console.log('Changes in the file "mfc.json" were made.');
+        log('Changes in the file "mfc.json" were made.');
     }
 };
 
@@ -218,7 +235,7 @@ async function main() {
         await fetchData();
         await scrapeImages();
     } catch (err) {
-        console.error('Error in script:', err);
+        log('Error in script: ' + err.message);
     } finally {
         console.log('Closing conections...');
         setTimeout(() => process.exit(0), 3000); // Closes everything

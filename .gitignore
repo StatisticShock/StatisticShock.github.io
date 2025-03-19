@@ -5,3 +5,4 @@ tsconfig.json
 myFigureCollection.csv
 .env
 temp
+logs

@@ -495,13 +495,15 @@ function addImages() {
                 }
                 ;
                 if (item.origin !== 'オリジナル' && item.origin !== undefined) {
+                    originName.parentElement.style.display = '';
                     originLink = "https://buyee.jp/item/search/query/".concat(item.origin, "/category/2084023782?sort=end&order=a&store=1");
                 }
                 else {
                     originName.parentElement.style.display = 'none';
                 }
                 ;
-                if (item.classification) {
+                if (item.classification !== undefined) {
+                    classification.parentElement.style.display = '';
                     classificationLink = "https://buyee.jp/item/search/query/".concat(item.classification.replaceAll('#', ''), "/category/2084023782?sort=end&order=a&store=1");
                 }
                 else {

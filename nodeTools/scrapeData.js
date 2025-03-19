@@ -3,14 +3,28 @@ import * as cheerio from 'cheerio';
 import dotenv from 'dotenv';
 import * as fs from 'fs';
 import { pipeline } from 'stream';
-import { promisify } from 'util';
+import util from 'util';
+import * as pathImport from 'path';
 dotenv.config();
 const serviceAccount = JSON.parse(process.env.GOOGLE_JSON_KEY);
 const storage = new Storage({ credentials: serviceAccount });
 const bucket = storage.bucket('statisticshock_github_io');
 const mfcJsonGoogle = bucket.file('mfc.json');
 const publicBucket = storage.bucket('statisticshock_github_io_public');
-const streamPipeline = promisify(pipeline);
+const streamPipeline = util.promisify(pipeline);
+// To log to a .log file
+const dirName = 'logs';
+const logDir = pathImport.resolve(dirName);
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir);
+}
+const date = new Date();
+const formattedDate = date.toLocaleDateString().split('/')[2] + '-' + date.toLocaleDateString().split('/')[1] + '-' + date.toLocaleDateString().split('/')[0];
+const logFile = fs.createWriteStream(pathImport.join(logDir, `debug_${formattedDate}.log`), { flags: 'a' });
+const log = function (message) {
+    console.log(message);
+    logFile.write(message + '\n');
+};
 const mfcLink = 'https://pt.myfigurecollection.net';
 async function sleep(ms) {
     return new Promise(res => setTimeout(res, ms));
@@ -23,7 +37,7 @@ const links = [
 async function downloadImage(url, path) {
     const response = await fetch(url);
     if (!response.ok)
-        throw new Error(`Failed to download: ${response.statusText}`);
+        log(`Failed to download: ${response.statusText}`);
     await streamPipeline(response.body, fs.createWriteStream(path));
 }
 async function scrapeImages() {
@@ -50,20 +64,20 @@ async function scrapeImages() {
                 finalLink = imgLink;
             }
             ;
-            let path = 'temp/' + finalLink.split(/\/[1-2]\//)[1];
+            let path = 'temp/' + finalLink.split(/\/[1-2]\//)[1].split('-')[0] + '.jpg';
             const [exists] = await publicBucket.file(path.replace('temp/', '')).exists();
             if (exists) {
-                console.log(path.replace('temp/', '') + ' already uploaded.');
+                log(path.replace('temp/', '') + ' already uploaded.');
                 continue;
             }
             else {
                 await downloadImage(finalLink, path);
                 publicBucket.upload(path);
-                console.log(path.replace('temp/', '') + ' uploaded to bucket.');
+                log(path.replace('temp/', '') + ' uploaded to bucket.');
                 await sleep(1000);
                 fs.unlink(path, (err) => {
                     if (err) {
-                        console.error(err);
+                        log(err.message);
                     }
                     ;
                 });
@@ -73,11 +87,11 @@ async function scrapeImages() {
         ;
     }
     async function deleteOldImages() {
-        let imageFilesToKeep = imgLinks.map((link) => link.replace(/https\:\/\/static\.myfigurecollection\.net\/upload\/items\/[1-2]\//, ''));
+        let imageFilesToKeep = imgLinks.map((link) => link.replace(/https\:\/\/static\.myfigurecollection\.net\/upload\/items\/[1-2]\//, '').split('-')[0] + '.jpg');
         const [imageFiles] = await publicBucket.getFiles();
         const imageFilesToDelete = imageFiles.filter((x) => !imageFilesToKeep.includes(x.name));
         imageFilesToDelete.forEach((fileToDelete) => {
-            console.log(`Deleting ${fileToDelete.name}...`);
+            log(`Deleting ${fileToDelete.name}...`);
             fileToDelete.delete();
         });
     }
@@ -107,6 +121,7 @@ async function fetchData() {
         for (const el of itemIcons.toArray()) {
             const elementId = $(el).find('a').attr('href').replace('/item/', '');
             figuresIdsToKeep.push(elementId);
+            await sleep(1000);
             let index = json.findIndex((obj) => obj.id === elementId);
             if (index > 0) {
                 if (json[index].type !== typeOfFigure) {
@@ -121,10 +136,10 @@ async function fetchData() {
             }
             else {
                 changes = true;
-                console.log('Fetching ' + $(el).find('a img').attr('alt'));
+                log('Fetching ' + $(el).find('a img').attr('alt'));
                 let id = elementId;
                 let href = `${mfcLink}/item/${elementId}`;
-                let img = $(el).find('a img').attr('src').replace('https://static.myfigurecollection.net/upload/items/0/', 'https://storage.googleapis.com/statisticshock_github_io_public/');
+                let img = $(el).find('a img').attr('src').replace('https://static.myfigurecollection.net/upload/items/0/', 'https://storage.googleapis.com/statisticshock_github_io_public/').split('-')[0] + '.jpg';
                 let character;
                 let characterJap;
                 let origin;
@@ -183,7 +198,7 @@ async function fetchData() {
     }
     if (changes) {
         mfcJsonGoogle.save(JSON.stringify(outputJson, null, 2));
-        console.log('Changes in the file "mfc.json" were made.');
+        log('Changes in the file "mfc.json" were made.');
     }
 }
 ;
@@ -196,7 +211,7 @@ async function main() {
         await scrapeImages();
     }
     catch (err) {
-        console.error('Error in script:', err);
+        log('Error in script: ' + err.message);
     }
     finally {
         console.log('Closing conections...');
