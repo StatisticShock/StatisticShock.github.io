@@ -106,10 +106,10 @@ async function fetchData() {
     console.log('Starting to fetch items...');
     let json = await fetchJson();
     if (json instanceof Array) {
-        console.log('JSON file sucessfully loaded');
+        log('JSON file sucessfully loaded');
     }
     else {
-        console.log("Couldn't fetch JSON file.");
+        log("Couldn't fetch JSON file.");
     }
     let changes = false;
     let figuresIdsToKeep = [];
@@ -121,7 +121,7 @@ async function fetchData() {
         for (const el of itemIcons.toArray()) {
             const elementId = $(el).find('a').attr('href').replace('/item/', '');
             figuresIdsToKeep.push(elementId);
-            await sleep(1000);
+            await sleep(900);
             let index = json.findIndex((obj) => obj.id === elementId);
             if (index > 0) {
                 if (json[index].type !== typeOfFigure) {
@@ -156,8 +156,13 @@ async function fetchData() {
                         category = $$(element).find('.data-value').text();
                     }
                     ;
-                    if ($$(element).find('.data-label').text().includes('Classificação')) {
-                        classification = $$(element).find('.data-value a').text();
+                    if ($$(element).find('.data-label').text().includes('Classificaç')) {
+                        if ($$(element).find('.data-value a span').attr('switch') == '') {
+                            classification = $$(element).find('.data-value a span').text();
+                        }
+                        else {
+                            classification = $$(element).find('.data-value a span').attr('switch');
+                        }
                     }
                     ;
                     if ($$(element).find('.data-label').text().includes('Personag') || $$(element).find('.data-label').text().includes('Título')) {

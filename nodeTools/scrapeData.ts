@@ -129,7 +129,7 @@ async function fetchJson(): Promise<Array<mfc>> {
 async function fetchData(): Promise<void> {
     console.log('Starting to fetch items...')
     let json: Array<mfc> = await fetchJson();
-    if (json instanceof Array) {console.log('JSON file sucessfully loaded')} else {console.log("Couldn't fetch JSON file.")}
+    if (json instanceof Array) {log('JSON file sucessfully loaded')} else {log("Couldn't fetch JSON file.")}
     let changes: boolean = false;
     let figuresIdsToKeep: string[] = [];
 
@@ -144,7 +144,7 @@ async function fetchData(): Promise<void> {
             const elementId: string = $(el).find('a').attr('href').replace('/item/','');
             figuresIdsToKeep.push(elementId);
 
-            await sleep(1000);
+            await sleep(900);
 
             let index: number = json.findIndex((obj) => obj.id === elementId);
             
@@ -181,8 +181,12 @@ async function fetchData(): Promise<void> {
                     if ($$(element).find('.data-label').text().includes('Categoria')) {
                         category = $$(element).find('.data-value').text();
                     };
-                    if ($$(element).find('.data-label').text().includes('Classificação')) {
-                        classification = $$(element).find('.data-value a').text();
+                    if ($$(element).find('.data-label').text().includes('Classificaç')) {
+                        if ($$(element).find('.data-value a span').attr('switch') == '') {
+                            classification = $$(element).find('.data-value a span').text()
+                        } else {
+                            classification = $$(element).find('.data-value a span').attr('switch');
+                        }
                     };
                     if ($$(element).find('.data-label').text().includes('Personag') || $$(element).find('.data-label').text().includes('Título')) {
                         character = $$(element).find('.data-value').text();
