@@ -592,9 +592,9 @@ function addImages() {
 }
 ;
 // To add a MyAnimeList card
-function scrappleMyAnimeList() {
+function scrapeMyAnimeList() {
     return __awaiter(this, void 0, void 0, function () {
-        function scrappleDataFromMAL(offset) {
+        function scrapeDataFromMAL(offset) {
             return __awaiter(this, void 0, void 0, function () {
                 var data;
                 return __generator(this, function (_a) {
@@ -613,7 +613,7 @@ function scrappleMyAnimeList() {
             switch (_a.label) {
                 case 0:
                     ;
-                    return [4 /*yield*/, scrappleDataFromMAL(0)];
+                    return [4 /*yield*/, scrapeDataFromMAL(0)];
                 case 1:
                     output = _a.sent();
                     mal = document.querySelector('#my-anime-list .inner-card');
@@ -705,7 +705,7 @@ function onLoadFunctions() {
                     stopImageDrag();
                     redditSearchTrigger();
                     wikipediaSearchTrigger();
-                    return [4 /*yield*/, scrappleMyAnimeList()];
+                    return [4 /*yield*/, scrapeMyAnimeList()];
                 case 2:
                     _a.sent();
                     return [2 /*return*/];

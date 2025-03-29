@@ -23,10 +23,10 @@ const formattedDate = date.toLocaleDateString().split('/')[2] + '-' + date.toLoc
 const logFile = fs.createWriteStream(pathImport.join(logDir, `debug_${formattedDate}.log`), { flags: 'a' });
 const log = function (message) {
     console.log(message);
-    logFile.write(message + '\n');
+    logFile.write(message + ' [' + new Date().getHours() + ':' + new Date().getMinutes() + ':' + new Date().getSeconds() + ']' + '\n');
 };
 const mfcLink = 'https://pt.myfigurecollection.net';
-async function sleep(ms) {
+export async function sleep(ms) {
     return new Promise(res => setTimeout(res, ms));
 }
 const links = [
@@ -98,18 +98,79 @@ async function scrapeImages() {
     await downloadNewImages();
     await deleteOldImages();
 }
-async function fetchJson() {
-    let json = JSON.parse(await fetch('https://statisticshock-github-io.onrender.com/figurecollection/').then(res => res.text()));
-    return json;
+export default class ScrapeFunctions {
+    async readMFCItem(elementId, typeOfFigure) {
+        const response = await fetch(`${mfcLink}/item/${elementId}`);
+        const html = await response.text();
+        const $ = cheerio.load(html);
+        log('Fetching ' + $('h1.title').text());
+        let id = elementId;
+        let href = `${mfcLink}/item/${elementId}`;
+        let img = $('a.main img').attr('src').replaceAll(/https\:\/\/static\.myfigurecollection\.net\/upload\/items\/[0-2]\//g, 'https://storage.googleapis.com/statisticshock_github_io_public/').split('-')[0] + '.jpg';
+        let character;
+        let characterJap;
+        let origin;
+        let classification;
+        let category;
+        let type = typeOfFigure;
+        let title = $('h1.title').text();
+        const figureResponse = await fetch(`${mfcLink}/item/${elementId}`);
+        const figureHtml = await figureResponse.text();
+        const $$ = cheerio.load(figureHtml);
+        const dataFields = $$('.data-field');
+        for (const element of dataFields.toArray()) {
+            if ($$(element).find('.data-label').text().includes('Categoria')) {
+                category = $$(element).find('.data-value').text();
+            }
+            ;
+            if ($$(element).find('.data-label').text().includes('Classificaç')) {
+                if ($$(element).find('.data-value a span').attr('switch') == '') {
+                    classification = $$(element).find('.data-value a span').text();
+                }
+                else {
+                    classification = $$(element).find('.data-value a span').attr('switch');
+                }
+            }
+            ;
+            if ($$(element).find('.data-label').text().includes('Personag') || $$(element).find('.data-label').text().includes('Título')) {
+                character = $$(element).find('.data-value').text();
+                characterJap = $$(element).find('.data-value a span').map((i, item) => $$(item).attr('switch')).get().join(', ');
+            }
+            ;
+            if ($$(element).find('.data-label').text().includes('Origem')) {
+                origin = $$(element).find('.data-value a span').attr('switch');
+            }
+        }
+        ;
+        const itemData = {
+            id: id,
+            href: href,
+            img: img,
+            character: character,
+            characterJap: characterJap,
+            origin: origin,
+            classification: classification,
+            category: category,
+            type: type,
+            title: title,
+        };
+        return itemData;
+    }
+    async fetchJson() {
+        let json = JSON.parse(await fetch('https://statisticshock-github-io.onrender.com/figurecollection/').then(res => res.text()));
+        return json;
+    }
 }
 async function fetchData() {
+    const scrapeFunctions = new ScrapeFunctions();
     console.log('Starting to fetch items...');
-    let json = await fetchJson();
+    let json = await scrapeFunctions.fetchJson();
     if (json instanceof Array) {
         log('JSON file sucessfully loaded');
     }
     else {
         log("Couldn't fetch JSON file.");
+        return;
     }
     let changes = false;
     let figuresIdsToKeep = [];
@@ -136,57 +197,7 @@ async function fetchData() {
             }
             else {
                 changes = true;
-                log('Fetching ' + $(el).find('a img').attr('alt'));
-                let id = elementId;
-                let href = `${mfcLink}/item/${elementId}`;
-                let img = $(el).find('a img').attr('src').replace('https://static.myfigurecollection.net/upload/items/0/', 'https://storage.googleapis.com/statisticshock_github_io_public/').split('-')[0] + '.jpg';
-                let character;
-                let characterJap;
-                let origin;
-                let classification;
-                let category;
-                let type = typeOfFigure;
-                let title = $(el).find('a img').attr('alt');
-                const figureResponse = await fetch(`${mfcLink}/item/${elementId}`);
-                const figureHtml = await figureResponse.text();
-                const $$ = cheerio.load(figureHtml);
-                const dataFields = $$('.data-field');
-                for (const element of dataFields.toArray()) {
-                    if ($$(element).find('.data-label').text().includes('Categoria')) {
-                        category = $$(element).find('.data-value').text();
-                    }
-                    ;
-                    if ($$(element).find('.data-label').text().includes('Classificaç')) {
-                        if ($$(element).find('.data-value a span').attr('switch') == '') {
-                            classification = $$(element).find('.data-value a span').text();
-                        }
-                        else {
-                            classification = $$(element).find('.data-value a span').attr('switch');
-                        }
-                    }
-                    ;
-                    if ($$(element).find('.data-label').text().includes('Personag') || $$(element).find('.data-label').text().includes('Título')) {
-                        character = $$(element).find('.data-value').text();
-                        characterJap = $$(element).find('.data-value a span').map((i, item) => $$(item).attr('switch')).get().join(', ');
-                    }
-                    ;
-                    if ($$(element).find('.data-label').text().includes('Origem')) {
-                        origin = $$(element).find('.data-value a span').attr('switch');
-                    }
-                }
-                ;
-                const itemData = {
-                    id: id,
-                    href: href,
-                    img: img,
-                    character: character,
-                    characterJap: characterJap,
-                    origin: origin,
-                    classification: classification,
-                    category: category,
-                    type: type,
-                    title: title,
-                };
+                let itemData = await scrapeFunctions.readMFCItem(elementId, typeOfFigure);
                 json.push(itemData);
             }
             ;
@@ -207,10 +218,10 @@ async function fetchData() {
     }
 }
 ;
-setInterval(() => {
-    console.log('Memory usage:', process.memoryUsage().heapUsed / 1024 / 1024, 'MB');
-}, 5000);
-async function main() {
+export async function main() {
+    setInterval(() => {
+        console.log('Memory usage:', process.memoryUsage().heapUsed / 1024 / 1024, 'MB');
+    }, 5000);
     try {
         await fetchData();
         await scrapeImages();
@@ -220,7 +231,6 @@ async function main() {
     }
     finally {
         console.log('Closing conections...');
-        setTimeout(() => process.exit(0), 3000); // Closes everything
+        setTimeout(() => process.exit(0), 1500); // Closes everything
     }
 }
-main();

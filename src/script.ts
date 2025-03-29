@@ -620,7 +620,7 @@ async function addImages (): Promise<void> {
 };
 
 // To add a MyAnimeList card
-async function scrappleMyAnimeList (): Promise<void> {
+async function scrapeMyAnimeList (): Promise<void> {
     type malJson = {
         data: [{
             node: {
@@ -644,14 +644,14 @@ async function scrappleMyAnimeList (): Promise<void> {
         }
     };
 
-    async function scrappleDataFromMAL (offset: number): Promise<malJson> {
+    async function scrapeDataFromMAL (offset: number): Promise<malJson> {
         const data: malJson = await fetch(`https://statisticshock-github-io.onrender.com/animelist/HikariMontgomery/${offset}`)
         .then(response => response.json());
 
         return data;
     };
 
-    let output: malJson = await scrappleDataFromMAL(0);
+    let output: malJson = await scrapeDataFromMAL(0);
     const mal: HTMLDivElement = document.querySelector('#my-anime-list .inner-card')!;
 
     output.data.forEach((anime) => {
@@ -739,7 +739,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     stopImageDrag();
     redditSearchTrigger();
     wikipediaSearchTrigger();
-    await scrappleMyAnimeList();
+    await scrapeMyAnimeList();
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     setTimeout( () => {
