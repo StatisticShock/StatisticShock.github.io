@@ -1,0 +1,223 @@
+:root {
+    --pink-custom: rgba(250,30,78,255);
+    --pink-purple: linear-gradient(163deg, var(--pink-custom) 0%, #3700ff 100%);
+}
+
+@font-face {
+    font-family: OpenSans;
+    src: url(../../../font/OpenSans.ttf);
+}
+
+body {
+    font-family: OpenSans;
+    width: 100%;
+    height: 100%;
+    color: white;
+    background-color: #313131;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 2px, transparent 0);
+    background-size: 30px 30px;
+    background-position: -5px -5px;
+    overflow-x: hidden;
+}
+
+.container {
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-auto-rows: 1px;
+    grid-gap: 1px;
+    gap: 20px;
+    margin: 20px;
+
+    & a {
+        width: 100%;
+        cursor: pointer;
+        border-radius: 30px;
+        background-color: transparent;
+        overflow: hidden;
+
+        & img {
+            width: 100%;
+        }
+    }
+}
+
+.pop-up {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #1a1a1a;
+    border-radius: 20px;
+    border: 2px solid white;
+    width: fit-content;
+    height: fit-content;
+    padding: 2em;
+    padding-top: 50px;
+    z-index: 2;
+    align-items:last baseline;
+
+    & > div {
+        position: absolute;
+        top: 10px;
+        padding: 0%;
+        /* border: 1px solid white; */
+        width: 100%;
+        left: 0em;
+
+        & button {
+            position: absolute;
+            height: 30px;
+            width: 30px;
+            top: 0px;
+            margin: 0%;
+            right: 1em;
+            border-radius: 100%;
+        }
+
+        & > div {
+            padding-left: 1em;
+
+            & img {
+                height: 30px;
+            }
+        }
+    }
+
+    & > span {
+        display: flex;
+        gap: 10px;
+    }
+
+    & button {
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    & button:hover {
+        border: 2px var(--pink-custom) solid;
+    }
+
+    & input {
+        border-radius: 10px;
+    }
+
+    & input:focus {
+        outline: none;
+        border: 2px solid var(--pink-custom);
+        position: relative;
+    }
+
+    & input ~ .floating-label {
+        position: absolute;
+        color: grey;
+        font-size: 13.3333px;
+        pointer-events: none;
+        transition: ease all 0.3s;
+        transform: translate(5px);       
+    }
+
+    & input:focus ~ .floating-label, & input:not(:placeholder-shown) ~ .floating-label {
+        position: absolute;
+        width: fit-content;
+        font-size: 10px;
+        transform: translate(5px, -100%);
+        /* background-color: #1a1a1a; */
+    }
+
+    & img {
+        pointer-events: fill;
+    }
+}
+
+.pop-up.mfc {
+    height: 70vmin;
+    aspect-ratio: 3/4;
+    font-size: 2vmin;
+    z-index: 4;
+    
+    & #pop-up-img > img {
+        max-width: 90%;
+        max-height: 55%;
+        position: relative;
+        left: 50%;
+        transform: translate(-50%,0);
+        border-radius: 10px;        
+    }
+
+    & .pop-up-title {
+        text-align: center ;
+    }
+
+    & .data-container {
+        position: relative;
+        top: 10%;
+        & p {
+            width: 100%;
+            margin-bottom: -5px;
+            color: white;
+            /* border: 1px solid white; */
+
+            & span {
+                position: absolute;
+                left: 30%;
+                color: white;
+                display: inline-block;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                width: 65%;
+
+                & a {
+                    color: var(--pink-custom);
+                    text-decoration: none;
+                }
+
+                & a:hover {
+                    text-decoration: underline overline dotted var(--pink-custom);
+                }
+
+                & a:visited {
+                    color: pink;
+                }
+            }
+        }
+
+        & #mfc-item-rating {
+            position: relative;
+            text-align: center;
+            transition: ease-in 0.3s;
+        }
+
+        & #mfc-item-rating-before {
+            position: absolute;
+            display: none;
+            width: fit-content;
+            background-color: #313131;
+            left: 50%;
+            transform: translate(-50%,-150%);
+            padding: 5px;
+            border-radius: 5px;
+            z-index: 6;
+        }
+    }
+
+    & .button{
+        position: absolute;
+        bottom: 100px;
+        padding: 1em;
+        border-radius: 100px;
+        left: 50%;
+    }
+
+    & .show {
+        transform: translate(-50%,175%);
+    }
+
+    & .update {
+        transform: translate(-50%,25%);
+    }
+}
