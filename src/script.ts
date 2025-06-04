@@ -490,7 +490,15 @@ async function addImages (): Promise<void> {
 
     let result = CustomFunctions.shuffle(await (await fetch('https://statisticshock-github-io.onrender.com/figurecollection/')).json());
     console.log(result)
-    result.map(createElement);
+
+    let createElementPromise = new Promise ((resolve, reject) => { //This creates a promise that will create every item in the aside
+        resolve(result.map(createElement));
+    });
+
+    createElementPromise.then(() => {
+        resizeAllMasonryItems();
+        setTimeout(resizeAside, 500);
+    });
     
     function createElement (item: mfc) { //To create the necessary elements
         let div  = document.createElement('div');   // The container
@@ -600,8 +608,6 @@ async function addImages (): Promise<void> {
         div.append(item.character);
     }
 
-    setTimeout(resizeAllMasonryItems, 500);
-    setTimeout(resizeAllMasonryItems, 1000);
     window.addEventListener('resize', () => {
         setTimeout(() => {
             resizeAllMasonryItems;

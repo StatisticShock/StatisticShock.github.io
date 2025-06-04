@@ -558,7 +558,7 @@ function addImages() {
             card.append(div);
             div.append(item.character);
         }
-        var result, _a, _b;
+        var result, _a, _b, createElementPromise;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -568,9 +568,13 @@ function addImages() {
                 case 2:
                     result = _b.apply(_a, [_c.sent()]);
                     console.log(result);
-                    result.map(createElement);
-                    setTimeout(resizeAllMasonryItems, 500);
-                    setTimeout(resizeAllMasonryItems, 1000);
+                    createElementPromise = new Promise(function (resolve, reject) {
+                        resolve(result.map(createElement));
+                    });
+                    createElementPromise.then(function () {
+                        resizeAllMasonryItems();
+                        setTimeout(resizeAside, 500);
+                    });
                     window.addEventListener('resize', function () {
                         setTimeout(function () {
                             resizeAllMasonryItems;
