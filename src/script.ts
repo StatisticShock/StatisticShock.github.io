@@ -488,15 +488,14 @@ async function addImages (): Promise<void> {
         title: string,
     }
 
-    let result = CustomFunctions.shuffle(await (await fetch('https://statisticshock-github-io.onrender.com/figurecollection/')).json());
-    console.log(result)
+    let result = CustomFunctions.shuffle((await (await fetch('https://statisticshock-github-io.onrender.com/figurecollection/')).json()));
 
     let createElementPromise = new Promise ((resolve, reject) => { //This creates a promise that will create every item in the aside
         resolve(result.map(createElement));
     });
 
     createElementPromise.then(() => {
-        resizeAllMasonryItems();
+        setTimeout(resizeAllMasonryItems, 450);
         setTimeout(resizeAside, 500);
     });
     
@@ -736,7 +735,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     setDefaults();
     adjustGamecard();
     rotateGamecardText(0);
-    await addImages();
+    addImages();
     mfcToggleSwitch();
     makeSwitchesSlide();
     formatPopUps();
@@ -745,7 +744,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     stopImageDrag();
     redditSearchTrigger();
     wikipediaSearchTrigger();
-    await scrapeMyAnimeList();
+    scrapeMyAnimeList();
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     setTimeout( () => {

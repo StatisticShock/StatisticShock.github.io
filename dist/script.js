@@ -566,13 +566,12 @@ function addImages() {
                     return [4 /*yield*/, fetch('https://statisticshock-github-io.onrender.com/figurecollection/')];
                 case 1: return [4 /*yield*/, (_c.sent()).json()];
                 case 2:
-                    result = _b.apply(_a, [_c.sent()]);
-                    console.log(result);
+                    result = _b.apply(_a, [(_c.sent())]);
                     createElementPromise = new Promise(function (resolve, reject) {
                         resolve(result.map(createElement));
                     });
                     createElementPromise.then(function () {
-                        resizeAllMasonryItems();
+                        setTimeout(resizeAllMasonryItems, 450);
                         setTimeout(resizeAside, 500);
                     });
                     window.addEventListener('resize', function () {
@@ -687,33 +686,26 @@ window.addEventListener('load', onLoadFunctions, true);
 function onLoadFunctions() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    createLoaders(8);
-                    openLinksInNewTab();
-                    redirectToEdge();
-                    setHeaderBackground();
-                    figuresSitDown();
-                    resizeAside(0);
-                    setDefaults();
-                    adjustGamecard();
-                    rotateGamecardText(0);
-                    return [4 /*yield*/, addImages()];
-                case 1:
-                    _a.sent();
-                    mfcToggleSwitch();
-                    makeSwitchesSlide();
-                    formatPopUps();
-                    mfcPopUpAdjust();
-                    dragPopUps();
-                    stopImageDrag();
-                    redditSearchTrigger();
-                    wikipediaSearchTrigger();
-                    return [4 /*yield*/, scrapeMyAnimeList()];
-                case 2:
-                    _a.sent();
-                    return [2 /*return*/];
-            }
+            createLoaders(8);
+            openLinksInNewTab();
+            redirectToEdge();
+            setHeaderBackground();
+            figuresSitDown();
+            resizeAside(0);
+            setDefaults();
+            adjustGamecard();
+            rotateGamecardText(0);
+            addImages();
+            mfcToggleSwitch();
+            makeSwitchesSlide();
+            formatPopUps();
+            mfcPopUpAdjust();
+            dragPopUps();
+            stopImageDrag();
+            redditSearchTrigger();
+            wikipediaSearchTrigger();
+            scrapeMyAnimeList();
+            return [2 /*return*/];
         });
     });
 }
