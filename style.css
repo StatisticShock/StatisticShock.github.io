@@ -178,13 +178,13 @@ img {
 
 .pop-up.mfc {
     height: 70vmin;
-    aspect-ratio: 3/4;
+    aspect-ratio: 1;
     font-size: 2vmin;
     z-index: 4;
     
     & #pop-up-img > img {
         max-width: 90%;
-        max-height: 55%;
+        max-height: 90%;
         position: relative;
         left: 50%;
         transform: translate(-50%,0);
@@ -493,7 +493,7 @@ aside {
             width: 31vw;
             scroll-snap-align: center;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             grid-auto-rows: 5px;
             grid-gap: 5px;
             gap: 10px;

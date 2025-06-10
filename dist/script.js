@@ -34,7 +34,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-// Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
 // To make loaders work
 function createLoaders(count) {
@@ -558,17 +557,17 @@ function addImages() {
             card.append(div);
             div.append(item.character);
         }
-        var result, _a, _b, createElementPromise;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        var result, ownedFiguresArray, createElementPromise;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
-                    _b = (_a = CustomFunctions).shuffle;
                     return [4 /*yield*/, fetch('https://statisticshock-github-io.onrender.com/figurecollection/')];
-                case 1: return [4 /*yield*/, (_c.sent()).json()];
+                case 1: return [4 /*yield*/, (_a.sent()).json()];
                 case 2:
-                    result = _b.apply(_a, [(_c.sent())]);
+                    result = _a.sent();
+                    ownedFiguresArray = result.filter(function (figure) { return figure.type !== 'Wished'; });
                     createElementPromise = new Promise(function (resolve, reject) {
-                        resolve(result.map(createElement));
+                        resolve(ownedFiguresArray.map(createElement));
                     });
                     createElementPromise.then(function () {
                         setTimeout(resizeAllMasonryItems, 450);

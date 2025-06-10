@@ -1,4 +1,5 @@
 // Import custom functions from "./functions.Js"
+import { Console } from "console";
 import CustomFunctions from "./functions.js";
 
 // To make loaders work
@@ -488,10 +489,11 @@ async function addImages (): Promise<void> {
         title: string,
     }
 
-    let result = CustomFunctions.shuffle((await (await fetch('https://statisticshock-github-io.onrender.com/figurecollection/')).json()));
+    let result: mfc[] = await (await fetch('https://statisticshock-github-io.onrender.com/figurecollection/')).json();
+    let ownedFiguresArray = result.filter((figure) => figure.type !== 'Wished');
 
     let createElementPromise = new Promise ((resolve, reject) => { //This creates a promise that will create every item in the aside
-        resolve(result.map(createElement));
+        resolve(ownedFiguresArray.map(createElement));
     });
 
     createElementPromise.then(() => {
