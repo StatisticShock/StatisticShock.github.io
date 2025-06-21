@@ -1,3 +1,5 @@
+import { on } from "events";
+
 export default class CustomFunctions {
     static shuffle (arr: Array<any>): Array<any> { //Intended to shuffle any array
         let j, x, index;
@@ -22,4 +24,15 @@ export default class CustomFunctions {
             return max;
         } else return Math.floor(Math.random() * (max - min + 1) + min);
     }
+
+    static doesItCollide (oneElement: HTMLElement, twoElement: HTMLElement): boolean {
+        const oneRect: DOMRect = oneElement.getBoundingClientRect();
+        const twoRect: DOMRect = twoElement.getBoundingClientRect();
+
+        if (oneRect.x + oneRect.width > twoRect.x &&
+            twoRect.x + twoRect.width > oneRect.x &&
+            oneRect.y + oneRect.height > twoRect.y &&
+            twoRect.y + twoRect.height > oneRect.y) return true
+        else return false;
+    };
 }

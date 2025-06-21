@@ -661,11 +661,12 @@ aside {
     & .card {
         position: relative;
         width: 100%;
-        height: 300px;
+        height: 320px;
         --height: 300px;
         border-radius: 20px;
         text-decoration: none;
         background-image: var(--pink-purple);
+        overflow: hidden;
 
         & .inner-card {
             height: inherit;
@@ -678,12 +679,13 @@ aside {
             scroll-snap-type: x mandatory;
             scroll-behavior: smooth;
             scrollbar-width: none;
+            white-space: nowrap;
             gap: 1.5vw;
-            padding: 0 40vw;
+            padding: 10px calc(50% - 300px / 4 * 3 / 2);
             touch-action: none;
 
             & a {
-                height: inherit;
+                height: 300px;
                 aspect-ratio: 3/4;
                 scroll-snap-align: center;
                 transition: 0.3s ease;
@@ -707,6 +709,7 @@ aside {
                     font-size: 0.75em;
 
                     & p {
+                        white-space: initial;
                         width: 100%;
                         color: white;
                         pointer-events: none;
@@ -721,27 +724,36 @@ aside {
 
         & .nav-button {
             position:absolute;
-            height: 100%;
-            width: fit-content;
-            top: 0;
+            height: 110%;
+            width: 15vw;
+            top: -5%;
             z-index: 2;
-            background-color: #1a1a1a;
-            border: 3px double white;
+            border: transparent;
             color: white;
             font-size: 3vw;
+            transition: all .5s;
         }
 
         & .nav-button:hover {
-            background-color: #313131;
             cursor: pointer;
         }
 
-        & .left {
+        & .nav-button.left {
             left: 0px;
+            background-color: #313131;
+            mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)),
+                        linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));;
+            -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)),
+                                linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));
         }
 
-        & .right {
+        & .nav-button.right {
             right: 0px;
+            background-color: #313131;
+            mask-image: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0)),
+                        linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
+            -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0)),
+                                linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
         }
     }
 }

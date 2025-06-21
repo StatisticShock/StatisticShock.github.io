@@ -1,6 +1,10 @@
 // Import custom functions from "./functions.Js"
 import { Console } from "console";
 import CustomFunctions from "./functions.js";
+import { convertCookiesPartitionKeyFromPuppeteerToCdp } from "puppeteer";
+
+//A const that stores if the browser is mobile
+const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 // To make loaders work
 function createLoaders (count: number): void {
@@ -764,7 +768,32 @@ async function scrapeMyAnimeList (): Promise<void> {
             let innerCard: HTMLDivElement = card.querySelector('.inner-card')!;
             scrollFunctions(card);
         });
-    })()
+    })();
+
+    (function selectOnlyTheCurrentImage (): void {
+        if (!mobile) return;
+        else {
+            [animeCard, mangaCard].forEach((card) => {
+                const entries = card.querySelectorAll('a');
+                const navBttns = card.parentElement!.querySelectorAll('.nav-button') as NodeListOf<HTMLElement>;
+
+                entries.forEach((entry) => {
+                    entry.addEventListener('click', (e) => {
+                        let collision: boolean = false;
+                        navBttns.forEach((bttn) => {
+                            if (CustomFunctions.doesItCollide(entry, bttn)) {
+                                collision = true;
+                            };
+                        });
+
+                        if (collision) {
+                            e.preventDefault();
+                        }
+                    });
+                });
+            });
+        };
+    })();
 
     setTimeout(() => { //Should run immeditialy after output[].data.forEach
         let loaders: NodeListOf<HTMLDivElement> = document.querySelectorAll('#my-anime-list .loader')!;
@@ -778,7 +807,8 @@ async function scrapeMyAnimeList (): Promise<void> {
         })
 
     }, 1000);
-}
+};
+
 window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions () {
     createLoaders(8);
     openLinksInNewTab();

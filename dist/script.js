@@ -35,6 +35,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import CustomFunctions from "./functions.js";
+//A const that stores if the browser is mobile
+var mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 // To make loaders work
 function createLoaders(count) {
     var loaders = document.querySelectorAll('.loader');
@@ -711,6 +713,31 @@ function scrapeMyAnimeList() {
                             scrollFunctions(card);
                         });
                     })();
+                    (function selectOnlyTheCurrentImage() {
+                        if (!mobile)
+                            return;
+                        else {
+                            [animeCard, mangaCard].forEach(function (card) {
+                                var entries = card.querySelectorAll('a');
+                                var navBttns = card.parentElement.querySelectorAll('.nav-button');
+                                entries.forEach(function (entry) {
+                                    entry.addEventListener('click', function (e) {
+                                        var collision = false;
+                                        navBttns.forEach(function (bttn) {
+                                            if (CustomFunctions.doesItCollide(entry, bttn)) {
+                                                collision = true;
+                                            }
+                                            ;
+                                        });
+                                        if (collision) {
+                                            e.preventDefault();
+                                        }
+                                    });
+                                });
+                            });
+                        }
+                        ;
+                    })();
                     setTimeout(function () {
                         var loaders = document.querySelectorAll('#my-anime-list .loader');
                         var innerCards = document.querySelectorAll('#my-anime-list .inner-card');
@@ -726,6 +753,7 @@ function scrapeMyAnimeList() {
         });
     });
 }
+;
 window.addEventListener('load', onLoadFunctions, true);
 function onLoadFunctions() {
     return __awaiter(this, void 0, void 0, function () {

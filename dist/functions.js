@@ -28,6 +28,18 @@ var CustomFunctions = /** @class */ (function () {
         else
             return Math.floor(Math.random() * (max - min + 1) + min);
     };
+    CustomFunctions.doesItCollide = function (oneElement, twoElement) {
+        var oneRect = oneElement.getBoundingClientRect();
+        var twoRect = twoElement.getBoundingClientRect();
+        if (oneRect.x + oneRect.width > twoRect.x &&
+            twoRect.x + twoRect.width > oneRect.x &&
+            oneRect.y + oneRect.height > twoRect.y &&
+            twoRect.y + twoRect.height > oneRect.y)
+            return true;
+        else
+            return false;
+    };
+    ;
     return CustomFunctions;
 }());
 export default CustomFunctions;
