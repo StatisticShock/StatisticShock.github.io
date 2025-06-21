@@ -609,7 +609,7 @@ function scrapeMyAnimeList() {
                                     .then(function (response) { return response.json(); })];
                         case 2:
                             mangaData = _a.sent();
-                            return [2 /*return*/, [animeData, mangaData]];
+                            return [2 /*return*/, [animeData]];
                     }
                 });
             });

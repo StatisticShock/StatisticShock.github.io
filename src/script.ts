@@ -658,7 +658,7 @@ async function scrapeMyAnimeList (): Promise<void> {
         const mangaData: malJson = await fetch(`https://statisticshock-github-io.onrender.com/mangalist/HikariMontgomery/${offset}`)
         .then(response => response.json());
 
-        return [animeData, mangaData];
+        return [animeData];
     };
 
     let output: malJson[] = await scrapeDataFromMAL(0);

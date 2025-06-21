@@ -52,7 +52,7 @@ app.get("/mangalist/:username/:offset?", async (req, res) => {
     if (!offset) offset = 0;
 
     try {
-        const response = await fetch(`${API_URL}${username}/mangalist?limit=10&sort=list_updated_at&offset=${offset}&fields=list_status`, {
+        const response = await fetch(`${API_URL}${username}/animelist?limit=10&sort=list_updated_at&offset=${offset}&fields=list_status`, {
             headers: {
                 "X-MAL-CLIENT-ID": ACCESS_TOKEN,
             },
