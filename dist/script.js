@@ -698,11 +698,11 @@ function scrapeMyAnimeList() {
                             var innerCard = cardContainer.querySelector('.inner-card');
                             leftButton.onclick = function () {
                                 var width = innerCard.scrollWidth;
-                                innerCard.scrollBy({ left: -width / 10, behavior: "smooth" });
+                                innerCard.scrollBy({ left: -width / 20, behavior: "smooth" });
                             };
                             rightButton.onclick = function () {
                                 var width = innerCard.scrollWidth;
-                                innerCard.scrollBy({ left: width / 10, behavior: "smooth" });
+                                innerCard.scrollBy({ left: width / 20, behavior: "smooth" });
                             };
                         }
                         ;

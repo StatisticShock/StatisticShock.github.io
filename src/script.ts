@@ -751,12 +751,12 @@ async function scrapeMyAnimeList (): Promise<void> {
 
             leftButton.onclick = () => {
                 let width: number  = innerCard.scrollWidth;
-                innerCard.scrollBy({left: - width / 10, behavior: "smooth"});
+                innerCard.scrollBy({left: - width / 20, behavior: "smooth"});
             };
 
             rightButton.onclick = () => {
                 let width: number  = innerCard.scrollWidth;
-                innerCard.scrollBy({left: width / 10, behavior: "smooth"});
+                innerCard.scrollBy({left: width / 20, behavior: "smooth"});
             }
         };
 
