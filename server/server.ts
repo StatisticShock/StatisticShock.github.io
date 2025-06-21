@@ -46,6 +46,28 @@ app.get("/animelist/:username/:offset?", async (req, res) => {
     }
 });
 
+app.get("/mangalist/:username/:offset?", async (req, res) => {
+    let { username, offset } = req.params;
+
+    if (!offset) offset = 0;
+
+    try {
+        const response = await fetch(`${API_URL}${username}/mangalist?limit=10&sort=list_updated_at&offset=${offset}&fields=list_status`, {
+            headers: {
+                "X-MAL-CLIENT-ID": ACCESS_TOKEN,
+            },
+        });
+
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+
+        const data = await response.json();
+
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.get("/figurecollection/", async (req, res) => {
     try {
         const bucket = storage.bucket('statisticshock_github_io');

@@ -736,11 +736,11 @@ aside {
             cursor: pointer;
         }
 
-        & #left {
+        & .left {
             left: 0px;
         }
 
-        & #right {
+        & .right {
             right: 0px;
         }
     }

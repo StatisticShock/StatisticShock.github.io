@@ -598,19 +598,23 @@ function scrapeMyAnimeList() {
     return __awaiter(this, void 0, void 0, function () {
         function scrapeDataFromMAL(offset) {
             return __awaiter(this, void 0, void 0, function () {
-                var data;
+                var animeData, mangaData;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, fetch("https://statisticshock-github-io.onrender.com/animelist/HikariMontgomery/".concat(offset))
                                 .then(function (response) { return response.json(); })];
                         case 1:
-                            data = _a.sent();
-                            return [2 /*return*/, data];
+                            animeData = _a.sent();
+                            return [4 /*yield*/, fetch("https://statisticshock-github-io.onrender.com/mangalist/HikariMontgomery/".concat(offset))
+                                    .then(function (response) { return response.json(); })];
+                        case 2:
+                            mangaData = _a.sent();
+                            return [2 /*return*/, [animeData, mangaData]];
                     }
                 });
             });
         }
-        var output, mal;
+        var output, animeCard, mangaCard;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -618,8 +622,9 @@ function scrapeMyAnimeList() {
                     return [4 /*yield*/, scrapeDataFromMAL(0)];
                 case 1:
                     output = _a.sent();
-                    mal = document.querySelector('#my-anime-list .inner-card');
-                    output.data.forEach(function (anime) {
+                    animeCard = document.querySelector('#my-anime-list .inner-card.anime');
+                    mangaCard = document.querySelector('#my-anime-list .inner-card.manga');
+                    output[0].data.forEach(function (anime) {
                         var img = new Image();
                         img.src = anime.node.main_picture.large;
                         var a = document.createElement('a');
@@ -638,7 +643,7 @@ function scrapeMyAnimeList() {
                         }
                         div.appendChild(p);
                         a.appendChild(div);
-                        mal.appendChild(a);
+                        animeCard.appendChild(a);
                         a.addEventListener('mouseenter', showAnimeData, true);
                         a.addEventListener('touchstart', showAnimeData, true);
                         a.addEventListener('mouseleave', hideAnimeData, true);
@@ -653,12 +658,11 @@ function scrapeMyAnimeList() {
                         ;
                     });
                     (function makeCarouselSlide() {
-                        var card = document.querySelector('#my-anime-list .card');
-                        var innerCard = card.querySelector('.inner-card');
-                        var leftButton = card.querySelector('#left');
-                        var rightButton = card.querySelector('#right');
-                        innerCard.addEventListener('load', scrollFunctions, true);
-                        function scrollFunctions() {
+                        var cards = document.querySelectorAll('#my-anime-list .card');
+                        function scrollFunctions(cardContainer) {
+                            var leftButton = cardContainer.querySelector('.left');
+                            var rightButton = cardContainer.querySelector('.right');
+                            var innerCard = cardContainer.querySelector('.inner-card');
                             leftButton.onclick = function () {
                                 var width = innerCard.scrollWidth;
                                 innerCard.scrollBy({ left: -width / 10, behavior: "smooth" });
@@ -669,6 +673,10 @@ function scrapeMyAnimeList() {
                             };
                         }
                         ;
+                        cards.forEach(function (card) {
+                            var innerCard = card.querySelector('.inner-card');
+                            scrollFunctions(card);
+                        });
                     })();
                     setTimeout(function () {
                         var loader = document.querySelector('#my-anime-list .loader');

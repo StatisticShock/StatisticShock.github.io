@@ -651,17 +651,21 @@ async function scrapeMyAnimeList (): Promise<void> {
         }
     };
 
-    async function scrapeDataFromMAL (offset: number): Promise<malJson> {
-        const data: malJson = await fetch(`https://statisticshock-github-io.onrender.com/animelist/HikariMontgomery/${offset}`)
+    async function scrapeDataFromMAL (offset: number): Promise<malJson[]> {
+        const animeData: malJson = await fetch(`https://statisticshock-github-io.onrender.com/animelist/HikariMontgomery/${offset}`)
         .then(response => response.json());
 
-        return data;
+        const mangaData: malJson = await fetch(`https://statisticshock-github-io.onrender.com/mangalist/HikariMontgomery/${offset}`)
+        .then(response => response.json());
+
+        return [animeData, mangaData];
     };
 
-    let output: malJson = await scrapeDataFromMAL(0);
-    const mal: HTMLDivElement = document.querySelector('#my-anime-list .inner-card')!;
+    let output: malJson[] = await scrapeDataFromMAL(0);
+    const animeCard: HTMLDivElement = document.querySelector('#my-anime-list .inner-card.anime')!;
+    const mangaCard: HTMLDivElement = document.querySelector('#my-anime-list .inner-card.manga')!;
 
-    output.data.forEach((anime) => {
+    output[0].data.forEach((anime) => {
         let img: HTMLImageElement = new Image();
         img.src = anime.node.main_picture.large;
         let a: HTMLAnchorElement = document.createElement('a');
@@ -683,7 +687,7 @@ async function scrapeMyAnimeList (): Promise<void> {
         div.appendChild(p);
         a.appendChild(div);
         
-        mal.appendChild(a);
+        animeCard.appendChild(a);
 
         a.addEventListener('mouseenter', showAnimeData, true);
         a.addEventListener('touchstart', showAnimeData, true);
@@ -700,12 +704,13 @@ async function scrapeMyAnimeList (): Promise<void> {
     });
 
     (function makeCarouselSlide (): void {
-        let card: HTMLDivElement = document.querySelector('#my-anime-list .card')!;
-        let innerCard: HTMLDivElement = card.querySelector('.inner-card')!;
-        let leftButton: HTMLButtonElement = card.querySelector('#left')!;
-        let rightButton: HTMLButtonElement = card.querySelector('#right')!;
+        let cards: NodeListOf<HTMLDivElement> = document.querySelectorAll('#my-anime-list .card')!;
+        
+        function scrollFunctions (cardContainer: HTMLDivElement): void {
+            const leftButton: HTMLButtonElement = cardContainer.querySelector('.left')!;
+            const rightButton: HTMLButtonElement = cardContainer.querySelector('.right')!;
+            const innerCard: HTMLDivElement = cardContainer.querySelector('.inner-card')!;
 
-        innerCard.addEventListener('load', scrollFunctions, true); function scrollFunctions (): void {
             leftButton.onclick = () => {
                 let width: number  = innerCard.scrollWidth;
                 innerCard.scrollBy({left: - width / 10, behavior: "smooth"});
@@ -716,6 +721,11 @@ async function scrapeMyAnimeList (): Promise<void> {
                 innerCard.scrollBy({left: width / 10, behavior: "smooth"});
             }
         };
+
+        cards.forEach((card) => {
+            let innerCard: HTMLDivElement = card.querySelector('.inner-card')!;
+            scrollFunctions(card);
+        });
     })()
 
     setTimeout(() => { //Should run immeditialy after output.data.forEach

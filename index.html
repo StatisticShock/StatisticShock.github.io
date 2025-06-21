@@ -10,6 +10,7 @@
 <body>
     <header id="header">
         <h1>StatisticShock's Index</h1>
+        <div class="loader"></div>
     </header>
     <nav class="menu">
         <a href="#shortcuts" class="menu-item">ATALHOS</a>
@@ -303,11 +304,19 @@
         </section>
         <section id="my-anime-list">
             <h2>MyAnimeList</h2>
+            <h3>Anime</h3>
             <div class="card">
                 <div class="loader"></div>
-                <button id="left" class="nav-button" type="button">&lt;</button>
-                <div class="inner-card" style="opacity: 0;"></div>
-                <button id="right" class="nav-button" type="button">&gt;</button>
+                <button class="nav-button left" type="button">&lt;</button>
+                <div class="inner-card anime" style="opacity: 0;"></div>
+                <button class="nav-button right" type="button">&gt;</button>
+            </div>
+            <h3>Mangá</h3>
+            <div class="card">
+                <div class="loader"></div>
+                <button class="nav-button left" type="button">&lt;</button>
+                <div class="inner-card manga" style="opacity: 0;"></div>
+                <button class="nav-button right" type="button">&gt;</button>
             </div>
         </section>
         <section id="about">
