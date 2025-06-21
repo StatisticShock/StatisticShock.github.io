@@ -658,7 +658,7 @@ async function scrapeMyAnimeList (): Promise<void> {
         const mangaData: malJson = await fetch(`https://statisticshock-github-io.onrender.com/mangalist/HikariMontgomery/${offset}`)
         .then(response => response.json());
 
-        return [animeData];
+        return [animeData, mangaData];
     };
 
     let output: malJson[] = await scrapeDataFromMAL(0);
@@ -703,6 +703,44 @@ async function scrapeMyAnimeList (): Promise<void> {
         };
     });
 
+    output[1].data.forEach((manga) => {
+        let img: HTMLImageElement = new Image();
+        img.src = manga.node.main_picture.large;
+        let a: HTMLAnchorElement = document.createElement('a');
+        a.appendChild(img);
+        a.target = '_blank';
+        a.href = `https://myanimelist.net/manga/${manga.node.id}/`
+        let div: HTMLDivElement = document.createElement('div');
+        div.classList.add('paragraph-container');
+        let p: HTMLParagraphElement = document.createElement('p');
+        p.innerHTML = `${manga.node.title}&nbsp;`;
+        div.style.display = 'none';
+
+        if (manga.list_status.score !== 0) {
+            let p2: HTMLParagraphElement = document.createElement('p');
+            p2.innerHTML = `${'⭐'.repeat(manga.list_status.score)} (${manga.list_status.score}/10)`;
+            p.appendChild(p2);
+        }
+        
+        div.appendChild(p);
+        a.appendChild(div);
+        
+        mangaCard.appendChild(a);
+
+        a.addEventListener('mouseenter', showAnimeData, true);
+        a.addEventListener('touchstart', showAnimeData, true);
+        a.addEventListener('mouseleave', hideAnimeData, true);
+        a.addEventListener('touchend', hideAnimeData, true);
+
+        function showAnimeData (): void {
+            div.style.display = '';
+        };
+
+        function hideAnimeData (): void {
+            div.style.display = 'none';
+        };
+    });
+
     (function makeCarouselSlide (): void {
         let cards: NodeListOf<HTMLDivElement> = document.querySelectorAll('#my-anime-list .card')!;
         
@@ -728,12 +766,16 @@ async function scrapeMyAnimeList (): Promise<void> {
         });
     })()
 
-    setTimeout(() => { //Should run immeditialy after output.data.forEach
-        let loader: HTMLDivElement = document.querySelector('#my-anime-list .loader')!;
-        let innerCard: HTMLDivElement = document.querySelector('#my-anime-list .inner-card')!;
+    setTimeout(() => { //Should run immeditialy after output[].data.forEach
+        let loaders: NodeListOf<HTMLDivElement> = document.querySelectorAll('#my-anime-list .loader')!;
+        let innerCards: NodeListOf<HTMLDivElement> = document.querySelectorAll('#my-anime-list .inner-card')!;
         
-        loader.style.display = 'none';
-        innerCard.style.opacity = '1';
+        loaders.forEach((loader) => {
+            loader.style.display = 'none';
+        })
+        innerCards.forEach((innerCard) => {
+            innerCard.style.opacity = '1';
+        })
 
     }, 1000);
 }

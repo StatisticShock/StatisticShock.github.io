@@ -609,7 +609,7 @@ function scrapeMyAnimeList() {
                                     .then(function (response) { return response.json(); })];
                         case 2:
                             mangaData = _a.sent();
-                            return [2 /*return*/, [animeData]];
+                            return [2 /*return*/, [animeData, mangaData]];
                     }
                 });
             });
@@ -657,6 +657,39 @@ function scrapeMyAnimeList() {
                         }
                         ;
                     });
+                    output[1].data.forEach(function (manga) {
+                        var img = new Image();
+                        img.src = manga.node.main_picture.large;
+                        var a = document.createElement('a');
+                        a.appendChild(img);
+                        a.target = '_blank';
+                        a.href = "https://myanimelist.net/manga/".concat(manga.node.id, "/");
+                        var div = document.createElement('div');
+                        div.classList.add('paragraph-container');
+                        var p = document.createElement('p');
+                        p.innerHTML = "".concat(manga.node.title, "&nbsp;");
+                        div.style.display = 'none';
+                        if (manga.list_status.score !== 0) {
+                            var p2 = document.createElement('p');
+                            p2.innerHTML = "".concat('⭐'.repeat(manga.list_status.score), " (").concat(manga.list_status.score, "/10)");
+                            p.appendChild(p2);
+                        }
+                        div.appendChild(p);
+                        a.appendChild(div);
+                        mangaCard.appendChild(a);
+                        a.addEventListener('mouseenter', showAnimeData, true);
+                        a.addEventListener('touchstart', showAnimeData, true);
+                        a.addEventListener('mouseleave', hideAnimeData, true);
+                        a.addEventListener('touchend', hideAnimeData, true);
+                        function showAnimeData() {
+                            div.style.display = '';
+                        }
+                        ;
+                        function hideAnimeData() {
+                            div.style.display = 'none';
+                        }
+                        ;
+                    });
                     (function makeCarouselSlide() {
                         var cards = document.querySelectorAll('#my-anime-list .card');
                         function scrollFunctions(cardContainer) {
@@ -679,10 +712,14 @@ function scrapeMyAnimeList() {
                         });
                     })();
                     setTimeout(function () {
-                        var loader = document.querySelector('#my-anime-list .loader');
-                        var innerCard = document.querySelector('#my-anime-list .inner-card');
-                        loader.style.display = 'none';
-                        innerCard.style.opacity = '1';
+                        var loaders = document.querySelectorAll('#my-anime-list .loader');
+                        var innerCards = document.querySelectorAll('#my-anime-list .inner-card');
+                        loaders.forEach(function (loader) {
+                            loader.style.display = 'none';
+                        });
+                        innerCards.forEach(function (innerCard) {
+                            innerCard.style.opacity = '1';
+                        });
                     }, 1000);
                     return [2 /*return*/];
             }
