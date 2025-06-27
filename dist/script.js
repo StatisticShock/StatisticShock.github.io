@@ -616,140 +616,188 @@ function scrapeMyAnimeList() {
                 });
             });
         }
-        var output, animeCard, mangaCard;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    ;
-                    return [4 /*yield*/, scrapeDataFromMAL(0)];
-                case 1:
-                    output = _a.sent();
-                    animeCard = document.querySelector('#my-anime-list .inner-card.anime');
-                    mangaCard = document.querySelector('#my-anime-list .inner-card.manga');
-                    output[0].data.forEach(function (anime) {
-                        var img = new Image();
-                        img.src = anime.node.main_picture.large;
-                        var a = document.createElement('a');
-                        a.appendChild(img);
-                        a.target = '_blank';
-                        a.href = "https://myanimelist.net/anime/".concat(anime.node.id, "/");
-                        var div = document.createElement('div');
-                        div.classList.add('paragraph-container');
-                        var p = document.createElement('p');
-                        p.innerHTML = "".concat(anime.node.title, "&nbsp;");
-                        div.style.display = 'none';
-                        if (anime.list_status.score !== 0) {
-                            var p2 = document.createElement('p');
-                            p2.innerHTML = "".concat('⭐'.repeat(anime.list_status.score), " (").concat(anime.list_status.score, "/10)");
-                            p.appendChild(p2);
-                        }
-                        div.appendChild(p);
-                        a.appendChild(div);
-                        animeCard.appendChild(a);
-                        a.addEventListener('mouseenter', showAnimeData, true);
-                        a.addEventListener('touchstart', showAnimeData, true);
-                        a.addEventListener('mouseleave', hideAnimeData, true);
-                        a.addEventListener('touchend', hideAnimeData, true);
-                        function showAnimeData() {
-                            div.style.display = '';
-                        }
-                        ;
-                        function hideAnimeData() {
-                            div.style.display = 'none';
-                        }
-                        ;
-                    });
-                    output[1].data.forEach(function (manga) {
-                        var img = new Image();
-                        img.src = manga.node.main_picture.large;
-                        var a = document.createElement('a');
-                        a.appendChild(img);
-                        a.target = '_blank';
-                        a.href = "https://myanimelist.net/manga/".concat(manga.node.id, "/");
-                        var div = document.createElement('div');
-                        div.classList.add('paragraph-container');
-                        var p = document.createElement('p');
-                        p.innerHTML = "".concat(manga.node.title, "&nbsp;");
-                        div.style.display = 'none';
-                        if (manga.list_status.score !== 0) {
-                            var p2 = document.createElement('p');
-                            p2.innerHTML = "".concat('⭐'.repeat(manga.list_status.score), " (").concat(manga.list_status.score, "/10)");
-                            p.appendChild(p2);
-                        }
-                        div.appendChild(p);
-                        a.appendChild(div);
-                        mangaCard.appendChild(a);
-                        a.addEventListener('mouseenter', showAnimeData, true);
-                        a.addEventListener('touchstart', showAnimeData, true);
-                        a.addEventListener('mouseleave', hideAnimeData, true);
-                        a.addEventListener('touchend', hideAnimeData, true);
-                        function showAnimeData() {
-                            div.style.display = '';
-                        }
-                        ;
-                        function hideAnimeData() {
-                            div.style.display = 'none';
-                        }
-                        ;
-                    });
-                    (function makeCarouselSlide() {
-                        var cards = document.querySelectorAll('#my-anime-list .card');
-                        function scrollFunctions(cardContainer) {
-                            var leftButton = cardContainer.querySelector('.left');
-                            var rightButton = cardContainer.querySelector('.right');
-                            var innerCard = cardContainer.querySelector('.inner-card');
-                            leftButton.onclick = function () {
-                                var width = innerCard.scrollWidth;
-                                innerCard.scrollBy({ left: -width / 20, behavior: "smooth" });
-                            };
-                            rightButton.onclick = function () {
-                                var width = innerCard.scrollWidth;
-                                innerCard.scrollBy({ left: width / 20, behavior: "smooth" });
-                            };
-                        }
-                        ;
-                        cards.forEach(function (card) {
-                            var innerCard = card.querySelector('.inner-card');
-                            scrollFunctions(card);
-                        });
-                    })();
-                    (function selectOnlyTheCurrentImage() {
-                        if (!mobile)
-                            return;
-                        else {
-                            [animeCard, mangaCard].forEach(function (card) {
-                                var entries = card.querySelectorAll('a');
-                                var navBttns = card.parentElement.querySelectorAll('.nav-button');
-                                entries.forEach(function (entry) {
-                                    entry.addEventListener('click', function (e) {
-                                        var collision = false;
-                                        navBttns.forEach(function (bttn) {
-                                            if (CustomFunctions.doesItCollide(entry, bttn)) {
-                                                collision = true;
-                                            }
-                                            ;
-                                        });
-                                        if (collision) {
-                                            e.preventDefault();
-                                        }
-                                    });
-                                });
+        function createCards(entries, card, insertBefore) {
+            var firstCard = card.firstElementChild;
+            entries.data.forEach(function (entry) {
+                var typeOfMedia = Object.keys(entry.list_status).includes('is_rewatching') ? 'anime' : 'manga';
+                var img = new Image();
+                img.src = entry.node.main_picture.large;
+                var a = document.createElement('a');
+                a.appendChild(img);
+                a.target = '_blank';
+                a.href = "https://myanimelist.net/".concat(typeOfMedia, "/").concat(entry.node.id, "/");
+                var div = document.createElement('div');
+                div.classList.add('paragraph-container');
+                var p = document.createElement('p');
+                p.innerHTML = "".concat(entry.node.title, "&nbsp;");
+                div.style.display = 'none';
+                if (entry.list_status.score !== 0) {
+                    var p2 = document.createElement('p');
+                    p2.innerHTML = "".concat('⭐'.repeat(entry.list_status.score), " (").concat(entry.list_status.score, "/10)");
+                    p.appendChild(p2);
+                }
+                div.appendChild(p);
+                a.appendChild(div);
+                if (insertBefore) {
+                    card.insertBefore(a, firstCard);
+                }
+                else {
+                    card.appendChild(a);
+                }
+                a.addEventListener('mouseenter', showEntryData, true);
+                a.addEventListener('touchstart', showEntryData, true);
+                a.addEventListener('mouseleave', hideEntryData, true);
+                a.addEventListener('touchend', hideEntryData, true);
+                function showEntryData() {
+                    div.style.display = '';
+                }
+                ;
+                function hideEntryData() {
+                    div.style.display = 'none';
+                }
+                ;
+            });
+        }
+        function setDefaultScroll() {
+            var itemWidth = animeCard.querySelector('a').getBoundingClientRect().width;
+            var gap = parseFloat(getComputedStyle(animeCard).gap);
+            animeCard.scrollTo((itemWidth + gap) * 10, 0);
+            mangaCard.scrollTo((itemWidth + gap) * 10, 0);
+        }
+        function makeCarouselSlide(entries, card) {
+            function getClosestAnchor(container) {
+                var rect = container.getBoundingClientRect();
+                var center = rect.left + rect.width / 2;
+                var anchors = container.querySelectorAll('a');
+                var closestAnchor = null;
+                var closestDistance = Infinity; //First distance as a number
+                anchors.forEach(function (anchor) {
+                    var anchorRect = anchor.getBoundingClientRect();
+                    var anchorCenter = anchorRect.left + anchorRect.width / 2;
+                    var distance = Math.abs(center - anchorCenter);
+                    if (distance < closestDistance) {
+                        closestDistance = distance; //Assigns the lowest possible distance
+                        closestAnchor = anchor;
+                    }
+                });
+                return closestAnchor;
+            }
+            ;
+            var navBttns = card.parentElement.querySelectorAll('.nav-button');
+            navBttns.forEach(function (bttn) {
+                bttn.addEventListener('click', scrollFunction);
+                function scrollFunction(e) {
+                    var target = e.target;
+                    var direction = target.classList.contains('left') ? 'left' : 'right';
+                    var anchor = getClosestAnchor(card);
+                    var anchors = card.querySelectorAll('a');
+                    var width = card.scrollWidth;
+                    var anchorWidth = parseFloat(getComputedStyle(anchor).width);
+                    var gap = parseFloat(getComputedStyle(card).gap);
+                    if (direction === 'left') {
+                        card.scrollBy({ left: -width / anchors.length, behavior: 'smooth' });
+                        if (anchor === anchors[5] || anchor === anchors[4]) {
+                            var frstChild = card.firstElementChild;
+                            var previousOffset = frstChild.offsetLeft;
+                            createCards(entries, card, true);
+                            var newOffset = frstChild.offsetLeft;
+                            card.style.scrollBehavior = 'auto'; //Sets to 'auto' momentanely
+                            card.scrollLeft += (newOffset - previousOffset);
+                            card.scrollBy({ left: -width / anchors.length, behavior: 'smooth' });
+                            card.style.scrollBehavior = 'smooth'; //Reverts it to 'smooth'
+                            var allAnchors = card.querySelectorAll('a');
+                            var anchorsToRemove = Array.from(allAnchors).slice(allAnchors.length - 10, allAnchors.length);
+                            anchorsToRemove.forEach(function (anchorToRemove) {
+                                anchorToRemove.remove();
                             });
                         }
                         ;
-                    })();
-                    setTimeout(function () {
-                        var loaders = document.querySelectorAll('#my-anime-list .loader');
-                        var innerCards = document.querySelectorAll('#my-anime-list .inner-card');
-                        loaders.forEach(function (loader) {
-                            loader.style.display = 'none';
+                    }
+                    else if (direction === 'right') {
+                        card.scrollBy({ left: width / anchors.length, behavior: 'smooth' });
+                        if (anchor === anchors[anchors.length - 5] || anchor === anchors[anchors.length - 4]) {
+                            var frstChild = card.lastElementChild;
+                            var previousOffset = frstChild.offsetLeft;
+                            createCards(entries, card, false);
+                            var allAnchors = card.querySelectorAll('a');
+                            var anchorsToRemove = Array.from(allAnchors).slice(0, 10);
+                            anchorsToRemove.forEach(function (anchorToRemove) {
+                                anchorToRemove.remove();
+                            });
+                            var newOffset = frstChild.offsetLeft;
+                            card.style.scrollBehavior = 'auto'; //Sets to 'auto' momentanely
+                            console.log(previousOffset, newOffset);
+                            card.scrollLeft += (newOffset - previousOffset);
+                            card.scrollBy({ left: width / anchors.length, behavior: 'smooth' });
+                            card.style.scrollBehavior = 'smooth'; //Reverts it to 'smooth'
+                        }
+                        ;
+                    }
+                    ;
+                }
+                ;
+            });
+        }
+        function selectOnlyTheCurrentImage() {
+            if (!mobile)
+                return;
+            else {
+                console.log('Running mobile.');
+                [animeCard, mangaCard].forEach(function (card) {
+                    var entries = card.querySelectorAll('a');
+                    var navBttns = card.parentElement.querySelectorAll('.nav-button');
+                    entries.forEach(function (entry) {
+                        entry.addEventListener('click', function (e) {
+                            var collision = false;
+                            navBttns.forEach(function (bttn) {
+                                if (CustomFunctions.doesItCollide(entry, bttn)) {
+                                    collision = true;
+                                }
+                                ;
+                            });
+                            if (collision) {
+                                e.preventDefault();
+                            }
                         });
-                        innerCards.forEach(function (innerCard) {
-                            innerCard.style.opacity = '1';
-                        });
-                    }, 1000);
-                    return [2 /*return*/];
+                    });
+                });
             }
+            ;
+        }
+        var output, animeCard, mangaCard;
+        return __generator(this, function (_a) {
+            ;
+            output = scrapeDataFromMAL(0);
+            animeCard = document.querySelector('#my-anime-list .inner-card.anime');
+            mangaCard = document.querySelector('#my-anime-list .inner-card.manga');
+            output.then(function (res) {
+                for (var i = 0; i < 2; i++) { //Adds two of each anime/manga entry to make it look infinite
+                    createCards(res[0], animeCard);
+                    createCards(res[1], mangaCard);
+                    if (i === 1) {
+                        makeCarouselSlide(res[0], animeCard);
+                        makeCarouselSlide(res[1], mangaCard);
+                    }
+                }
+                ;
+                setDefaultScroll();
+                selectOnlyTheCurrentImage();
+            });
+            ;
+            ;
+            ;
+            ;
+            setTimeout(function () {
+                var loaders = document.querySelectorAll('#my-anime-list .loader');
+                var innerCards = document.querySelectorAll('#my-anime-list .inner-card');
+                loaders.forEach(function (loader) {
+                    loader.style.display = 'none';
+                });
+                innerCards.forEach(function (innerCard) {
+                    innerCard.style.opacity = '1';
+                });
+            }, 1000);
+            return [2 /*return*/];
         });
     });
 }

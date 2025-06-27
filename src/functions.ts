@@ -12,6 +12,14 @@ export default class CustomFunctions {
         return arr;
     };
 
+    static revertArray (arr: Array<any>): Array<any> {
+        const newArr: Array<any> = [];
+        for (let i = arr.length - 1; i >= 0; i--) {
+            newArr.push(arr[i]);
+        };
+        return newArr;
+    }
+
     static isParent (element: HTMLElement, parent: HTMLElement): boolean {
         return parent.contains(element);
     };
@@ -23,7 +31,7 @@ export default class CustomFunctions {
         } else if (min == max) {
             return max;
         } else return Math.floor(Math.random() * (max - min + 1) + min);
-    }
+    };
 
     static doesItCollide (oneElement: HTMLElement, twoElement: HTMLElement): boolean {
         const oneRect: DOMRect = oneElement.getBoundingClientRect();
@@ -35,4 +43,8 @@ export default class CustomFunctions {
             twoRect.y + twoRect.height > oneRect.y) return true
         else return false;
     };
+
+    static async sleep(ms: number): Promise<void> {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 }
