@@ -726,7 +726,6 @@ function scrapeMyAnimeList() {
                             });
                             var newOffset = frstChild.offsetLeft;
                             card.style.scrollBehavior = 'auto'; //Sets to 'auto' momentanely
-                            console.log(previousOffset, newOffset);
                             card.scrollLeft += (newOffset - previousOffset);
                             card.scrollBy({ left: width / anchors.length, behavior: 'smooth' });
                             card.style.scrollBehavior = 'smooth'; //Reverts it to 'smooth'
@@ -782,12 +781,7 @@ function scrapeMyAnimeList() {
                 ;
                 setDefaultScroll();
                 selectOnlyTheCurrentImage();
-            });
-            ;
-            ;
-            ;
-            ;
-            setTimeout(function () {
+            }).then(function (res) {
                 var loaders = document.querySelectorAll('#my-anime-list .loader');
                 var innerCards = document.querySelectorAll('#my-anime-list .inner-card');
                 loaders.forEach(function (loader) {
@@ -796,7 +790,11 @@ function scrapeMyAnimeList() {
                 innerCards.forEach(function (innerCard) {
                     innerCard.style.opacity = '1';
                 });
-            }, 1000);
+            });
+            ;
+            ;
+            ;
+            ;
             return [2 /*return*/];
         });
     });

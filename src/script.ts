@@ -682,6 +682,16 @@ async function scrapeMyAnimeList (): Promise<void> {
 
         setDefaultScroll();
         selectOnlyTheCurrentImage();
+    }).then((res) => {
+        let loaders: NodeListOf<HTMLDivElement> = document.querySelectorAll('#my-anime-list .loader')!;
+        let innerCards: NodeListOf<HTMLDivElement> = document.querySelectorAll('#my-anime-list .inner-card')!;
+        
+        loaders.forEach((loader) => {
+            loader.style.display = 'none';
+        })
+        innerCards.forEach((innerCard) => {
+            innerCard.style.opacity = '1';
+        })
     })
 
     function createCards (entries: malJson, card: HTMLDivElement, insertBefore?: boolean): void {
@@ -815,7 +825,6 @@ async function scrapeMyAnimeList (): Promise<void> {
                         const newOffset: number = frstChild.offsetLeft;
 
                         card.style.scrollBehavior = 'auto'; //Sets to 'auto' momentanely
-                        console.log(previousOffset, newOffset);
                         card.scrollLeft += (newOffset - previousOffset);
                         card.scrollBy({left: width / anchors.length, behavior: 'smooth'});
                         card.style.scrollBehavior = 'smooth'; //Reverts it to 'smooth'
@@ -850,19 +859,6 @@ async function scrapeMyAnimeList (): Promise<void> {
             });
         };
     };
-
-    setTimeout(() => { //Should run immeditialy after output[].data.forEach
-        let loaders: NodeListOf<HTMLDivElement> = document.querySelectorAll('#my-anime-list .loader')!;
-        let innerCards: NodeListOf<HTMLDivElement> = document.querySelectorAll('#my-anime-list .inner-card')!;
-        
-        loaders.forEach((loader) => {
-            loader.style.display = 'none';
-        })
-        innerCards.forEach((innerCard) => {
-            innerCard.style.opacity = '1';
-        })
-
-    }, 1000);
 };
 
 window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions () {
