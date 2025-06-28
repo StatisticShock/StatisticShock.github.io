@@ -567,13 +567,13 @@ function addImages() {
                 case 1: return [4 /*yield*/, (_a.sent()).json()];
                 case 2:
                     result = _a.sent();
-                    ownedFiguresArray = result.filter(function (figure) { return figure.type !== 'Wished'; });
+                    ownedFiguresArray = CustomFunctions.shuffle(result.filter(function (figure) { return figure.type !== 'Wished'; }));
                     createElementPromise = new Promise(function (resolve, reject) {
                         resolve(ownedFiguresArray.map(createElement));
                     });
                     createElementPromise.then(function () {
-                        setTimeout(resizeAllMasonryItems, 450);
-                        setTimeout(resizeAside, 500);
+                        setTimeout(resizeAllMasonryItems, 1000);
+                        setTimeout(resizeAside, 1000);
                     });
                     window.addEventListener('resize', function () {
                         setTimeout(function () {
