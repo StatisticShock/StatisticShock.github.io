@@ -1,5 +1,6 @@
 // Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
+import { AnimeList, MangaList } from "../server/server.js"
 
 //A const that stores if the browser is mobile
 const mobile: boolean = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -801,40 +802,17 @@ async function addImages (): Promise<void> {
 
 // To add a MyAnimeList card
 async function scrapeMyAnimeList (): Promise<void> {
-    type malJson = {
-        data: [{
-            node: {
-                id: number,
-                main_picture: {
-                    medium: string,
-                    large: string
-                },
-                title: string
-            },
-            list_status: {
-                is_rewatching: boolean,
-                num_episodes_watched: number,
-                score: number,
-                status: string,
-                updated_at: string,
-            }
-        }],
-        paging: {
-            next: string
-        }
-    };
-
-    async function scrapeDataFromMAL (offset: number): Promise<malJson[]> {
-        const animeData: malJson = await fetch(`https://statisticshock-github-io.onrender.com/animelist/HikariMontgomery/${offset}`)
+    async function scrapeDataFromMAL (offset: number): Promise<[AnimeList, MangaList]> {
+        const animeData: AnimeList = await fetch(`https://statisticshock-github-io.onrender.com/animelist/HikariMontgomery/${offset}`)
         .then(response => response.json());
 
-        const mangaData: malJson = await fetch(`https://statisticshock-github-io.onrender.com/mangalist/HikariMontgomery/${offset}`)
+        const mangaData: MangaList = await fetch(`https://statisticshock-github-io.onrender.com/mangalist/HikariMontgomery/${offset}`)
         .then(response => response.json());
 
         return [animeData, mangaData];
     };
 
-    let output: Promise<malJson[]> = scrapeDataFromMAL(0);
+    let output: Promise<[AnimeList, MangaList]> = scrapeDataFromMAL(0);
     const animeCard: HTMLDivElement = document.querySelector('#my-anime-list .inner-card.anime')!;
     const mangaCard: HTMLDivElement = document.querySelector('#my-anime-list .inner-card.manga')!;
 
@@ -864,7 +842,7 @@ async function scrapeMyAnimeList (): Promise<void> {
         })
     })
 
-    function createCards (entries: malJson, card: HTMLDivElement, insertBefore?: boolean): void {
+    function createCards (entries: AnimeList | MangaList, card: HTMLDivElement, insertBefore?: boolean): void {
         const firstCard = card.firstElementChild as HTMLAnchorElement | null;
         
         entries.data.forEach((entry) => {
@@ -920,7 +898,7 @@ async function scrapeMyAnimeList (): Promise<void> {
         mangaCard.scrollTo((itemWidth + gap) * 10,0);
     };
 
-    function makeCarouselSlide (entries: malJson, card: HTMLDivElement): void {
+    function makeCarouselSlide (entries: AnimeList | MangaList, card: HTMLDivElement): void {
         function getClosestAnchor (container: HTMLDivElement): HTMLAnchorElement {
             const rect: DOMRect = container.getBoundingClientRect();
             const center: number = rect.left + rect.width / 2;

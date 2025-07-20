@@ -10,7 +10,7 @@ const storage_1 = require("@google-cloud/storage");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
-const API_URL = "https://api.myanimelist.net/v2/users/";
+const API_URL = "https://api.myanimelist.net/v2/";
 const ACCESS_TOKEN = process.env.MAL_ACCESS_TOKEN;
 const serviceAccount = JSON.parse(process.env.GOOGLE_JSON_KEY);
 const storage = new storage_1.Storage({ credentials: serviceAccount });
@@ -28,7 +28,7 @@ app.get("/animelist/:username/:offset?", async (req, res) => {
     if (!offset)
         offset = 0;
     try {
-        const response = await fetch(`${API_URL}${username}/animelist?limit=10&sort=list_updated_at&offset=${offset}&fields=list_status`, {
+        const response = await fetch(`${API_URL}users/${username}/animelist?limit=100&sort=list_updated_at&offset=${offset}&fields=list_status,synopsis,genres,num_episodes,nsfw,rank`, {
             headers: {
                 "X-MAL-CLIENT-ID": ACCESS_TOKEN,
             },
@@ -47,7 +47,7 @@ app.get("/mangalist/:username/:offset?", async (req, res) => {
     if (!offset)
         offset = 0;
     try {
-        const response = await fetch(`${API_URL}${username}/mangalist?limit=10&sort=list_updated_at&offset=${offset}&fields=list_status`, {
+        const response = await fetch(`${API_URL}users/${username}/mangalist?limit=100&sort=list_updated_at&offset=${offset}&fields=list_status,synopsis,genres,num_chapters,nsfw,rank`, {
             headers: {
                 "X-MAL-CLIENT-ID": ACCESS_TOKEN,
             },
@@ -72,4 +72,4 @@ app.get("/figurecollection/", async (req, res) => {
         console.error(err);
     }
 });
-app.listen(PORT, () => console.log(`Server running on https://statisticshock-github-io.onrender.com`));
+app.listen(PORT, () => console.log(`Server running...`));
