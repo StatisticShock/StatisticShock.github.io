@@ -766,25 +766,27 @@ function scrapeMyAnimeList() {
     return __awaiter(this, void 0, void 0, function () {
         function scrapeDataFromMAL(offset) {
             return __awaiter(this, void 0, void 0, function () {
-                var animeData, mangaData;
+                var animeData, animeDataData, mangaData, mangaDataData;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, fetch("https://statisticshock-github-io.onrender.com/animelist/HikariMontgomery/".concat(offset))
                                 .then(function (response) { return response.json(); })];
                         case 1:
                             animeData = _a.sent();
+                            animeDataData = animeData.data.filter(function (entry) { return entry.node.nsfw === 'white'; }).slice(0, 10);
                             return [4 /*yield*/, fetch("https://statisticshock-github-io.onrender.com/mangalist/HikariMontgomery/".concat(offset))
                                     .then(function (response) { return response.json(); })];
                         case 2:
                             mangaData = _a.sent();
-                            return [2 /*return*/, [animeData, mangaData]];
+                            mangaDataData = mangaData.data.filter(function (entry) { return entry.node.nsfw === 'white'; }).slice(0, 10);
+                            return [2 /*return*/, [animeDataData, mangaDataData]];
                     }
                 });
             });
         }
         function createCards(entries, card, insertBefore) {
             var firstCard = card.firstElementChild;
-            entries.data.forEach(function (entry) {
+            entries.forEach(function (entry) {
                 var typeOfMedia = Object.keys(entry.list_status).includes('is_rewatching') ? 'anime' : 'manga';
                 var img = new Image();
                 img.src = entry.node.main_picture.large;
@@ -794,15 +796,36 @@ function scrapeMyAnimeList() {
                 a.href = "https://myanimelist.net/".concat(typeOfMedia, "/").concat(entry.node.id, "/");
                 var div = document.createElement('div');
                 div.classList.add('paragraph-container');
-                var p = document.createElement('p');
-                p.innerHTML = "".concat(entry.node.title, "&nbsp;");
-                div.style.display = 'none';
-                if (entry.list_status.score !== 0) {
-                    var p2 = document.createElement('p');
-                    p2.innerHTML = "".concat('⭐'.repeat(entry.list_status.score), " (").concat(entry.list_status.score, "/10)");
-                    p.appendChild(p2);
+                var bold = document.createElement('b');
+                bold.innerHTML = "#".concat(entry.node.rank === undefined ? 'N/A' : entry.node.rank);
+                var span = document.createElement('span');
+                span.innerHTML = "<p><span>T\u00EDtulo&nbsp;</span><span>".concat(entry.node.title, "</span></p>");
+                var p2 = document.createElement('p');
+                if ('num_episodes_watched' in entry.list_status && 'num_episodes' in entry.node) {
+                    p2.innerHTML = "<span>Assistidos&nbsp;</span><span>".concat(entry.list_status.num_episodes_watched, "/").concat(entry.node.num_episodes === 0 ? '??' : entry.node.num_episodes, "</span>");
                 }
-                div.appendChild(p);
+                else if ('num_chapters_read' in entry.list_status && 'num_chapters' in entry.node) {
+                    p2.innerHTML = "<span>Lidos&nbsp;</span><span>".concat(entry.list_status.num_chapters_read, "/").concat(entry.node.num_chapters === 0 ? '??' : entry.node.num_chapters, "</span>");
+                }
+                ;
+                var p3 = document.createElement('p');
+                var genres = [];
+                for (var _i = 0, _a = entry.node.genres; _i < _a.length; _i++) {
+                    var genre = _a[_i];
+                    genres.push(genre.name);
+                }
+                p3.innerHTML = "<span>G\u00EAneros&nbsp;</span><span>".concat(genres.join(', '), "</span>");
+                div.style.display = mobile ? '' : 'none';
+                img.style.opacity = mobile ? '0.25' : '1';
+                span.appendChild(p2);
+                span.appendChild(p3);
+                if (entry.list_status.score !== 0) {
+                    var p4 = document.createElement('p');
+                    p4.innerHTML = "<span>Pontua\u00E7\u00E3o&nbsp;</span><span>".concat('⭐'.repeat(entry.list_status.score), " (").concat(entry.list_status.score, "/10)</span>");
+                    span.appendChild(p4);
+                }
+                div.appendChild(bold);
+                div.appendChild(span);
                 a.appendChild(div);
                 if (insertBefore) {
                     card.insertBefore(a, firstCard);
@@ -810,16 +833,21 @@ function scrapeMyAnimeList() {
                 else {
                     card.appendChild(a);
                 }
-                a.addEventListener('mouseenter', showEntryData, true);
-                a.addEventListener('touchstart', showEntryData, true);
-                a.addEventListener('mouseleave', hideEntryData, true);
-                a.addEventListener('touchend', hideEntryData, true);
+                if (!mobile) {
+                    a.addEventListener('mouseenter', showEntryData, true);
+                    a.addEventListener('touchstart', showEntryData, true);
+                    a.addEventListener('mouseleave', hideEntryData, true);
+                    a.addEventListener('touchend', hideEntryData, true);
+                }
+                ;
                 function showEntryData() {
                     div.style.display = '';
+                    img.style.opacity = '0.25';
                 }
                 ;
                 function hideEntryData() {
                     div.style.display = 'none';
+                    img.style.opacity = '1';
                 }
                 ;
             });

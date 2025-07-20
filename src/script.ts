@@ -1,6 +1,6 @@
 // Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
-import { AnimeList, MangaList } from "../server/server.js"
+import { AnimeList, MangaList } from "../server/types.js"
 
 //A const that stores if the browser is mobile
 const mobile: boolean = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -802,17 +802,19 @@ async function addImages (): Promise<void> {
 
 // To add a MyAnimeList card
 async function scrapeMyAnimeList (): Promise<void> {
-    async function scrapeDataFromMAL (offset: number): Promise<[AnimeList, MangaList]> {
+    async function scrapeDataFromMAL (offset: number): Promise<[AnimeList['data'], MangaList['data']]> {
         const animeData: AnimeList = await fetch(`https://statisticshock-github-io.onrender.com/animelist/HikariMontgomery/${offset}`)
         .then(response => response.json());
+        const animeDataData: AnimeList["data"] = animeData.data.filter((entry) => entry.node.nsfw === 'white').slice(0, 10);
 
         const mangaData: MangaList = await fetch(`https://statisticshock-github-io.onrender.com/mangalist/HikariMontgomery/${offset}`)
         .then(response => response.json());
+        const mangaDataData: MangaList["data"] = mangaData.data.filter((entry) => entry.node.nsfw === 'white').slice(0, 10);
 
-        return [animeData, mangaData];
+        return [animeDataData, mangaDataData];
     };
 
-    let output: Promise<[AnimeList, MangaList]> = scrapeDataFromMAL(0);
+    let output: Promise<[AnimeList['data'], MangaList['data']]> = scrapeDataFromMAL(0);
     const animeCard: HTMLDivElement = document.querySelector('#my-anime-list .inner-card.anime')!;
     const mangaCard: HTMLDivElement = document.querySelector('#my-anime-list .inner-card.manga')!;
 
@@ -842,31 +844,50 @@ async function scrapeMyAnimeList (): Promise<void> {
         })
     })
 
-    function createCards (entries: AnimeList | MangaList, card: HTMLDivElement, insertBefore?: boolean): void {
+    function createCards (entries: AnimeList['data'] | MangaList['data'], card: HTMLDivElement, insertBefore?: boolean): void {
         const firstCard = card.firstElementChild as HTMLAnchorElement | null;
         
-        entries.data.forEach((entry) => {
+        entries.forEach((entry) => {
             const typeOfMedia: string = Object.keys(entry.list_status).includes('is_rewatching') ? 'anime' : 'manga';
 
-            let img: HTMLImageElement = new Image();
+            const img: HTMLImageElement = new Image();
             img.src = entry.node.main_picture.large;
-            let a: HTMLAnchorElement = document.createElement('a');
+            const a: HTMLAnchorElement = document.createElement('a');
             a.appendChild(img);
             a.target = '_blank';
             a.href = `https://myanimelist.net/${typeOfMedia}/${entry.node.id}/`
-            let div: HTMLDivElement = document.createElement('div');
+            const div: HTMLDivElement = document.createElement('div');
             div.classList.add('paragraph-container');
-            let p: HTMLParagraphElement = document.createElement('p');
-            p.innerHTML = `${entry.node.title}&nbsp;`;
-            div.style.display = 'none';
+            const bold: HTMLElement = document.createElement('b');
+            bold.innerHTML = `#${entry.node.rank === undefined ? 'N/A' : entry.node.rank}`
+            const span: HTMLSpanElement = document.createElement('span');
+            span.innerHTML = `<p><span>Título&nbsp;</span><span>${entry.node.title}</span></p>`;
+            const p2: HTMLParagraphElement = document.createElement('p');
+            if ('num_episodes_watched' in entry.list_status && 'num_episodes' in entry.node) {
+                p2.innerHTML = `<span>Assistidos&nbsp;</span><span>${entry.list_status.num_episodes_watched}/${entry.node.num_episodes === 0 ? '??' : entry.node.num_episodes}</span>`;
+            } else if ('num_chapters_read' in entry.list_status && 'num_chapters' in entry.node) {
+                p2.innerHTML = `<span>Lidos&nbsp;</span><span>${entry.list_status.num_chapters_read}/${entry.node.num_chapters === 0 ? '??' : entry.node.num_chapters}</span>`;
+            };
+            const p3: HTMLParagraphElement = document.createElement('p');
+            const genres: Array<string> = [];
+            for (const genre of entry.node.genres) {
+                genres.push(genre.name);
+            }
+            p3.innerHTML = `<span>Gêneros&nbsp;</span><span>${genres.join(', ')}</span>`
+            div.style.display = mobile ? '' : 'none';
+            img.style.opacity = mobile ? '0.25' : '1'
+
+            span.appendChild(p2);
+            span.appendChild(p3);
 
             if (entry.list_status.score !== 0) {
-                let p2: HTMLParagraphElement = document.createElement('p');
-                p2.innerHTML = `${'⭐'.repeat(entry.list_status.score)} (${entry.list_status.score}/10)`;
-                p.appendChild(p2);
+                const p4: HTMLParagraphElement = document.createElement('p');
+                p4.innerHTML = `<span>Pontuação&nbsp;</span><span>${'⭐'.repeat(entry.list_status.score)} (${entry.list_status.score}/10)</span>`;
+                span.appendChild(p4);
             }
             
-            div.appendChild(p);
+            div.appendChild(bold);
+            div.appendChild(span);
             a.appendChild(div);
             
             if (insertBefore) {
@@ -875,17 +896,21 @@ async function scrapeMyAnimeList (): Promise<void> {
                 card.appendChild(a);
             }
 
-            a.addEventListener('mouseenter', showEntryData, true);
-            a.addEventListener('touchstart', showEntryData, true);
-            a.addEventListener('mouseleave', hideEntryData, true);
-            a.addEventListener('touchend', hideEntryData, true);
+            if (!mobile) {
+                a.addEventListener('mouseenter', showEntryData, true);
+                a.addEventListener('touchstart', showEntryData, true);
+                a.addEventListener('mouseleave', hideEntryData, true);
+                a.addEventListener('touchend', hideEntryData, true);
+            };
 
             function showEntryData (): void {
                 div.style.display = '';
+                img.style.opacity = '0.25';
             };
 
             function hideEntryData (): void {
                 div.style.display = 'none';
+                img.style.opacity = '1';
             };
         });
     };
@@ -898,7 +923,7 @@ async function scrapeMyAnimeList (): Promise<void> {
         mangaCard.scrollTo((itemWidth + gap) * 10,0);
     };
 
-    function makeCarouselSlide (entries: AnimeList | MangaList, card: HTMLDivElement): void {
+    function makeCarouselSlide (entries: AnimeList['data'] | MangaList['data'], card: HTMLDivElement): void {
         function getClosestAnchor (container: HTMLDivElement): HTMLAnchorElement {
             const rect: DOMRect = container.getBoundingClientRect();
             const center: number = rect.left + rect.width / 2;

@@ -28,7 +28,7 @@ app.get("/animelist/:username/:offset?", async (req, res) => {
     if (!offset)
         offset = 0;
     try {
-        const response = await fetch(`${API_URL}users/${username}/animelist?limit=100&sort=list_updated_at&offset=${offset}&fields=list_status,synopsis,genres,num_episodes,nsfw,rank`, {
+        const response = await fetch(`${API_URL}users/${username}/animelist?limit=100&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_episodes,nsfw,rank`, {
             headers: {
                 "X-MAL-CLIENT-ID": ACCESS_TOKEN,
             },
@@ -47,7 +47,7 @@ app.get("/mangalist/:username/:offset?", async (req, res) => {
     if (!offset)
         offset = 0;
     try {
-        const response = await fetch(`${API_URL}users/${username}/mangalist?limit=100&sort=list_updated_at&offset=${offset}&fields=list_status,synopsis,genres,num_chapters,nsfw,rank`, {
+        const response = await fetch(`${API_URL}users/${username}/mangalist?limit=100&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_chapters,nsfw,rank`, {
             headers: {
                 "X-MAL-CLIENT-ID": ACCESS_TOKEN,
             },

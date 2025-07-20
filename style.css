@@ -629,21 +629,29 @@ section {
                             position: relative;
                             top: calc(-100% - 4px);
                             height: 100%;
-                            /* border: 1px solid wheat; */
                             margin: 1em;
                             font-size: 0.75em;
 
-                            & p {
+                            & b {
+                                font-size: 1.5em;
+                                color: white;
+                            }
+
+                            & span > p {
+                                font-size: 0.8em;
+                                display: grid;
+                                grid-template-columns: 1fr 2fr;
                                 white-space: initial;
                                 width: 100%;
                                 color: white;
                                 pointer-events: none;
+                                margin: 5px 0;
+
+                                & span:nth-child(1) {
+                                    color: #a1a1a1;
+                                }
                             }
                         }
-                    }
-
-                    & a:hover img {
-                        opacity: 0.25;
                     }
                 }
 
