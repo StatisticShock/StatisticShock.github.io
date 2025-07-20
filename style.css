@@ -13,24 +13,44 @@
 /* THE ACTUAL THING */
 /* Styling */
 :root {
-    --pink-custom: rgba(250,30,78,255);
+    --pink-custom: rgba(250,30,78,1);
     --pink-purple: linear-gradient(163deg, var(--pink-custom) 0%, #3700ff 100%);
+}
+
+:root, :root[data-theme="dark"] {
+    --invert: 100%;
+    --main-color: black;
+    --background-color: rgba(49, 49, 49, 1);
+    --contrast-color-1: rgba(60, 60, 60, 1);
+    --contrast-color-2: rgba(70, 70, 70, 1);
+    --contrast-color-3: rgba(80, 80, 80, 1);
+    --contrast-color-4: rgba(115, 115, 115, 1);
+    --contrast-color-0: rgba(255, 255, 255, 1);
+}
+
+:root[data-theme="light"] {
+    --invert: 0%;
+    --main-color: white;
+    --background-color: rgba(240, 240, 240, 1);
+    --contrast-color-1: rgba(195, 195, 195, 1);
+    --contrast-color-2: rgba(185, 185, 185, 1);
+    --contrast-color-3: rgba(175, 175, 175, 1);
+    --contrast-color-4: rgba(140, 140, 140, 1);
+    --contrast-color-0: rgba(0, 0, 0, 1);
 }
 
 body {
     font-family: OpenSans;
     line-height: 1.6;
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
-    width: 100%;
-    height: 100%;
-    /* Add your background pattern here */
-    color: white;
-    background-color: #313131;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.171) 2px, transparent 0);
+    color: var(--contrast-color-0);
+    background-color: var(--background-color);
+    background-image: radial-gradient(var(--contrast-color-3) 2px, transparent 0);
     background-size: 30px 30px;
     background-position: -5px -5px;
-    overflow-x: hidden;
+    transition: all 0.3s ease;
+    display: block;
 }
 
 img {
@@ -42,12 +62,10 @@ img {
 .pop-up {
     display: none;
     position: fixed;
-    top: 50%;
-    left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #1a1a1a;
+    background-color: var(--main-color);
     border-radius: 20px;
-    border: 2px solid white;
+    border: 2px solid var(--contrast-color-0);
     width: fit-content;
     height: fit-content;
     padding: 2em;
@@ -128,15 +146,15 @@ img {
     }
 }
 
-/* From Uiverse.io by gharsh11032000 */ 
-/* The switch - the box around the slider */
 .switch {
     /* font-size: 17px; */
     text-transform: uppercase;
     position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
     display: inline-block;
-    width: 3.5em;
     height: 2em;
+    border-radius: 1em;
     cursor: pointer;
 
     /* Hide default HTML checkbox */
@@ -149,42 +167,41 @@ img {
     /* The slider */
     & .slider {
         position: absolute;
+        border: 2px solid var(--pink-custom);
+        background-color: var(--contrast-color-2);
         inset: 0;
-        border: 2px solid #414141;
-        border-radius: 50px;
+        border-radius: 1000px;
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    .slider::before {
+    & .slider::before {
         position: absolute;
         content: "";
         height: 80%;
         aspect-ratio: 1;
         left: 0.2em;
+        top: 50%;
+        transform: translateY(-50%);
         bottom: 0.2em;
-        background-color: white;
+        background-color: var(--contrast-color-0);
         border-radius: inherit;
-        transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
-    } 
-
-    & input + .slider {
-        border: 2px solid var(--pink-custom);
+        transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
     }
 
     & input:checked + .slider::before {
-        transform: translateX(var(--total-transition));
+        transform: translateX(var(--total-transition)) translateY(-50%);
     }
 }
 
 .pop-up.mfc {
     height: 70vmin;
     aspect-ratio: 1;
-    font-size: 2vmin;
+    font-size: 1.25vmax;
     z-index: 4;
     
     & #pop-up-img > img {
         max-width: 90%;
-        max-height: 90%;
+        max-height: 45%;
         position: relative;
         left: 50%;
         transform: translate(-50%,0);
@@ -201,12 +218,11 @@ img {
         & p {
             width: 100%;
             margin-bottom: -5px;
-            /* border: 1px solid white; */
 
             & span {
                 position: absolute;
                 left: 30%;
-                color: white;
+                color: var(--contrast-color-0);
                 display: inline-block;
                 white-space: nowrap;
                 overflow: hidden;
@@ -238,7 +254,7 @@ img {
             position: absolute;
             display: none;
             width: fit-content;
-            background-color: #313131;
+            background-color: var(--background-color);
             left: 50%;
             transform: translate(-50%,-150%);
             padding: 5px;
@@ -251,8 +267,8 @@ img {
 .pop-up.reddit-google {
     & span img {
         height: 20px;
-        -webkit-filter: invert(100%);
-        filter: invert(100%);
+        -webkit-filter: invert(var(--invert));
+        filter: invert(var(--invert));
     }
 
     & #keywords-reddit, & #subreddit {
@@ -263,19 +279,17 @@ img {
 .pop-up.wikipedia {
     & span img {
         height: 20px;
-        -webkit-filter: invert(100%);
-        filter: invert(100%);
+        -webkit-filter: invert(var(--invert));
+        filter: invert(var(--invert));
     } 
 }
-
-/* Styling the header */
 
 header {
     font-family: Hylia Serif;
     width: 100%;
     aspect-ratio: 5;
     cursor: pointer;
-    background-color: black;
+    background-color: var(--main-color);
     background-size: cover;
     background-position: center;
     color: white;
@@ -283,11 +297,12 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: fit-content;
     z-index: 2;
+    position: sticky;
+    top: 0;
 
     & h1 {
-        text-shadow: 0.3vh 0.3vh black;
+        text-shadow: 2px 2px black;
         font-size: 5.5vw;
         width: fit-content;
         margin: 0px;
@@ -300,11 +315,14 @@ nav {
     position: sticky;
     top: 0;
     padding: 10px 20px;
-    background-color: rgba(70,70,70,0.5);
+    background-color: var(--contrast-color-1);
     backdrop-filter: blur(1px);
-    color: white;
+    color: var(--contrast-color-0);
     z-index: 3;
     font-size: 70%;
+    display: block;
+    height: fit-content;
+    min-height: calc(1em);
 
     #mfc-switch {
         top: 50%;
@@ -320,7 +338,7 @@ nav {
         left: 10px;
         max-height: 20vw;
         height: 170px;
-        z-index: 2;
+        z-index: 4;
     
         & img {
             height: 100%;
@@ -344,463 +362,648 @@ nav {
             top: 0;
         }
     }
-}
 
-.menu-item {
-    text-decoration: none;
-    margin-right: 15px;
-    color: white;
-    position: relative;
-    transition: .3s ease;
-}
-
-.menu-item:hover {
-    color: var(--pink-custom);
-}
-
-.menu-item::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -5px;
-    width: 0;
-    height: 2px;
-    background-color: var(--pink-custom);
-    transition: 0.3s ease;
-}
-
-.menu-item:hover::after {
-    width: 100%;
-    color: black;
+    & .switch {
+        width: 100px;
+        z-index: 4;
+    }
 }
 
 section {
     margin: 0px 20px;
 }
+  
+.flex-container {
+    /* SHORTCUTS SECTION */
+    & #shortcuts {
+        position: relative;
+        transition: grid 0.3s ease;
 
-h2 {
-    padding-top: 40px;
-}
+        & > section {
+            transition: inherit;
+            margin: 0;
 
-.grid-container {
-    display: grid;
-    gap: 30px;
-    grid-auto-rows: 50px;
-    grid-auto-columns: 50px;
-    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-    max-width: 80%;
-}
+            & > .grid-container {
+                display: grid;
+                gap: 30px;
+                grid-auto-rows: 50px;
+                grid-auto-columns: 50px;
+                grid-template-columns: repeat(auto-fill, 50px);
+                max-width: 80%;
+            }
 
+            & .shortcut-item {
+                text-decoration: none;
+                position: relative;
+                height: min(50px, 20vw);
+                aspect-ratio: 1;
+                color: black;
+                transition: inherit;
 
-/* Shortcut item on hover */
-.shortcut-item {
-    text-decoration: none;
-    position: relative;
-    height: 40px;
-    width: 40px;
-    color: black;
+                & img {
+                    position: absolute;
+                    height: 100%;
+                    transition: .2s;
+                    border-radius: 0.5em;
+                }
 
-    & img {
-        height: 50px; 
-        transition: .2s;
-        border-radius: 0.5em;
-    }
+                & span {
+                    position: absolute;
+                    transform: translate(0%, 100%);
+                    transition: .2s;
+                    color: var(--contrast-color-0);
+                }
+            }
 
-    & span {
-        position: absolute;
-        transform: translate(0%, -100%);
-        transition: .2s;
-        color: white;
-    }
-}
+            & .shortcut-item:hover {
+                & img {
+                    transform: scale(1.5);
+                    border-bottom-left-radius: 0;
+                }
 
-.shortcut-item:hover {
-    & img {
-        transform: scale(1.5);
-        border-bottom-left-radius: 0;
-    }
+                & span {
+                    transform: scale(1.5) translate(-50%, 100%);
+                }
+            }
 
-    & span {
-        transform: scale(1.5) translate(-50%, -50%);
-    }
-}
+            & .shortcut-item::after {
+                position: absolute;
+                left: 0px;
+                top: 50px;
+                content: "";
+                transition: .3s ease;
+            }
 
-.shortcut-item::after {
-    position: absolute;
-    left: 0px;
-    top: 50px;
-    content: "";
-    transition: .3s ease;
-}
-
-.shortcut-item:hover::after {
-    position: absolute;
-    left: -12px;
-    top: 65px;
-    font-size: 80%;
-    color: black;
-    content: attr(alt);
-    display: inline-block;
-    z-index: 1;
-    padding: 5px;
-    background-color: var(--pink-custom);
-    width: max-content;
-    text-align: center;
-    border-top-right-radius: 3ex;
-    border-bottom-left-radius: 3ex;
-    border-bottom-right-radius: 3ex;
-    padding: 0.5em 1em 0.5em 1em;
-}
-
-/* Spacing */
-#shortcuts > section > p {
-    padding-top: 50px;
-}
-
-#shortcuts {
-    position: relative;
-    width: calc(67vw - 40px);
-    /* border: 2px solid white; */
-}
-
-/* MFC Card */
-aside {
-    position: relative;
-    width: 33vw;
-    height: 2000px;
-    border-radius: 20px;
-    transition: all .3s;
-    float: right;
-    text-wrap:wrap;
-
-    & .card {
-        width: 100%;
-        height: 100%;
-        background-color: #1a1a1a;
-        border-radius: 10px;
-        text-decoration: none;
-        transition: all .2s;
-        display: grid;
-        grid-auto-flow: column;
-        overflow-x: scroll;
-        overflow-y: hidden;
-        overscroll-behavior-x: contain;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: none;
-        gap: 50px;
-    
-        & .pinterest-grid {
-            width: 31vw;
-            scroll-snap-align: center;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            grid-auto-rows: 5px;
-            grid-gap: 5px;
-            gap: 10px;
-            margin: 10px;
-            transition: ease 0.4s;
-    
-            & > .pinterest-grid-item {
-                border: 1px solid white;
-                position: static;
+            & .shortcut-item:hover::after {
+                position: absolute;
+                left: -12px;
+                top: 65px;
+                font-size: 80%;
+                color: black;
+                content: attr(alt);
                 display: inline-block;
-                width: 100%;
-                height: fit-content;
-                font-size: .75em;
-                text-decoration: none;
+                z-index: 1;
+                padding: 5px;
+                background-color: var(--pink-custom);
+                width: max-content;
                 text-align: center;
-                background-color: #1a1a1a;
-                border: #1a1a1a 2px solid;
-                border-radius: 10px;
-                padding: 2%;
-                transition: ease .3s;
-                overflow-x: hidden;
-    
-                & img {
-                    position: relative;
-                    width: 100%;
-                    height: auto;
-                    border-radius: 10px;
-                    cursor: pointer;
-                }
+                border-top-right-radius: 3ex;
+                border-bottom-left-radius: 3ex;
+                border-bottom-right-radius: 3ex;
+                padding: 0.5em 1em 0.5em 1em;
             }
-
-            & > .pinterest-grid-item.wished {
-                box-shadow: 0 0 5px black;
+        
+            & > p {
+                padding-top: 20px;
             }
         }
-    }
-}
 
-/* Game Card */
-/* From Uiverse.io by joe-watson-sbf */ 
-.gamecard-text {
-    display: grid;
-    grid-template-columns: 40px 1fr;
-
-    & > span {
-        /* border: solid white; */
-        gap: 15px;
-        border-radius: 10px;
-        background-image: var(--pink-purple);
-        align-content: center;
-        align-items: center;
-        margin: 5px 0px;
-    }
-
-    & > span > p {
-        /* border: solid white; */
-        width: max-content;
-        height: fit-content;
-        text-transform: uppercase;
-        transform: rotate(-90deg);
-    }
-
-    & .gamecard-container {
-        height: 300px;
-        display: flex;
-        gap: 5px;
-        padding: 5px;
-    }
-}
-
-    .gamecard, .gamecard > a{
-        height: 100%;
-        flex: 1;
-        overflow-x: hidden;
-        cursor: pointer;
-        border-radius: 10px;
-        transition: .3s ease;
-        display: flex;
-        justify-content: center;
-    }
-
-    .gamecard {
-        background-image: var(--pink-purple);
-        white-space: nowrap;
-    }
-
-    .gamecard > a {
-        position: relative;
-        background: #1a1a1a;
-        transition: ease .3s;
-        background-size: 100%;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: cover;
-
-        & > span {
-            width: fit-content;
-            position: absolute;
-            top: 50%;
-            translate: 0 -50%;
-        }
-    }
-
-    .gamecard:hover {
-        flex: calc(var(--gamecard-count) - 1);
-        background-size: cover;
-        background-position: center;
-        text-shadow: 0px 0px 5px black;
-        box-shadow: 0px 0px 30px 1px var(--pink-custom);
-    }
-
-    .gamecard a:hover {
-        transform: scale(98%);
-        font-size: 40px;
-    }
-
-        #ra {
-            background-image: url(images/pageImages/ra-ps.png);
-            background-size:contain;
-        }
-
-        #rroms {
-            background-image: url(images/pageImages/rroms.png);
-        }
-
-        #fitgirl {
-            background-image: url(images/pageImages/fitgirl-ps.png);
-        }
-
-        #pkmds {
-            background-size: contain;
-            background-image: url(images/pageImages/pokemon.png);
-        }
-
-        #zelda-tracker {
-            background-image: url(images/pageImages/botw-ps.png);
-        }
-
-        #pokemon-tracker {
-            background-image: url(images/pageImages/pokemon-ps.png);
-        }
-
-        #castlevania-tracker {
-            background-image: url(images/pageImages/castlevania-ps.png);
-        }
-
-        #zelda-dungeon {
-            background-image: url(images/pageImages/zelda.jpg);
-            background-position: bottom;
-        }
-    
-    .gamecard a b {
-        width: 100%;
-        padding: .5em;
-        text-align: center;
-        transition: all .3s;
-        color: var(--pink-custom);
-        letter-spacing: .1em;
-    }
-
-/* MyAnimeList */
-#my-anime-list {
-    position: relative;
-
-    & .card {
-        position: relative;
-        width: 100%;
-        height: 320px;
-        --height: 300px;
-        border-radius: 20px;
-        text-decoration: none;
-        background-image: var(--pink-purple);
-        overflow: hidden;
-
-        & .inner-card {
-            height: inherit;
-            transition: all .2s;
+        & .gamecard-text {
             display: grid;
-            grid-auto-flow: column;
-            overflow-x:  scroll;
-            overflow-y: hidden;
-            overscroll-behavior-x: contain;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            scrollbar-width: none;
-            white-space: nowrap;
-            gap: 1.5vw;
-            padding: 10px calc(50% - 300px / 4 * 3 / 2);
-            touch-action: none;
+            grid-template-columns: 40px 1fr;
 
-            & a {
+            & > span {
+                /* border: solid white; */
+                gap: 15px;
+                border-radius: 10px;
+                background-image: var(--pink-purple);
+                align-content: center;
+                align-items: center;
+                margin: 5px 0px;
+            }
+
+            & > span > p {
+                /* border: solid white; */
+                width: max-content;
+                height: fit-content;
+                text-transform: uppercase;
+                transform: rotate(-90deg);
+            }
+
+            & .gamecard-container {
                 height: 300px;
-                aspect-ratio: 3/4;
-                scroll-snap-align: center;
-                transition: 0.3s ease;
-                z-index: 0;
-                border-radius: 20px;
-                background-color: #1a1a1a;
-                text-decoration: none;
+                display: flex;
+                gap: 5px;
+                padding: 5px;
 
-                & img {
+                & .gamecard, .gamecard > a{
                     height: 100%;
-                    width: 100%;
-                    border-radius: 20px;
+                    flex: 1;
+                    overflow-x: hidden;
+                    cursor: pointer;
+                    border-radius: 10px;
+                    transition: .3s ease;
+                    display: flex;
+                    justify-content: center;
                 }
 
-                & .paragraph-container {
-                    position: relative;
-                    top: calc(-100% - 4px);
-                    height: 100%;
-                    /* border: 1px solid wheat; */
-                    margin: 1em;
-                    font-size: 0.75em;
+                & .gamecard {
+                    background-image: var(--pink-purple);
+                    white-space: nowrap;
 
-                    & p {
-                        white-space: initial;
+                    & #ra {
+                        background-image: url(images/pageImages/ra-ps.png);
+                        background-size:contain;
+                    }
+
+                    & #rroms {
+                        background-image: url(images/pageImages/rroms.png);
+                    }
+
+                    & #fitgirl {
+                        background-image: url(images/pageImages/fitgirl-ps.png);
+                    }
+
+                    & #pkmds {
+                        background-size: contain;
+                        background-image: url(images/pageImages/pokemon.png);
+                    }
+
+                    & #zelda-tracker {
+                        background-image: url(images/pageImages/botw-ps.png);
+                    }
+
+                    & #pokemon-tracker {
+                        background-image: url(images/pageImages/pokemon-ps.png);
+                    }
+
+                    & #castlevania-tracker {
+                        background-image: url(images/pageImages/castlevania-ps.png);
+                    }
+
+                    & #zelda-dungeon {
+                        background-image: url(images/pageImages/zelda.jpg);
+                        background-position: bottom;
+                    }
+                }
+
+                & .gamecard > a {
+                    position: relative;
+                    background: #1a1a1a;
+                    transition: ease .3s;
+                    background-size: 100%;
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    background-size: cover;
+
+                    & > span {
+                        width: fit-content;
+                        position: absolute;
+                        top: 50%;
+                        translate: 0 -50%;
+                        color: var(--pink-custom);
+                    }
+                }
+
+                & .gamecard:hover {
+                    flex: calc(var(--gamecard-count) - 1);
+                    background-size: cover;
+                    background-position: center;
+                    text-shadow: 0px 0px 5px black;
+                    box-shadow: 0px 0px 30px 1px var(--pink-custom);
+                }
+
+                & .gamecard a:hover {
+                    transform: scale(98%);
+                    font-size: 40px;
+                }
+            }
+        }
+
+        & #my-anime-list {
+            position: relative;
+            transition: all 0.3s;
+
+            & .card {
+                position: relative;
+                left: 50%;
+                width: 100%;
+                transform: translate(-50%, 0);
+                height: 320px;
+                --height: 300px;
+                border-radius: 20px;
+                text-decoration: none;
+                background-image: var(--pink-purple);
+                overflow: hidden;
+
+                & .loader {
+                    height: 10px;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
+
+                & .inner-card {
+                    height: inherit;
+                    transition: all .2s;
+                    display: grid;
+                    grid-auto-flow: column;
+                    overflow-x:  scroll;
+                    overflow-y: hidden;
+                    overscroll-behavior-x: contain;
+                    scroll-snap-type: x mandatory;
+                    scroll-behavior: smooth;
+                    scrollbar-width: none;
+                    white-space: nowrap;
+                    gap: 1.5vw;
+                    padding: 10px calc(50% - 300px / 4 * 3 / 2);
+                    touch-action: none;
+
+                    & a {
+                        height: 300px;
+                        aspect-ratio: 3/4;
+                        scroll-snap-align: center;
+                        transition: 0.3s ease;
+                        z-index: 0;
+                        border-radius: 20px;
+                        background-color: #1a1a1a;
+                        text-decoration: none;
+
+                        & img {
+                            height: 100%;
+                            width: 100%;
+                            border-radius: 20px;
+                        }
+
+                        & .paragraph-container {
+                            position: relative;
+                            top: calc(-100% - 4px);
+                            height: 100%;
+                            /* border: 1px solid wheat; */
+                            margin: 1em;
+                            font-size: 0.75em;
+
+                            & p {
+                                white-space: initial;
+                                width: 100%;
+                                color: white;
+                                pointer-events: none;
+                            }
+                        }
+                    }
+
+                    & a:hover img {
+                        opacity: 0.25;
+                    }
+                }
+
+                & .nav-button {
+                    cursor: pointer;
+                    position:absolute;
+                    height: 110%;
+                    width: 15%;
+                    top: -5%;
+                    z-index: 1;
+                    border: transparent;
+                    color: var(--contrast-color-0);
+                    font-size: 3vw;
+                    transition: all .5s;
+                }
+
+                & .nav-button.left {
+                    left: 0px;
+                    background-color: var(--background-color);
+                    mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)),
+                                linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));;
+                    -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)),
+                                        linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));
+                }
+
+                & .nav-button.right {
+                    right: 0px;
+                    background-color: var(--background-color);
+                    mask-image: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0)),
+                                linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
+                    -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0)),
+                                        linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
+                }
+            }
+        }
+    }
+
+    /* MFC Card */
+    & aside {
+        display: grid;
+        position: relative;
+        transition: width 0.3s ease-in, transform 0.3s ease-in;
+        height: 100%;
+        border-radius: 20px;
+        text-wrap:wrap;
+        overflow-x: hidden;
+        overflow-y: auto;
+        background-color: var(--main-color);
+
+        & input {
+            position: relative;
+            width: 90%;
+            height: 25px;
+            top: 10px;
+            left: 50%;
+            border-radius: 20px;
+            margin: 20px 0;
+            border: none;
+            padding: 10px 0;
+            text-align: center;
+            background-color: var(--contrast-color-0);
+            color: var(--main-color);
+            transition: all 0.3s ease;
+        }
+
+        & input:focus {
+            outline: none;
+        }
+
+        & > .loader {
+            height: 6px;
+            z-index: 3;
+            --border: 1px solid white;
+        }
+
+        & input::placeholder {
+            font-size: 1.1em;
+            text-align: center;
+            color: rgba(127, 127, 127, 1)
+        }
+
+        & .card {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all .2s;
+            display: flex;
+            overflow: hidden;
+            scrollbar-width: none;
+            gap: 1%;
+            
+            & .pinterest-grid {
+                height: fit-content;
+                scroll-snap-align: center;
+                display: grid;
+                grid-auto-rows: 5px;
+                grid-gap: 1%;
+                gap: 10px;
+                margin: 15px;
+                transition: ease 0.4s;
+        
+                & > .pinterest-grid-item {
+                    position: static;
+                    display: inline-block;
+                    width: 100%;
+                    height: fit-content;
+                    font-size: .75em;
+                    text-decoration: none;
+                    text-align: center;
+                    /* background-color: #1a1a1a;
+                    border: #1a1a1a 2px solid; */
+                    border-radius: 10px;
+                    padding: 2%;
+                    transition: 0.3s all ;
+                    overflow-x: hidden;
+        
+                    & img {
+                        position: relative;
                         width: 100%;
-                        color: white;
-                        pointer-events: none;
+                        height: auto;
+                        border-radius: 10px;
+                        cursor: pointer;
                     }
                 }
             }
 
-            & a:hover img {
-                opacity: 0.25;
+            & > .loader {
+                width: 50px;
+                position: absolute;
+                top: 10%;
+                left: 50%;
+                transform: translate(-50%, 0);
+                --border: 1px solid white;
             }
         }
 
-        & .nav-button {
-            position:absolute;
-            height: 110%;
-            width: 15vw;
-            top: -5%;
-            z-index: 2;
-            border: transparent;
-            color: white;
-            font-size: 3vw;
-            transition: all .5s;
-        }
-
-        & .nav-button:hover {
+        & > .button-bar {
             cursor: pointer;
-        }
-
-        & .nav-button.left {
+            position: relative;
+            top: 0px;
             left: 0px;
-            background-color: #313131;
-            mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)),
-                        linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));;
-            -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)),
-                                linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));
+            height: 100%;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            grid-row-end: span 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            font-size: 2em;
+            background-color: var(--pink-custom);
+            border: none;
+            transition: all 0.3s;
+            padding: 0%;
+
+            & > button {
+                cursor: pointer;
+                position: absolute;
+                height: 20px;
+                top: 50%;
+                transition: ease-out 0.25s;
+                border: none;
+                background-color: var(--pink-custom);
+                transform: scale(0.5, 1);
+
+                clip-path: path("m 0 0 C 6 6 20 0 20 10 c 0 10 -14 4 -20 10 Q 0 10 0 0");
+
+                & span {
+                    display: flex;
+                    height: 100%;
+                    transform: rotate(0deg) translate(0%,-10%);
+                    align-items: center;
+                    justify-content: center;
+                }
+            }
         }
 
-        & .nav-button.right {
-            right: 0px;
-            background-color: #313131;
-            mask-image: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0)),
-                        linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
-            -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0)),
-                                linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
+        & > .button-bar:hover {
+            & button {
+                transform: translate(100%, 0) scale(1.5);
+
+                & span {
+                    display: flex;
+                    color: #000;
+                }
+            }
         }
     }
 }
 
-/* To make the loaders spin */
-@keyframes loading {
-    from {
-        transform: rotate(0turn);
+@media (orientation: landscape) { 
+    .flex-container{
+        display: grid;
+        grid-template-columns: 75vw 40px 1fr;
+        transition: grid-template-columns 0.3s ease;
+
+        & #shortcuts {
+            grid-column-start: 1;
+            grid-row-start: 1;
+            width: 100%;
+        }
+
+        & aside {
+            grid-column-start: 3;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 10px 44vw;
+
+            & input {
+                width: calc((24vw - 40px - 10px) * 0.9);
+                left: calc(((22vw - 10px) * 0.1) / 2);
+            }
+
+            & .card {
+                overflow: hidden;
+
+                & .pinterest-grid {
+                    width: 20vw;
+                    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                }
+            }
+
+            & .card:hover {
+                & .pinterest-grid-item {
+                    opacity: 0.5;
+                }
+                
+                & .pinterest-grid-item:hover {
+                    opacity: 1;
+                }
+            }
+
+            & > .loader {
+                top: calc((10px + 20px + 20px));
+                left: calc(10px + 5% + 20px);
+            }
+
+            & .button-bar {
+                width: 10px;
+
+                & button {
+                    top: 50%;
+
+                    & span {
+                        color: var(--pink-custom);
+                    }
+                }
+            }
+        }
     }
-    to {
-        transform: rotate(1turn);
+
+    .pop-up {
+        left: 50%;
+        top: 50%;
+    }
+}
+
+@media (orientation: portrait) {    
+    .flex-container{
+        display: flex;
+
+        & #shortcuts {
+            width: calc(100vw - 20px - 20px - 20px);
+        }
+
+        & aside {
+            grid-template-columns: 20px 1fr;
+            z-index: 1;
+            position: absolute;
+            width: 100%;
+            overflow: visible;
+            right: 0;
+
+            & input {
+                transform: translate(-50%, 0);
+            }
+
+            & .card {
+                width: 99%;
+                grid-template-columns: calc((100vw - 20px) / 2) calc((100vw - 20px) / 2);
+                
+                & .pinterest-grid {
+                    position: static;
+                    min-width: calc(50vw - 20px - 20px);
+                    max-width: calc(50vw - 20px - 20px);
+                    margin: 10px;
+                    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+                }
+            }
+
+            & > .loader {
+                top: calc((10px + 20px + 20px));
+                left: calc(20px + 5% + 20px);
+            }
+
+            & .button-bar {
+                width: 20px;
+
+                & button {
+                    top: 10px;
+                    transform: rotate(180deg) translate(20px, 0);
+
+                    & span {
+                        color: black;
+                        transform: rotate(180deg) translate(0, -2px);
+                    }
+                }
+            }
+        }
+
+        & aside.hidden {
+            width: 20px;
+        }
+    }
+
+    .pop-up{
+        top: 50%;
+        left: 50%;
+    }
+}
+
+@keyframes loader_5191 {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spinner {
+    0%, 10%, 20%, 30%, 50%, 60%, 70%, 80%, 90%, 100% {
+        transform: rotate(calc(var(--rotation) * 1deg)) translate(0, calc(var(--translation) * 1%));
+    }
+
+    50% {
+        transform: rotate(calc(var(--rotation) * 1deg)) translate(0, calc(var(--translation) * 1.5%));
     }
 }
 
 .loader {
     position: absolute;
-    left: 50%;
-    width: 25%;
-    max-width: calc(var(--height) / 2);
+    max-height: 5%;
+    max-width: 5%;
     aspect-ratio: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: translate(-50%, 50%) rotate(45deg);
 
-    & .orb {
+    & .loading {
+        --delay: calc(var(--index) / var(--count));
+        --rotation: calc((360 / var(--count) * var(--index)));
         position: absolute;
-        width: 100%;
-        aspect-ratio: 1;
-        border-radius: 100%;
-
-        --delay: calc(var(--index) * 1s / (var(--count) * 2));
-        opacity: calc((var(--count) + 1 - var(--index)) * (1 / var(--count)));
-
-        animation: loading 1.5s var(--delay) ease-in-out infinite;
-    }
-
-    & .orb::after {
-        position: absolute;
-        content: '';
-        top: 0;
-        left: 0;
-        width: 10px;
-        aspect-ratio: 1;
-        background-color: var(--pink-custom);
-        box-shadow: 0px 0px 20px 5px var(--pink-custom);
-        border-radius: 50%;
+        top: -25%;
+        left: 25%;
+        width: 50%;
+        height: 150%;
+        background-color: black;
+        border: var(--border);
+        transform: rotate(calc(var(--rotation) * 1deg)) translate(0%, calc(var(--translation) * 1%));
+        animation: spinner 1s calc(var(--delay) * 1s) infinite ease;
     }
 }
 

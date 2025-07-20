@@ -1,54 +1,63 @@
 // Import custom functions from "./functions.Js"
-import { slice } from "cheerio/dist/commonjs/api/traversing.js";
 import CustomFunctions from "./functions.js";
 
 //A const that stores if the browser is mobile
-const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+const mobile: boolean = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+const portrait: boolean = (window.innerWidth < window.innerHeight);
+
+if (mobile) {
+    document.title = document.title + ' (Mobile)';
+    console.log('Running mobile.');
+}
 
 // To make loaders work
-function createLoaders (count: number): void {
+function createLoaders (counter: number): void { // NO NEED OF RESPONSIVENESS
     let loaders: NodeListOf<HTMLDivElement> = document.querySelectorAll('.loader');
 
     loaders.forEach(loader => {
-        for (let i: number = 1; i <= count; i++) { //Create for loop to add the correct number of orbs
-            let orb: HTMLDivElement = document.createElement('div');
-            orb.setAttribute('class', 'orb');
-            orb.setAttribute('style', `--index: ${i}; --count: ${count};`);
-            loader.appendChild(orb);
-        }
+        for (let i = 0; i < counter; i++) {
+            const div: HTMLDivElement = document.createElement('div');
+            
+            div.setAttribute('class', 'loading');
+            div.setAttribute('style', `--translation: 150; --index: ${i + 1}; --count: ${counter}`);
+
+            loader.appendChild(div);
+        };
     });
-}
+};
 
 // Stop image dragging
-function stopImageDrag ():void {
+function stopImageDrag (): void { // NO NEED OF RESPONSIVENESS
     let images: HTMLCollectionOf<HTMLImageElement> = document.getElementsByTagName('img');
 
     Array.from(images).forEach((img) => {
         img.setAttribute('draggable', 'false')
     });
-}
+};
 
 // Open in new tab
-function openLinksInNewTab (): void {
-    let shortcuts: NodeListOf<HTMLAnchorElement> = document.querySelectorAll('.shortcut-item');
+function openLinksInNewTab (): void { // RESPONSIVE
+    const shortcuts: NodeListOf<HTMLAnchorElement> = document.querySelectorAll('.shortcut-item');
     shortcuts.forEach((element) => {
-        if (element.href.match(/docs\.google\.com/) == null) {
+        if (element.href.match(/docs\.google\.com/) == null || mobile) {
             element.target = '_blank';
         }
     });
 
-    let gamecards: NodeListOf<HTMLDivElement> = document.querySelectorAll('.gamecard')!;
-    gamecards.forEach(element => {
-        var child = element.firstElementChild as HTMLAnchorElement;
+    const gamecards: NodeListOf<HTMLDivElement> = document.querySelectorAll('.gamecard')!;
+    gamecards.forEach((element) => {
+        let child = element.firstElementChild as HTMLAnchorElement;
         
-        if (child.href.match(/docs\.google\.com/) == null) {
+        if (child.href.match(/docs\.google\.com/) == null || mobile) {
             child.target = '_blank';
         }
     });
-}
+};
 
 //To make sheets open in edge
-function redirectToEdge (): void {
+function redirectToEdge (): void { // RESPONSIVE
+    if (mobile) return;
+
     let links = document.querySelectorAll('a');
     links.forEach(link => {
         var hyperlink = link.href
@@ -58,48 +67,105 @@ function redirectToEdge (): void {
             link.target = ''
         }
     });
-}
+};
 
 //To make aside the same height of Shortcut-Item
-function resizeAside (counter?: number): void {
-   let aside = document.querySelector('aside')!;
-   let card = document.querySelector('.card')               as HTMLDivElement;
-   let pinterest = document.querySelector('#owned-ordered') as HTMLDivElement;
-   let shortcuts = document.querySelector('#shortcuts')     as HTMLElement;
+function resizeAside (counter?: number): void { // RESPONSIVE
+    const aside: HTMLElement = document.querySelector('aside')!;
+    const card: HTMLDivElement = document.querySelector('.card')!;
+    const owned: HTMLDivElement = card.querySelector('.pinterest-grid#owned-ordered')!;
+    const wished: HTMLDivElement = card.querySelector('.pinterest-grid#wished')!;
+    const shortcuts: HTMLElement = document.querySelector('#shortcuts')!;
+    
 
-   aside.style.height = 'fit-content';
-   card.style.height = 'fit-content';
-   shortcuts.style.height = 'fit-content';
+    const maxHeight = Math.max(owned.offsetHeight, wished.offsetHeight);
 
-   let maxHeight = Math.max(pinterest.offsetHeight, shortcuts.offsetHeight);
+    aside.style.height = Math.max(shortcuts.offsetHeight, (maxHeight + 90)) + 'px';
+    card.style.height = maxHeight + 'px';
+    shortcuts.style.height = Math.max(shortcuts.offsetHeight, (maxHeight + 90)) + 'px';
 
-   aside.style.height = maxHeight + 'px';
-   card.style.height = maxHeight + 'px';
-   shortcuts.style.height = maxHeight + 'px';
+    if (counter == 0) {
+        setTimeout(() => {
+            resizeAside(1);
+        },750);
+    }; 
+};
 
-   if (counter == 0) {
-      setTimeout(() => {
-        resizeAside(1);
-      },750)
-   } 
-}
+function expandAside (): void { // RESPONSIVE 
+    const aside: HTMLElement = document.querySelector('aside')!;
+    const div: HTMLDivElement = aside.querySelector('.button-bar')!;
+    const bttn: HTMLButtonElement = aside.querySelector('#expand-button')!;
+    const span: HTMLSpanElement = bttn.querySelector('span')!;
+    const shortcuts: HTMLTableSectionElement = document.querySelector('#shortcuts')!;
+    const flexContainer: HTMLDivElement = document.querySelector('.flex-container')!;
+    const input: HTMLInputElement = aside.querySelector('input')!;
+
+    bttn.onclick = function (ev) {
+        if (!portrait) {
+            if (aside.getBoundingClientRect().width < window.innerWidth * 0.3) {
+                span.style.transform = `rotate(180deg) translate(0%,-10%)`;
+                flexContainer.style.gridTemplateColumns = '54vw 40px 1fr';
+                input.style.width = `calc((46vw - 40px - 10px) * 0.9)`; input.style.left = `calc(((44vw - 10px) * 0.1) / 2)`;
+            } else {
+                span.style.transform = `rotate(0deg) translate(0%,-10%)`;
+                flexContainer.style.gridTemplateColumns = '76vw 40px 1fr';
+                input.style.width = `calc((24vw - 40px - 10px) * 0.9)`; input.style.left = `calc(((22vw - 10px) * 0.1) / 2)`;
+            };
+        } else {
+            if (!aside.classList.contains('hidden')) {
+                aside.classList.add('hidden');
+                bttn.style.transform = 'rotate(180deg) translate(20px, 0)'
+            } else {
+                aside.classList.remove('hidden');
+                bttn.style.transform = 'translate(20px, 0)'
+            };
+        };
+
+        resizeAside();
+    };
+
+    div.onclick = function (ev) {
+        bttn.click();
+    };
+
+    span.onclick = function (ev) {
+        bttn.click();
+    };
+};
+
+function makeAsideButtonFollow (): void {
+    if (mobile) return;
+
+    const aside: HTMLElement = document.querySelector('aside')!;
+    const div: HTMLDivElement = aside.querySelector('.button-bar')!;
+    const button: HTMLButtonElement = div.querySelector('#expand-button')!;
+    const buttonHeight: number = button.offsetHeight;
+
+    div.addEventListener('mousemove', (ev: MouseEvent): void => {
+        const target = ev.target as HTMLElement;
+        
+        if (CustomFunctions.isParent(target, button)) return;
+
+        button.style.top = (ev.layerY) + 'px';
+    });
+};
 
 // To make the gamecard occupy 50% of the screen on hover
-function adjustGamecard(): void {
-    let gameCardContainers: NodeListOf<HTMLElement> = document.querySelectorAll('.gamecard-container');
-    gameCardContainers.forEach(gamecard_container => {
-        var childCount: string = Math.max(gamecard_container.children.length, 2).toString();
+function adjustGamecard (): void { // NEED TO TEST
+    const gameCardContainers: NodeListOf<HTMLElement> = document.querySelectorAll('.gamecard-container');
+    gameCardContainers.forEach(gamecardContainer => {
+        let childCount: string = Math.max(gamecardContainer.children.length, 2).toString();
 
-        gamecard_container.style.setProperty('--gamecard-count', childCount);
+        gamecardContainer.style.setProperty('--gamecard-count', childCount);
     });
 
-    let gameCardText: NodeListOf<HTMLElement> = document.querySelectorAll('.gamecard-text > span p');
+    const gameCardText: NodeListOf<HTMLElement> = document.querySelectorAll('.gamecard-text > span p');
     gameCardText.forEach((element) => {
         element.style.marginLeft = - (element.offsetWidth / 2 - 20) + 'px';
     });
-}
+};
 
-function rotateGamecardText (counter: number): void {
+function rotateGamecardText (counter: number): void { // RESPONSIVE
     let gameCardSpan: NodeListOf<HTMLElement> = document.querySelectorAll('.gamecard > a > span');
     gameCardSpan.forEach((element) => {
         let parentElement = element.parentElement as HTMLDivElement;
@@ -115,9 +181,10 @@ function rotateGamecardText (counter: number): void {
     if (counter == 0) {
         setTimeout(rotateGamecardText,100);
     };
-}
+};
+
 // To make the header have different backgrounds
-function setHeaderBackground (): void {
+function setHeaderBackground (): void { // NO NEED OF RESPONSIVENESS
     let filePath: string = 'images/headers/'
 
     fetch(`${filePath}headers.json`)
@@ -156,49 +223,76 @@ function setHeaderBackground (): void {
                 header.style.backgroundImage = `url('${src}')`;
             }
         });
+};
+
+function resizeHeader (): void { // RESPONSIVE
+    const header: HTMLElement = document.querySelector('header')!;
+    const nav: HTMLElement = document.querySelector('nav')!;
+    const height: number = parseFloat(getComputedStyle(header).height);
+    const windowWidth: number = document.documentElement.scrollWidth;
+    const scrollY: number = window.scrollY;
+    const ohtoHeight: number = parseFloat(getComputedStyle(document.querySelector('#ohto')!).height);
+
+    header.style.aspectRatio = Math.min(windowWidth / ohtoHeight, Math.max(5, (5 * ((scrollY + height) / height)))) + '';
+
+    const newHeight: number = parseFloat(getComputedStyle(header).height);
+    nav.style.top = newHeight + 'px';
 }
 
 // To make 2B and Ai sit on the navbar (and makke the MFC toggle sit under 2B)
-function figuresSitDown (): void {
-    let twoB: HTMLElement = document.getElementById('twoB')!;
-    let twoB_Ass = Math.floor(parseFloat(getComputedStyle(twoB).height) * 493 / 920);
-    let twoB_Pussy = Math.floor(parseFloat(getComputedStyle(twoB).width) * 182 / 356);
-    let aside: HTMLElement = document.querySelector('aside')!;
+function figuresSitDown (): void { // RESPONSIVE
+    const twoB: HTMLElement = document.getElementById('twoB')!;
+    const twoB_Ass = Math.floor(parseFloat(getComputedStyle(twoB).height) * 493 / 920);
+    const twoB_Pussy = Math.floor(parseFloat(getComputedStyle(twoB).width) * 182 / 356);
+    const aside: HTMLElement = document.querySelector('aside')!;
 
     twoB.style.top = (- twoB_Ass) + 'px';
-    twoB.style.right = (aside.offsetWidth / 2 - twoB_Pussy) + 'px';
+    twoB.style.right = (!mobile) ? (aside.offsetWidth / 2 - twoB_Pussy) + 'px' : '5%';
 
-    let ohto: HTMLElement = document.getElementById('ohto')!;
-    let ohto_panties = getComputedStyle(ohto).height;
-    let ohto_mouth = Math.floor(parseFloat(getComputedStyle(ohto).width) / 2);
+    const ohto: HTMLElement = document.getElementById('ohto')!;
+    const ohto_panties = getComputedStyle(ohto).height;
+    const ohto_mouth = Math.floor(parseFloat(getComputedStyle(ohto).width) / 2);
     
     ohto.style.top = '-' + ohto_panties;
     ohto.style.left = getComputedStyle(twoB).right;
 
-    let toggleSwitch: HTMLElement = document.getElementById('mfc-switch')!;
+    const toggleSwitch: HTMLElement = document.getElementById('mfc-switch')!;
     
     toggleSwitch.style.width = twoB.style.width;
     toggleSwitch.style.right = parseFloat(twoB.style.right) + twoB.offsetWidth / 2 + 'px';
     toggleSwitch.style.transform = 'translate(50%, 0)'
-}
+};
 
 //To make all switches work
-function makeSwitchesSlide (): void {
-    let sliders: NodeListOf<HTMLElement> = document.querySelectorAll('.switch > .slider'); 
+function makeSwitchesSlide (): void { // NO NEED OF RESPONSIVENES
+    const switches: NodeListOf<HTMLLabelElement> = document.querySelectorAll('.switch');
+    switches.forEach((switchElement) => {
+        const input: HTMLInputElement = document.createElement('input');
+        const slider: HTMLDivElement = document.createElement('div');
+        input.setAttribute('type', 'checkbox');
+        slider.classList.add('slider');
+
+        switchElement.appendChild(input);
+        switchElement.appendChild(slider);
+
+        switchElement.style.borderRadius = (parseFloat(getComputedStyle(switchElement).height) / 2) + 'px'
+    });
+
+    const sliders: NodeListOf<HTMLElement> = document.querySelectorAll('.switch > .slider'); 
     sliders.forEach((slider) => {
         let parent = slider.parentElement as HTMLElement;
         let input = parent.querySelector('input') as HTMLInputElement;
 
         let uncheckedPosition = getComputedStyle(slider, '::before').left;
-        let checkedPosition   = parent.offsetWidth - parseFloat(uncheckedPosition) * 3 - parseFloat(getComputedStyle(slider, ':before').width) + 'px';
+        let checkedPosition   = parent.offsetWidth - parseFloat(uncheckedPosition) * 4 - parseFloat(getComputedStyle(slider, '::before').width) + 'px';
 
         slider.style.setProperty('--total-transition', checkedPosition);
         input.style.setProperty('--total-transition', checkedPosition);
     })
-}
+};
 
 //To make MFC toggle switch work
-function mfcToggleSwitch (): void {
+function mfcToggleSwitch (): void { 
     let input = document.querySelector('#mfc-switch > input') as HTMLInputElement;
     let owned = document.getElementById('owned') as HTMLElement;
     let ordered = document.getElementById('ordered') as HTMLElement;
@@ -223,6 +317,34 @@ function mfcToggleSwitch (): void {
             input.checked = true;
         }
     }
+};
+
+//To toggle night mode
+function nightModeToggle(): void {
+    const label = document.querySelector('#night-mode-toggle') as HTMLLabelElement;
+
+    // Create input if it doesn't exist
+    let input = label.querySelector('input') as HTMLInputElement;
+
+    // Set initial state based on current theme
+    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    input.checked = isDark;
+
+    // Listen for toggle
+    input.addEventListener('change', (ev) => {
+        if (input.checked) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+        };
+
+        console.log(getComputedStyle(document.documentElement).getPropertyValue('--contrast-color').trim());
+    });
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+        const newColorScheme = event.matches ? "dark" : "light";
+    });
 }
 
 //To make the popups appear on click
@@ -295,7 +417,7 @@ function formatPopUps (): void {
             setDefaults();
         };
     })
-}
+};
 
 // To make the reddit search work
 function redditSearchTrigger (): void {
@@ -342,7 +464,7 @@ function redditSearchTrigger (): void {
             window.open(string, '_blank')?.focus();
         };
     }
-}
+};
 
 //To make the wikipedia search work
 function wikipediaSearchTrigger (): void {
@@ -360,7 +482,7 @@ function wikipediaSearchTrigger (): void {
             window.open(string, '_blank')?.focus();
         }
     }
-}
+};
 
 // To make MFC pop-up adjust
 function mfcPopUpAdjust (): void {
@@ -372,7 +494,7 @@ function mfcPopUpAdjust (): void {
     let fontSize: number = parseFloat(getComputedStyle(mfc).fontSize);
 
     // alert(fontSize);
-}
+};
 
 // To make the inputbox draggable
 function dragPopUps (): void {
@@ -428,7 +550,7 @@ function dragPopUps (): void {
     }; function stopDragging (): void {
         isDragging = false;
     }
-}
+};
 
 // To make the defaults load within the window
 function setDefaults (): void {
@@ -445,7 +567,7 @@ function setDefaults (): void {
     let keywordsWikipedia = document.getElementById('keywords-wikipedia') as HTMLInputElement;
 
     keywordsWikipedia.value = '';
-}
+};
 
 // To add MFC images in the aside and do 
 async function addImages (): Promise<void> {
@@ -480,6 +602,7 @@ async function addImages (): Promise<void> {
     }
 
     type mfc = {
+        [key: string]: string
         id: string,
         href: string,
         img: string,
@@ -493,15 +616,28 @@ async function addImages (): Promise<void> {
     }
 
     let result: mfc[] = await (await fetch('https://statisticshock-github-io.onrender.com/figurecollection/')).json();
-    let ownedFiguresArray = CustomFunctions.shuffle(result.filter((figure) => figure.type !== 'Wished'));
 
     let createElementPromise = new Promise ((resolve, reject) => { //This creates a promise that will create every item in the aside
-        resolve(ownedFiguresArray.map(createElement));
+        resolve(result.sort((a: mfc, b: mfc) => Number(a.id) - Number(b.id)).map(createElement));
     });
-
+    
     createElementPromise.then(() => {
         setTimeout(resizeAllMasonryItems, 1000);
         setTimeout(resizeAside, 1000);
+
+        const input: HTMLInputElement = document.querySelector('#search-bar')!;
+        const loader: HTMLDivElement = document.querySelector('.container .flex-container aside > .loader')!;
+
+        let timeout: NodeJS.Timeout;
+        input.addEventListener('keyup', (ev) => {
+            clearTimeout(timeout);
+            loader.style.display = '';
+            
+            timeout = setTimeout(() => {
+                searchFigure(input, result);
+                loader.style.display = 'none';
+            }, 2000);
+        })
     });
     
     function createElement (item: mfc) { //To create the necessary elements
@@ -519,6 +655,7 @@ async function addImages (): Promise<void> {
 
         div.setAttribute('alt', item.title);
         div.classList.add('pinterest-grid-item');
+        div.id = item.id;
         img.src = item.img;
 
         if (item.category == 'Prepainted') {
@@ -585,7 +722,6 @@ async function addImages (): Promise<void> {
             }
 
             if (navigator.userAgent.includes('Android') || navigator.userAgent.includes('like Mac OS')) {
-                console.log('Running on mobile');
                 //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
                 const links: HTMLAnchorElement[] = [originalName, originName, classification] as HTMLAnchorElement[];
             
@@ -610,14 +746,42 @@ async function addImages (): Promise<void> {
         div.append(img);
         card.append(div);
         div.append(item.character);
-    }
+    };
+
+    function searchFigure (textInput: HTMLInputElement, json: mfc[]) {
+        let searchStr: RegExp = new RegExp(textInput.value, 'i');
+
+        console.info(`A string procurada é ${searchStr}`);
+        
+        const figuresToHide = json.filter((figure) => {
+            let count = 0;
+
+            Object.keys(figure).forEach((key: string) => {
+                if (searchStr.test(figure[key])) {
+                    count += 1;
+                }
+            });
+
+            return count === 0;
+        });
+
+        const divs: NodeListOf<HTMLDivElement> = document.querySelectorAll('.pinterest-grid-item');
+
+        divs.forEach((div) => {
+            div.style.display = 'block';
+
+            if (figuresToHide.filter((figure) => figure.id === div.id).length > 0) {
+                div.style.display = 'none';
+            };
+        });
+    };
 
     window.addEventListener('resize', () => {
         setTimeout(() => {
             resizeAllMasonryItems;
-            resizeAside;
         },500);
     });
+
     setTimeout(() => { //Should run immeditialy after "resizeAllMasonryItems"
         let loader: HTMLDivElement = document.querySelector('aside > .card > .loader')!;
         let pinterestGrids: NodeListOf<HTMLSpanElement> = document.querySelectorAll('aside > .card > .pinterest-grid');
@@ -627,6 +791,12 @@ async function addImages (): Promise<void> {
             grid.style.opacity = '1'
         });
     }, 1000);
+
+    const card = document.querySelector('aside .card')!;
+
+    const observer = new MutationObserver(() => {resizeAside();});
+
+    observer.observe(card, { childList: true, subtree: true });
 };
 
 // To add a MyAnimeList card
@@ -837,7 +1007,6 @@ async function scrapeMyAnimeList (): Promise<void> {
     function selectOnlyTheCurrentImage (): void {
         if (!mobile) return;
         else {
-            console.log('Running mobile.');
             [animeCard, mangaCard].forEach((card) => {
                 const entries = card.querySelectorAll('a');
                 const navBttns = card.parentElement!.querySelectorAll('.nav-button') as NodeListOf<HTMLElement>;
@@ -862,25 +1031,29 @@ async function scrapeMyAnimeList (): Promise<void> {
 };
 
 window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions () {
-    createLoaders(8);
+    createLoaders(10);
     openLinksInNewTab();
     redirectToEdge();
     setHeaderBackground();
     figuresSitDown();
-    resizeAside(0)
+    expandAside();
     setDefaults();
     adjustGamecard();
     rotateGamecardText(0);
-    addImages();
-    mfcToggleSwitch();
     makeSwitchesSlide();
+    // mfcToggleSwitch();
+    nightModeToggle();
+    resizeAside(0);
     formatPopUps();
     mfcPopUpAdjust();
     dragPopUps();
     stopImageDrag();
     redditSearchTrigger();
     wikipediaSearchTrigger();
-    scrapeMyAnimeList();
+    resizeHeader();
+    makeAsideButtonFollow();
+    await addImages();
+    await scrapeMyAnimeList();
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
     setTimeout( () => {
@@ -892,4 +1065,7 @@ window.addEventListener('resize', onResizeFunctions, true); function onResizeFun
 };
 window.addEventListener('mousemove', onMouseMoveFunctions, true); function onMouseMoveFunctions (event: Event) {
     // console.log(event.target);
+};
+window.addEventListener('scroll', onScrollFunctions, true); function onScrollFunctions (event: Event) {
+    resizeHeader();
 };

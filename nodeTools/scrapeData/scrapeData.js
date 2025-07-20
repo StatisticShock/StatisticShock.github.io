@@ -13,6 +13,7 @@ export class GoogleClass {
     static mfcJsonGoogle = GoogleClass.bucket.file('mfc.json');
     static publicBucket = GoogleClass.storage.bucket('statisticshock_github_io_public');
 }
+;
 const streamPipeline = util.promisify(pipeline);
 // To log to a .log file
 const dirName = 'logs';
@@ -119,7 +120,7 @@ export class ScrapeFunctions {
         const figureResponse = await fetch(`${mfcLink}/item/${elementId}`);
         const figureHtml = await figureResponse.text();
         const $$ = cheerio.load(figureHtml);
-        const dataFields = $$('.data-field');
+        const dataFields = $$('.object-wrapper .data-wrapper .data-field');
         for (const element of dataFields.toArray()) {
             if ($$(element).find('.data-label').text().includes('Categoria')) {
                 category = $$(element).find('.data-value').text();
@@ -140,8 +141,10 @@ export class ScrapeFunctions {
             }
             ;
             if ($$(element).find('.data-label').text().includes('Origem')) {
-                origin = $$(element).find('.data-value a span').attr('switch');
+                origin = $$(element).find('.data-value span[switch]').attr('switch');
+                console.log(origin);
             }
+            ;
         }
         ;
         const itemData = {

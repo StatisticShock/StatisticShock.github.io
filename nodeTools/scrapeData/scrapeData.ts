@@ -13,7 +13,7 @@ export class GoogleClass {
     static bucket = GoogleClass.storage.bucket('statisticshock_github_io');
     static mfcJsonGoogle = GoogleClass.bucket.file('mfc.json');
     static publicBucket = GoogleClass.storage.bucket('statisticshock_github_io_public');
-}
+};
 
 const streamPipeline = util.promisify(pipeline);
 
@@ -33,6 +33,8 @@ const log = function (message: string | number) {
 
 const mfcLink: string = 'https://pt.myfigurecollection.net';
 export type mfc = {
+    [k: string]: string;
+
     id: string,
     href: string,
     img: string,
@@ -127,6 +129,7 @@ export class ScrapeFunctions {
     async readMFCItem (elementId: string, typeOfFigure: string): Promise<mfc> {
         const response = await fetch(`${mfcLink}/item/${elementId}`);
         const html = await response.text();
+
         const $ = cheerio.load(html);
 
         log('Fetching ' + $('h1.title').text());
@@ -146,7 +149,7 @@ export class ScrapeFunctions {
         const figureHtml = await figureResponse.text();
         const $$ = cheerio.load(figureHtml);
 
-        const dataFields = $$('.data-field');
+        const dataFields = $$('.object-wrapper .data-wrapper .data-field');
         for (const element of dataFields.toArray()) {
             if ($$(element).find('.data-label').text().includes('Categoria')) {
                 category = $$(element).find('.data-value').text();
@@ -160,11 +163,12 @@ export class ScrapeFunctions {
             };
             if ($$(element).find('.data-label').text().includes('Personag') || $$(element).find('.data-label').text().includes('Título')) {
                 character = $$(element).find('.data-value').text();
-                characterJap = $$(element).find('.data-value a span').map((i, item) => $$(item).attr('switch')).get().join(', ')
+                characterJap = $$(element).find('.data-value a span').map((i, item) => $$(item).attr('switch')).get().join(', ');
             };
             if ($$(element).find('.data-label').text().includes('Origem')) {
-                origin = $$(element).find('.data-value a span').attr('switch');
-            }
+                origin = $$(element).find('.data-value span[switch]').attr('switch');
+                console.log(origin)
+            };
         };
 
         const itemData : mfc = {

@@ -1,0 +1,62 @@
+:root {
+    --pink-custom: rgba(250,30,78,255);
+    --pink-purple: linear-gradient(163deg, var(--pink-custom) 0%, #3700ff 100%);
+}
+
+@font-face {
+    font-family: OpenSans;
+    src: url(../../../../font/OpenSans.ttf);
+}
+
+body {
+    font-family: OpenSans;
+    width: 100%;
+    height: 100%;
+    color: white;
+    background-color: #212121;
+    overflow-x: hidden;
+    display: flex;
+}
+
+.container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: fit-content;
+    width: 90%;
+    transform: translate(-50%, -50%);
+    display: grid;
+    grid-template-columns: 125px 1fr;
+
+    & span, & input {
+        border: 1px solid grey;
+        padding: 5px 10px;
+        align-content: center;
+    }
+
+    & span {
+        color: grey;
+    } 
+
+    & input {
+        color: white;
+        text-wrap: wrap;
+        background-color: transparent;
+    }
+}
+
+button {
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+button:hover {
+    border: 2px var(--pink-custom) solid;
+}
+
+#ok-button {
+    position: absolute;
+    left: 50%;
+    bottom: 10px;
+    transform: translate(-50%,0);
+}

@@ -1,8 +1,8 @@
-const { app, BrowserWindow, Menu, shell, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, Menu, shell, ipcMain, dialog, webContents } = require('electron');
 const path = require('node:path');
 const util = require('util');
 const { ScrapeFunctions, links } = require('../scrapeData');
-const { updateItem } = require('./scripts/updateItem');
+const { getNewData, updateItem } = require('./scripts/updateItem');
 
 console.log('Processo principal.');
 console.log(`Electron: ${process.versions.electron}`);
@@ -20,10 +20,10 @@ function createWindow() {
   });
 
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-
   win.loadFile('index.html');
   win.maximize();
-}
+  return win;
+};
 
 function aboutWindow () {
   const father = BrowserWindow.getFocusedWindow();
@@ -40,7 +40,37 @@ function aboutWindow () {
   
     win.loadFile('about.html');
   }
-}
+};
+
+function metadataWindow (metadata) {
+  const father = BrowserWindow.getFocusedWindow();
+  if (father) {
+    const win = new BrowserWindow({
+      width: 800,
+      height: 450,
+      icon: '../../../images/icons/mfc.ico',
+      autoHideMenuBar: true,
+      resizable: false,
+      parent: father,
+      modal: true,
+      minimizable: false,
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
+        contextIsolation: true,
+        nodeIntegration: false,
+      },
+    });
+  
+    win.loadFile('./metadata/metadata.html');
+    setTimeout(() => {
+      if (metadata[0] === undefined) {
+        win.webContents.send('metadata-data', metadata);
+      } else {
+        win.webContents.send('metadata-update', metadata);
+      };
+    }, 150);
+  };
+};
 
 const template = [
   {
@@ -94,33 +124,59 @@ const template = [
       }
     ]
   }
-]
+];
 
 app.whenReady().then(() => {
-  createWindow();
+  const mainWindow = createWindow();
 
   const sc = new ScrapeFunctions();
 
   ipcMain.on('load-mfc', async (event) => {
     console.log('Fetching "mfc.json"...');
     let json = await sc.fetchJson();
-    if (json) console.log('"mfc.json" carregado.');
+    if (json) console.log('"mfc.json" carregado.' + String.fromCharCode(10) + '');
 
-    event.reply('reply-message', json)
+    event.reply('reply-message', json);
   });
 
   ipcMain.on('update-mfc', async (event, id, json) => {
-    const promise = await updateItem(id, json);
-    dialog.showMessageBox({
-      type: 'info',
-      title: 'Informação',
-      message: JSON.stringify(promise).replaceAll('"',''),
-    })
-  })
+    const promise = await getNewData(id, json);
+    metadataWindow(promise);
+  });
+
+  ipcMain.on('update-new-metadata', async (event, [id, object, json]) => {
+    const update = await updateItem(id, json, object);
+    if (update) {
+      console.log(`Item "${object.title}" updated on  "mfc.json".`);
+      dialog.showMessageBox({
+        type: 'info',
+        title: 'Informação',
+        message: 'Dados atualizados.',
+        buttons: ['OK']
+      });
+      mainWindow.webContents.send('fetch-json-again', '');
+    } else {
+      dialog.showMessageBox({
+        type: 'info',
+        title: 'Informação',
+        message: 'Nenhuma atualização foi feita.',
+        buttons: ['OK']
+      });
+    };
+  });
 
   ipcMain.on('renderer-message', (event, message) => {
     console.log(`Processo principal recebeu: "${message}"`);
-  })
+  });
+
+  ipcMain.on('metadata', async (event, metadata) => {
+    console.log(`Showing metadata from item: ${metadata.title}`);
+    metadataWindow(metadata);
+  });
+
+  ipcMain.on('href', (event, message) => {
+    shell.openExternal(message);
+  });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

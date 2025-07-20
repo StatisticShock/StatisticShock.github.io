@@ -9,23 +9,42 @@
 </head>
 <body>
     <h1>Atualizar item do MyFigureCollection</h1>
+    <div class="search"><input type="text" id="search-bar" placeholder="Pesquise uma figure&nbsp;"></div>
     <h3>Selecione a figure:</h3>
-    <div class="container">
+    <div class="main pop-up">
       <p id="mfc-text">Fetching mfc.json...</p>
+    </div>
+    <div class="container">
+      <button>
+        <div>&gt;</div>
+        <span>&nbsp;Adquiridos</span>
+      </button>
+      <div class="owned" style="display: none;"></div>
+      <button>
+        <div>&gt;</div>
+        <span>&nbsp;Comprados</span>
+      </button>
+      <div class="ordered" style="display: none;"></div>
+      <button>
+        <div>&gt;</div>
+        <span>&nbsp;Desejados</span>
+      </button>
+      <div class="wished" style="display: none;"></div>
     </div>
     <div class="pop-up mfc">
       <div class="pop-up-header">
           <button type="button" class="close-button">&times;</button>
       </div>
-      <a id="pop-up-img" target="_blank"><img></a>
+      <a id="pop-up-img"><img></a>
       <span class="pop-up-title"></span>
       <div class="data-container">
           <p>Personagens&nbsp;<span id="mfc-character-original-name"></span></p>
           <p>Origem&nbsp;<span id="mfc-character-origin"></span></p>
           <p>Classificação<span id="mfc-classification"></span></p>
       </div>
+      <div class="pop-up metadata-container"></div>
       <button type="button" class="update button">Atualizar Figura</button>
-      <button type="button" class="show button">Ver Figura</button>
+      <button type="button" class="show button">Ver Metadados</button>
   </div>
   <script src="renderer.js"></script>
 </body>

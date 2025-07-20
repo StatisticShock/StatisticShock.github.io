@@ -34,21 +34,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+// Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
 //A const that stores if the browser is mobile
 var mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+var portrait = (window.innerWidth < window.innerHeight);
+if (mobile) {
+    document.title = document.title + ' (Mobile)';
+    console.log('Running mobile.');
+}
 // To make loaders work
-function createLoaders(count) {
+function createLoaders(counter) {
     var loaders = document.querySelectorAll('.loader');
     loaders.forEach(function (loader) {
-        for (var i = 1; i <= count; i++) { //Create for loop to add the correct number of orbs
-            var orb = document.createElement('div');
-            orb.setAttribute('class', 'orb');
-            orb.setAttribute('style', "--index: ".concat(i, "; --count: ").concat(count, ";"));
-            loader.appendChild(orb);
+        for (var i = 0; i < counter; i++) {
+            var div = document.createElement('div');
+            div.setAttribute('class', 'loading');
+            div.setAttribute('style', "--translation: 150; --index: ".concat(i + 1, "; --count: ").concat(counter));
+            loader.appendChild(div);
         }
+        ;
     });
 }
+;
 // Stop image dragging
 function stopImageDrag() {
     var images = document.getElementsByTagName('img');
@@ -56,24 +64,28 @@ function stopImageDrag() {
         img.setAttribute('draggable', 'false');
     });
 }
+;
 // Open in new tab
 function openLinksInNewTab() {
     var shortcuts = document.querySelectorAll('.shortcut-item');
     shortcuts.forEach(function (element) {
-        if (element.href.match(/docs\.google\.com/) == null) {
+        if (element.href.match(/docs\.google\.com/) == null || mobile) {
             element.target = '_blank';
         }
     });
     var gamecards = document.querySelectorAll('.gamecard');
     gamecards.forEach(function (element) {
         var child = element.firstElementChild;
-        if (child.href.match(/docs\.google\.com/) == null) {
+        if (child.href.match(/docs\.google\.com/) == null || mobile) {
             child.target = '_blank';
         }
     });
 }
+;
 //To make sheets open in edge
 function redirectToEdge() {
+    if (mobile)
+        return;
     var links = document.querySelectorAll('a');
     links.forEach(function (link) {
         var hyperlink = link.href;
@@ -83,37 +95,100 @@ function redirectToEdge() {
         }
     });
 }
+;
 //To make aside the same height of Shortcut-Item
 function resizeAside(counter) {
     var aside = document.querySelector('aside');
     var card = document.querySelector('.card');
-    var pinterest = document.querySelector('#owned-ordered');
+    var owned = card.querySelector('.pinterest-grid#owned-ordered');
+    var wished = card.querySelector('.pinterest-grid#wished');
     var shortcuts = document.querySelector('#shortcuts');
-    aside.style.height = 'fit-content';
-    card.style.height = 'fit-content';
-    shortcuts.style.height = 'fit-content';
-    var maxHeight = Math.max(pinterest.offsetHeight, shortcuts.offsetHeight);
-    aside.style.height = maxHeight + 'px';
+    var maxHeight = Math.max(owned.offsetHeight, wished.offsetHeight);
+    aside.style.height = Math.max(shortcuts.offsetHeight, (maxHeight + 90)) + 'px';
     card.style.height = maxHeight + 'px';
-    shortcuts.style.height = maxHeight + 'px';
+    shortcuts.style.height = Math.max(shortcuts.offsetHeight, (maxHeight + 90)) + 'px';
     if (counter == 0) {
         setTimeout(function () {
             resizeAside(1);
         }, 750);
     }
+    ;
 }
+;
+function expandAside() {
+    var aside = document.querySelector('aside');
+    var div = aside.querySelector('.button-bar');
+    var bttn = aside.querySelector('#expand-button');
+    var span = bttn.querySelector('span');
+    var shortcuts = document.querySelector('#shortcuts');
+    var flexContainer = document.querySelector('.flex-container');
+    var input = aside.querySelector('input');
+    bttn.onclick = function (ev) {
+        if (!portrait) {
+            if (aside.getBoundingClientRect().width < window.innerWidth * 0.3) {
+                span.style.transform = "rotate(180deg) translate(0%,-10%)";
+                flexContainer.style.gridTemplateColumns = '54vw 40px 1fr';
+                input.style.width = "calc((46vw - 40px - 10px) * 0.9)";
+                input.style.left = "calc(((44vw - 10px) * 0.1) / 2)";
+            }
+            else {
+                span.style.transform = "rotate(0deg) translate(0%,-10%)";
+                flexContainer.style.gridTemplateColumns = '76vw 40px 1fr';
+                input.style.width = "calc((24vw - 40px - 10px) * 0.9)";
+                input.style.left = "calc(((22vw - 10px) * 0.1) / 2)";
+            }
+            ;
+        }
+        else {
+            if (!aside.classList.contains('hidden')) {
+                aside.classList.add('hidden');
+                bttn.style.transform = 'rotate(180deg) translate(20px, 0)';
+            }
+            else {
+                aside.classList.remove('hidden');
+                bttn.style.transform = 'translate(20px, 0)';
+            }
+            ;
+        }
+        ;
+        resizeAside();
+    };
+    div.onclick = function (ev) {
+        bttn.click();
+    };
+    span.onclick = function (ev) {
+        bttn.click();
+    };
+}
+;
+function makeAsideButtonFollow() {
+    if (mobile)
+        return;
+    var aside = document.querySelector('aside');
+    var div = aside.querySelector('.button-bar');
+    var button = div.querySelector('#expand-button');
+    var buttonHeight = button.offsetHeight;
+    div.addEventListener('mousemove', function (ev) {
+        var target = ev.target;
+        if (CustomFunctions.isParent(target, button))
+            return;
+        button.style.top = (ev.layerY) + 'px';
+    });
+}
+;
 // To make the gamecard occupy 50% of the screen on hover
 function adjustGamecard() {
     var gameCardContainers = document.querySelectorAll('.gamecard-container');
-    gameCardContainers.forEach(function (gamecard_container) {
-        var childCount = Math.max(gamecard_container.children.length, 2).toString();
-        gamecard_container.style.setProperty('--gamecard-count', childCount);
+    gameCardContainers.forEach(function (gamecardContainer) {
+        var childCount = Math.max(gamecardContainer.children.length, 2).toString();
+        gamecardContainer.style.setProperty('--gamecard-count', childCount);
     });
     var gameCardText = document.querySelectorAll('.gamecard-text > span p');
     gameCardText.forEach(function (element) {
         element.style.marginLeft = -(element.offsetWidth / 2 - 20) + 'px';
     });
 }
+;
 function rotateGamecardText(counter) {
     var gameCardSpan = document.querySelectorAll('.gamecard > a > span');
     gameCardSpan.forEach(function (element) {
@@ -131,6 +206,7 @@ function rotateGamecardText(counter) {
     }
     ;
 }
+;
 // To make the header have different backgrounds
 function setHeaderBackground() {
     var filePath = 'images/headers/';
@@ -169,6 +245,18 @@ function setHeaderBackground() {
         };
     });
 }
+;
+function resizeHeader() {
+    var header = document.querySelector('header');
+    var nav = document.querySelector('nav');
+    var height = parseFloat(getComputedStyle(header).height);
+    var windowWidth = document.documentElement.scrollWidth;
+    var scrollY = window.scrollY;
+    var ohtoHeight = parseFloat(getComputedStyle(document.querySelector('#ohto')).height);
+    header.style.aspectRatio = Math.min(windowWidth / ohtoHeight, Math.max(5, (5 * ((scrollY + height) / height)))) + '';
+    var newHeight = parseFloat(getComputedStyle(header).height);
+    nav.style.top = newHeight + 'px';
+}
 // To make 2B and Ai sit on the navbar (and makke the MFC toggle sit under 2B)
 function figuresSitDown() {
     var twoB = document.getElementById('twoB');
@@ -176,7 +264,7 @@ function figuresSitDown() {
     var twoB_Pussy = Math.floor(parseFloat(getComputedStyle(twoB).width) * 182 / 356);
     var aside = document.querySelector('aside');
     twoB.style.top = (-twoB_Ass) + 'px';
-    twoB.style.right = (aside.offsetWidth / 2 - twoB_Pussy) + 'px';
+    twoB.style.right = (!mobile) ? (aside.offsetWidth / 2 - twoB_Pussy) + 'px' : '5%';
     var ohto = document.getElementById('ohto');
     var ohto_panties = getComputedStyle(ohto).height;
     var ohto_mouth = Math.floor(parseFloat(getComputedStyle(ohto).width) / 2);
@@ -187,18 +275,30 @@ function figuresSitDown() {
     toggleSwitch.style.right = parseFloat(twoB.style.right) + twoB.offsetWidth / 2 + 'px';
     toggleSwitch.style.transform = 'translate(50%, 0)';
 }
+;
 //To make all switches work
 function makeSwitchesSlide() {
+    var switches = document.querySelectorAll('.switch');
+    switches.forEach(function (switchElement) {
+        var input = document.createElement('input');
+        var slider = document.createElement('div');
+        input.setAttribute('type', 'checkbox');
+        slider.classList.add('slider');
+        switchElement.appendChild(input);
+        switchElement.appendChild(slider);
+        switchElement.style.borderRadius = (parseFloat(getComputedStyle(switchElement).height) / 2) + 'px';
+    });
     var sliders = document.querySelectorAll('.switch > .slider');
     sliders.forEach(function (slider) {
         var parent = slider.parentElement;
         var input = parent.querySelector('input');
         var uncheckedPosition = getComputedStyle(slider, '::before').left;
-        var checkedPosition = parent.offsetWidth - parseFloat(uncheckedPosition) * 3 - parseFloat(getComputedStyle(slider, ':before').width) + 'px';
+        var checkedPosition = parent.offsetWidth - parseFloat(uncheckedPosition) * 4 - parseFloat(getComputedStyle(slider, '::before').width) + 'px';
         slider.style.setProperty('--total-transition', checkedPosition);
         input.style.setProperty('--total-transition', checkedPosition);
     });
 }
+;
 //To make MFC toggle switch work
 function mfcToggleSwitch() {
     var input = document.querySelector('#mfc-switch > input');
@@ -225,6 +325,31 @@ function mfcToggleSwitch() {
             input.checked = true;
         }
     };
+}
+;
+//To toggle night mode
+function nightModeToggle() {
+    var label = document.querySelector('#night-mode-toggle');
+    // Create input if it doesn't exist
+    var input = label.querySelector('input');
+    // Set initial state based on current theme
+    var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    input.checked = isDark;
+    // Listen for toggle
+    input.addEventListener('change', function (ev) {
+        if (input.checked) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+        else {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+        ;
+        console.log(getComputedStyle(document.documentElement).getPropertyValue('--contrast-color').trim());
+    });
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (event) {
+        var newColorScheme = event.matches ? "dark" : "light";
+    });
 }
 //To make the popups appear on click
 function formatPopUps() {
@@ -288,6 +413,7 @@ function formatPopUps() {
         };
     });
 }
+;
 // To make the reddit search work
 function redditSearchTrigger() {
     var okButtonReddit = document.querySelector('.pop-up.reddit-google .ok-button');
@@ -331,6 +457,7 @@ function redditSearchTrigger() {
         ;
     }
 }
+;
 //To make the wikipedia search work
 function wikipediaSearchTrigger() {
     var okButtonWikipedia = document.querySelector('.pop-up.wikipedia .ok-button');
@@ -345,6 +472,7 @@ function wikipediaSearchTrigger() {
         }
     }
 }
+;
 // To make MFC pop-up adjust
 function mfcPopUpAdjust() {
     var mfc = document.querySelector('.pop-up.mfc');
@@ -353,6 +481,7 @@ function mfcPopUpAdjust() {
     var fontSize = parseFloat(getComputedStyle(mfc).fontSize);
     // alert(fontSize);
 }
+;
 // To make the inputbox draggable
 function dragPopUps() {
     var popUps = document.querySelectorAll('.pop-up');
@@ -409,6 +538,7 @@ function dragPopUps() {
         isDragging = false;
     }
 }
+;
 // To make the defaults load within the window
 function setDefaults() {
     var keywordsReddit = document.getElementById('keywords-reddit');
@@ -422,6 +552,7 @@ function setDefaults() {
     var keywordsWikipedia = document.getElementById('keywords-wikipedia');
     keywordsWikipedia.value = '';
 }
+;
 // To add MFC images in the aside and do 
 function addImages() {
     return __awaiter(this, void 0, void 0, function () {
@@ -463,6 +594,7 @@ function addImages() {
             }
             div.setAttribute('alt', item.title);
             div.classList.add('pinterest-grid-item');
+            div.id = item.id;
             img.src = item.img;
             if (item.category == 'Prepainted') {
                 div.style.color = 'green';
@@ -528,7 +660,6 @@ function addImages() {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                 }
                 if (navigator.userAgent.includes('Android') || navigator.userAgent.includes('like Mac OS')) {
-                    console.log('Running on mobile');
                     //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
                     var links_1 = [originalName, originName, classification];
                     var updateLinks = function () { return __awaiter(_this, void 0, void 0, function () {
@@ -559,7 +690,28 @@ function addImages() {
             card.append(div);
             div.append(item.character);
         }
-        var result, ownedFiguresArray, createElementPromise;
+        function searchFigure(textInput, json) {
+            var searchStr = new RegExp(textInput.value, 'i');
+            console.info("A string procurada \u00E9 ".concat(searchStr));
+            var figuresToHide = json.filter(function (figure) {
+                var count = 0;
+                Object.keys(figure).forEach(function (key) {
+                    if (searchStr.test(figure[key])) {
+                        count += 1;
+                    }
+                });
+                return count === 0;
+            });
+            var divs = document.querySelectorAll('.pinterest-grid-item');
+            divs.forEach(function (div) {
+                div.style.display = 'block';
+                if (figuresToHide.filter(function (figure) { return figure.id === div.id; }).length > 0) {
+                    div.style.display = 'none';
+                }
+                ;
+            });
+        }
+        var result, createElementPromise, card, observer;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -567,18 +719,29 @@ function addImages() {
                 case 1: return [4 /*yield*/, (_a.sent()).json()];
                 case 2:
                     result = _a.sent();
-                    ownedFiguresArray = CustomFunctions.shuffle(result.filter(function (figure) { return figure.type !== 'Wished'; }));
                     createElementPromise = new Promise(function (resolve, reject) {
-                        resolve(ownedFiguresArray.map(createElement));
+                        resolve(result.sort(function (a, b) { return Number(a.id) - Number(b.id); }).map(createElement));
                     });
                     createElementPromise.then(function () {
                         setTimeout(resizeAllMasonryItems, 1000);
                         setTimeout(resizeAside, 1000);
+                        var input = document.querySelector('#search-bar');
+                        var loader = document.querySelector('.container .flex-container aside > .loader');
+                        var timeout;
+                        input.addEventListener('keyup', function (ev) {
+                            clearTimeout(timeout);
+                            loader.style.display = '';
+                            timeout = setTimeout(function () {
+                                searchFigure(input, result);
+                                loader.style.display = 'none';
+                            }, 2000);
+                        });
                     });
+                    ;
+                    ;
                     window.addEventListener('resize', function () {
                         setTimeout(function () {
                             resizeAllMasonryItems;
-                            resizeAside;
                         }, 500);
                     });
                     setTimeout(function () {
@@ -589,6 +752,9 @@ function addImages() {
                             grid.style.opacity = '1';
                         });
                     }, 1000);
+                    card = document.querySelector('aside .card');
+                    observer = new MutationObserver(function () { resizeAside(); });
+                    observer.observe(card, { childList: true, subtree: true });
                     return [2 /*return*/];
             }
         });
@@ -741,7 +907,6 @@ function scrapeMyAnimeList() {
             if (!mobile)
                 return;
             else {
-                console.log('Running mobile.');
                 [animeCard, mangaCard].forEach(function (card) {
                     var entries = card.querySelectorAll('a');
                     var navBttns = card.parentElement.querySelectorAll('.nav-button');
@@ -804,26 +969,37 @@ window.addEventListener('load', onLoadFunctions, true);
 function onLoadFunctions() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            createLoaders(8);
-            openLinksInNewTab();
-            redirectToEdge();
-            setHeaderBackground();
-            figuresSitDown();
-            resizeAside(0);
-            setDefaults();
-            adjustGamecard();
-            rotateGamecardText(0);
-            addImages();
-            mfcToggleSwitch();
-            makeSwitchesSlide();
-            formatPopUps();
-            mfcPopUpAdjust();
-            dragPopUps();
-            stopImageDrag();
-            redditSearchTrigger();
-            wikipediaSearchTrigger();
-            scrapeMyAnimeList();
-            return [2 /*return*/];
+            switch (_a.label) {
+                case 0:
+                    createLoaders(10);
+                    openLinksInNewTab();
+                    redirectToEdge();
+                    setHeaderBackground();
+                    figuresSitDown();
+                    expandAside();
+                    setDefaults();
+                    adjustGamecard();
+                    rotateGamecardText(0);
+                    makeSwitchesSlide();
+                    // mfcToggleSwitch();
+                    nightModeToggle();
+                    resizeAside(0);
+                    formatPopUps();
+                    mfcPopUpAdjust();
+                    dragPopUps();
+                    stopImageDrag();
+                    redditSearchTrigger();
+                    wikipediaSearchTrigger();
+                    resizeHeader();
+                    makeAsideButtonFollow();
+                    return [4 /*yield*/, addImages()];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, scrapeMyAnimeList()];
+                case 2:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
         });
     });
 }
@@ -841,5 +1017,10 @@ function onResizeFunctions() {
 window.addEventListener('mousemove', onMouseMoveFunctions, true);
 function onMouseMoveFunctions(event) {
     // console.log(event.target);
+}
+;
+window.addEventListener('scroll', onScrollFunctions, true);
+function onScrollFunctions(event) {
+    resizeHeader();
 }
 ;
