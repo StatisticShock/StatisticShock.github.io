@@ -210,7 +210,7 @@ function rotateGamecardText(counter) {
 // To make the header have different backgrounds
 function setHeaderBackground() {
     var filePath = 'images/headers/';
-    fetch("".concat(filePath, "headers.json"))
+    fetch("".concat(filePath, "_headers.json"))
         .then(function (res) { return res.json(); })
         .then(function (json) {
         var index = CustomFunctions.randomIntFromInterval(1, json.length);
@@ -659,24 +659,31 @@ function addImages() {
                 else if (item.type == 'Wished') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                 }
-                if (navigator.userAgent.includes('Android') || navigator.userAgent.includes('like Mac OS')) {
+                if (mobile) {
                     //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
                     var links_1 = [originalName, originName, classification];
+                    var timeoutId_1;
+                    var copyToClipboard_1 = function (ev) {
+                        ev.preventDefault();
+                        var target = ev.currentTarget;
+                        timeoutId_1 = setTimeout(function () {
+                            ev.preventDefault();
+                            void navigator.clipboard.writeText(target.textContent);
+                            console.log("COpied to clipboard: ".concat(target.textContent));
+                        }, 2000);
+                    };
                     var updateLinks = function () { return __awaiter(_this, void 0, void 0, function () {
-                        var _loop_1, _i, links_2, itemLink;
+                        var _i, links_2, itemLink, anchorChild;
                         return __generator(this, function (_a) {
-                            _loop_1 = function (itemLink) {
-                                var anchorChild = itemLink.firstElementChild;
-                                anchorChild.href = '';
-                                anchorChild.target = '';
-                                anchorChild.onclick = function (event) {
-                                    event.preventDefault();
-                                    void navigator.clipboard.writeText(itemLink.textContent);
-                                };
-                            };
                             for (_i = 0, links_2 = links_1; _i < links_2.length; _i++) {
                                 itemLink = links_2[_i];
-                                _loop_1(itemLink);
+                                anchorChild = itemLink.firstElementChild;
+                                anchorChild.addEventListener('touchstart', copyToClipboard_1);
+                                anchorChild.addEventListener('touchend', function (ev) {
+                                    console.log(timeoutId_1);
+                                    clearTimeout(timeoutId_1);
+                                    console.log(timeoutId_1);
+                                });
                             }
                             ;
                             return [2 /*return*/];

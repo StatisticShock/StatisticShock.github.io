@@ -502,37 +502,37 @@ section {
                     white-space: nowrap;
 
                     & #ra {
-                        background-image: url(images/pageImages/ra-ps.png);
+                        background-image: url(images/pageImages/ra-ps.webp);
                         background-size:contain;
                     }
 
                     & #rroms {
-                        background-image: url(images/pageImages/rroms.png);
+                        background-image: url(images/pageImages/rroms.webp);
                     }
 
                     & #fitgirl {
-                        background-image: url(images/pageImages/fitgirl-ps.png);
+                        background-image: url(images/pageImages/fitgirl-ps.webp);
                     }
 
                     & #pkmds {
                         background-size: contain;
-                        background-image: url(images/pageImages/pokemon.png);
+                        background-image: url(images/pageImages/pokemon.webp);
                     }
 
                     & #zelda-tracker {
-                        background-image: url(images/pageImages/botw-ps.png);
+                        background-image: url(images/pageImages/botw-ps.webp);
                     }
 
                     & #pokemon-tracker {
-                        background-image: url(images/pageImages/pokemon-ps.png);
+                        background-image: url(images/pageImages/pokemon-ps.webp);
                     }
 
                     & #castlevania-tracker {
-                        background-image: url(images/pageImages/castlevania-ps.png);
+                        background-image: url(images/pageImages/castlevania-ps.webp);
                     }
 
                     & #zelda-dungeon {
-                        background-image: url(images/pageImages/zelda.jpg);
+                        background-image: url(images/pageImages/zelda.webp);
                         background-position: bottom;
                     }
                 }

@@ -188,7 +188,7 @@ function rotateGamecardText (counter: number): void { // RESPONSIVE
 function setHeaderBackground (): void { // NO NEED OF RESPONSIVENESS
     let filePath: string = 'images/headers/'
 
-    fetch(`${filePath}headers.json`)
+    fetch(`${filePath}_headers.json`)
         .then((res) => res.json())
         .then((json) => {
             let index: number = CustomFunctions.randomIntFromInterval(1, json.length);
@@ -722,19 +722,32 @@ async function addImages (): Promise<void> {
                 a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
             }
 
-            if (navigator.userAgent.includes('Android') || navigator.userAgent.includes('like Mac OS')) {
+            if (mobile) {
                 //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
                 const links: HTMLAnchorElement[] = [originalName, originName, classification] as HTMLAnchorElement[];
-            
+                let timeoutId: NodeJS.Timeout;
+
+                const copyToClipboard = (ev: TouchEvent) => {
+                    ev.preventDefault();
+                    const target = ev.currentTarget as HTMLAnchorElement;
+                    
+                    timeoutId = setTimeout(() => {
+                        ev.preventDefault();
+                        void navigator.clipboard.writeText(target.textContent!);
+                        console.log(`COpied to clipboard: ${target.textContent!}`)
+                    }, 2000);
+
+                }
+
                 const updateLinks = async () => {
                     for (const itemLink of links) {
                         let anchorChild: HTMLAnchorElement = itemLink.firstElementChild! as HTMLAnchorElement;
-                        anchorChild.href = '';
-                        anchorChild.target = '';
-                        anchorChild.onclick = (event) => {
-                            event.preventDefault();
-                            void navigator.clipboard.writeText(itemLink.textContent!);
-                        };
+                        anchorChild.addEventListener('touchstart', copyToClipboard);
+                        anchorChild.addEventListener('touchend', (ev) => {
+                            console.log(timeoutId);
+                            clearTimeout(timeoutId);
+                            console.log(timeoutId)
+                        });
                     };
                 };
             
