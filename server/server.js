@@ -16,7 +16,7 @@ const serviceAccount = JSON.parse(process.env.GOOGLE_JSON_KEY);
 const storage = new storage_1.Storage({ credentials: serviceAccount });
 const corsHeaders = {
     origin: [
-        'https://statisticshockindex.pages.dev/',
+        'https://statisticshock.github.io',
         'http://127.0.0.1:5500',
         'http://localhost:3000'
     ],
