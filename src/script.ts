@@ -1,14 +1,31 @@
 // Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
-import { AnimeList, MangaList } from "../server/types.js"
+import * as MyTypes from "../server/types.js"
 
 //A const that stores if the browser is mobile
-const mobile: boolean = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+const mobile: boolean = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0))
 const portrait: boolean = (window.innerWidth < window.innerHeight);
 
-if (mobile) {
-    document.title = document.title + ' (Mobile)';
-    console.log('Running mobile.');
+//The server
+const server: string = window.location.href === 'http://127.0.0.1:5500/' ? 'http://localhost:3000/' : 'https://statisticshock-github-io.onrender.com/';
+
+// Remove :hover effects
+function goThroughRules (rules: CSSRuleList) {
+    try {
+        for (let j = rules.length - 1; j >= 0; j--) {
+            const rule = rules[j];
+
+            if (rule instanceof CSSStyleRule) {
+                if (rule.selectorText.includes(':hover')) {
+                    rule.cssText = '';
+                } else if (rule.cssRules) {
+                    goThroughRules(rule.cssRules);
+                };
+            };
+        };
+    } catch (err) {
+        // Do nothing
+    };
 }
 
 // To make loaders work
@@ -27,6 +44,86 @@ function createLoaders (counter: number): void { // NO NEED OF RESPONSIVENESS
     });
 };
 
+//To make all shortcuts available
+async function loadContentFromJson () {
+    const json: MyTypes.PageContent = JSON.parse(await (await fetch(`${server}contents?filename=contents`)).text());
+
+    async function loadShortcuts () {
+        const targetedNode: Element = document.querySelectorAll('#shortcuts h2')[1]!
+        const shortcutsNode: Element = document.querySelector('#shortcuts')!;
+
+        for (const section of json.shortcuts.sort((a, b) => a.index - b.index)) { //Creates the section
+            const container: HTMLElement = document.createElement('section');
+            container.id = section.id;
+            const p: HTMLParagraphElement = document.createElement('p');
+            p.innerHTML = section.title;
+            const div: HTMLDivElement = document.createElement('div');
+            div.classList.add('grid-container');
+
+            for (const child of section.children.sort((a, b) => a.index - b.index)) { //Creates each shortcut
+                const a: HTMLAnchorElement = document.createElement('a');
+                a.classList.add('shortcut-item');
+                a.href = child.href;
+                a.setAttribute('alt', child.alt);
+                a.id = child.id;
+
+                const img: HTMLImageElement = document.createElement('img');
+                img.src = child.img;
+
+                a.appendChild(img);
+                div.appendChild(a);
+            };
+
+            container.appendChild(p);
+            container.appendChild(div);
+            shortcutsNode.insertBefore(container, targetedNode); //Inserts the created element before the gaming cards
+        }
+    };
+
+    async function loadHeaders () {
+        let index: number = CustomFunctions.randomIntFromInterval(1, json.headers.length);
+        let src: string = json.headers[index-1];
+
+        json.headers.forEach((imgSrc: string) => { //To load each header image
+            let img = new Image();
+            img.src = imgSrc;
+        });
+
+        const header: HTMLElement = document.querySelector('#header')!;
+        const h1: HTMLElement = header.querySelector('h1')!;
+        header.style.backgroundImage = `url('${src}')`;
+
+        header.onclick = (event: MouseEvent | TouchEvent) => {
+            let target: EventTarget | null = null;
+            if (event instanceof MouseEvent) {
+                target = event.target;
+            } else if (event instanceof TouchEvent) {
+                target = event.touches[0].target;
+            }
+
+            if (typeof window.getSelection() !== undefined) {
+                if (window.getSelection()?.toString() !== '') return;
+            };
+
+            let arr: Array<string> = json.headers.filter((headerImg: string) => {
+                return headerImg != src.split('/').pop();
+            })
+            let indexArr: number = CustomFunctions.randomIntFromInterval(1, arr.length);
+            src = arr[indexArr-1];
+
+            header.style.backgroundImage = `url('${src}')`;
+        };
+    };
+
+    (Array.from(document.body.children) as Array<HTMLElement>).concat(document.querySelector('footer')!).forEach((element) => {
+        if (element.classList.contains('loader')) element.style.display = 'none';
+        else element.removeAttribute('style');
+    });
+
+    loadShortcuts();
+    loadHeaders();
+}
+
 // Stop image dragging
 function stopImageDrag (): void { // NO NEED OF RESPONSIVENESS
     let images: HTMLCollectionOf<HTMLImageElement> = document.getElementsByTagName('img');
@@ -39,11 +136,12 @@ function stopImageDrag (): void { // NO NEED OF RESPONSIVENESS
 // Open in new tab
 function openLinksInNewTab (): void { // RESPONSIVE
     const shortcuts: NodeListOf<HTMLAnchorElement> = document.querySelectorAll('.shortcut-item');
-    shortcuts.forEach((element) => {
+    for (const element of Array.from(shortcuts)) {
+        if (!element.href) continue; 
         if (element.href.match(/docs\.google\.com/) == null || mobile) {
             element.target = '_blank';
         }
-    });
+    };
 
     const gamecards: NodeListOf<HTMLDivElement> = document.querySelectorAll('.gamecard')!;
     gamecards.forEach((element) => {
@@ -73,17 +171,16 @@ function redirectToEdge (): void { // RESPONSIVE
 //To make aside the same height of Shortcut-Item
 function resizeAside (counter?: number): void { // RESPONSIVE
     const aside: HTMLElement = document.querySelector('aside')!;
-    const card: HTMLDivElement = document.querySelector('.card')!;
-    const owned: HTMLDivElement = card.querySelector('.pinterest-grid#owned-ordered')!;
-    const wished: HTMLDivElement = card.querySelector('.pinterest-grid#wished')!;
     const shortcuts: HTMLElement = document.querySelector('#shortcuts')!;
-    
 
-    const maxHeight = Math.max(owned.offsetHeight, wished.offsetHeight);
+    aside.style.height = 'fit-content'
+    shortcuts.style.height = 'fit-content'
 
-    aside.style.height = Math.max(shortcuts.offsetHeight, (maxHeight + 90)) + 'px';
-    card.style.height = maxHeight + 'px';
-    shortcuts.style.height = Math.max(shortcuts.offsetHeight, (maxHeight + 90)) + 'px';
+    if (parseFloat(getComputedStyle(aside).height) < parseFloat(getComputedStyle(shortcuts).height)) {
+        aside.style.height = shortcuts.offsetHeight + 'px';
+    } else {
+        shortcuts.style.height = aside.offsetHeight + 'px';
+    }
 
     if (counter == 0) {
         setTimeout(() => {
@@ -105,12 +202,12 @@ function expandAside (): void { // RESPONSIVE
         if (!portrait) {
             if (aside.getBoundingClientRect().width < window.innerWidth * 0.3) {
                 span.style.transform = `rotate(180deg) translate(0%,-10%)`;
-                flexContainer.style.gridTemplateColumns = '54vw 40px 1fr';
-                input.style.width = `calc((46vw - 40px - 10px) * 0.9)`; input.style.left = `calc(((44vw - 10px) * 0.1) / 2)`;
+                flexContainer.style.gridTemplateColumns = '54vw 2vw 1fr';
+                input.style.width = `calc((46vw - 2vw - 10px) * 0.9)`; input.style.left = `calc(((44vw - 10px) * 0.1) / 2)`;
             } else {
                 span.style.transform = `rotate(0deg) translate(0%,-10%)`;
-                flexContainer.style.gridTemplateColumns = '76vw 40px 1fr';
-                input.style.width = `calc((24vw - 40px - 10px) * 0.9)`; input.style.left = `calc(((22vw - 10px) * 0.1) / 2)`;
+                flexContainer.style.gridTemplateColumns = '76vw 2vw 1fr';
+                input.style.width = `calc((24vw - 2vw - 10px) * 0.9)`; input.style.left = `calc(((22vw - 10px) * 0.1) / 2)`;
             };
         } else {
             if (!aside.classList.contains('hidden')) {
@@ -121,8 +218,6 @@ function expandAside (): void { // RESPONSIVE
                 bttn.style.transform = 'translate(20px, 0)'
             };
         };
-
-        resizeAside();
     };
 
     div.onclick = function (ev) {
@@ -182,48 +277,6 @@ function rotateGamecardText (counter: number): void { // RESPONSIVE
     if (counter == 0) {
         setTimeout(rotateGamecardText,100);
     };
-};
-
-// To make the header have different backgrounds
-function setHeaderBackground (): void { // NO NEED OF RESPONSIVENESS
-    let filePath: string = 'images/headers/'
-
-    fetch(`${filePath}_headers.json`)
-        .then((res) => res.json())
-        .then((json) => {
-            let index: number = CustomFunctions.randomIntFromInterval(1, json.length);
-            let src: string = filePath + json[index-1];
-
-            json.forEach((imgSrc: string) => {
-                let img = new Image();
-                img.src = filePath + imgSrc;
-            });
-
-            const header: HTMLElement = document.querySelector('#header')!;
-            const h1: HTMLElement = header.querySelector('h1')!;
-            header.style.backgroundImage = `url('${src}')`;
-
-            header.onclick = (event: MouseEvent | TouchEvent) => {
-                let target: EventTarget | null = null;
-                if (event instanceof MouseEvent) {
-                    target = event.target;
-                } else if (event instanceof TouchEvent) {
-                    target = event.touches[0].target;
-                }
-
-                if (typeof window.getSelection() !== undefined) {
-                    if (window.getSelection()?.toString() !== '') return;
-                };
-
-                let arr: Array<string> = json.filter((headerImg: string) => {
-                    return headerImg != src.split('/')[2];
-                })
-                let indexArr: number = CustomFunctions.randomIntFromInterval(1, arr.length);
-                src = filePath + arr[indexArr-1];
-
-                header.style.backgroundImage = `url('${src}')`;
-            }
-        });
 };
 
 function resizeHeader (): void { // RESPONSIVE
@@ -321,7 +374,7 @@ function mfcToggleSwitch (): void {
 };
 
 //To toggle night mode
-function nightModeToggle(): void {
+function nightModeToggle(): void { //RESPONSIVE
     const label = document.querySelector('#night-mode-toggle') as HTMLLabelElement;
 
     // Create input if it doesn't exist
@@ -349,22 +402,18 @@ function nightModeToggle(): void {
 }
 
 //To make the popups appear on click
-function formatPopUps (): void {
-    type popUpInterface = {button: HTMLAnchorElement, popUpContainer: HTMLFormElement}
+function formatPopUps (): void { //NO NEED OF RESPONSIVENESS
+    type popUpInterface = {button: HTMLAnchorElement | HTMLButtonElement, popUpContainer: HTMLFormElement}
     const popUpShortcuts: Array<popUpInterface> = [];
 
     (document.querySelectorAll('form.pop-up') as NodeListOf<HTMLFormElement>).forEach((form) => {
         if (form.classList.length < 2) return;
 
-        let otherClass: string = Array.from(form.classList).filter((className) => {
-            return className !== 'pop-up';
-        })[0];
+        const otherClass: string = Array.from(form.classList).filter((className) => className !== 'pop-up')[0];
 
-        let openButton = Array.from(document.querySelectorAll(`.${otherClass}`)).find((el) => el.classList.contains('shortcut-item')) as HTMLAnchorElement;
+        const openBttn = Array.from(document.querySelectorAll(`.${otherClass}`)).filter((element) => element.classList.contains('pop-up-open'))[0] as HTMLAnchorElement | HTMLButtonElement;
 
-        if (openButton) {
-            popUpShortcuts.push({button: openButton, popUpContainer: form});
-        };
+        popUpShortcuts.push({button: openBttn, popUpContainer: form});
     });
 
     popUpShortcuts.forEach((object) => {
@@ -376,7 +425,7 @@ function formatPopUps (): void {
             
             if ((display == '') || (display == 'none')) {
                 object.popUpContainer.style.display = 'block';   //Makes the popUp appear
-            } else {
+            } else if (!(object.popUpContainer.classList.contains('create-shortcut') && object.button.classList.contains('create-shortcut') && !(object.button.id.replace('-button', '-item') === object.popUpContainer.getAttribute('x')))) {
                 object.popUpContainer.style.display = 'none';    //Makes the popUp disappear
             };
 
@@ -386,18 +435,20 @@ function formatPopUps (): void {
                 };
             });
 
-            floatingLabelElement.forEach((label) => {
-                let parent = label.parentElement as HTMLElement;
-                var siblings = Array.from(parent.children) as Array<HTMLElement>;
-                var input = siblings[siblings.indexOf(label) - 1] as HTMLInputElement; //Gets the imediate predecessor sibling
-                var rect = object.popUpContainer.getBoundingClientRect();
-                var inputRect = input.getBoundingClientRect();
-    
-                var left = inputRect.left - rect.left;
-                label.style.left = left +'px';
+            setTimeout(() => {
+                floatingLabelElement.forEach((label) => {
+                    const parent = label.parentElement as HTMLElement;
+                    const siblings = Array.from(parent.children) as Array<HTMLElement>;
+                    const input = siblings[siblings.indexOf(label) - 1] as HTMLInputElement; //Gets the imediate predecessor sibling
+                    const rect = object.popUpContainer.getBoundingClientRect();
+                    const inputRect = input.getBoundingClientRect();
+        
+                    const left = inputRect.left - rect.left;
+                    label.style.left = Math.max(left, 5) + 'px';
 
-                input.setAttribute('placeholder', ' ')
-            })
+                    input.placeholder ? input.placeholder = input.placeholder : input.placeholder = ' ';
+                });
+            }, 10);
         }
 
         object.popUpContainer.addEventListener('keydown', function (e) {
@@ -421,7 +472,7 @@ function formatPopUps (): void {
 };
 
 // To make the reddit search work
-function redditSearchTrigger (): void {
+function redditSearchTrigger (): void { //NO NEED OF RESPONSIVENESS
     let okButtonReddit: HTMLButtonElement = document.querySelector('.pop-up.reddit-google .ok-button')!;
     okButtonReddit.onclick = redditSearch;
 
@@ -468,7 +519,7 @@ function redditSearchTrigger (): void {
 };
 
 //To make the wikipedia search work
-function wikipediaSearchTrigger (): void {
+function wikipediaSearchTrigger (): void { //NO NEED OF RESPONSIVENESS
     let okButtonWikipedia: HTMLButtonElement = document.querySelector('.pop-up.wikipedia .ok-button')!;
     okButtonWikipedia.onclick = wikipediaSearch;
 
@@ -485,21 +536,14 @@ function wikipediaSearchTrigger (): void {
     }
 };
 
-// To make MFC pop-up adjust
-function mfcPopUpAdjust (): void {
-    let mfc: HTMLDivElement = document.querySelector('.pop-up.mfc')!;
-
-    // To make it have the proper aspect ratio
-    let a
-
-    let fontSize: number = parseFloat(getComputedStyle(mfc).fontSize);
-
-    // alert(fontSize);
-};
+//To create new shortcuts
+function createShortcutsTrigger (): void {
+    
+}
 
 // To make the inputbox draggable
 function dragPopUps (): void {
-    let popUps: NodeListOf<HTMLElement> = document.querySelectorAll('.pop-up')
+    const popUps: NodeListOf<HTMLElement> = document.querySelectorAll('.pop-up');
     let isDragging: boolean = false;
     let offsetX: number, offsetY: number;
     
@@ -522,7 +566,7 @@ function dragPopUps (): void {
 
         let target = e.target as HTMLElement;
 
-        if ((target === this || CustomFunctions.isParent(target, this)) &&
+        if ((target === this || CustomFunctions.isParent(target, this.querySelector('.pop-up-header')!)) &&
             !(target instanceof HTMLImageElement) &&
             !(target instanceof HTMLParagraphElement) &&
             !(target instanceof HTMLSpanElement) &&
@@ -551,6 +595,228 @@ function dragPopUps (): void {
     }; function stopDragging (): void {
         isDragging = false;
     }
+};
+
+async function dragAndDropHandler () {
+    function toggleHeaderInput (header: HTMLElement, forceText?: boolean): void {
+        if (header.querySelector('input') === null) {
+            header.innerHTML = forceText ? header.innerHTML : `<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg" class="drag-handle"><input type="text" value="${header.textContent}"><span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg"></span>`;
+        } else {
+            const input = header.querySelector('input') as HTMLInputElement;
+            header.innerHTML = `<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg" class="drag-handle">${input.value}<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span>`;
+        };
+    }
+
+    function toggleShortcutInput (shorcut: HTMLElement, forceText?: boolean): void {
+        if (shorcut.querySelector('input') === null) {
+            shorcut.innerHTML = forceText ? shorcut.innerHTML : shorcut.innerHTML.replace(shorcut.textContent!, `<input type="text" value="${shorcut.textContent!}">`).replace('edit.svg', 'check.svg');
+        } else {
+            const input = shorcut.querySelector('input') as HTMLInputElement;
+            input.outerHTML = `${input.value}`
+            shorcut.innerHTML = shorcut.innerHTML.replace('check.svg', 'edit.svg')
+        };
+    }
+
+    function updateIcon (shorcut: HTMLElement) {
+        const icon: HTMLImageElement = shorcut.querySelectorAll('img')[1];
+        const src: string = icon.src;
+        
+        icon.outerHTML = `<input type="file" accept="image/*">`
+
+        const newIcon = Array.from(shorcut.querySelectorAll('input')).pop() as HTMLInputElement;
+
+        newIcon.files = null;
+    }
+
+    const popUp: HTMLFormElement = document.querySelector('.pop-up.create-shortcut')!;
+    const dragAndDrop: HTMLDivElement = popUp.querySelector('#drag-and-drop')!;
+    const addItemButton: HTMLButtonElement = popUp.querySelector('#add-drag-and-drop-button')!;
+    const addItem: HTMLDivElement = popUp.querySelector('#add-drag-and-drop')!;
+    const fileDrop: HTMLElement = addItem.querySelector('#drop-file')!;
+    const bttn: HTMLButtonElement = document.querySelector('.create-shortcut.pop-up-open')!;
+    const json: MyTypes.PageContent = JSON.parse(await (await fetch(`${server}contents?filename=contents`)).text());
+    const submitBttn: HTMLButtonElement = popUp.querySelector('.ok-button')!;
+    const addNewEntryBttn: HTMLButtonElement = popUp.querySelector('#add-drag-and-drop-submit')!;
+
+    bttn.addEventListener('click', (ev) => {
+        fileDrop.querySelector('img')!.src = 'https://storage.googleapis.com/statisticshock_github_io_public/icons/static/image.svg';
+
+        for (const input of Array.from(addItem.querySelectorAll('input'))) {
+            input.value = '';
+        }
+
+        addItemButton.classList.remove('active');
+        dragAndDrop.style.display = 'grid'
+        dragAndDrop.innerHTML = '';
+        
+        for (const shortcut of json.shortcuts) {
+            dragAndDrop.insertAdjacentHTML('beforeend', `<div id="${shortcut.id}-list" class="drag-and-drop-list" draggable="false" x="shown"><h3 class="drag-and-drop-list-header"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg" class="drag-handle">${shortcut.title}<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></h3><div style="--children-length: ${shortcut.children.length};"></div></div>`);
+
+            const dragAndDropList: HTMLDivElement = dragAndDrop.querySelector(`#${shortcut.id}-list div`)!;
+            const dragAndDropListHeader: HTMLElement = dragAndDropList.parentElement!.querySelector('h3')!;
+
+            for (const child of shortcut.children) {
+                addItem.style.display = 'none';
+                dragAndDropList.innerHTML += `<div id="${child.id}-list" class="drag-and-drop-item" draggable="false" y="${child.href}"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg" class="drag-handle">${child.alt}<span><img src="${child.img}" draggable="false"><input type="file" accept="image/*"></span><span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></div>`;
+            };
+        };
+
+        fileDrop.querySelector('input')!.files = null;
+        fileDrop.querySelector('p')!.innerHTML = `Solte uma imagem aqui`;
+    });
+
+    addItemButton.onclick = function (ev) {
+        if (addItemButton.classList.contains('active')) {
+            addItemButton.classList.remove('active');
+            addItem.style.display = 'none';
+            dragAndDrop.style.display = 'grid'
+            submitBttn.removeAttribute('style')
+        } else {
+            addItemButton.classList.add('active');
+            addItem.style.display = 'block';
+            dragAndDrop.style.display = 'none'
+            submitBttn.style.display = 'none'
+        }
+    }
+
+    function handleDropFile (): void {
+        function activeFileDrop (): void {
+            fileDrop.style.border = '3px solid var(--pink-custom)';
+        };
+
+        function inactiveFileDrop (): void {
+            fileDrop.style.border = '3px dashed grey';
+        };
+
+        const input: HTMLInputElement = fileDrop.querySelector('input')!;
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((evName) => fileDrop.addEventListener(evName, (e) => e.preventDefault()));
+        ['dragenter', 'dragover'].forEach((evName) => fileDrop.addEventListener(evName, (e) => activeFileDrop()));
+        ['dragleave', 'drop'].forEach((evName) => fileDrop.addEventListener(evName, (e) => inactiveFileDrop()));
+        fileDrop.addEventListener('drop', (e) => {
+            const dt: DataTransfer = e.dataTransfer!;
+            const filesDt: FileList = dt.files;
+
+            input.files = filesDt;
+            fileDrop.querySelector('p')!.innerHTML = `"${input.files[0].name}" selecionado.`
+        });
+
+        fileDrop.querySelector('input')!.addEventListener('change', (e) => {
+            if (input.files && input.files[0]) {
+                fileDrop.querySelector('p')!.innerHTML = `"${input.files[0].name}" selecionado.`
+                
+                let reader = new FileReader();
+
+                reader.onload = (ev) => {fileDrop.querySelector('img')!.src = ev.target!.result as string}
+
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                fileDrop.querySelector('p')!.innerHTML = 'Solte uma imagem aqui';
+            };
+        });
+    }
+
+    handleDropFile();
+
+    popUp.addEventListener('submit', async (ev) => { //It submits the adition of a shortcut
+        ev.preventDefault();
+        const formData: FormData = new FormData(popUp);
+
+        addItem.querySelectorAll('input').forEach((input) => { //To alert if an input is empty
+            if (input.type === 'text' && input.value === '') {
+                input.style.setProperty('--initial-color', getComputedStyle(input).backgroundColor);
+                input.classList.add('pulse');
+                setTimeout(() => {
+                    input.classList.remove('pulse');
+                    input.style.removeProperty('--initial-color');
+                }, 1800);
+            } else if (input.type === 'file' && input.files!.length === 0) {
+                input.parentElement!.style.setProperty('--initial-color', getComputedStyle(input).backgroundColor);
+                input.parentElement!.classList.add('pulse');
+                setTimeout(() => {
+                    input.parentElement!.classList.remove('pulse');
+                    input.parentElement!.style.removeProperty('--initial-color');
+                }, 1800);
+            };
+        });
+        
+        for (const [key, value] of Array.from(formData)) {
+            if (typeof value === 'string' && value === '') return;
+            if (value instanceof File && value.size === 0) return;
+        };
+
+        try {
+            const response: Response = await fetch(`${server}upload/`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const textJson: MyTypes.ShortcutResponse = await response.json();
+                const targetListToAddNewData: HTMLDivElement | null = dragAndDrop.querySelector(`${textJson.sectionId}-list`);
+
+                if (targetListToAddNewData === null) {
+
+                } else {
+
+                };
+            } else {
+                const textJson: MyTypes.ErrorJson = await response.json();
+                alert(`ERRO:\n${textJson.message}`)
+            }
+
+        } catch (err) {
+
+        };
+    })
+
+    dragAndDrop.addEventListener('click', (ev) => {
+        const header = (ev.target as HTMLElement).closest('.drag-and-drop-list-header');
+        if (!header) return;
+        if ((ev.target as HTMLElement).tagName === 'INPUT') return;
+        if (CustomFunctions.isParent(ev.target as HTMLElement, header.querySelector('span') as HTMLSpanElement)) {
+            toggleHeaderInput(header as HTMLElement);
+            return;
+        };
+
+        const container = header.parentElement!;
+
+        const isShown = container.getAttribute('x') === 'shown';
+
+        container.setAttribute('x', isShown ? 'hidden' : 'shown');
+        container.classList.toggle('hidden', isShown);
+    });
+
+    dragAndDrop.addEventListener('click', (ev) => {
+        const shortcut = (ev.target as HTMLElement).closest('.drag-and-drop-item') as HTMLDivElement;
+        if (!shortcut) return;
+        else if ((ev.target as HTMLElement).tagName === 'INPUT') return;
+        else if (shortcut.querySelector('input') !== null && shortcut.querySelector('input')!.value === '') return;
+        else if (CustomFunctions.isParent(ev.target as HTMLElement, shortcut.querySelector('span') as HTMLSpanElement)) toggleShortcutInput(shortcut as HTMLElement);
+        else if ((ev.target as HTMLElement) === shortcut.querySelectorAll('img')[1]) updateIcon(shortcut);
+    });
+
+    dragAndDrop.addEventListener('mousemove', (ev) => {
+        if (mobile) return;
+        
+        const sections: Array<HTMLElement> = Array.from(document.querySelectorAll('.container .flex-container section:has(.grid-container)'));
+
+        sections.forEach((section) => {
+            if (!(ev.target as HTMLElement).closest('.drag-and-drop-list')) return;
+            if ((ev.target as HTMLElement).closest('.drag-and-drop-list')!.id.replace('-list', '') === section.id) {
+                section.querySelector('p')!.classList.add('animated');
+            } else {
+                section.querySelector('p')!.classList.remove('animated')
+            }
+        })
+    });
+
+    dragAndDrop.addEventListener('mouseleave', (ev) => {
+        const sections: Array<HTMLElement> = Array.from(document.querySelectorAll('.container .flex-container section:has(.grid-container)'));
+        sections.forEach((section) => {
+            section.querySelector('p')!.classList.remove('animated')
+        })
+    });
 };
 
 // To make the defaults load within the window
@@ -616,7 +882,7 @@ async function addImages (): Promise<void> {
         title: string,
     }
 
-    let result: mfc[] = await (await fetch('https://statisticshock-github-io.onrender.com/figurecollection/')).json();
+    let result: mfc[] = await (await fetch(`${server}contents?filename=mfc`)).json();
 
     let createElementPromise = new Promise ((resolve, reject) => { //This creates a promise that will create every item in the aside
         resolve(result.sort((a: mfc, b: mfc) => Number(a.id) - Number(b.id)).map(createElement));
@@ -790,15 +1056,13 @@ async function addImages (): Promise<void> {
         });
     };
 
-    window.addEventListener('resize', () => {
-        setTimeout(() => {
-            resizeAllMasonryItems;
-        },500);
-    });
+    setInterval(() => {
+        resizeAllMasonryItems();
+    }, 500)
 
     setTimeout(() => { //Should run immeditialy after "resizeAllMasonryItems"
-        let loader: HTMLDivElement = document.querySelector('aside > .card > .loader')!;
-        let pinterestGrids: NodeListOf<HTMLSpanElement> = document.querySelectorAll('aside > .card > .pinterest-grid');
+        const loader: HTMLDivElement = document.querySelector('aside > .card > .loader')!;
+        const pinterestGrids: NodeListOf<HTMLSpanElement> = document.querySelectorAll('aside > .card > .pinterest-grid');
         
         loader.style.display = 'none';
         pinterestGrids.forEach((grid) => {
@@ -806,28 +1070,31 @@ async function addImages (): Promise<void> {
         });
     }, 1000);
 
-    const card = document.querySelector('aside .card')!;
+    setInterval(() => {
+        const card: HTMLDivElement = document.querySelector('aside .card')!;
+        const grids: NodeListOf<HTMLDivElement> = card.querySelectorAll('.pinterest-grid');
 
-    const observer = new MutationObserver(() => {resizeAside();});
-
-    observer.observe(card, { childList: true, subtree: true });
+        grids.forEach((grid) => {
+            grid.style.width = (parseFloat(getComputedStyle(card).width) / 2) + 'px';
+        })
+    }, 500)
 };
 
 // To add a MyAnimeList card
 async function scrapeMyAnimeList (): Promise<void> {
-    async function scrapeDataFromMAL (offset: number): Promise<[AnimeList['data'], MangaList['data']]> {
-        const animeData: AnimeList = await fetch(`https://statisticshock-github-io.onrender.com/animelist/HikariMontgomery/${offset}`)
+    async function scrapeDataFromMAL (offset: number): Promise<[MyTypes.AnimeList['data'], MyTypes.MangaList['data']]> {
+        const animeData: MyTypes.AnimeList = await fetch(`${server}myanimelist?type=animelist&username=HikariMontgomery&offset=${offset}`)
         .then(response => response.json());
-        const animeDataData: AnimeList["data"] = animeData.data.filter((entry) => entry.node.nsfw === 'white').slice(0, 10);
+        const animeDataData: MyTypes.AnimeList["data"] = animeData.data.filter((entry) => entry.node.nsfw === 'white').slice(0, 10);
 
-        const mangaData: MangaList = await fetch(`https://statisticshock-github-io.onrender.com/mangalist/HikariMontgomery/${offset}`)
+        const mangaData: MyTypes.MangaList = await fetch(`${server}myanimelist?type=mangalist&username=HikariMontgomery&offset=${offset}`)
         .then(response => response.json());
-        const mangaDataData: MangaList["data"] = mangaData.data.filter((entry) => entry.node.nsfw === 'white').slice(0, 10);
+        const mangaDataData: MyTypes.MangaList["data"] = mangaData.data.filter((entry) => entry.node.nsfw === 'white').slice(0, 10);
 
         return [animeDataData, mangaDataData];
     };
 
-    let output: Promise<[AnimeList['data'], MangaList['data']]> = scrapeDataFromMAL(0);
+    let output: Promise<[MyTypes.AnimeList['data'], MyTypes.MangaList['data']]> = scrapeDataFromMAL(0);
     const animeCard: HTMLDivElement = document.querySelector('#my-anime-list .inner-card.anime')!;
     const mangaCard: HTMLDivElement = document.querySelector('#my-anime-list .inner-card.manga')!;
 
@@ -857,7 +1124,7 @@ async function scrapeMyAnimeList (): Promise<void> {
         })
     })
 
-    function createCards (entries: AnimeList['data'] | MangaList['data'], card: HTMLDivElement, insertBefore?: boolean): void {
+    function createCards (entries: MyTypes.AnimeList['data'] | MyTypes.MangaList['data'], card: HTMLDivElement, insertBefore?: boolean): void {
         const firstCard = card.firstElementChild as HTMLAnchorElement | null;
         
         entries.forEach((entry) => {
@@ -895,7 +1162,7 @@ async function scrapeMyAnimeList (): Promise<void> {
 
             if (entry.list_status.score !== 0) {
                 const p4: HTMLParagraphElement = document.createElement('p');
-                p4.innerHTML = `<span>Pontuação&nbsp;</span><span>${'⭐'.repeat(entry.list_status.score)} (${entry.list_status.score}/10)</span>`;
+                p4.innerHTML = `<span>Pontuação&nbsp;</span><span>${'⭐'.repeat(entry.list_status.score)}\n(${entry.list_status.score}/10)</span>`;
                 span.appendChild(p4);
             }
             
@@ -936,7 +1203,7 @@ async function scrapeMyAnimeList (): Promise<void> {
         mangaCard.scrollTo((itemWidth + gap) * 10,0);
     };
 
-    function makeCarouselSlide (entries: AnimeList['data'] | MangaList['data'], card: HTMLDivElement): void {
+    function makeCarouselSlide (entries: MyTypes.AnimeList['data'] | MyTypes.MangaList['data'], card: HTMLDivElement): void {
         function getClosestAnchor (container: HTMLDivElement): HTMLAnchorElement {
             const rect: DOMRect = container.getBoundingClientRect();
             const center: number = rect.left + rect.width / 2;
@@ -1046,11 +1313,12 @@ async function scrapeMyAnimeList (): Promise<void> {
     };
 };
 
-window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions () {
+window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions (ev: Event) {
     createLoaders(10);
+    await loadContentFromJson();
+    dragAndDropHandler();
     openLinksInNewTab();
     redirectToEdge();
-    setHeaderBackground();
     figuresSitDown();
     expandAside();
     setDefaults();
@@ -1059,29 +1327,23 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     makeSwitchesSlide();
     // mfcToggleSwitch();
     nightModeToggle();
-    resizeAside(0);
     formatPopUps();
-    mfcPopUpAdjust();
     dragPopUps();
     stopImageDrag();
     redditSearchTrigger();
     wikipediaSearchTrigger();
     resizeHeader();
     makeAsideButtonFollow();
-    await addImages();
-    await scrapeMyAnimeList();
+    if (mobile) goThroughRules(document.styleSheets[0].cssRules)
+    await Promise.all([addImages(), scrapeMyAnimeList()]);
 };
-window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions () {
-    setTimeout( () => {
+window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions (ev: Event) {
+    setTimeout(() => {
         resizeAside();
         figuresSitDown();
         rotateGamecardText(0);
-        mfcPopUpAdjust ();
     }, 500);
 };
-window.addEventListener('mousemove', onMouseMoveFunctions, true); function onMouseMoveFunctions (event: Event) {
-    // console.log(event.target);
-};
-window.addEventListener('scroll', onScrollFunctions, true); function onScrollFunctions (event: Event) {
+window.addEventListener('scroll', onScrollFunctions, true); function onScrollFunctions (ev: Event) {
     resizeHeader();
 };

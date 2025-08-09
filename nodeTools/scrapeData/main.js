@@ -1,2 +1,2 @@
 import { main } from './scrapeData.js'
-main();
+main(false);

@@ -1,14 +1,16 @@
-import { Storage } from '@google-cloud/storage';
+import * as Google from '@google-cloud/storage';
 import * as cheerio from 'cheerio';
 import dotenv from 'dotenv';
 import * as fs from 'fs';
 import { pipeline } from 'stream';
 import util from 'util';
 import * as pathImport from 'path';
+import { fileURLToPath } from 'url';
+import { exec } from 'child_process';
 dotenv.config({ path: pathImport.resolve(import.meta.dirname + '/.env') });
 export class GoogleClass {
     static serviceAccount = JSON.parse(process.env.GOOGLE_JSON_KEY);
-    static storage = new Storage({ credentials: GoogleClass.serviceAccount });
+    static storage = new Google.Storage({ credentials: GoogleClass.serviceAccount });
     static bucket = GoogleClass.storage.bucket('statisticshock_github_io');
     static mfcJsonGoogle = GoogleClass.bucket.file('mfc.json');
     static publicBucket = GoogleClass.storage.bucket('statisticshock_github_io_public');
@@ -17,21 +19,24 @@ export class GoogleClass {
 const streamPipeline = util.promisify(pipeline);
 // To log to a .log file
 const dirName = 'logs';
-const logDir = pathImport.resolve(dirName);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = pathImport.dirname(__filename);
+const logDir = pathImport.resolve(__dirname, dirName);
 if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
 }
-const date = new Date();
-const formattedDate = date.toLocaleDateString().split('/')[2] + '-' + date.toLocaleDateString().split('/')[1] + '-' + date.toLocaleDateString().split('/')[0];
-const logFile = fs.createWriteStream(pathImport.join(logDir, `debug_${formattedDate}.log`), { flags: 'a' });
+const date = new Date().toISOString().split('T')[0];
+const logFile = fs.createWriteStream(pathImport.join(logDir, `debug_${date}.log`), { flags: 'a' });
 const log = function (message) {
     console.log(message);
-    logFile.write(message + ' [' + new Date().getHours() + ':' + new Date().getMinutes() + ':' + new Date().getSeconds() + ']' + '\n');
+    logFile.write(`${message} [${Intl.DateTimeFormat('pt-BR', { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(new Date())}]\n`);
 };
+const execute = util.promisify(exec);
 const mfcLink = 'https://pt.myfigurecollection.net';
 export async function sleep(ms) {
     return new Promise(res => setTimeout(res, ms));
 }
+;
 export const links = [
     ['Owned', 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=0&categoryId=-1&output=2&sort=category&order=asc&_tb=user'],
     ['Ordered', 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=0&categoryId=-1&output=2&sort=category&order=asc&_tb=user'],
@@ -43,6 +48,7 @@ async function downloadImage(url, path) {
         log(`Failed to download: ${response.statusText}`);
     await streamPipeline(response.body, fs.createWriteStream(path));
 }
+;
 async function scrapeImages() {
     let imgLinks = [];
     async function downloadNewImages() {
@@ -68,17 +74,25 @@ async function scrapeImages() {
             }
             ;
             let path = 'temp/' + finalLink.split(/\/[1-2]\//)[1].split('-')[0] + '.jpg';
-            const [exists] = await GoogleClass.publicBucket.file(path.replace('temp/', '')).exists();
+            let finalPath = path.replace('jpg', 'webp');
+            const [exists] = await GoogleClass.publicBucket.file(finalPath.replace('temp', 'mfc')).exists();
             if (exists) {
-                log(path.replace('temp/', '') + ' already uploaded.');
+                log(finalPath.replace('temp/', 'mfc/') + ' already uploaded.');
                 continue;
             }
             else {
                 await downloadImage(finalLink, path);
-                GoogleClass.publicBucket.upload(path);
-                log(path.replace('temp/', '') + ' uploaded to bucket.');
+                await convertToWebp(path);
+                GoogleClass.publicBucket.upload(finalPath, { destination: finalPath.replace('temp', 'mfc') });
+                log(finalPath.replace('temp/', '') + ' uploaded to bucket.');
                 await sleep(1000);
                 fs.unlink(path, (err) => {
+                    if (err) {
+                        log(err.message);
+                    }
+                    ;
+                });
+                fs.unlink(finalPath, (err) => {
                     if (err) {
                         log(err.message);
                     }
@@ -90,26 +104,46 @@ async function scrapeImages() {
         ;
     }
     async function deleteOldImages() {
-        let imageFilesToKeep = imgLinks.map((link) => link.replace(/https\:\/\/static\.myfigurecollection\.net\/upload\/items\/[1-2]\//, '').split('-')[0] + '.jpg');
+        let imageFilesToKeep = imgLinks.map((link) => 'mfc/' + link.replace(/https\:\/\/static\.myfigurecollection\.net\/upload\/items\/[1-2]\//, '').split('-')[0] + '.webp');
         const [imageFiles] = await GoogleClass.publicBucket.getFiles();
         const imageFilesToDelete = imageFiles.filter((x) => !imageFilesToKeep.includes(x.name));
-        imageFilesToDelete.forEach((fileToDelete) => {
+        for (const fileToDelete of imageFilesToDelete) {
+            if (!fileToDelete.name.includes('mfc/'))
+                continue; //Skip every link that is not from "mfc" folder
             log(`Deleting ${fileToDelete.name}...`);
             fileToDelete.delete();
-        });
+        }
+        ;
     }
+    ;
     await downloadNewImages();
     await deleteOldImages();
 }
+;
+async function convertToWebp(imgPath) {
+    try {
+        await execute(`ffmpeg -i "${imgPath}" -y -lossless 1 "${imgPath.replace('jpg', 'webp')}"`);
+    }
+    catch (e) {
+        log(e.code);
+        log(e.message);
+    }
+    ;
+}
+;
 export class ScrapeFunctions {
     async readMFCItem(elementId, typeOfFigure) {
-        const response = await fetch(`${mfcLink}/item/${elementId}`);
+        let response = await fetch(`${mfcLink}/item/${elementId}`);
+        if (!response.ok) {
+            await sleep(10000);
+            response = await fetch(`${mfcLink}/item/${elementId}`);
+        }
         const html = await response.text();
         const $ = cheerio.load(html);
         log('Fetching ' + $('h1.title').text());
         let id = elementId;
         let href = `${mfcLink}/item/${elementId}`;
-        let img = $('a.main img').attr('src').replaceAll(/https\:\/\/static\.myfigurecollection\.net\/upload\/items\/[0-2]\//g, 'https://storage.googleapis.com/statisticshock_github_io_public/').split('-')[0] + '.jpg';
+        let img = $('a.main img').attr('src').replaceAll(/https\:\/\/static\.myfigurecollection\.net\/upload\/items\/[0-2]\//g, 'https://storage.googleapis.com/statisticshock_github_io_public/mfc/').split('-')[0] + '.webp';
         let character;
         let characterJap;
         let origin;
@@ -142,7 +176,6 @@ export class ScrapeFunctions {
             ;
             if ($$(element).find('.data-label').text().includes('Origem')) {
                 origin = $$(element).find('.data-value span[switch]').attr('switch');
-                console.log(origin);
             }
             ;
         }
@@ -166,7 +199,8 @@ export class ScrapeFunctions {
         return json;
     }
 }
-async function fetchData() {
+;
+async function fetchData(addingData) {
     const scrapeFunctions = new ScrapeFunctions();
     console.log('Starting to fetch items...');
     let json = await scrapeFunctions.fetchJson();
@@ -179,56 +213,99 @@ async function fetchData() {
     }
     let changes = false;
     let figuresIdsToKeep = [];
-    for (const [typeOfFigure, link] of links) {
-        const response = await fetch(link);
-        const html = await response.text();
-        const $ = cheerio.load(html);
-        const itemIcons = $('.item-icon');
-        for (const el of itemIcons.toArray()) {
-            const elementId = $(el).find('a').attr('href').replace('/item/', '');
-            figuresIdsToKeep.push(elementId);
-            await sleep(900);
-            let index = json.findIndex((obj) => obj.id === elementId);
-            if (index > 0) {
-                if (json[index].type !== typeOfFigure) {
-                    changes = true;
-                    json[index].type = typeOfFigure;
+    if (addingData) {
+        const itemsToUpdate = json.filter((obj) => Object.keys(obj).length < 10);
+        if (itemsToUpdate.length > 0) {
+            for (const item of itemsToUpdate) {
+                const index = json.indexOf(item);
+                let type = undefined;
+                for (const [typeOfFigure, link] of links) { //To check item type
+                    const response = await fetch(link);
+                    const html = await response.text();
+                    const $ = cheerio.load(html);
+                    const itemIcons = $('.item-icon');
+                    if (!type) {
+                        for (const el of itemIcons.toArray()) {
+                            const elementId = $(el).find('a').attr('href').replace('/item/', '');
+                            if (elementId === item.id)
+                                type = typeOfFigure;
+                        }
+                        ;
+                    }
+                    ;
+                    await sleep(900);
                 }
                 ;
-            }
-            ;
-            if (json.some((mfcObj) => mfcObj.id === elementId)) {
-                continue;
-            }
-            else {
-                changes = true;
-                let itemData = await scrapeFunctions.readMFCItem(elementId, typeOfFigure);
-                json.push(itemData);
+                const itemData = await scrapeFunctions.readMFCItem(item.id, type);
+                if (item !== itemData) {
+                    changes = true;
+                    json[index] = itemData;
+                    log(`Updated.`);
+                    log(`Type: ${itemData.type}`);
+                    await sleep(900);
+                }
             }
             ;
         }
         ;
-        await sleep(1000);
+        if (changes) {
+            GoogleClass.mfcJsonGoogle.save(JSON.stringify(json, null, 2));
+            log('Changes in the file "mfc.json" were made.');
+        }
+    }
+    else {
+        for (const [typeOfFigure, link] of links) {
+            const response = await fetch(link);
+            const html = await response.text();
+            const $ = cheerio.load(html);
+            const itemIcons = $('.item-icon');
+            for (const el of itemIcons.toArray()) {
+                const elementId = $(el).find('a').attr('href').replace('/item/', '');
+                figuresIdsToKeep.push(elementId);
+                await sleep(900);
+                const index = json.findIndex((obj) => obj.id === elementId);
+                if (index > 0) {
+                    if (json[index].type !== typeOfFigure) {
+                        changes = true;
+                        json[index].type = typeOfFigure;
+                    }
+                    ;
+                }
+                ;
+                if (json.some((mfcObj) => mfcObj.id === elementId)) {
+                    continue;
+                }
+                else {
+                    changes = true;
+                    const itemData = await scrapeFunctions.readMFCItem(elementId, typeOfFigure);
+                    json.push(itemData);
+                }
+                ;
+            }
+            ;
+            await sleep(1000);
+        }
+        ;
+        let outputJson = json.filter((obj) => {
+            return figuresIdsToKeep.includes(obj.id);
+        });
+        if (outputJson.length < json.length) {
+            changes = true;
+        }
+        if (changes) {
+            GoogleClass.mfcJsonGoogle.save(JSON.stringify(outputJson, null, 2));
+            log('Changes in the file "mfc.json" were made.');
+        }
     }
     ;
-    let outputJson = json.filter((obj) => {
-        return figuresIdsToKeep.includes(obj.id);
-    });
-    if (outputJson.length < json.length) {
-        changes = true;
-    }
-    if (changes) {
-        GoogleClass.mfcJsonGoogle.save(JSON.stringify(outputJson, null, 2));
-        log('Changes in the file "mfc.json" were made.');
-    }
 }
 ;
-export async function main() {
+export async function main(addingData) {
     setInterval(() => {
         console.log('Memory usage:', process.memoryUsage().heapUsed / 1024 / 1024, 'MB');
     }, 5000);
     try {
-        await fetchData();
+        await fetchData(addingData);
         await scrapeImages();
     }
     catch (err) {
@@ -238,4 +315,8 @@ export async function main() {
         console.log('Closing conections...');
         setTimeout(() => process.exit(0), 1500); // Closes everything
     }
+}
+;
+export async function fillData() {
+    await main(true);
 }

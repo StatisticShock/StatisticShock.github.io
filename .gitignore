@@ -1,9 +1,9 @@
 package-lock.json
 node_modules
 .vscode
-tsconfig.json
 myFigureCollection.csv
 .env
 temp
 logs
 updateLogs
+**.vbs

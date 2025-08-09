@@ -1,5 +1,3 @@
-import { on } from "events";
-
 export default class CustomFunctions {
     static shuffle (arr: Array<any>): Array<any> { //Intended to shuffle any array
         let j, x, index;
@@ -46,5 +44,9 @@ export default class CustomFunctions {
 
     static async sleep(ms: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, ms));
+    };
+
+    static normalize(string: string): string {
+        return string.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
     }
 }

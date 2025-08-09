@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "types": [
+      "node",
+    ],
+    "noEmitOnError": true,
+  },
+  "include": [
+    ".",
+    "../src/functions"
+  ]
+}

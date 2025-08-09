@@ -37,11 +37,32 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 // Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
 //A const that stores if the browser is mobile
-var mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+var mobile = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
 var portrait = (window.innerWidth < window.innerHeight);
-if (mobile) {
-    document.title = document.title + ' (Mobile)';
-    console.log('Running mobile.');
+//The server
+var server = window.location.href === 'http://127.0.0.1:5500/' ? 'http://localhost:3000/' : 'https://statisticshock-github-io.onrender.com/';
+// Remove :hover effects
+function goThroughRules(rules) {
+    try {
+        for (var j = rules.length - 1; j >= 0; j--) {
+            var rule = rules[j];
+            if (rule instanceof CSSStyleRule) {
+                if (rule.selectorText.includes(':hover')) {
+                    rule.cssText = '';
+                }
+                else if (rule.cssRules) {
+                    goThroughRules(rule.cssRules);
+                }
+                ;
+            }
+            ;
+        }
+        ;
+    }
+    catch (err) {
+        // Do nothing
+    }
+    ;
 }
 // To make loaders work
 function createLoaders(counter) {
@@ -57,6 +78,106 @@ function createLoaders(counter) {
     });
 }
 ;
+//To make all shortcuts available
+function loadContentFromJson() {
+    return __awaiter(this, void 0, void 0, function () {
+        function loadShortcuts() {
+            return __awaiter(this, void 0, void 0, function () {
+                var targetedNode, shortcutsNode, _i, _a, section, container, p, div, _b, _c, child, a, img;
+                return __generator(this, function (_d) {
+                    targetedNode = document.querySelectorAll('#shortcuts h2')[1];
+                    shortcutsNode = document.querySelector('#shortcuts');
+                    for (_i = 0, _a = json.shortcuts.sort(function (a, b) { return a.index - b.index; }); _i < _a.length; _i++) { //Creates the section
+                        section = _a[_i];
+                        container = document.createElement('section');
+                        container.id = section.id;
+                        p = document.createElement('p');
+                        p.innerHTML = section.title;
+                        div = document.createElement('div');
+                        div.classList.add('grid-container');
+                        for (_b = 0, _c = section.children.sort(function (a, b) { return a.index - b.index; }); _b < _c.length; _b++) { //Creates each shortcut
+                            child = _c[_b];
+                            a = document.createElement('a');
+                            a.classList.add('shortcut-item');
+                            a.href = child.href;
+                            a.setAttribute('alt', child.alt);
+                            a.id = child.id;
+                            img = document.createElement('img');
+                            img.src = child.img;
+                            a.appendChild(img);
+                            div.appendChild(a);
+                        }
+                        ;
+                        container.appendChild(p);
+                        container.appendChild(div);
+                        shortcutsNode.insertBefore(container, targetedNode); //Inserts the created element before the gaming cards
+                    }
+                    return [2 /*return*/];
+                });
+            });
+        }
+        function loadHeaders() {
+            return __awaiter(this, void 0, void 0, function () {
+                var index, src, header, h1;
+                return __generator(this, function (_a) {
+                    index = CustomFunctions.randomIntFromInterval(1, json.headers.length);
+                    src = json.headers[index - 1];
+                    json.headers.forEach(function (imgSrc) {
+                        var img = new Image();
+                        img.src = imgSrc;
+                    });
+                    header = document.querySelector('#header');
+                    h1 = header.querySelector('h1');
+                    header.style.backgroundImage = "url('".concat(src, "')");
+                    header.onclick = function (event) {
+                        var _a;
+                        var target = null;
+                        if (event instanceof MouseEvent) {
+                            target = event.target;
+                        }
+                        else if (event instanceof TouchEvent) {
+                            target = event.touches[0].target;
+                        }
+                        if (typeof window.getSelection() !== undefined) {
+                            if (((_a = window.getSelection()) === null || _a === void 0 ? void 0 : _a.toString()) !== '')
+                                return;
+                        }
+                        ;
+                        var arr = json.headers.filter(function (headerImg) {
+                            return headerImg != src.split('/').pop();
+                        });
+                        var indexArr = CustomFunctions.randomIntFromInterval(1, arr.length);
+                        src = arr[indexArr - 1];
+                        header.style.backgroundImage = "url('".concat(src, "')");
+                    };
+                    return [2 /*return*/];
+                });
+            });
+        }
+        var json, _a, _b;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _b = (_a = JSON).parse;
+                    return [4 /*yield*/, fetch("".concat(server, "contents?filename=contents"))];
+                case 1: return [4 /*yield*/, (_c.sent()).text()];
+                case 2:
+                    json = _b.apply(_a, [_c.sent()]);
+                    ;
+                    ;
+                    Array.from(document.body.children).concat(document.querySelector('footer')).forEach(function (element) {
+                        if (element.classList.contains('loader'))
+                            element.style.display = 'none';
+                        else
+                            element.removeAttribute('style');
+                    });
+                    loadShortcuts();
+                    loadHeaders();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
 // Stop image dragging
 function stopImageDrag() {
     var images = document.getElementsByTagName('img');
@@ -68,11 +189,15 @@ function stopImageDrag() {
 // Open in new tab
 function openLinksInNewTab() {
     var shortcuts = document.querySelectorAll('.shortcut-item');
-    shortcuts.forEach(function (element) {
+    for (var _i = 0, _a = Array.from(shortcuts); _i < _a.length; _i++) {
+        var element = _a[_i];
+        if (!element.href)
+            continue;
         if (element.href.match(/docs\.google\.com/) == null || mobile) {
             element.target = '_blank';
         }
-    });
+    }
+    ;
     var gamecards = document.querySelectorAll('.gamecard');
     gamecards.forEach(function (element) {
         var child = element.firstElementChild;
@@ -99,14 +224,15 @@ function redirectToEdge() {
 //To make aside the same height of Shortcut-Item
 function resizeAside(counter) {
     var aside = document.querySelector('aside');
-    var card = document.querySelector('.card');
-    var owned = card.querySelector('.pinterest-grid#owned-ordered');
-    var wished = card.querySelector('.pinterest-grid#wished');
     var shortcuts = document.querySelector('#shortcuts');
-    var maxHeight = Math.max(owned.offsetHeight, wished.offsetHeight);
-    aside.style.height = Math.max(shortcuts.offsetHeight, (maxHeight + 90)) + 'px';
-    card.style.height = maxHeight + 'px';
-    shortcuts.style.height = Math.max(shortcuts.offsetHeight, (maxHeight + 90)) + 'px';
+    aside.style.height = 'fit-content';
+    shortcuts.style.height = 'fit-content';
+    if (parseFloat(getComputedStyle(aside).height) < parseFloat(getComputedStyle(shortcuts).height)) {
+        aside.style.height = shortcuts.offsetHeight + 'px';
+    }
+    else {
+        shortcuts.style.height = aside.offsetHeight + 'px';
+    }
     if (counter == 0) {
         setTimeout(function () {
             resizeAside(1);
@@ -127,14 +253,14 @@ function expandAside() {
         if (!portrait) {
             if (aside.getBoundingClientRect().width < window.innerWidth * 0.3) {
                 span.style.transform = "rotate(180deg) translate(0%,-10%)";
-                flexContainer.style.gridTemplateColumns = '54vw 40px 1fr';
-                input.style.width = "calc((46vw - 40px - 10px) * 0.9)";
+                flexContainer.style.gridTemplateColumns = '54vw 2vw 1fr';
+                input.style.width = "calc((46vw - 2vw - 10px) * 0.9)";
                 input.style.left = "calc(((44vw - 10px) * 0.1) / 2)";
             }
             else {
                 span.style.transform = "rotate(0deg) translate(0%,-10%)";
-                flexContainer.style.gridTemplateColumns = '76vw 40px 1fr';
-                input.style.width = "calc((24vw - 40px - 10px) * 0.9)";
+                flexContainer.style.gridTemplateColumns = '76vw 2vw 1fr';
+                input.style.width = "calc((24vw - 2vw - 10px) * 0.9)";
                 input.style.left = "calc(((22vw - 10px) * 0.1) / 2)";
             }
             ;
@@ -151,7 +277,6 @@ function expandAside() {
             ;
         }
         ;
-        resizeAside();
     };
     div.onclick = function (ev) {
         bttn.click();
@@ -205,45 +330,6 @@ function rotateGamecardText(counter) {
         setTimeout(rotateGamecardText, 100);
     }
     ;
-}
-;
-// To make the header have different backgrounds
-function setHeaderBackground() {
-    var filePath = 'images/headers/';
-    fetch("".concat(filePath, "_headers.json"))
-        .then(function (res) { return res.json(); })
-        .then(function (json) {
-        var index = CustomFunctions.randomIntFromInterval(1, json.length);
-        var src = filePath + json[index - 1];
-        json.forEach(function (imgSrc) {
-            var img = new Image();
-            img.src = filePath + imgSrc;
-        });
-        var header = document.querySelector('#header');
-        var h1 = header.querySelector('h1');
-        header.style.backgroundImage = "url('".concat(src, "')");
-        header.onclick = function (event) {
-            var _a;
-            var target = null;
-            if (event instanceof MouseEvent) {
-                target = event.target;
-            }
-            else if (event instanceof TouchEvent) {
-                target = event.touches[0].target;
-            }
-            if (typeof window.getSelection() !== undefined) {
-                if (((_a = window.getSelection()) === null || _a === void 0 ? void 0 : _a.toString()) !== '')
-                    return;
-            }
-            ;
-            var arr = json.filter(function (headerImg) {
-                return headerImg != src.split('/')[2];
-            });
-            var indexArr = CustomFunctions.randomIntFromInterval(1, arr.length);
-            src = filePath + arr[indexArr - 1];
-            header.style.backgroundImage = "url('".concat(src, "')");
-        };
-    });
 }
 ;
 function resizeHeader() {
@@ -357,14 +443,9 @@ function formatPopUps() {
     document.querySelectorAll('form.pop-up').forEach(function (form) {
         if (form.classList.length < 2)
             return;
-        var otherClass = Array.from(form.classList).filter(function (className) {
-            return className !== 'pop-up';
-        })[0];
-        var openButton = Array.from(document.querySelectorAll(".".concat(otherClass))).find(function (el) { return el.classList.contains('shortcut-item'); });
-        if (openButton) {
-            popUpShortcuts.push({ button: openButton, popUpContainer: form });
-        }
-        ;
+        var otherClass = Array.from(form.classList).filter(function (className) { return className !== 'pop-up'; })[0];
+        var openBttn = Array.from(document.querySelectorAll(".".concat(otherClass))).filter(function (element) { return element.classList.contains('pop-up-open'); })[0];
+        popUpShortcuts.push({ button: openBttn, popUpContainer: form });
     });
     popUpShortcuts.forEach(function (object) {
         var popUpClass = document.querySelectorAll('.pop-up');
@@ -374,7 +455,7 @@ function formatPopUps() {
             if ((display == '') || (display == 'none')) {
                 object.popUpContainer.style.display = 'block'; //Makes the popUp appear
             }
-            else {
+            else if (!(object.popUpContainer.classList.contains('create-shortcut') && object.button.classList.contains('create-shortcut') && !(object.button.id.replace('-button', '-item') === object.popUpContainer.getAttribute('x')))) {
                 object.popUpContainer.style.display = 'none'; //Makes the popUp disappear
             }
             ;
@@ -384,16 +465,18 @@ function formatPopUps() {
                 }
                 ;
             });
-            floatingLabelElement.forEach(function (label) {
-                var parent = label.parentElement;
-                var siblings = Array.from(parent.children);
-                var input = siblings[siblings.indexOf(label) - 1]; //Gets the imediate predecessor sibling
-                var rect = object.popUpContainer.getBoundingClientRect();
-                var inputRect = input.getBoundingClientRect();
-                var left = inputRect.left - rect.left;
-                label.style.left = left + 'px';
-                input.setAttribute('placeholder', ' ');
-            });
+            setTimeout(function () {
+                floatingLabelElement.forEach(function (label) {
+                    var parent = label.parentElement;
+                    var siblings = Array.from(parent.children);
+                    var input = siblings[siblings.indexOf(label) - 1]; //Gets the imediate predecessor sibling
+                    var rect = object.popUpContainer.getBoundingClientRect();
+                    var inputRect = input.getBoundingClientRect();
+                    var left = inputRect.left - rect.left;
+                    label.style.left = Math.max(left, 5) + 'px';
+                    input.placeholder ? input.placeholder = input.placeholder : input.placeholder = ' ';
+                });
+            }, 10);
         };
         object.popUpContainer.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
@@ -473,15 +556,9 @@ function wikipediaSearchTrigger() {
     }
 }
 ;
-// To make MFC pop-up adjust
-function mfcPopUpAdjust() {
-    var mfc = document.querySelector('.pop-up.mfc');
-    // To make it have the proper aspect ratio
-    var a;
-    var fontSize = parseFloat(getComputedStyle(mfc).fontSize);
-    // alert(fontSize);
+//To create new shortcuts
+function createShortcutsTrigger() {
 }
-;
 // To make the inputbox draggable
 function dragPopUps() {
     var popUps = document.querySelectorAll('.pop-up');
@@ -505,7 +582,7 @@ function dragPopUps() {
         }
         ;
         var target = e.target;
-        if ((target === this || CustomFunctions.isParent(target, this)) &&
+        if ((target === this || CustomFunctions.isParent(target, this.querySelector('.pop-up-header'))) &&
             !(target instanceof HTMLImageElement) &&
             !(target instanceof HTMLParagraphElement) &&
             !(target instanceof HTMLSpanElement) &&
@@ -537,6 +614,251 @@ function dragPopUps() {
     function stopDragging() {
         isDragging = false;
     }
+}
+;
+function dragAndDropHandler() {
+    return __awaiter(this, void 0, void 0, function () {
+        function toggleHeaderInput(header, forceText) {
+            if (header.querySelector('input') === null) {
+                header.innerHTML = forceText ? header.innerHTML : "<img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg\" class=\"drag-handle\"><input type=\"text\" value=\"".concat(header.textContent, "\"><span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg\"></span>");
+            }
+            else {
+                var input = header.querySelector('input');
+                header.innerHTML = "<img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg\" class=\"drag-handle\">".concat(input.value, "<span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span>");
+            }
+            ;
+        }
+        function toggleShortcutInput(shorcut, forceText) {
+            if (shorcut.querySelector('input') === null) {
+                shorcut.innerHTML = forceText ? shorcut.innerHTML : shorcut.innerHTML.replace(shorcut.textContent, "<input type=\"text\" value=\"".concat(shorcut.textContent, "\">")).replace('edit.svg', 'check.svg');
+            }
+            else {
+                var input = shorcut.querySelector('input');
+                input.outerHTML = "".concat(input.value);
+                shorcut.innerHTML = shorcut.innerHTML.replace('check.svg', 'edit.svg');
+            }
+            ;
+        }
+        function updateIcon(shorcut) {
+            var icon = shorcut.querySelectorAll('img')[1];
+            var src = icon.src;
+            icon.outerHTML = "<input type=\"file\" accept=\"image/*\">";
+            var newIcon = Array.from(shorcut.querySelectorAll('input')).pop();
+            newIcon.files = null;
+        }
+        function handleDropFile() {
+            function activeFileDrop() {
+                fileDrop.style.border = '3px solid var(--pink-custom)';
+            }
+            ;
+            function inactiveFileDrop() {
+                fileDrop.style.border = '3px dashed grey';
+            }
+            ;
+            var input = fileDrop.querySelector('input');
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (evName) { return fileDrop.addEventListener(evName, function (e) { return e.preventDefault(); }); });
+            ['dragenter', 'dragover'].forEach(function (evName) { return fileDrop.addEventListener(evName, function (e) { return activeFileDrop(); }); });
+            ['dragleave', 'drop'].forEach(function (evName) { return fileDrop.addEventListener(evName, function (e) { return inactiveFileDrop(); }); });
+            fileDrop.addEventListener('drop', function (e) {
+                var dt = e.dataTransfer;
+                var filesDt = dt.files;
+                input.files = filesDt;
+                fileDrop.querySelector('p').innerHTML = "\"".concat(input.files[0].name, "\" selecionado.");
+            });
+            fileDrop.querySelector('input').addEventListener('change', function (e) {
+                if (input.files && input.files[0]) {
+                    fileDrop.querySelector('p').innerHTML = "\"".concat(input.files[0].name, "\" selecionado.");
+                    var reader = new FileReader();
+                    reader.onload = function (ev) { fileDrop.querySelector('img').src = ev.target.result; };
+                    reader.readAsDataURL(input.files[0]);
+                }
+                else {
+                    fileDrop.querySelector('p').innerHTML = 'Solte uma imagem aqui';
+                }
+                ;
+            });
+        }
+        var popUp, dragAndDrop, addItemButton, addItem, fileDrop, bttn, json, _a, _b, submitBttn, addNewEntryBttn;
+        var _this = this;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    popUp = document.querySelector('.pop-up.create-shortcut');
+                    dragAndDrop = popUp.querySelector('#drag-and-drop');
+                    addItemButton = popUp.querySelector('#add-drag-and-drop-button');
+                    addItem = popUp.querySelector('#add-drag-and-drop');
+                    fileDrop = addItem.querySelector('#drop-file');
+                    bttn = document.querySelector('.create-shortcut.pop-up-open');
+                    _b = (_a = JSON).parse;
+                    return [4 /*yield*/, fetch("".concat(server, "contents?filename=contents"))];
+                case 1: return [4 /*yield*/, (_c.sent()).text()];
+                case 2:
+                    json = _b.apply(_a, [_c.sent()]);
+                    submitBttn = popUp.querySelector('.ok-button');
+                    addNewEntryBttn = popUp.querySelector('#add-drag-and-drop-submit');
+                    bttn.addEventListener('click', function (ev) {
+                        fileDrop.querySelector('img').src = 'https://storage.googleapis.com/statisticshock_github_io_public/icons/static/image.svg';
+                        for (var _i = 0, _a = Array.from(addItem.querySelectorAll('input')); _i < _a.length; _i++) {
+                            var input = _a[_i];
+                            input.value = '';
+                        }
+                        addItemButton.classList.remove('active');
+                        dragAndDrop.style.display = 'grid';
+                        dragAndDrop.innerHTML = '';
+                        for (var _b = 0, _c = json.shortcuts; _b < _c.length; _b++) {
+                            var shortcut = _c[_b];
+                            dragAndDrop.insertAdjacentHTML('beforeend', "<div id=\"".concat(shortcut.id, "-list\" class=\"drag-and-drop-list\" draggable=\"false\" x=\"shown\"><h3 class=\"drag-and-drop-list-header\"><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg\" class=\"drag-handle\">").concat(shortcut.title, "<span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span></h3><div style=\"--children-length: ").concat(shortcut.children.length, ";\"></div></div>"));
+                            var dragAndDropList = dragAndDrop.querySelector("#".concat(shortcut.id, "-list div"));
+                            var dragAndDropListHeader = dragAndDropList.parentElement.querySelector('h3');
+                            for (var _d = 0, _e = shortcut.children; _d < _e.length; _d++) {
+                                var child = _e[_d];
+                                addItem.style.display = 'none';
+                                dragAndDropList.innerHTML += "<div id=\"".concat(child.id, "-list\" class=\"drag-and-drop-item\" draggable=\"false\" y=\"").concat(child.href, "\"><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg\" class=\"drag-handle\">").concat(child.alt, "<span><img src=\"").concat(child.img, "\" draggable=\"false\"><input type=\"file\" accept=\"image/*\"></span><span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span></div>");
+                            }
+                            ;
+                        }
+                        ;
+                        fileDrop.querySelector('input').files = null;
+                        fileDrop.querySelector('p').innerHTML = "Solte uma imagem aqui";
+                    });
+                    addItemButton.onclick = function (ev) {
+                        if (addItemButton.classList.contains('active')) {
+                            addItemButton.classList.remove('active');
+                            addItem.style.display = 'none';
+                            dragAndDrop.style.display = 'grid';
+                            submitBttn.removeAttribute('style');
+                        }
+                        else {
+                            addItemButton.classList.add('active');
+                            addItem.style.display = 'block';
+                            dragAndDrop.style.display = 'none';
+                            submitBttn.style.display = 'none';
+                        }
+                    };
+                    handleDropFile();
+                    popUp.addEventListener('submit', function (ev) { return __awaiter(_this, void 0, void 0, function () {
+                        var formData, _i, _a, _b, key, value, response, textJson, targetListToAddNewData, textJson, err_1;
+                        return __generator(this, function (_c) {
+                            switch (_c.label) {
+                                case 0:
+                                    ev.preventDefault();
+                                    formData = new FormData(popUp);
+                                    addItem.querySelectorAll('input').forEach(function (input) {
+                                        if (input.type === 'text' && input.value === '') {
+                                            input.style.setProperty('--initial-color', getComputedStyle(input).backgroundColor);
+                                            input.classList.add('pulse');
+                                            setTimeout(function () {
+                                                input.classList.remove('pulse');
+                                                input.style.removeProperty('--initial-color');
+                                            }, 1800);
+                                        }
+                                        else if (input.type === 'file' && input.files.length === 0) {
+                                            input.parentElement.style.setProperty('--initial-color', getComputedStyle(input).backgroundColor);
+                                            input.parentElement.classList.add('pulse');
+                                            setTimeout(function () {
+                                                input.parentElement.classList.remove('pulse');
+                                                input.parentElement.style.removeProperty('--initial-color');
+                                            }, 1800);
+                                        }
+                                        ;
+                                    });
+                                    for (_i = 0, _a = Array.from(formData); _i < _a.length; _i++) {
+                                        _b = _a[_i], key = _b[0], value = _b[1];
+                                        if (typeof value === 'string' && value === '')
+                                            return [2 /*return*/];
+                                        if (value instanceof File && value.size === 0)
+                                            return [2 /*return*/];
+                                    }
+                                    ;
+                                    _c.label = 1;
+                                case 1:
+                                    _c.trys.push([1, 7, , 8]);
+                                    return [4 /*yield*/, fetch("".concat(server, "upload/"), {
+                                            method: 'POST',
+                                            body: formData
+                                        })];
+                                case 2:
+                                    response = _c.sent();
+                                    if (!response.ok) return [3 /*break*/, 4];
+                                    return [4 /*yield*/, response.json()];
+                                case 3:
+                                    textJson = _c.sent();
+                                    targetListToAddNewData = dragAndDrop.querySelector("".concat(textJson.sectionId, "-list"));
+                                    if (targetListToAddNewData === null) {
+                                    }
+                                    else {
+                                    }
+                                    ;
+                                    return [3 /*break*/, 6];
+                                case 4: return [4 /*yield*/, response.json()];
+                                case 5:
+                                    textJson = _c.sent();
+                                    alert("ERRO:\n".concat(textJson.message));
+                                    _c.label = 6;
+                                case 6: return [3 /*break*/, 8];
+                                case 7:
+                                    err_1 = _c.sent();
+                                    return [3 /*break*/, 8];
+                                case 8:
+                                    ;
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); });
+                    dragAndDrop.addEventListener('click', function (ev) {
+                        var header = ev.target.closest('.drag-and-drop-list-header');
+                        if (!header)
+                            return;
+                        if (ev.target.tagName === 'INPUT')
+                            return;
+                        if (CustomFunctions.isParent(ev.target, header.querySelector('span'))) {
+                            toggleHeaderInput(header);
+                            return;
+                        }
+                        ;
+                        var container = header.parentElement;
+                        var isShown = container.getAttribute('x') === 'shown';
+                        container.setAttribute('x', isShown ? 'hidden' : 'shown');
+                        container.classList.toggle('hidden', isShown);
+                    });
+                    dragAndDrop.addEventListener('click', function (ev) {
+                        var shortcut = ev.target.closest('.drag-and-drop-item');
+                        if (!shortcut)
+                            return;
+                        else if (ev.target.tagName === 'INPUT')
+                            return;
+                        else if (shortcut.querySelector('input') !== null && shortcut.querySelector('input').value === '')
+                            return;
+                        else if (CustomFunctions.isParent(ev.target, shortcut.querySelector('span')))
+                            toggleShortcutInput(shortcut);
+                        else if (ev.target === shortcut.querySelectorAll('img')[1])
+                            updateIcon(shortcut);
+                    });
+                    dragAndDrop.addEventListener('mousemove', function (ev) {
+                        if (mobile)
+                            return;
+                        var sections = Array.from(document.querySelectorAll('.container .flex-container section:has(.grid-container)'));
+                        sections.forEach(function (section) {
+                            if (!ev.target.closest('.drag-and-drop-list'))
+                                return;
+                            if (ev.target.closest('.drag-and-drop-list').id.replace('-list', '') === section.id) {
+                                section.querySelector('p').classList.add('animated');
+                            }
+                            else {
+                                section.querySelector('p').classList.remove('animated');
+                            }
+                        });
+                    });
+                    dragAndDrop.addEventListener('mouseleave', function (ev) {
+                        var sections = Array.from(document.querySelectorAll('.container .flex-container section:has(.grid-container)'));
+                        sections.forEach(function (section) {
+                            section.querySelector('p').classList.remove('animated');
+                        });
+                    });
+                    return [2 /*return*/];
+            }
+        });
+    });
 }
 ;
 // To make the defaults load within the window
@@ -718,11 +1040,11 @@ function addImages() {
                 ;
             });
         }
-        var result, createElementPromise, card, observer;
+        var result, createElementPromise;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    return [4 /*yield*/, fetch('https://statisticshock-github-io.onrender.com/figurecollection/')];
+                    return [4 /*yield*/, fetch("".concat(server, "contents?filename=mfc"))];
                 case 1: return [4 /*yield*/, (_a.sent()).json()];
                 case 2:
                     result = _a.sent();
@@ -746,11 +1068,9 @@ function addImages() {
                     });
                     ;
                     ;
-                    window.addEventListener('resize', function () {
-                        setTimeout(function () {
-                            resizeAllMasonryItems;
-                        }, 500);
-                    });
+                    setInterval(function () {
+                        resizeAllMasonryItems();
+                    }, 500);
                     setTimeout(function () {
                         var loader = document.querySelector('aside > .card > .loader');
                         var pinterestGrids = document.querySelectorAll('aside > .card > .pinterest-grid');
@@ -759,9 +1079,13 @@ function addImages() {
                             grid.style.opacity = '1';
                         });
                     }, 1000);
-                    card = document.querySelector('aside .card');
-                    observer = new MutationObserver(function () { resizeAside(); });
-                    observer.observe(card, { childList: true, subtree: true });
+                    setInterval(function () {
+                        var card = document.querySelector('aside .card');
+                        var grids = card.querySelectorAll('.pinterest-grid');
+                        grids.forEach(function (grid) {
+                            grid.style.width = (parseFloat(getComputedStyle(card).width) / 2) + 'px';
+                        });
+                    }, 500);
                     return [2 /*return*/];
             }
         });
@@ -776,12 +1100,12 @@ function scrapeMyAnimeList() {
                 var animeData, animeDataData, mangaData, mangaDataData;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0: return [4 /*yield*/, fetch("https://statisticshock-github-io.onrender.com/animelist/HikariMontgomery/".concat(offset))
+                        case 0: return [4 /*yield*/, fetch("".concat(server, "myanimelist?type=animelist&username=HikariMontgomery&offset=").concat(offset))
                                 .then(function (response) { return response.json(); })];
                         case 1:
                             animeData = _a.sent();
                             animeDataData = animeData.data.filter(function (entry) { return entry.node.nsfw === 'white'; }).slice(0, 10);
-                            return [4 /*yield*/, fetch("https://statisticshock-github-io.onrender.com/mangalist/HikariMontgomery/".concat(offset))
+                            return [4 /*yield*/, fetch("".concat(server, "myanimelist?type=mangalist&username=HikariMontgomery&offset=").concat(offset))
                                     .then(function (response) { return response.json(); })];
                         case 2:
                             mangaData = _a.sent();
@@ -828,7 +1152,7 @@ function scrapeMyAnimeList() {
                 span.appendChild(p3);
                 if (entry.list_status.score !== 0) {
                     var p4 = document.createElement('p');
-                    p4.innerHTML = "<span>Pontua\u00E7\u00E3o&nbsp;</span><span>".concat('⭐'.repeat(entry.list_status.score), " (").concat(entry.list_status.score, "/10)</span>");
+                    p4.innerHTML = "<span>Pontua\u00E7\u00E3o&nbsp;</span><span>".concat('⭐'.repeat(entry.list_status.score), "\n(").concat(entry.list_status.score, "/10)</span>");
                     span.appendChild(p4);
                 }
                 div.appendChild(bold);
@@ -1001,15 +1325,18 @@ function scrapeMyAnimeList() {
 }
 ;
 window.addEventListener('load', onLoadFunctions, true);
-function onLoadFunctions() {
+function onLoadFunctions(ev) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     createLoaders(10);
+                    return [4 /*yield*/, loadContentFromJson()];
+                case 1:
+                    _a.sent();
+                    dragAndDropHandler();
                     openLinksInNewTab();
                     redirectToEdge();
-                    setHeaderBackground();
                     figuresSitDown();
                     expandAside();
                     setDefaults();
@@ -1018,19 +1345,16 @@ function onLoadFunctions() {
                     makeSwitchesSlide();
                     // mfcToggleSwitch();
                     nightModeToggle();
-                    resizeAside(0);
                     formatPopUps();
-                    mfcPopUpAdjust();
                     dragPopUps();
                     stopImageDrag();
                     redditSearchTrigger();
                     wikipediaSearchTrigger();
                     resizeHeader();
                     makeAsideButtonFollow();
-                    return [4 /*yield*/, addImages()];
-                case 1:
-                    _a.sent();
-                    return [4 /*yield*/, scrapeMyAnimeList()];
+                    if (mobile)
+                        goThroughRules(document.styleSheets[0].cssRules);
+                    return [4 /*yield*/, Promise.all([addImages(), scrapeMyAnimeList()])];
                 case 2:
                     _a.sent();
                     return [2 /*return*/];
@@ -1040,22 +1364,16 @@ function onLoadFunctions() {
 }
 ;
 window.addEventListener('resize', onResizeFunctions, true);
-function onResizeFunctions() {
+function onResizeFunctions(ev) {
     setTimeout(function () {
         resizeAside();
         figuresSitDown();
         rotateGamecardText(0);
-        mfcPopUpAdjust();
     }, 500);
 }
 ;
-window.addEventListener('mousemove', onMouseMoveFunctions, true);
-function onMouseMoveFunctions(event) {
-    // console.log(event.target);
-}
-;
 window.addEventListener('scroll', onScrollFunctions, true);
-function onScrollFunctions(event) {
+function onScrollFunctions(ev) {
     resizeHeader();
 }
 ;

@@ -61,3 +61,31 @@ export type MangaList = {
         next: string;
     };
 };
+export type NewShortcutData = {
+    folder: string,
+    title: string,
+    url: string
+};
+export type Shortcut = {
+    id: string,
+    index: number,
+    title: string,
+    children: Array<{
+        id: string,
+        alt: string,
+        index: number,
+        href: string,
+        img: string
+    }>
+};
+export type PageContent = {
+    shortcuts: Array<Shortcut>,
+    headers: Array<string>
+};
+export type ErrorJson = {
+    message: string
+};
+export type ShortcutResponse = {
+    sectionId: string,
+    newImgPath: string,
+}
