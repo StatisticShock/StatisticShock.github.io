@@ -8,6 +8,7 @@ const portrait: boolean = (window.innerWidth < window.innerHeight);
 
 //The server
 const server: string = window.location.href === 'http://127.0.0.1:5500/' ? 'http://localhost:3000/' : 'https://statisticshock-github-io.onrender.com/';
+console.log(`Running server at ${server}`);
 
 // Remove :hover effects
 function goThroughRules (rules: CSSRuleList) {
@@ -538,7 +539,7 @@ function wikipediaSearchTrigger (): void { //NO NEED OF RESPONSIVENESS
 
 //To create new shortcuts
 function createShortcutsTrigger (): void {
-    
+
 }
 
 // To make the inputbox draggable
