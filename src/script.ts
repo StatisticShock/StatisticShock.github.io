@@ -941,7 +941,6 @@ async function addMfcImages (): Promise<void> {
         img.style.width = `calc(100% - ${imgBorder} * 2)`
 
         img.onclick = () => { //Format a pop-up for each item once it's image is clicked
-            console.log(1)
             let popUp          = document.querySelector('.pop-up.mfc')               as HTMLDivElement;
             let title          = popUp.querySelector('.pop-up-title')                as HTMLSpanElement;
             let popUpImgAnchor = popUp.querySelector('#pop-up-img')                  as HTMLAnchorElement;
@@ -994,22 +993,19 @@ async function addMfcImages (): Promise<void> {
             }
 
             //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
-            const links = [originalName, originName, classification] as HTMLSpanElement[];
-
-            console.log(links);
+            const links = [originalName.querySelector('a'), originName.querySelector('a'), classification.querySelector('a')] as HTMLSpanElement[];
 
             links.forEach((link) => {
-                console.log(link);
                 link.addEventListener('click', (ev: MouseEvent | TouchEvent) => {
-                    console.log(1);
                     const target = (ev as TouchEvent).touches ? ((ev as TouchEvent).touches[0]?.target as HTMLElement) || (ev.target as HTMLElement) : (ev.target as HTMLElement);
                     const copyToClipboard = (ev: MouseEvent | TouchEvent, target: HTMLElement) => {
                         ev.preventDefault();
-                        navigator.clipboard.writeText(target.textContent.trim());
+                        navigator.clipboard.writeText(target.parentElement!.textContent!.trim());
+                        console.log(`Copied ${target.parentElement!.textContent!}`);
+                        console.log(target);
                     };
 
                     if (target instanceof SVGElement) copyToClipboard(ev, target);
-                    console.log(target);
                 })
             })
             

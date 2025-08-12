@@ -983,16 +983,18 @@ function addMfcImages() {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                 }
                 //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
-                var links = [originalName, originName, classification];
+                var links = [originalName.querySelector('a'), originName.querySelector('a'), classification.querySelector('a')];
                 links.forEach(function (link) {
                     link.addEventListener('click', function (ev) {
                         var _a;
                         var target = ev.touches ? ((_a = ev.touches[0]) === null || _a === void 0 ? void 0 : _a.target) || ev.target : ev.target;
                         var copyToClipboard = function (ev, target) {
                             ev.preventDefault();
-                            navigator.clipboard.writeText;
+                            navigator.clipboard.writeText(target.parentElement.textContent.trim());
+                            console.log("Copied ".concat(target.parentElement.textContent));
+                            console.log(target);
                         };
-                        if (target.tagName === 'SVG')
+                        if (target instanceof SVGElement)
                             copyToClipboard(ev, target);
                     });
                 });
