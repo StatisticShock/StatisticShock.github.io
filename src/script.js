@@ -877,7 +877,7 @@ function setDefaults() {
 }
 ;
 // To add MFC images in the aside and do 
-function addImages() {
+function addMfcImages() {
     return __awaiter(this, void 0, void 0, function () {
         function resizeMasonryItem(item) {
             /* Get the grid object, its row-gap, and the size of its implicit rows */
@@ -904,7 +904,6 @@ function addImages() {
             ;
         }
         function createElement(item) {
-            var _this = this;
             var div = document.createElement('div'); // The container
             var img = new Image(); // The image
             var card;
@@ -944,15 +943,15 @@ function addImages() {
                 var originLink = '';
                 var classificationLink = '';
                 if (item.characterJap) {
-                    characterLink = "https://buyee.jp/item/search/query/".concat(item.characterJap, "/category/2084023782?sort=end&order=a&store=1");
+                    characterLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.characterJap), "/category/2084023782?sort=end&order=a&store=1");
                 }
                 else {
-                    characterLink = "https://buyee.jp/item/search/query/".concat(item.character, "/category/2084023782?sort=end&order=a&store=1");
+                    characterLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.character), "/category/2084023782?sort=end&order=a&store=1");
                 }
                 ;
                 if (item.origin !== 'オリジナル' && item.origin !== undefined) {
                     originName.parentElement.style.display = '';
-                    originLink = "https://buyee.jp/item/search/query/".concat(item.origin, "/category/2084023782?sort=end&order=a&store=1");
+                    originLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.origin), "/category/2084023782?sort=end&order=a&store=1");
                 }
                 else {
                     originName.parentElement.style.display = 'none';
@@ -960,7 +959,7 @@ function addImages() {
                 ;
                 if (item.classification !== undefined) {
                     classification.parentElement.style.display = '';
-                    classificationLink = "https://buyee.jp/item/search/query/".concat(item.classification.replaceAll('#', ''), "/category/2084023782?sort=end&order=a&store=1");
+                    classificationLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.classification.replaceAll('#', '')), "/category/2084023782?sort=end&order=a&store=1");
                 }
                 else {
                     classification.parentElement.style.display = 'none';
@@ -970,9 +969,10 @@ function addImages() {
                 popUpImgAnchor.href = item.href;
                 popUpImg.src = img.src;
                 popUpImg.style.border = "".concat(imgBorder, " solid ").concat(div.style.color);
-                originalName.innerHTML = item.characterJap !== '' ? "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(item.characterJap, "</a>") : "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(item.character, "</a>");
-                originName.innerHTML = "<a target=\"_blank\" href=\"".concat(originLink, "\">").concat(item.origin, "</a>");
-                classification.innerHTML = "<a target=\"_blank\" href=\"".concat(classificationLink, "\">").concat(item.classification, "</a>");
+                var copySvg = "<?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 20010904//EN\" \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\"><svg version=\"1.0\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200.000000 200.000000\" preserveAspectRatio=\"xMidYMid meet\"><g transform=\"translate(0.000000,200.000000) scale(0.100000,-0.100000)\" fill=\"currentColor\" stroke=\"none\"><path d=\"M721 1882 c-71 -36 -76 -51 -79 -268 l-3 -194 60 0 61 0 2 178 3 177 475 0 475 0 0 -475 0 -475 -117 -3 -118 -3 0 -60 0 -61 134 4 c151 3 175 12 209 79 16 31 17 73 15 531 -3 484 -4 497 -24 525 -47 64 -39 63 -574 63 -442 0 -488 -2 -519 -18z\"/><path d=\"M241 1282 c-19 -9 -44 -30 -55 -45 -20 -28 -21 -41 -24 -525 -3 -555 -4 -542 67 -589 l34 -23 496 0 c477 0 497 1 529 20 18 11 41 34 52 52 19 32 20 52 20 529 l0 496 -23 34 c-47 70 -36 69 -577 69 -442 0 -488 -2 -519 -18z m994 -582 l0 -475 -475 0 -475 0 -3 465 c-1 256 0 471 3 478 3 10 104 12 477 10 l473 -3 0 -475z\"/></g></svg>";
+                originalName.innerHTML = item.characterJap !== '' ? "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(copySvg, "&nbsp;").concat(item.characterJap, "</a>") : "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(copySvg, "&nbsp;").concat(item.character, "</div></a>");
+                originName.innerHTML = "<a target=\"_blank\" href=\"".concat(originLink, "\">").concat(copySvg, "&nbsp;").concat(item.origin, "</a>");
+                classification.innerHTML = "<a target=\"_blank\" href=\"".concat(classificationLink, "\">").concat(copySvg, "&nbsp;").concat(item.classification, "</a>");
                 if (item.type == 'Owned') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                 }
@@ -982,38 +982,20 @@ function addImages() {
                 else if (item.type == 'Wished') {
                     a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
                 }
-                if (mobile) {
-                    //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
-                    var links_1 = [originalName, originName, classification];
-                    var timeoutId_1;
-                    var copyToClipboard_1 = function (ev) {
-                        ev.preventDefault();
-                        var target = ev.currentTarget;
-                        timeoutId_1 = setTimeout(function () {
+                //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
+                var links = [originalName, originName, classification];
+                links.forEach(function (link) {
+                    link.addEventListener('click', function (ev) {
+                        var _a;
+                        var target = ev.touches ? ((_a = ev.touches[0]) === null || _a === void 0 ? void 0 : _a.target) || ev.target : ev.target;
+                        var copyToClipboard = function (ev, target) {
                             ev.preventDefault();
-                            void navigator.clipboard.writeText(target.textContent);
-                            console.log("COpied to clipboard: ".concat(target.textContent));
-                        }, 2000);
-                    };
-                    var updateLinks = function () { return __awaiter(_this, void 0, void 0, function () {
-                        var _i, links_2, itemLink, anchorChild;
-                        return __generator(this, function (_a) {
-                            for (_i = 0, links_2 = links_1; _i < links_2.length; _i++) {
-                                itemLink = links_2[_i];
-                                anchorChild = itemLink.firstElementChild;
-                                anchorChild.addEventListener('touchstart', copyToClipboard_1);
-                                anchorChild.addEventListener('touchend', function (ev) {
-                                    console.log(timeoutId_1);
-                                    clearTimeout(timeoutId_1);
-                                    console.log(timeoutId_1);
-                                });
-                            }
-                            ;
-                            return [2 /*return*/];
-                        });
-                    }); };
-                    updateLinks();
-                }
+                            navigator.clipboard.writeText;
+                        };
+                        if (target.tagName === 'SVG')
+                            copyToClipboard(ev, target);
+                    });
+                });
                 popUp.style.display = 'block';
             };
             div.append(img);
@@ -1355,7 +1337,7 @@ function onLoadFunctions(ev) {
                     makeAsideButtonFollow();
                     if (mobile)
                         goThroughRules(document.styleSheets[0].cssRules);
-                    return [4 /*yield*/, Promise.all([addImages(), scrapeMyAnimeList()])];
+                    return [4 /*yield*/, Promise.all([addMfcImages(), scrapeMyAnimeList()])];
                 case 2:
                     _a.sent();
                     return [2 /*return*/];

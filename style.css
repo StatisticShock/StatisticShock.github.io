@@ -249,6 +249,12 @@ img {
                 & a {
                     color: var(--pink-custom);
                     text-decoration: none;
+
+                    & svg {
+                        position: relative;
+                        height: 1em;
+                        aspect-ratio: 1;
+                    }
                 }
 
                 & a:hover {
@@ -259,24 +265,6 @@ img {
                     color: pink;
                 }
             }
-        }
-
-        & #mfc-item-rating {
-            position: relative;
-            text-align: center;
-            transition: ease-in 0.3s;
-        }
-
-        & #mfc-item-rating-before {
-            position: absolute;
-            display: none;
-            width: fit-content;
-            background-color: var(--background-color);
-            left: 50%;
-            transform: translate(-50%,-150%);
-            padding: 5px;
-            border-radius: 5px;
-            z-index: 6;
         }
     }
 }

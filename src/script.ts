@@ -838,7 +838,7 @@ function setDefaults (): void {
 };
 
 // To add MFC images in the aside and do 
-async function addImages (): Promise<void> {
+async function addMfcImages (): Promise<void> {
     function resizeMasonryItem (item: HTMLElement): void {
         /* Get the grid object, its row-gap, and the size of its implicit rows */
         let grid = document.getElementsByClassName('pinterest-grid')[0],
@@ -941,6 +941,7 @@ async function addImages (): Promise<void> {
         img.style.width = `calc(100% - ${imgBorder} * 2)`
 
         img.onclick = () => { //Format a pop-up for each item once it's image is clicked
+            console.log(1)
             let popUp          = document.querySelector('.pop-up.mfc')               as HTMLDivElement;
             let title          = popUp.querySelector('.pop-up-title')                as HTMLSpanElement;
             let popUpImgAnchor = popUp.querySelector('#pop-up-img')                  as HTMLAnchorElement;
@@ -956,70 +957,61 @@ async function addImages (): Promise<void> {
 
 
             if (item.characterJap) {
-                characterLink = `https://buyee.jp/item/search/query/${item.characterJap}/category/2084023782?sort=end&order=a&store=1`;
+                characterLink = `https://buyee.jp/item/search/query/${encodeURIComponent(item.characterJap)}/category/2084023782?sort=end&order=a&store=1`;
             } else {
-                characterLink = `https://buyee.jp/item/search/query/${item.character}/category/2084023782?sort=end&order=a&store=1`;
+                characterLink = `https://buyee.jp/item/search/query/${encodeURIComponent(item.character)}/category/2084023782?sort=end&order=a&store=1`;
             };
             if (item.origin !== 'オリジナル' && item.origin !== undefined) {
                 originName.parentElement!.style.display = '';
-                originLink = `https://buyee.jp/item/search/query/${item.origin}/category/2084023782?sort=end&order=a&store=1`;
+                originLink = `https://buyee.jp/item/search/query/${encodeURIComponent(item.origin)}/category/2084023782?sort=end&order=a&store=1`;
             } else {
                 originName.parentElement!.style.display = 'none';
             };
             if (item.classification !== undefined) {
                 classification.parentElement!.style.display = '';
-                classificationLink = `https://buyee.jp/item/search/query/${item.classification.replaceAll('#','')}/category/2084023782?sort=end&order=a&store=1`;
+                classificationLink = `https://buyee.jp/item/search/query/${encodeURIComponent(item.classification.replaceAll('#',''))}/category/2084023782?sort=end&order=a&store=1`;
             } else {
                 classification.parentElement!.style.display = 'none';
             };
-
+            
             title.innerHTML             = item.title;
             popUpImgAnchor.href         = item.href;
             popUpImg.src                = img.src;
             popUpImg.style.border       = `${imgBorder} solid ${div.style.color}`            
-            originalName.innerHTML      = item.characterJap !== '' ? `<a target="_blank" href="${characterLink}">${item.characterJap}</a>` : `<a target="_blank" href="${characterLink}">${item.character}</a>`;
-            originName.innerHTML        = `<a target="_blank" href="${originLink}">${item.origin}</a>`;
-            classification.innerHTML    = `<a target="_blank" href="${classificationLink}">${item.classification}</a>`;
+            
+            const copySvg: string = `<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200.000000 200.000000" preserveAspectRatio="xMidYMid meet"><g transform="translate(0.000000,200.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none"><path d="M721 1882 c-71 -36 -76 -51 -79 -268 l-3 -194 60 0 61 0 2 178 3 177 475 0 475 0 0 -475 0 -475 -117 -3 -118 -3 0 -60 0 -61 134 4 c151 3 175 12 209 79 16 31 17 73 15 531 -3 484 -4 497 -24 525 -47 64 -39 63 -574 63 -442 0 -488 -2 -519 -18z"/><path d="M241 1282 c-19 -9 -44 -30 -55 -45 -20 -28 -21 -41 -24 -525 -3 -555 -4 -542 67 -589 l34 -23 496 0 c477 0 497 1 529 20 18 11 41 34 52 52 19 32 20 52 20 529 l0 496 -23 34 c-47 70 -36 69 -577 69 -442 0 -488 -2 -519 -18z m994 -582 l0 -475 -475 0 -475 0 -3 465 c-1 256 0 471 3 478 3 10 104 12 477 10 l473 -3 0 -475z"/></g></svg>`;
+            
+            originalName.innerHTML      = item.characterJap !== '' ? `<a target="_blank" href="${characterLink}">${copySvg}&nbsp;${item.characterJap}</a>` : `<a target="_blank" href="${characterLink}">${copySvg}&nbsp;${item.character}</div></a>`;
+            originName.innerHTML        = `<a target="_blank" href="${originLink}">${copySvg}&nbsp;${item.origin}</a>`;
+            classification.innerHTML    = `<a target="_blank" href="${classificationLink}">${copySvg}&nbsp;${item.classification}</a>`;
 
             if (item.type == 'Owned') {
-                a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
+                a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
             } else if (item.type == 'Ordered') {
-                a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
+                a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
             } else if (item.type == 'Wished') {
-                a.href                      = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
+                a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
             }
 
-            if (mobile) {
-                //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
-                const links: HTMLAnchorElement[] = [originalName, originName, classification] as HTMLAnchorElement[];
-                let timeoutId: NodeJS.Timeout;
+            //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
+            const links = [originalName, originName, classification] as HTMLSpanElement[];
 
-                const copyToClipboard = (ev: TouchEvent) => {
-                    ev.preventDefault();
-                    const target = ev.currentTarget as HTMLAnchorElement;
-                    
-                    timeoutId = setTimeout(() => {
+            console.log(links);
+
+            links.forEach((link) => {
+                console.log(link);
+                link.addEventListener('click', (ev: MouseEvent | TouchEvent) => {
+                    console.log(1);
+                    const target = (ev as TouchEvent).touches ? ((ev as TouchEvent).touches[0]?.target as HTMLElement) || (ev.target as HTMLElement) : (ev.target as HTMLElement);
+                    const copyToClipboard = (ev: MouseEvent | TouchEvent, target: HTMLElement) => {
                         ev.preventDefault();
-                        void navigator.clipboard.writeText(target.textContent!);
-                        console.log(`COpied to clipboard: ${target.textContent!}`)
-                    }, 2000);
-
-                }
-
-                const updateLinks = async () => {
-                    for (const itemLink of links) {
-                        let anchorChild: HTMLAnchorElement = itemLink.firstElementChild! as HTMLAnchorElement;
-                        anchorChild.addEventListener('touchstart', copyToClipboard);
-                        anchorChild.addEventListener('touchend', (ev) => {
-                            console.log(timeoutId);
-                            clearTimeout(timeoutId);
-                            console.log(timeoutId)
-                        });
+                        navigator.clipboard.writeText(target.textContent.trim());
                     };
-                };
-            
-                updateLinks();
-            }
+
+                    if (target instanceof SVGElement) copyToClipboard(ev, target);
+                    console.log(target);
+                })
+            })
             
             popUp.style.display = 'block';
         }
@@ -1336,7 +1328,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
     resizeHeader();
     makeAsideButtonFollow();
     if (mobile) goThroughRules(document.styleSheets[0].cssRules)
-    await Promise.all([addImages(), scrapeMyAnimeList()]);
+    await Promise.all([addMfcImages(), scrapeMyAnimeList()]);
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions (ev: Event) {
     setTimeout(() => {
