@@ -296,7 +296,7 @@ img {
 	& .pop-up-header {
 		& a {
 			text-decoration: none;
-			
+
 			& img {
 				height: 100%;
 				margin: 0 10px;
@@ -919,9 +919,16 @@ section {
 				}
 
 				& .shortcut-item.retroachievements-award {
+					cursor: pointer;
+
 					& img {
 						border-radius: 0;
 					}
+				}
+
+				& .shortcut-item.retroachievements-award:hover::after {
+					left: calc(-12px - 1px);
+					top: calc(65px + 2px);
 				}
 			}
 

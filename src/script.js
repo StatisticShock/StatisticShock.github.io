@@ -37,7 +37,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 // Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
 //A const that stores if the browser is mobile
-var mobile = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
+var ua = navigator.userAgent || navigator.vendor || window.opera;
+var mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 var portrait = (window.innerWidth < window.innerHeight);
 //The server
 var server = window.location.href === 'http://127.0.0.1:5500/' ? 'http://localhost:3000/' : 'https://statisticshock-github-io.onrender.com/';
@@ -1181,6 +1182,8 @@ function scrapeMyAnimeList() {
                 p3.innerHTML = "<span>G\u00EAneros&nbsp;</span><span>".concat(genres.join(', '), "</span>");
                 div.style.display = mobile ? '' : 'none';
                 img.style.opacity = mobile ? '0.25' : '1';
+                if (mobile)
+                    console.log('mobile');
                 span.appendChild(p2);
                 span.appendChild(p3);
                 if (entry.list_status.score !== 0) {

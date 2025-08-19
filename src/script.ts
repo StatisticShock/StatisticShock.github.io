@@ -4,7 +4,8 @@ import * as MyTypes from "../server/types.js";
 import { append } from "cheerio/dist/commonjs/api/manipulation.js";
 
 //A const that stores if the browser is mobile
-const mobile: boolean = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0))
+const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
+const mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 const portrait: boolean = (window.innerWidth < window.innerHeight);
 
 //The server
@@ -1185,6 +1186,7 @@ async function scrapeMyAnimeList(): Promise<void> {
 			p3.innerHTML = `<span>Gêneros&nbsp;</span><span>${genres.join(', ')}</span>`
 			div.style.display = mobile ? '' : 'none';
 			img.style.opacity = mobile ? '0.25' : '1'
+			if (mobile) console.log('mobile')
 
 			span.appendChild(p2);
 			span.appendChild(p3);
