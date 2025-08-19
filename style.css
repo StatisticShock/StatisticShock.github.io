@@ -1639,6 +1639,6 @@ footer {
 
 @media (hover: none) and (pointer: coarse) {
 	*:hover {
-		/*all: unset !important;*/
+		/* all: unset !important; */
 	}
 }
