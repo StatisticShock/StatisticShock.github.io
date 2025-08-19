@@ -21,18 +21,23 @@ export class GoogleClass {
 const streamPipeline = util.promisify(pipeline);
 
 // To log to a .log file
-const dirName = 'logs';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = pathImport.dirname(__filename);
-const logDir = pathImport.resolve(__dirname, dirName);
-if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir);
-}
-const date = new Date().toISOString().split('T')[0];
-const logFile = fs.createWriteStream(pathImport.join(logDir, `debug_${date}.log`), { flags: 'a' });
-const log = function (message: string | number) {
+let logIsRunByBot: boolean = false;
+function log (message: string | number, isRunByBot?: boolean) {
+    const isBot = isRunByBot ?? logIsRunByBot;
+
+    const dirName = `logs${isBot ? '/bot' : ''}`;
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = pathImport.dirname(__filename);
+    const logDir = pathImport.resolve(__dirname, dirName);
+    if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir);
+    };
+    const startDate: Date = new Date(new Date().getTime() - (3 * 60 * 60 * 1000));
+    const date = startDate.toISOString().split('T')[0];
+
+    const logFile = fs.createWriteStream(pathImport.join(logDir, isBot ? 'log.txt' : `debug_${date}.log`), { flags: 'a' });
     console.log(message);
-    logFile.write(`${message} [${Intl.DateTimeFormat('pt-BR', {hour: 'numeric', minute: 'numeric', second: 'numeric'}).format(new Date())}]\n`);
+    logFile.write(`[${Intl.DateTimeFormat('pt-BR', {hour: 'numeric', minute: 'numeric', second: 'numeric'}).format(new Date())}] ${message}\n`);
 };
 const execute = util.promisify(exec);
 
@@ -96,18 +101,19 @@ async function scrapeImages(): Promise<void> {
                 finalLink = imgLink;
             };
 
-            let path: string = 'temp/' + finalLink.split(/\/[1-2]\//)[1].split('-')[0] + '.jpg';
+            const folderPath: string = process.env.TEMP_PATH;
+            let path: string = folderPath + finalLink.split(/\/[1-2]\//)[1].split('-')[0] + '.jpg';
             let finalPath: string = path.replace('jpg', 'webp');
 
-            const [exists] = await GoogleClass.publicBucket.file(finalPath.replace('temp','mfc')).exists();
+            const [exists] = await GoogleClass.publicBucket.file(finalPath.replace(folderPath,'mfc/')).exists();
             if (exists) {
-                log(finalPath.replace('temp/','mfc/') + ' already uploaded.')
+                console.log(finalPath.replace(folderPath,'mfc/') + ' already uploaded.')
                 continue;
             } else {
                 await downloadImage(finalLink, path);
                 await convertToWebp(path);
-                GoogleClass.publicBucket.upload(finalPath, { destination: finalPath.replace('temp', 'mfc')});
-                log(finalPath.replace('temp/','') + ' uploaded to bucket.')
+                GoogleClass.publicBucket.upload(finalPath, { destination: finalPath.replace(folderPath, 'mfc/')});
+                log(finalPath.replace(folderPath,'') + ' uploaded to bucket.')
                 await sleep(1000);
                 fs.unlink(path, (err) => {
                     if (err) {
@@ -216,7 +222,7 @@ export class ScrapeFunctions {
     }
 
     async fetchJson(): Promise<Array<mfc>> {
-        let json: Array<mfc> = JSON.parse(await fetch('https://statisticshock-github-io.onrender.com/figurecollection/').then(res => res.text()));
+        let json: Array<mfc> = JSON.parse(await fetch('https://statisticshock-github-io.onrender.com/contents?filename=mfc').then(res => res.text()));
         return json;
     }
 };
@@ -323,11 +329,17 @@ async function fetchData(addingData?: boolean): Promise<void> {
         if (changes) {
             GoogleClass.mfcJsonGoogle.save(JSON.stringify(outputJson, null, 2));
             log('Changes in the file "mfc.json" were made.');
+        } else {
+            log('No changes in the file "mfc.json" were made.')
         }
     };
 };
 
-export async function main(addingData?: boolean): Promise<void> {
+export async function main(addingData?: boolean, isRunByBot?: boolean): Promise<void> {
+    logIsRunByBot = isRunByBot ?? false;
+    
+    if (isRunByBot) log('ESTA EXECUÇÃO FOI ATIVADA POR CLEYTON PELO SEU DISPOSITIVO ANDROID.\n\n');
+
     setInterval(() => {
         console.log('Memory usage:', process.memoryUsage().heapUsed / 1024 / 1024, 'MB');
     }, 5000);
@@ -340,7 +352,7 @@ export async function main(addingData?: boolean): Promise<void> {
     } finally {
         console.log('Closing conections...');
         setTimeout(() => process.exit(0), 1500); // Closes everything
-    }
+    };
 };
 
 export async function fillData (): Promise<void> {

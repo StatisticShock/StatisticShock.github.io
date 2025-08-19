@@ -1,16 +1,21 @@
+import "dotenv/config";
 import express from "express";
-import dotenv from "dotenv";
 import cors from 'cors';
 import { Storage } from "@google-cloud/storage";
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 import multer from 'multer';
+import * as ra from '@retroachievements/api';
 import CustomFunctions from '../src/functions.js';
-dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const API_URL = "https://api.myanimelist.net/v2/";
 const MAL_ACCESS_TOKEN = process.env.MAL_ACCESS_TOKEN;
+const { RA_API_KEY, RA_USERNAME } = process.env;
+const userObject = { username: RA_USERNAME };
+const authorization = { username: RA_USERNAME, webApiKey: RA_API_KEY };
+const raAuthorization = ra.buildAuthorization(authorization);
+const raUrl = 'https://retroachievements.org';
 const serviceAccount = JSON.parse(process.env.GOOGLE_JSON_KEY);
 const storage = new Storage({ credentials: serviceAccount });
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
@@ -55,6 +60,97 @@ app.get("/contents/", async (req, res) => {
     catch (err) {
         res.status(500).json({ error: err.message });
     }
+});
+app.get("/retroAchievements/:language/", async (req, res) => {
+    const { language } = req.params;
+    const translations = [
+        ['en-US', 'pt-BR', 'n'],
+        ['Mastery', 'Platinado', 2],
+        ['Completion', 'Completo', 3],
+        ['Game Beaten', 'Zerado', 4],
+        ['Certified Legend', 'Lenda Certificada', 1],
+        ['Event', 'Evento', 1],
+    ];
+    if (translations[0].indexOf(language) === -1)
+        res.status(400).json({ message: 'There is no such language as ' + language + ' available.' });
+    const formattedAwards = [];
+    const consoles = [];
+    async function getAndFormatAwards() {
+        let json = await ra.getUserAwards(raAuthorization, userObject);
+        for (const award of json.visibleUserAwards) { //To format the json itself
+            if (award.awardType === 'Mastery/Completion') {
+                if (award.awardDataExtra === 1) { //Hardcore mode
+                    award.awardType = 'Mastery';
+                }
+                else if (award.awardDataExtra === 0) { //Softcore mode
+                    award.awardType = 'Completion';
+                }
+                ;
+            }
+            ;
+            award.awardType = CustomFunctions.vlookup(award.awardType, translations, translations[0].indexOf(language) + 1);
+        }
+        ;
+        json.visibleUserAwards = json.visibleUserAwards.sort((a, b) => {
+            const positionA = CustomFunctions.vlookup(a.awardType, translations, 3, translations[0].indexOf(language) + 1);
+            const positionB = CustomFunctions.vlookup(b.awardType, translations, 3, translations[0].indexOf(language) + 1);
+            if (positionA !== positionB)
+                return positionA - positionB;
+            else {
+                const dateA = new Date(a.awardedAt).getTime();
+                const dateB = new Date(b.awardedAt).getTime();
+                return dateA - dateB;
+            }
+            ;
+        });
+        for (const award of json.visibleUserAwards) {
+            if (formattedAwards.some((formattedAward) => formattedAward.awardData === award.awardData)) { //Join data from award if it appears more than once
+                const index = formattedAwards.indexOf(formattedAwards.filter((formattedAward) => formattedAward.awardData === award.awardData)[0]);
+                if (formattedAwards[index].allData.some((data) => Math.abs(new Date(data.awardedAt).getTime() - new Date(award.awardedAt).getTime()) < 1000 * 60)) { // Updates a game award data if it happened the same time as the current entry
+                    const awardDataToUpdate = formattedAwards[index].allData.filter((data) => Math.abs(new Date(data.awardedAt).getTime() - new Date(award.awardedAt).getTime()) < 1000 * 60)[0];
+                    const dataIndexInAward = formattedAwards[index].allData.indexOf(awardDataToUpdate);
+                    formattedAwards[index].allData[dataIndexInAward].awardType += ` • ${award.awardType}`;
+                }
+                else { //Add new data if awards happened in different times
+                    formattedAwards[index].allData.push({
+                        awardType: award.awardType,
+                        awardedAt: award.awardedAt,
+                        displayOrder: award.displayOrder,
+                    });
+                }
+                ;
+            }
+            else { //Pushes awards to array
+                formattedAwards.push({
+                    awardData: award.awardData,
+                    awardDataExtra: award.awardDataExtra,
+                    title: award.title,
+                    consoleId: award.consoleId,
+                    consoleName: award.consoleName,
+                    flags: award.flags,
+                    imageIcon: raUrl + award.imageIcon,
+                    allData: [{
+                            awardType: award.awardType,
+                            awardedAt: award.awardedAt,
+                            displayOrder: award.displayOrder,
+                        }],
+                });
+            }
+            ;
+        }
+        ;
+    }
+    ;
+    async function getAndFormatConsoles() {
+        let json = await ra.getConsoleIds(raAuthorization);
+        consoles.push(json);
+    }
+    await Promise.all([getAndFormatConsoles(), getAndFormatAwards()]);
+    const output = {
+        awards: formattedAwards,
+        consoles: consoles[0],
+    };
+    res.status(200).json(output);
 });
 app.post("/upload/", upload.single('file'), uploadShortcut, async (req, res) => { res.status(400).json({ message: 'Wrong upload.' }); });
 app.listen(PORT, () => console.log(`Server running...`));

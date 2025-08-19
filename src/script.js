@@ -234,6 +234,7 @@ function resizeAside(counter) {
     else {
         shortcuts.style.height = aside.offsetHeight + 'px';
     }
+    ;
     if (counter == 0) {
         setTimeout(function () {
             resizeAside(1);
@@ -559,6 +560,7 @@ function wikipediaSearchTrigger() {
 ;
 //To create new shortcuts
 function createShortcutsTrigger() {
+    //Code here
 }
 // To make the inputbox draggable
 function dragPopUps() {
@@ -876,6 +878,52 @@ function setDefaults() {
     keywordsWikipedia.value = '';
 }
 ;
+// To add retroachievements awards
+function addRetroAchievementsAwards() {
+    return __awaiter(this, void 0, void 0, function () {
+        function createRetroAchievementsAwardCard(award) {
+            gridContainer.innerHTML += "<div id=\"".concat(CustomFunctions.normalize(award.title), "\" class=\"shortcut-item retroachievements-award\" alt=\"").concat(award.title, "\" target=\"_blank\"><img src=\"").concat(award.imageIcon, "\" style=\"border: 2px solid ").concat(award.allData.some(function (a) { return a.awardType.includes('Platinado'); }) ? 'gold' : '#e5e7eb', ";\" draggable=\"false\"></div>");
+        }
+        var raUrl, response, awards, consoles, gridContainer, popUp;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    raUrl = 'https://retroachievements.org';
+                    return [4 /*yield*/, fetch("".concat(server, "retroAchievements/pt-BR/")).then(function (res) { return res.json(); })];
+                case 1:
+                    response = _a.sent();
+                    awards = response.awards;
+                    consoles = response.consoles;
+                    gridContainer = document.querySelector('#retroachievements-awards > .grid-container');
+                    popUp = document.querySelector('.pop-up.retroachievements-awards');
+                    awards.map(createRetroAchievementsAwardCard);
+                    ;
+                    gridContainer.querySelectorAll('.retroachievements-award').forEach(function (awardCard) {
+                        var currentAwardData = awards.filter(function (award) { return CustomFunctions.normalize(award.title) === awardCard.id; })[0];
+                        var currentConsoleData = consoles.filter(function (consoleId) { return consoleId.id === currentAwardData.consoleId; })[0];
+                        awardCard.addEventListener('click', function (ev) {
+                            popUp.style.display = 'block';
+                            popUp.querySelector('#pop-up-img').href = "".concat(raUrl, "/game/").concat(currentAwardData.awardData);
+                            popUp.querySelector('#pop-up-img').style.border = "2px solid ".concat(currentAwardData.allData.some(function (a) { return a.awardType.includes('Platinado'); }) ? 'gold' : '#e5e7eb');
+                            popUp.querySelector('#pop-up-img').style.aspectRatio = '1';
+                            popUp.querySelector('#pop-up-img > img').src = currentAwardData.imageIcon;
+                            popUp.querySelectorAll('.pop-up-header > div > a')[1].href = "".concat(raUrl, "/system/").concat(currentConsoleData.id, "-").concat(CustomFunctions.normalize(currentConsoleData.name), "/games");
+                            popUp.querySelectorAll('.pop-up-header > div > a > img')[1].src = consoles.filter(function (consoleId) { return consoleId.id === currentAwardData.consoleId; })[0].iconUrl;
+                            popUp.querySelector('.pop-up-title').innerHTML = "<p>".concat(currentAwardData.title, "</p><p><small>").concat(currentConsoleData.name, "</small></p>");
+                            popUp.querySelector('.data-container').innerHTML = '';
+                            for (var _i = 0, _a = currentAwardData.allData; _i < _a.length; _i++) {
+                                var data = _a[_i];
+                                popUp.querySelector('.data-container').innerHTML += "<div style=\"border-top: 1px solid var(--contrast-color-3);\"><p>Pr\u00EAmio&nbsp;<span>".concat(data.awardType, "</span></p><p>Data&nbsp;<span>").concat(Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(data.awardedAt)), "</span></p></div>");
+                                // a =
+                            }
+                        });
+                    });
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+;
 // To add MFC images in the aside and do 
 function addMfcImages() {
     return __awaiter(this, void 0, void 0, function () {
@@ -883,14 +931,14 @@ function addMfcImages() {
             /* Get the grid object, its row-gap, and the size of its implicit rows */
             var grid = document.getElementsByClassName('pinterest-grid')[0], rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap')), rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
             /*
-             * Spanning for any brick = S
-             * Grid's row-gap = G
-             * Size of grid's implicitly create row-track = R
-             * Height of item content = H
-             * Net height of the item = H1 = H + G
-             * Net height of the implicit row-track = T = G + R
-             * S = H1 / T
-             */
+            * Spanning for any brick = S
+            * Grid's row-gap = G
+            * Size of grid's implicitly create row-track = R
+            * Height of item content = H
+            * Net height of the item = H1 = H + G
+            * Net height of the implicit row-track = T = G + R
+            * S = H1 / T
+            */
             var rowSpan = Math.ceil((item.offsetHeight + rowGap) / (rowHeight + rowGap));
             /* Set the spanning as calculated above (S) */
             item.style.gridRowEnd = 'span ' + rowSpan;
@@ -967,8 +1015,8 @@ function addMfcImages() {
                 ;
                 title.innerHTML = item.title;
                 popUpImgAnchor.href = item.href;
+                popUpImgAnchor.style.border = "".concat(imgBorder, " solid ").concat(div.style.color);
                 popUpImg.src = img.src;
-                popUpImg.style.border = "".concat(imgBorder, " solid ").concat(div.style.color);
                 var copySvg = "<?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 20010904//EN\" \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\"><svg version=\"1.0\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200.000000 200.000000\" preserveAspectRatio=\"xMidYMid meet\"><g transform=\"translate(0.000000,200.000000) scale(0.100000,-0.100000)\" fill=\"currentColor\" stroke=\"none\"><path d=\"M721 1882 c-71 -36 -76 -51 -79 -268 l-3 -194 60 0 61 0 2 178 3 177 475 0 475 0 0 -475 0 -475 -117 -3 -118 -3 0 -60 0 -61 134 4 c151 3 175 12 209 79 16 31 17 73 15 531 -3 484 -4 497 -24 525 -47 64 -39 63 -574 63 -442 0 -488 -2 -519 -18z\"/><path d=\"M241 1282 c-19 -9 -44 -30 -55 -45 -20 -28 -21 -41 -24 -525 -3 -555 -4 -542 67 -589 l34 -23 496 0 c477 0 497 1 529 20 18 11 41 34 52 52 19 32 20 52 20 529 l0 496 -23 34 c-47 70 -36 69 -577 69 -442 0 -488 -2 -519 -18z m994 -582 l0 -475 -475 0 -475 0 -3 465 c-1 256 0 471 3 478 3 10 104 12 477 10 l473 -3 0 -475z\"/></g></svg>";
                 originalName.innerHTML = item.characterJap !== '' ? "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(copySvg, "&nbsp;").concat(item.characterJap, "</a>") : "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(copySvg, "&nbsp;").concat(item.character, "</div></a>");
                 originName.innerHTML = "<a target=\"_blank\" href=\"".concat(originLink, "\">").concat(copySvg, "&nbsp;").concat(item.origin, "</a>");
@@ -1339,7 +1387,7 @@ function onLoadFunctions(ev) {
                     makeAsideButtonFollow();
                     if (mobile)
                         goThroughRules(document.styleSheets[0].cssRules);
-                    return [4 /*yield*/, Promise.all([addMfcImages(), scrapeMyAnimeList()])];
+                    return [4 /*yield*/, Promise.all([addMfcImages(), scrapeMyAnimeList(), addRetroAchievementsAwards()])];
                 case 2:
                     _a.sent();
                     return [2 /*return*/];

@@ -1,232 +1,253 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="./icon/favicon.svg" type="image/x-icon">
-    <link rel="stylesheet" href="style.css">
-    <title>Index</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="./icon/favicon.svg" type="image/x-icon">
+	<link rel="stylesheet" href="style.css">
+	<title>Index</title>
 </head>
 <body>
-    <div class="loader"></div>
-    <header id="header" style="display: none;">
-        <h1>StatisticShock's Index</h1>
-    </header>
-    <nav class="menu" style="display: none;">
-        <label id="night-mode-toggle" class="switch"></label>
-        <div id="twoB"><img src="https://storage.googleapis.com/statisticshock_github_io_public/pageImages/2b.webp"></div>
-        <div id="ohto"><img src="https://storage.googleapis.com/statisticshock_github_io_public/pageImages/Ohto_Ai_Flamengo.webp"></div>
-        <label id="mfc-switch" class="switch" style="display: none;"></label>
-        <div class="grid-container">
-            <a class="pop-up-open reddit-google" alt="Reddit Google Search" style="cursor: pointer;">
-                <img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/google-reddit.ico">
-            </a>
-            <a class="pop-up-open wikipedia" alt="Wikipedia Search" style="cursor: pointer;">
-                <img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/wikipedia.ico">
-            </a>
-        </div>
-    </nav>
-    <div class="container" style="display: none;">
-        <div class="flex-container">
-            <aside class="hidden">
-                <div class="button-bar">
-                    <button id="expand-button" type="button"><span>&larr;</span></button>
-                </div>
-                <input type="text" placeholder="Pesquise uma figure" id="search-bar">
-                <div class="loader" style="display: none;"></div>
-                <div class="card">
-                    <div class="loader"></div>
-                    <span style="opacity: 0;" id="owned-ordered" class="pinterest-grid"></span>
-                    <span style="opacity: 0;" id="wished" class="pinterest-grid"></span>
-                </div>
-            </aside>
-            <section id="shortcuts">
-                <h2>ATALHOS&nbsp;<button class="create-shortcut pop-up-open" type="button" alt="Adicionar"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></button></h2>
-                <h2>GAMING&nbsp;<button class="create-gaming pop-up-open" type="button" alt="Adicionar"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></button></h2>
-                <section id="gaming">
-                    <!-- From Uiverse.io by joe-watson-sbf -->
-                    <div class="gamecard-text">
-                        <span><p>Links</p></span>
-                        <div class="gamecard-container">
-                            <div class="gamecard">
-                                <a href="https://retroachievements.org/user/assdeper" id="ra"><span><b>RetroAchievements</b></span></a>
-                            </div>
-                            <div class="gamecard">
-                                <a href="https://r-roms.github.io/" id="rroms"><span><b>r/Roms Megathread</b></span></a>
-                            </div>
-                            <div class="gamecard">
-                                <a href="https://fitgirl-repacks.site/" id="fitgirl"><span><b>FitGirl Repacks</b></span></a>
-                            </div>
-                            <div class="gamecard">
-                                <a href="https://pkmds.app/" id="pkmds"><span><b>PKMDS for Web</b></span></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="gamecard-text">
-                        <span><p>Trackers</p></span>
-                        <div class="gamecard-container">
-                            <div class="gamecard">
-                                <a href="https://docs.google.com/spreadsheets/d/1jNHIzwtyUZluNiJlVO9JWz3i3Syxy5Zn0VhCyA1gqK8" id="zelda-tracker"><span><b>Zelda Tracker</b></span></a>
-                            </div>
-                            <div class="gamecard">
-                                <a href="https://docs.google.com/spreadsheets/d/1_ncbpgu4W73Xgre8ShWDOR707zvUY2CY_7vxmmhodu8" id="pokemon-tracker"><span><b>Pokémon Tracker</b></span></a>
-                            </div>
-                            <div class="gamecard">
-                                <a href="https://docs.google.com/spreadsheets/d/1raLufRI9VZQz__vWuYPL0zJkDeMc1vZI6Zl3m3DBE7k" id="castlevania-tracker"><span><b>Castlevania Tracker</b></span></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="gamecard-text">
-                        <span><p>Walkthroughs</p></span>
-                        <div class="gamecard-container">
-                            <div class="gamecard">
-                                <a href="https://www.zeldadungeon.net/" id="zelda-dungeon"><span><b>Zelda Dungeon</b></span></a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- From Uiverse.io by joe-watson-sbf -->
-                </section>
-                <h2>MyAnimeList</h2>
-                <section id="my-anime-list">
-                    <h3>Anime</h3>
-                    <div class="card">
-                        <div class="loader"></div>
-                        <button class="nav-button left" type="button">&lt;</button>
-                        <div class="inner-card anime" style="opacity: 0;"></div>
-                        <button class="nav-button right" type="button">&gt;</button>
-                    </div>
-                    <h3>Mangá</h3>
-                    <div class="card">
-                        <div class="loader"></div>
-                        <button class="nav-button left" type="button">&lt;</button>
-                        <div class="inner-card manga" style="opacity: 0;"></div>
-                        <button class="nav-button right" type="button">&gt;</button>
-                    </div>
-                </section>
-            </section>
-        </div>
-        <div class="pop-up mfc">
-            <div class="pop-up-header">
-                <div>
-                    <a target="_blank">
-                        <img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/mfc.ico">
-                    </a>
-                </div>
-                <button type="button" class="close-button">&times;</button>
-            </div>
-            <a id="pop-up-img" target="_blank"><img></a>
-            <span class="pop-up-title"></span>
-            <div class="data-container">
-                <p>Personagens&nbsp;<span id="mfc-character-original-name"></span></p>
-                <p>Origem&nbsp;<span id="mfc-character-origin"></span></p>
-                <p>Classificação<span id="mfc-classification"></span></p>
-            </div>
-        </div>
-        <form class="pop-up reddit-google">
-            <div class="pop-up-header">
-                <div>
-                    <img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/google.ico">
-                    <img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/reddit-icon.ico">
-                </div>
-                <button type="button" class="close-button">&times;</button>
-            </div>
-            <span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/key-multiple.svg"><input id="keywords-reddit"><span class='floating-label'>Palavras-chave</span></span>
-            <p></p>
-            <span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/r.svg"><input id="subreddit"><span class='floating-label'>Subreddit</span></span>
-            <p></p>
-            <span><input type="date" id="from-date"><span class='floating-label'>Data início</span>a<input type="date" id="to-date"><span class='floating-label'>Data fim</span></span>
-            <p></p>
-            <button type="button" class="ok-button">OK</button>
-        </form>
-        <form class="pop-up wikipedia">
-            <div class-="pop-up-header">
-                <div>
-                    <img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/wikipedia.ico">
-                </div>
-                <button type="button" class="close-button">&times;</button>
-            </div>
-            <span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/key-multiple.svg"><input id="keywords-wikipedia"><span class='floating-label'>Palavras-chave</span></span>
-            <p></p>
-            <button type="button" class="ok-button">OK</button>
-        </form>
-        <form class="pop-up create-shortcut" enctype="multipart/form-data" action="http://localhost:3000/upload">
-            <div class="pop-up-header">
-                <div>
-                    <img src="./icon/favicon.svg">
-                </div>
-                <button type="button" class="close-button">&times;</button>
-            </div>
-            <div id="drag-and-drop"></div>
-            <button id="add-drag-and-drop-button" type="button">Adicionar item</button>
-            <div id="add-drag-and-drop">
-                <input type="text" name="folder" autocomplete="on"><span class='floating-label'>Pasta</span>
-                <input type="text" name="url"><span class='floating-label'>URL</span>
-                <input type="text" name="title"><span class='floating-label'>Título</span>
-                <section id="drop-file">
-                    <img>
-                    <p>Solte uma imagem aqui</p>
-                    <p><small>Apenas um arquivo</small></p>
-                    <input type="file" name="file" multiple="false" accept="image/*">
-                </section>
-                <button id="add-drag-and-drop-submit" type="submit">Adicionar</button>
-            </div>
-            <p></p>
-            <button type="button" class="ok-button">OK</button>
-        </form>
-        <section id="about">
-            <h2>SOBRE</h2>
-            <p>Esta é uma página em HTML desenvolvida por StatisticShock para uso próprio.</p>
-        </section>
-    </div>
-    <footer style="display: none;">
-        <p>Nada a dizer.</p>
-    </footer>
-    <script type="module" src="./src/script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <script>
-        const dragAndDrop = document.querySelector('#drag-and-drop');
-        const shortcutBttn = document.querySelector('.create-shortcut.pop-up-open');
+	<div class="loader"></div>
+	<header id="header" style="display: none;">
+		<h1>StatisticShock's Index</h1>
+	</header>
+	<nav class="menu" style="display: none;">
+		<label id="night-mode-toggle" class="switch"></label>
+		<div id="twoB"><img src="https://storage.googleapis.com/statisticshock_github_io_public/pageImages/2b.webp"></div>
+		<div id="ohto"><img src="https://storage.googleapis.com/statisticshock_github_io_public/pageImages/Ohto_Ai_Flamengo.webp"></div>
+		<label id="mfc-switch" class="switch" style="display: none;"></label>
+		<div class="grid-container">
+			<a class="pop-up-open reddit-google" alt="Reddit Google Search" style="cursor: pointer;">
+				<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/google-reddit.ico">
+			</a>
+			<a class="pop-up-open wikipedia" alt="Wikipedia Search" style="cursor: pointer;">
+				<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/wikipedia.ico">
+			</a>
+		</div>
+	</nav>
+	<div class="container" style="display: none;">
+		<div class="flex-container">
+			<aside class="hidden">
+				<div class="button-bar">
+					<button id="expand-button" type="button"><span>&larr;</span></button>
+				</div>
+				<input type="text" placeholder="Pesquise uma figure" id="search-bar">
+				<div class="loader" style="display: none;"></div>
+				<div class="card">
+					<div class="loader"></div>
+					<span style="opacity: 0;" id="owned-ordered" class="pinterest-grid"></span>
+					<span style="opacity: 0;" id="wished" class="pinterest-grid"></span>
+				</div>
+			</aside>
+			<section id="shortcuts">
+				<h2>ATALHOS&nbsp;<button class="create-shortcut pop-up-open" type="button" alt="Adicionar"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></button></h2>
+				<h2>GAMING&nbsp;<button class="create-gaming pop-up-open" type="button" alt="Adicionar"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></button></h2>
+				<section id="gaming">
+					<!-- From Uiverse.io by joe-watson-sbf -->
+					<div class="gamecard-text">
+						<span><p>Links</p></span>
+						<div class="gamecard-container">
+							<div class="gamecard">
+								<a href="https://retroachievements.org/user/assdeper" id="ra"><span><b>RetroAchievements</b></span></a>
+							</div>
+							<div class="gamecard">
+								<a href="https://r-roms.github.io/" id="rroms"><span><b>r/Roms Megathread</b></span></a>
+							</div>
+							<div class="gamecard">
+								<a href="https://fitgirl-repacks.site/" id="fitgirl"><span><b>FitGirl Repacks</b></span></a>
+							</div>
+							<div class="gamecard">
+								<a href="https://pkmds.app/" id="pkmds"><span><b>PKMDS for Web</b></span></a>
+							</div>
+						</div>
+					</div>
+					<div class="gamecard-text">
+						<span><p>Trackers</p></span>
+						<div class="gamecard-container">
+							<div class="gamecard">
+								<a href="https://docs.google.com/spreadsheets/d/1jNHIzwtyUZluNiJlVO9JWz3i3Syxy5Zn0VhCyA1gqK8" id="zelda-tracker"><span><b>Zelda Tracker</b></span></a>
+							</div>
+							<div class="gamecard">
+								<a href="https://docs.google.com/spreadsheets/d/1_ncbpgu4W73Xgre8ShWDOR707zvUY2CY_7vxmmhodu8" id="pokemon-tracker"><span><b>Pokémon Tracker</b></span></a>
+							</div>
+							<div class="gamecard">
+								<a href="https://docs.google.com/spreadsheets/d/1raLufRI9VZQz__vWuYPL0zJkDeMc1vZI6Zl3m3DBE7k" id="castlevania-tracker"><span><b>Castlevania Tracker</b></span></a>
+							</div>
+						</div>
+					</div>
+					<div class="gamecard-text">
+						<span><p>Walkthroughs</p></span>
+						<div class="gamecard-container">
+							<div class="gamecard">
+								<a href="https://www.zeldadungeon.net/" id="zelda-dungeon"><span><b>Zelda Dungeon</b></span></a>
+							</div>
+						</div>
+					</div>
+					<!-- From Uiverse.io by joe-watson-sbf -->
+				</section>
+				<h2>RETROACHIEVEMENTS</h2>
+				<section id="retroachievements-awards">
+					<h3>Prêmios</h3>
+					<div class="grid-container"></div>
+				</section>
+				<h2>MyAnimeList</h2>
+				<section id="my-anime-list">
+					<h3>Anime</h3>
+					<div class="card">
+						<div class="loader"></div>
+						<button class="nav-button left" type="button">&lt;</button>
+						<div class="inner-card anime" style="opacity: 0;"></div>
+						<button class="nav-button right" type="button">&gt;</button>
+					</div>
+					<h3>Mangá</h3>
+					<div class="card">
+						<div class="loader"></div>
+						<button class="nav-button left" type="button">&lt;</button>
+						<div class="inner-card manga" style="opacity: 0;"></div>
+						<button class="nav-button right" type="button">&gt;</button>
+					</div>
+				</section>
+			</section>
+		</div>
+		<div class="pop-up mfc">
+			<div class="pop-up-header">
+				<div>
+					<a target="_blank">
+						<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/mfc.ico">
+					</a>
+				</div>
+				<button type="button" class="close-button">&times;</button>
+			</div>
+			<a id="pop-up-img" target="_blank"><img></a>
+			<span class="pop-up-title"></span>
+			<div class="data-container">
+				<p>Personagens&nbsp;<span id="mfc-character-original-name"></span></p>
+				<p>Origem&nbsp;<span id="mfc-character-origin"></span></p>
+				<p>Classificação<span id="mfc-classification"></span></p>
+			</div>
+		</div>
+		<div class="pop-up retroachievements-awards">
+			<div class="pop-up-header">
+				<div>
+					<a target="_blank" href="https://retroachievements.org/user/assdeper">
+						<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/ra.webp?v=2">
+					</a>
+					<a target="_blank">
+						<img>
+					</a>
+				</div>
+				<button type="button" class="close-button">&times;</button>
+			</div>
+			<a id="pop-up-img" target="_blank"><img></a>
+			<span class="pop-up-title"></span>
+			<div class="data-container"></div>
+		</div>
+		<form class="pop-up reddit-google">
+			<div class="pop-up-header">
+				<div>
+					<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/google.ico">
+					<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/reddit-icon.ico">
+				</div>
+				<button type="button" class="close-button">&times;</button>
+			</div>
+			<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/key-multiple.svg"><input id="keywords-reddit"><span class='floating-label'>Palavras-chave</span></span>
+			<p></p>
+			<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/r.svg"><input id="subreddit"><span class='floating-label'>Subreddit</span></span>
+			<p></p>
+			<span><input type="date" id="from-date"><span class='floating-label'>Data início</span>a<input type="date" id="to-date"><span class='floating-label'>Data fim</span></span>
+			<p></p>
+			<button type="button" class="ok-button">OK</button>
+		</form>
+		<form class="pop-up wikipedia">
+			<div class="pop-up-header">
+				<div>
+					<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/wikipedia.ico">
+				</div>
+				<button type="button" class="close-button">&times;</button>
+			</div>
+			<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/key-multiple.svg"><input id="keywords-wikipedia"><span class='floating-label'>Palavras-chave</span></span>
+			<p></p>
+			<button type="button" class="ok-button">OK</button>
+		</form>
+		<form class="pop-up create-shortcut" enctype="multipart/form-data" action="http://localhost:3000/upload">
+			<div class="pop-up-header">
+				<div>
+					<img src="./icon/favicon.svg">
+				</div>
+				<button type="button" class="close-button">&times;</button>
+			</div>
+			<div id="drag-and-drop"></div>
+			<button id="add-drag-and-drop-button" type="button">Adicionar item</button>
+			<div id="add-drag-and-drop">
+				<input type="text" name="folder" autocomplete="on"><span class='floating-label'>Pasta</span>
+				<input type="text" name="url"><span class='floating-label'>URL</span>
+				<input type="text" name="title"><span class='floating-label'>Título</span>
+				<section id="drop-file">
+					<img>
+					<p>Solte uma imagem aqui</p>
+					<p><small>Apenas um arquivo</small></p>
+					<input type="file" name="file" multiple="false" accept="image/*">
+				</section>
+				<button id="add-drag-and-drop-submit" type="submit">Adicionar</button>
+			</div>
+			<p></p>
+			<button type="button" class="ok-button">OK</button>
+		</form>
+		<section id="about">
+			<h2>SOBRE</h2>
+			<p>Esta é uma página em HTML desenvolvida por StatisticShock para uso próprio.</p>
+		</section>
+	</div>
+	<footer style="display: none;">
+		<p>Nada a dizer.</p>
+	</footer>
+	<script type="module" src="./src/script.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+	<script>
+		const dragAndDrop = document.querySelector('#drag-and-drop');
+		const shortcutBttn = document.querySelector('.create-shortcut.pop-up-open');
 
-        new Sortable(dragAndDrop, {
-            handle: '.drag-handle',
-            animation: 150,
-            ghostClass: 'ghost',
-            chosenClass: 'chosen-drag-class',
-            onStart: (ev) => {
-                dragAndDrop.querySelectorAll('.drag-and-drop-list').forEach((element) => {
-                    const div = element.querySelector('div');
-                    div.style.maxHeight = '0px'
-                });
+		new Sortable(dragAndDrop, {
+			handle: '.drag-handle',
+			animation: 150,
+			ghostClass: 'ghost',
+			chosenClass: 'chosen-drag-class',
+			onStart: (ev) => {
+				dragAndDrop.querySelectorAll('.drag-and-drop-list').forEach((element) => {
+					const div = element.querySelector('div');
+					div.style.maxHeight = '0px'
+				});
 
-                setTimeout(() => {
-                    ev.item.setAttribute('draggable', 'false')
-                }, 10)
-            },
-            onEnd: () => {
-                dragAndDrop.querySelectorAll('.drag-and-drop-list').forEach((element) => {
-                    const div = element.querySelector('div');
+				setTimeout(() => {
+					ev.item.setAttribute('draggable', 'false')
+				}, 10)
+			},
+			onEnd: () => {
+				dragAndDrop.querySelectorAll('.drag-and-drop-list').forEach((element) => {
+					const div = element.querySelector('div');
 
-                    if (element.getAttribute('x') === 'shown') {
-                        div.style.height = 'fit-content'
-                    };
+					if (element.getAttribute('x') === 'shown') {
+						div.style.height = 'fit-content'
+					};
 
-                    div.setAttribute('style', div.getAttribute('style').match(/\-\-children\-length: \d+\;/)[0]);
-                    element.removeAttribute('style');
-                })
-            },
-        });
+					div.setAttribute('style', div.getAttribute('style').match(/\-\-children\-length: \d+\;/)[0]);
+					element.removeAttribute('style');
+				})
+			},
+		});
 
-        shortcutBttn.addEventListener('click', () => {
-            setTimeout(() => {
-                dragAndDrop.querySelectorAll('.drag-and-drop-list > div').forEach((element) => {
-                    new Sortable(element, {
-                        handle: '.drag-handle',
-                        animation: 150,
-                        ghostClass: 'ghost',
-                    });
-                });
-            }, 500);
-        });
-    </script>
+		shortcutBttn.addEventListener('click', () => {
+			setTimeout(() => {
+				dragAndDrop.querySelectorAll('.drag-and-drop-list > div').forEach((element) => {
+					new Sortable(element, {
+						handle: '.drag-handle',
+						animation: 150,
+						ghostClass: 'ghost',
+					});
+				});
+			}, 500);
+		});
+	</script>
 </body>
 </html>

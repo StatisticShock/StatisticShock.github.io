@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "target": "ESNext",
     "types": [
       "node",
     ],
     "noEmitOnError": true,
+    "skipLibCheck": true,
   },
   "include": [
     ".",

@@ -94,8 +94,17 @@ var CustomFunctions = /** @class */ (function () {
     };
     ;
     CustomFunctions.normalize = function (string) {
-        return string.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+        return string.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '').replaceAll(' ', '-').toLowerCase().trim();
     };
+    ;
+    CustomFunctions.vlookup = function (key, array, end, start) {
+        var startKey = start !== null && start !== void 0 ? start : 1;
+        var endKey = end;
+        var row = array.filter(function (row) { return row[startKey - 1] === key; });
+        return row.length > 0 ? row[0][endKey - 1] : "There is no such key \"".concat(key, "\" (").concat(typeof key, ") at position #").concat(startKey, ".");
+    };
+    ;
     return CustomFunctions;
 }());
 export default CustomFunctions;
+;
