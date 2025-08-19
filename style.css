@@ -1636,3 +1636,9 @@ footer {
 	position: relative;
 	text-align: center;
 }
+
+@media (hover: none) and (pointer: coarse) {
+	*:hover {
+		all: unset !important;
+	}
+}
