@@ -1,3 +1,4 @@
+//MAL
 export type AnimeList = {
 	data: Array<{
 		node: {
@@ -61,6 +62,8 @@ export type MangaList = {
 		next: string;
 	};
 };
+
+//PAGE CONTENT
 export type NewShortcutData = {
 	folder: string,
 	title: string,
@@ -78,17 +81,33 @@ export type Shortcut = {
 		img: string
 	}>
 };
+export type Gamecard = {
+	label: string,
+	id: string,
+	position: number,
+	children: Array<{
+		id: string,
+		label: string,
+		position: number,
+		href: string,
+		img: string,
+		img_css: Array<{
+			attribute: string,
+			value: string
+		}>
+	}>
+}
 export type PageContent = {
 	shortcuts: Array<Shortcut>,
+	gamecards: Array<Gamecard>,
 	headers: Array<string>
-};
-export type ErrorJson = {
-	message: string
 };
 export type ShortcutResponse = {
 	sectionId: string,
 	newImgPath: string,
 };
+
+//RETROACHIEVEMENTS
 export type RetroAchievementsAward = {
 	"awardedAt": string,
 	"awardType": string,
@@ -136,4 +155,9 @@ export type RetroAchievementsConsole = {
 export type RetroAchievementsOutput = {
 	"awards": Array<RetroAchievementsFormattedAward>,
 	"consoles": Array<RetroAchievementsConsole>,
+}
+
+//SERVER INTERACTION
+export type ErrorJson = {
+	message: string
 }

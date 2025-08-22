@@ -1,7 +1,6 @@
 // Import custom functions from "./functions.Js"
 import CustomFunctions from "./functions.js";
-import * as MyTypes from "../server/types.js";
-import { append } from "cheerio/dist/commonjs/api/manipulation.js";
+import * as MyTypes from "../types/types.js";
 
 //A const that stores if the browser is mobile
 const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
@@ -13,8 +12,7 @@ const server: string = window.location.href === 'http://127.0.0.1:5500/' ? 'http
 console.log(`Running server at ${server}`);
 
 class PageBuilding {	//CSS dynamic settings
-	// To make loaders work
-	static createLoaders(counter: number): void { // NO NEED OF RESPONSIVENESS
+	static createLoaders(counter: number): void {	// NO NEED OF RESPONSIVENESS
 		let loaders: NodeListOf<HTMLDivElement> = document.querySelectorAll('.loader');
 
 		loaders.forEach(loader => {
@@ -29,8 +27,7 @@ class PageBuilding {	//CSS dynamic settings
 		});
 	};
 
-	//To make aside the same height of Shortcut-Item
-	static resizeAside(counter?: number): void {// RESPONSIVE
+	static resizeAside(counter?: number): void {	// RESPONSIVE
 		const aside: HTMLElement = document.querySelector('aside')!;
 		const shortcuts: HTMLElement = document.querySelector('#shortcuts')!;
 
@@ -50,7 +47,6 @@ class PageBuilding {	//CSS dynamic settings
 		};
 	};
 
-	// To make the gamecard occupy 50% of the screen on hover
 	static adjustGamecard(): void { // NEED TO TEST
 		const gameCardContainers: NodeListOf<HTMLElement> = document.querySelectorAll('.gamecard-container');
 		gameCardContainers.forEach(gamecardContainer => {
@@ -65,7 +61,6 @@ class PageBuilding {	//CSS dynamic settings
 		});
 	};
 
-	//Make gamecard div class rotate text when there's not enough space to diplay the text
 	static adjustGamecardText(counter: number): void { // RESPONSIVE
 		let gameCardSpan: NodeListOf<HTMLElement> = document.querySelectorAll('.gamecard > a > span');
 		gameCardSpan.forEach((element) => {
@@ -84,8 +79,7 @@ class PageBuilding {	//CSS dynamic settings
 		};
 	};
 
-	// To make 2B and Ai sit on the navbar (and makke the MFC toggle sit under 2B)
-	static figuresSitDown(): void {
+	static figuresSitDown(): void {	// RESPONSIVE
 		const twoB: HTMLElement = document.getElementById('twoB')!;
 		const twoB_Ass = Math.floor(parseFloat(getComputedStyle(twoB).height) * 493 / 920);
 		const twoB_Pussy = Math.floor(parseFloat(getComputedStyle(twoB).width) * 182 / 356);
@@ -108,7 +102,7 @@ class PageBuilding {	//CSS dynamic settings
 		toggleSwitch.style.transform = 'translate(50%, 0)'
 	};
 
-	static formatPopUps(): void { //NO NEED OF RESPONSIVENESS
+	static formatPopUps(): void { // NO NEED OF RESPONSIVENESS
 		type popUpInterface = { button: HTMLAnchorElement | HTMLButtonElement, popUpContainer: HTMLFormElement }
 		const popUpShortcuts: Array<popUpInterface> = [];
 
@@ -521,7 +515,7 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 	static async loadContentFromJson(): Promise<void> {
 		const json: MyTypes.PageContent = JSON.parse(await (await fetch(`${server}contents?filename=contents`)).text());
 
-		async function loadShortcuts() {
+		async function loadShortcuts(): Promise<void> {
 			const targetedNode: Element = document.querySelectorAll('#shortcuts h2')[1]!
 			const shortcutsNode: Element = document.querySelector('#shortcuts')!;
 
@@ -553,7 +547,29 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 			}
 		};
 
-		async function loadHeaders() {
+		async function loadGamecards (): Promise<void> {
+			const targetedNode: Element = document.querySelector('#shortcuts #gaming')!
+
+			for (const gamecardData of json.gamecards.sort((a, b) => a.position - b.position)) {	//Creates the gamecard
+				const outerGamecard: HTMLDivElement = document.createElement('div');
+				outerGamecard.id = gamecardData.id;
+				outerGamecard.classList.add('gamecard-text');
+				outerGamecard.innerHTML = `<span><p>${gamecardData.label}</p></span><div class="gamecard-container"></div>`;
+
+				for (const game of gamecardData.children.sort((a, b) => a.position - b.position)) {	//Creates each link
+					let gameStyleString: string = '';
+					for (const cssAtttribute of game.img_css) {
+						gameStyleString += `${cssAtttribute.attribute}: ${cssAtttribute.value}; `;
+					};
+
+					outerGamecard.querySelector('.gamecard-container')!.innerHTML += `<div class="gamecard"><a href="${game.href}" id="${game.id}" style="background-image: url(${game.img}); ${gameStyleString}"><span><b>${game.label}</b></span></a></div>`
+				};
+
+				targetedNode.appendChild(outerGamecard);
+			}
+		}
+
+		async function loadHeaders(): Promise<void> {
 			let index: number = CustomFunctions.randomIntFromInterval(1, json.headers.length);
 			let src: string = json.headers[index - 1];
 
@@ -594,6 +610,7 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 		});
 
 		loadShortcuts();
+		loadGamecards();
 		loadHeaders();
 	};
 
@@ -1053,7 +1070,7 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 			})
 		}, 500)
 	};
-}
+};
 
 class ExternalData {	//Gets data from other webservices APIs
 	// To add retroachievements awards
@@ -1098,16 +1115,27 @@ class ExternalData {	//Gets data from other webservices APIs
 	// To add a MyAnimeList card
 	static async scrapeMyAnimeList(): Promise<void> {
 		async function scrapeDataFromMAL(offset: number): Promise<[MyTypes.AnimeList['data'], MyTypes.MangaList['data']]> {
-			const animeData: MyTypes.AnimeList = await fetch(`${server}myanimelist?type=animelist&username=HikariMontgomery&offset=${offset}`)
+			const animeData: MyTypes.AnimeList = await fetch(`${server}myanimelist/animelist?username=HikariMontgomery&offset=${offset}`)
 				.then(response => response.json());
 			const animeDataData: MyTypes.AnimeList["data"] = animeData.data.filter((entry) => entry.node.nsfw === 'white').slice(0, 10);
 
-			const mangaData: MyTypes.MangaList = await fetch(`${server}myanimelist?type=mangalist&username=HikariMontgomery&offset=${offset}`)
+			const mangaData: MyTypes.MangaList = await fetch(`${server}myanimelist/mangalist?username=HikariMontgomery&offset=${offset}`)
 				.then(response => response.json());
 			const mangaDataData: MyTypes.MangaList["data"] = mangaData.data.filter((entry) => entry.node.nsfw === 'white').slice(0, 10);
 
 			return [animeDataData, mangaDataData];
 		};
+
+		const translations: Array<Array<string>> = [
+			['api', 'en-US', 'pt-BR'],
+			['completed', 'Completed', 'Finalizado'],
+			['reading', 'Reading', 'Lendo'],
+			['watching', 'Watching', 'Assistindo'],
+			['plan_to_read', 'Plan to read', 'Planeja ler'],
+			['plan_to_watch', 'Plan to watch', 'Planeja assistir'],
+			['dropped', 'Dropped', 'Abandonado'],
+			['on_hold', 'On hold', 'Em espera']
+		]
 
 		let output: Promise<[MyTypes.AnimeList['data'], MyTypes.MangaList['data']]> = scrapeDataFromMAL(0);
 		const animeCard: HTMLDivElement = document.querySelector('#my-anime-list .inner-card.anime')!;
@@ -1147,33 +1175,47 @@ class ExternalData {	//Gets data from other webservices APIs
 
 				const img: HTMLImageElement = new Image();
 				img.src = entry.node.main_picture.large;
+				
 				const a: HTMLAnchorElement = document.createElement('a');
 				a.appendChild(img);
 				a.target = '_blank';
 				a.href = `https://myanimelist.net/${typeOfMedia}/${entry.node.id}/`
+				
 				const div: HTMLDivElement = document.createElement('div');
 				div.classList.add('paragraph-container');
+				
 				const bold: HTMLElement = document.createElement('b');
 				bold.innerHTML = `#${entry.node.rank === undefined ? 'N/A' : entry.node.rank}`
+				
 				const span: HTMLSpanElement = document.createElement('span');
 				span.innerHTML = `<p><span>Título&nbsp;</span><span>${entry.node.title}</span></p>`;
+				
 				const p2: HTMLParagraphElement = document.createElement('p');
+				
 				if ('num_episodes_watched' in entry.list_status && 'num_episodes' in entry.node) {
 					p2.innerHTML = `<span>Assistidos&nbsp;</span><span>${entry.list_status.num_episodes_watched}/${entry.node.num_episodes === 0 ? '??' : entry.node.num_episodes}</span>`;
 				} else if ('num_chapters_read' in entry.list_status && 'num_chapters' in entry.node) {
 					p2.innerHTML = `<span>Lidos&nbsp;</span><span>${entry.list_status.num_chapters_read}/${entry.node.num_chapters === 0 ? '??' : entry.node.num_chapters}</span>`;
 				};
+				
 				const p3: HTMLParagraphElement = document.createElement('p');
 				const genres: Array<string> = [];
+				
 				for (const genre of entry.node.genres) {
 					genres.push(genre.name);
 				}
-				p3.innerHTML = `<span>Gêneros&nbsp;</span><span>${genres.join(', ')}</span>`
+				
+				p3.innerHTML = `<span>Gêneros&nbsp;</span><span>${genres.join(', ')}</span>`;
+
+				const p4: HTMLParagraphElement = document.createElement('p');
+				p4.innerHTML = `<span>Status</span><span>${CustomFunctions.vlookup(entry.list_status.status, translations, translations[0].indexOf('pt-BR') + 1)}</span>`;
+
 				div.style.display = mobile ? '' : 'none';
 				img.style.opacity = mobile ? '0.25' : '1'
 
 				span.appendChild(p2);
 				span.appendChild(p3);
+				span.appendChild(p4);
 
 				if (entry.list_status.score !== 0) {
 					const p4: HTMLParagraphElement = document.createElement('p');

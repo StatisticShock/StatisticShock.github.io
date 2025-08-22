@@ -1038,41 +1038,6 @@ section {
 				& .gamecard {
 					background-image: var(--pink-purple);
 					white-space: nowrap;
-
-					& #ra {
-						background-image: url(https://storage.googleapis.com/statisticshock_github_io_public/pageImages/ra-ps.webp);
-						background-size:contain;
-					}
-
-					& #rroms {
-						background-image: url(https://storage.googleapis.com/statisticshock_github_io_public/pageImages/rroms.webp);
-					}
-
-					& #fitgirl {
-						background-image: url(https://storage.googleapis.com/statisticshock_github_io_public/pageImages/fitgirl-ps.webp);
-					}
-
-					& #pkmds {
-						background-size: contain;
-						background-image: url(https://storage.googleapis.com/statisticshock_github_io_public/pageImages/pokemon.webp);
-					}
-
-					& #zelda-tracker {
-						background-image: url(https://storage.googleapis.com/statisticshock_github_io_public/pageImages/botw-ps.webp);
-					}
-
-					& #pokemon-tracker {
-						background-image: url(https://storage.googleapis.com/statisticshock_github_io_public/pageImages/pokemon-ps.webp);
-					}
-
-					& #castlevania-tracker {
-						background-image: url(https://storage.googleapis.com/statisticshock_github_io_public/pageImages/castlevania-ps.webp);
-					}
-
-					& #zelda-dungeon {
-						background-image: url(https://storage.googleapis.com/statisticshock_github_io_public/pageImages/zelda.webp);
-						background-position: bottom;
-					}
 				}
 
 				& .gamecard > a {

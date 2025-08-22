@@ -9,8 +9,6 @@ import * as ra from '@retroachievements/api';
 import CustomFunctions from '../src/functions.js';
 const app = express();
 const PORT = process.env.PORT || 3000;
-const API_URL = "https://api.myanimelist.net/v2/";
-const MAL_ACCESS_TOKEN = process.env.MAL_ACCESS_TOKEN;
 const { RA_API_KEY, RA_USERNAME } = process.env;
 const userObject = { username: RA_USERNAME };
 const authorization = { username: RA_USERNAME, webApiKey: RA_API_KEY };
@@ -23,9 +21,9 @@ const corsHeaders = {
     origin: [
         'https://statisticshock.github.io',
         'http://127.0.0.1:5500',
-        'http://localhost:3000'
+        'http://localhost:3000',
     ],
-    optionsSuccessStatus: 200
+    optionsSuccessStatus: 200,
 };
 const multerStorage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -37,17 +35,43 @@ const multerStorage = multer.diskStorage({
 });
 const upload = multer({ storage: multerStorage });
 app.use(cors(corsHeaders), express.json());
-app.get("/myanimelist/", async (req, res) => {
-    let { type, username, offset } = req.query;
-    if (!offset)
-        offset = '0';
+// MY ANIME LIST
+const MAL_API_URL = "https://api.myanimelist.net/v2/";
+const MAL_ACCESS_TOKEN = process.env.MAL_ACCESS_TOKEN;
+app.get("/myanimelist/:type", async (req, res) => {
+    const { type } = req.params;
+    let { username, offset } = req.query;
+    async function fetchMyAnimeList(type, username, offset, res) {
+        if (type !== 'animelist' && type !== 'mangalist')
+            res.status(400).json({ error: `Couldn't fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".` });
+        const response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=100&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank`, {
+            headers: {
+                "X-MAL-CLIENT-ID": MAL_ACCESS_TOKEN,
+            },
+        });
+        if (!response.ok)
+            res.status(response.status).json({ error: `Couldn't fetch ${MAL_API_URL}.` });
+        let data;
+        if (type === 'animelist') {
+            data = await response.json();
+        }
+        else if (type === 'mangalist') {
+            data = await response.json();
+        }
+        ;
+        return data;
+    }
+    ;
     try {
-        const data = await fetchMyAnimeList(type, username, offset);
-        res.json(data);
+        if (!offset)
+            offset = '0';
+        const data = await fetchMyAnimeList(type, username, offset, res);
+        res.status(200).json(data);
     }
     catch (err) {
         res.status(500).json({ error: err.message });
     }
+    ;
 });
 app.get("/contents/", async (req, res) => {
     const { filename } = req.query;
@@ -55,7 +79,7 @@ app.get("/contents/", async (req, res) => {
         const bucket = storage.bucket('statisticshock_github_io');
         const file = bucket.file(`${filename}.json`);
         const json = JSON.parse((await file.download()).toString());
-        res.json(json);
+        res.status(200).json(json);
     }
     catch (err) {
         res.status(500).json({ error: err.message });
@@ -152,30 +176,6 @@ app.get("/retroAchievements/:language/", async (req, res) => {
     };
     res.status(200).json(output);
 });
-app.post("/upload/", upload.single('file'), uploadShortcut, async (req, res) => { res.status(400).json({ message: 'Wrong upload.' }); });
-app.listen(PORT, () => console.log(`Server running...`));
-// Functions that are too big to wrap in arrow functions
-async function fetchMyAnimeList(type, username, offset) {
-    if (type !== 'animelist' && type !== 'mangalist')
-        return;
-    const response = await fetch(`${API_URL}users/${username}/${type}?limit=100&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_episodes,nsfw,rank`, {
-        headers: {
-            "X-MAL-CLIENT-ID": MAL_ACCESS_TOKEN,
-        },
-    });
-    if (!response.ok)
-        return;
-    let data;
-    if (type === 'animelist') {
-        data = await response.json();
-    }
-    else if (type === 'mangalist') {
-        data = await response.json();
-    }
-    ;
-    return data;
-}
-;
 async function uploadShortcut(req, res, next) {
     ['title', 'url', 'folder'].forEach((key) => {
         if (!req.body[key])
@@ -244,3 +244,5 @@ async function uploadShortcut(req, res, next) {
     res.status(200).json(requestResponseData);
 }
 ;
+app.post("/upload/", upload.single('file'), uploadShortcut, async (req, res) => { res.status(400).json({ message: 'Wrong upload.' }); });
+app.listen(PORT, () => console.log(`Server running...`));

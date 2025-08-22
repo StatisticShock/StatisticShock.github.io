@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from 'cors';
 import { Storage } from "@google-cloud/storage";
-import * as types from "./types.js";
+import * as types from "../types/types.js";
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 import multer from 'multer';
@@ -11,9 +11,6 @@ import CustomFunctions from '../src/functions.js';
 
 const app: express.Application = express();
 const PORT = process.env.PORT || 3000;
-
-const API_URL: string = "https://api.myanimelist.net/v2/";
-const MAL_ACCESS_TOKEN: string = process.env.MAL_ACCESS_TOKEN;
 
 const { RA_API_KEY, RA_USERNAME } = process.env;
 const userObject: object = {username: RA_USERNAME};
@@ -30,9 +27,10 @@ const corsHeaders = {
 	origin: [
 		'https://statisticshock.github.io',
 		'http://127.0.0.1:5500',
-		'http://localhost:3000'
+		'http://localhost:3000',
 	],
-	optionsSuccessStatus: 200
+	optionsSuccessStatus: 200,
+	
 };
 
 const multerStorage = multer.diskStorage({
@@ -47,18 +45,45 @@ const upload: multer.Multer = multer({ storage: multerStorage });
 
 app.use(cors(corsHeaders), express.json());
 
-app.get("/myanimelist/", async (req: express.Request, res: express.Response) => {
-	let { type, username, offset } = req.query;
+// MY ANIME LIST
+const MAL_API_URL: string = "https://api.myanimelist.net/v2/";
+const MAL_ACCESS_TOKEN: string = process.env.MAL_ACCESS_TOKEN;
 
-	if (!offset) offset = '0';
+app.get("/myanimelist/:type", async (req: express.Request, res: express.Response) => {
+	const { type } = req.params;
+	let { username, offset } = req.query;
+
+	async function fetchMyAnimeList (type: string, username: string, offset: number | string, res: express.Response): Promise<types.AnimeList | types.MangaList> {
+		if (type !== 'animelist' && type !== 'mangalist') res.status(400).json({ error: `Couldn't fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".` });
+		
+		const response: Response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=100&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank`, {
+			headers: {
+				"X-MAL-CLIENT-ID": MAL_ACCESS_TOKEN,
+			},
+		});
+
+		if (!response.ok) res.status(response.status).json({ error: `Couldn't fetch ${MAL_API_URL}.` })
+
+		let data: types.AnimeList | types.MangaList;
+
+		if (type === 'animelist') {
+			data = await response.json() as types.AnimeList;
+		} else if (type === 'mangalist') {
+			data = await response.json() as types.MangaList;
+		};
+
+		return data;
+	};
 
 	try {
-		const data = await fetchMyAnimeList(type as string, username as string, offset as string);
+		if (!offset) offset = '0';
 
-		res.json(data);
+		const data = await fetchMyAnimeList(type as string, username as string, offset as string, res);
+
+		res.status(200).json(data);
 	} catch (err) {
 		res.status(500).json({ error: err.message });
-	}
+	};
 });
 
 app.get("/contents/", async (req: express.Request, res: express.Response) => {
@@ -69,8 +94,7 @@ app.get("/contents/", async (req: express.Request, res: express.Response) => {
 		const file = bucket.file(`${filename}.json`);
 
 		const json = JSON.parse((await file.download()).toString())
-		res.json(json);
-
+		res.status(200).json(json);
 	} catch (err) {
 		res.status(500).json({ error: err.message })
 	}
@@ -170,34 +194,6 @@ app.get("/retroAchievements/:language/", async (req: express.Request, res: expre
 	res.status(200).json(output);
 });
 
-app.post("/upload/", upload.single('file'), uploadShortcut, async (req: express.Request, res: express.Response) => {res.status(400).json({message: 'Wrong upload.'})});
-
-app.listen(PORT, () => console.log(`Server running...`));
-
-
-// Functions that are too big to wrap in arrow functions
-async function fetchMyAnimeList (type: string, username: string, offset: number | string): Promise<types.AnimeList | types.MangaList | void> {
-	if (type !== 'animelist' && type !== 'mangalist') return;
-	
-	const response: Response = await fetch(`${API_URL}users/${username}/${type}?limit=100&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_episodes,nsfw,rank`, {
-		headers: {
-			"X-MAL-CLIENT-ID": MAL_ACCESS_TOKEN,
-		},
-	});
-
-	if (!response.ok) return
-
-	let data: types.AnimeList | types.MangaList;
-
-	if (type === 'animelist') {
-		data = await response.json() as types.AnimeList;
-	} else if (type === 'mangalist') {
-		data = await response.json() as types.MangaList;
-	};
-
-	return data;
-};
-
 type ShortcutRequest = express.Request<{}, {}, types.NewShortcutData>
 async function uploadShortcut (req: ShortcutRequest, res: express.Response, next: express.NextFunction) {
 	['title', 'url', 'folder'].forEach((key) => {
@@ -270,3 +266,6 @@ async function uploadShortcut (req: ShortcutRequest, res: express.Response, next
 	const requestResponseData = await getDataToReturn() as types.ShortcutResponse;
 	res.status(200).json(requestResponseData);
 };
+app.post("/upload/", upload.single('file'), uploadShortcut, async (req: express.Request, res: express.Response) => {res.status(400).json({message: 'Wrong upload.'})});
+
+app.listen(PORT, () => console.log(`Server running...`));

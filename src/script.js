@@ -46,7 +46,6 @@ console.log("Running server at ".concat(server));
 var PageBuilding = /** @class */ (function () {
     function PageBuilding() {
     }
-    // To make loaders work
     PageBuilding.createLoaders = function (counter) {
         var loaders = document.querySelectorAll('.loader');
         loaders.forEach(function (loader) {
@@ -60,7 +59,6 @@ var PageBuilding = /** @class */ (function () {
         });
     };
     ;
-    //To make aside the same height of Shortcut-Item
     PageBuilding.resizeAside = function (counter) {
         var _this = this;
         var aside = document.querySelector('aside');
@@ -82,7 +80,6 @@ var PageBuilding = /** @class */ (function () {
         ;
     };
     ;
-    // To make the gamecard occupy 50% of the screen on hover
     PageBuilding.adjustGamecard = function () {
         var gameCardContainers = document.querySelectorAll('.gamecard-container');
         gameCardContainers.forEach(function (gamecardContainer) {
@@ -95,7 +92,6 @@ var PageBuilding = /** @class */ (function () {
         });
     };
     ;
-    //Make gamecard div class rotate text when there's not enough space to diplay the text
     PageBuilding.adjustGamecardText = function (counter) {
         var gameCardSpan = document.querySelectorAll('.gamecard > a > span');
         gameCardSpan.forEach(function (element) {
@@ -114,7 +110,6 @@ var PageBuilding = /** @class */ (function () {
         ;
     };
     ;
-    // To make 2B and Ai sit on the navbar (and makke the MFC toggle sit under 2B)
     PageBuilding.figuresSitDown = function () {
         var twoB = document.getElementById('twoB');
         var twoB_Ass = Math.floor(parseFloat(getComputedStyle(twoB).height) * 493 / 920);
@@ -562,6 +557,34 @@ var CloudStorageData = /** @class */ (function () {
                     });
                 });
             }
+            function loadGamecards() {
+                return __awaiter(this, void 0, void 0, function () {
+                    var targetedNode, _i, _a, gamecardData, outerGamecard, _b, _c, game, gameStyleString, _d, _e, cssAtttribute;
+                    return __generator(this, function (_f) {
+                        targetedNode = document.querySelector('#shortcuts #gaming');
+                        for (_i = 0, _a = json.gamecards.sort(function (a, b) { return a.position - b.position; }); _i < _a.length; _i++) { //Creates the gamecard
+                            gamecardData = _a[_i];
+                            outerGamecard = document.createElement('div');
+                            outerGamecard.id = gamecardData.id;
+                            outerGamecard.classList.add('gamecard-text');
+                            outerGamecard.innerHTML = "<span><p>".concat(gamecardData.label, "</p></span><div class=\"gamecard-container\"></div>");
+                            for (_b = 0, _c = gamecardData.children.sort(function (a, b) { return a.position - b.position; }); _b < _c.length; _b++) { //Creates each link
+                                game = _c[_b];
+                                gameStyleString = '';
+                                for (_d = 0, _e = game.img_css; _d < _e.length; _d++) {
+                                    cssAtttribute = _e[_d];
+                                    gameStyleString += "".concat(cssAtttribute.attribute, ": ").concat(cssAtttribute.value, "; ");
+                                }
+                                ;
+                                outerGamecard.querySelector('.gamecard-container').innerHTML += "<div class=\"gamecard\"><a href=\"".concat(game.href, "\" id=\"").concat(game.id, "\" style=\"background-image: url(").concat(game.img, "); ").concat(gameStyleString, "\"><span><b>").concat(game.label, "</b></span></a></div>");
+                            }
+                            ;
+                            targetedNode.appendChild(outerGamecard);
+                        }
+                        return [2 /*return*/];
+                    });
+                });
+            }
             function loadHeaders() {
                 return __awaiter(this, void 0, void 0, function () {
                     var index, src, header, h1;
@@ -618,6 +641,7 @@ var CloudStorageData = /** @class */ (function () {
                                 element.removeAttribute('style');
                         });
                         loadShortcuts();
+                        loadGamecards();
                         loadHeaders();
                         return [2 /*return*/];
                 }
@@ -1087,6 +1111,7 @@ var CloudStorageData = /** @class */ (function () {
     ;
     return CloudStorageData;
 }());
+;
 var ExternalData = /** @class */ (function () {
     function ExternalData() {
     }
@@ -1144,12 +1169,12 @@ var ExternalData = /** @class */ (function () {
                     var animeData, animeDataData, mangaData, mangaDataData;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, fetch("".concat(server, "myanimelist?type=animelist&username=HikariMontgomery&offset=").concat(offset))
+                            case 0: return [4 /*yield*/, fetch("".concat(server, "myanimelist/animelist?username=HikariMontgomery&offset=").concat(offset))
                                     .then(function (response) { return response.json(); })];
                             case 1:
                                 animeData = _a.sent();
                                 animeDataData = animeData.data.filter(function (entry) { return entry.node.nsfw === 'white'; }).slice(0, 10);
-                                return [4 /*yield*/, fetch("".concat(server, "myanimelist?type=mangalist&username=HikariMontgomery&offset=").concat(offset))
+                                return [4 /*yield*/, fetch("".concat(server, "myanimelist/mangalist?username=HikariMontgomery&offset=").concat(offset))
                                         .then(function (response) { return response.json(); })];
                             case 2:
                                 mangaData = _a.sent();
@@ -1190,14 +1215,17 @@ var ExternalData = /** @class */ (function () {
                         genres.push(genre.name);
                     }
                     p3.innerHTML = "<span>G\u00EAneros&nbsp;</span><span>".concat(genres.join(', '), "</span>");
+                    var p4 = document.createElement('p');
+                    p4.innerHTML = "<span>Status</span><span>".concat(CustomFunctions.vlookup(entry.list_status.status, translations, translations[0].indexOf('pt-BR') + 1), "</span>");
                     div.style.display = mobile ? '' : 'none';
                     img.style.opacity = mobile ? '0.25' : '1';
                     span.appendChild(p2);
                     span.appendChild(p3);
+                    span.appendChild(p4);
                     if (entry.list_status.score !== 0) {
-                        var p4 = document.createElement('p');
-                        p4.innerHTML = "<span>Pontua\u00E7\u00E3o&nbsp;</span><span>".concat('⭐'.repeat(entry.list_status.score), "\n(").concat(entry.list_status.score, "/10)</span>");
-                        span.appendChild(p4);
+                        var p4_1 = document.createElement('p');
+                        p4_1.innerHTML = "<span>Pontua\u00E7\u00E3o&nbsp;</span><span>".concat('⭐'.repeat(entry.list_status.score), "\n(").concat(entry.list_status.score, "/10)</span>");
+                        span.appendChild(p4_1);
                     }
                     div.appendChild(bold);
                     div.appendChild(span);
@@ -1331,9 +1359,19 @@ var ExternalData = /** @class */ (function () {
                 }
                 ;
             }
-            var output, animeCard, mangaCard;
+            var translations, output, animeCard, mangaCard;
             return __generator(this, function (_a) {
                 ;
+                translations = [
+                    ['api', 'en-US', 'pt-BR'],
+                    ['completed', 'Completed', 'Finalizado'],
+                    ['reading', 'Reading', 'Lendo'],
+                    ['watching', 'Watching', 'Assistindo'],
+                    ['plan_to_read', 'Plan to read', 'Planeja ler'],
+                    ['plan_to_watch', 'Plan to watch', 'Planeja assistir'],
+                    ['dropped', 'Dropped', 'Abandonado'],
+                    ['on_hold', 'On hold', 'Em espera']
+                ];
                 output = scrapeDataFromMAL(0);
                 animeCard = document.querySelector('#my-anime-list .inner-card.anime');
                 mangaCard = document.querySelector('#my-anime-list .inner-card.manga');
