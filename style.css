@@ -423,8 +423,13 @@ img {
 				grid-template-columns: 40px 1fr 40px;
 				align-items: center;
 				cursor: pointer;
+				height: fit-content;
 
 				& > img {
+					position: relative;
+					display: block;
+					height: 30px;
+					width: auto;
 					cursor: grab;
 				}
 
@@ -1635,10 +1640,4 @@ section {
 footer {
 	position: relative;
 	text-align: center;
-}
-
-@media (hover: none) and (pointer: coarse) {
-	*:hover {
-		/* all: unset !important; */
-	}
 }
