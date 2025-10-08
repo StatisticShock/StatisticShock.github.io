@@ -34,13 +34,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-// Import custom functions from "./functions.Js"
-import CustomFunctions from "./functions.js";
-//A const that stores if the browser is mobile
+import CustomFunctions from "../util/functions.js";
 var ua = navigator.userAgent || navigator.vendor || window.opera;
 var mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 var portrait = (window.innerWidth < window.innerHeight);
-//The server
 var server = window.location.href === 'http://127.0.0.1:5500/' ? 'http://localhost:3000/' : 'https://statisticshock-github-io.onrender.com/';
 console.log("Running server at ".concat(server));
 var PageBuilding = /** @class */ (function () {
@@ -63,8 +60,10 @@ var PageBuilding = /** @class */ (function () {
         var _this = this;
         var aside = document.querySelector('aside');
         var shortcuts = document.querySelector('#shortcuts');
+        var card = aside.querySelector('.card');
         aside.style.height = 'fit-content';
         shortcuts.style.height = 'fit-content';
+        card.style.height = 'fit-content';
         if (parseFloat(getComputedStyle(aside).height) < parseFloat(getComputedStyle(shortcuts).height)) {
             aside.style.height = shortcuts.offsetHeight + 'px';
         }
@@ -72,6 +71,9 @@ var PageBuilding = /** @class */ (function () {
             shortcuts.style.height = aside.offsetHeight + 'px';
         }
         ;
+        aside.style.height = aside.offsetHeight + 'px';
+        shortcuts.style.height = shortcuts.offsetHeight + 'px';
+        card.style.height = card.offsetHeight + 'px';
         if (counter == 0) {
             setTimeout(function () {
                 _this.resizeAside(1);
@@ -143,10 +145,10 @@ var PageBuilding = /** @class */ (function () {
             object.button.onclick = function () {
                 var display = object.popUpContainer.style.display;
                 if ((display == '') || (display == 'none')) {
-                    object.popUpContainer.style.display = 'block'; //Makes the popUp appear
+                    object.popUpContainer.style.display = 'block';
                 }
                 else if (!(object.popUpContainer.classList.contains('create-shortcut') && object.button.classList.contains('create-shortcut') && !(object.button.id.replace('-button', '-item') === object.popUpContainer.getAttribute('x')))) {
-                    object.popUpContainer.style.display = 'none'; //Makes the popUp disappear
+                    object.popUpContainer.style.display = 'none';
                 }
                 ;
                 popUpClass.forEach(function (element) {
@@ -159,7 +161,7 @@ var PageBuilding = /** @class */ (function () {
                     floatingLabelElement.forEach(function (label) {
                         var parent = label.parentElement;
                         var siblings = Array.from(parent.children);
-                        var input = siblings[siblings.indexOf(label) - 1]; //Gets the imediate predecessor sibling
+                        var input = siblings[siblings.indexOf(label) - 1];
                         var rect = object.popUpContainer.getBoundingClientRect();
                         var inputRect = input.getBoundingClientRect();
                         var left = inputRect.left - rect.left;
@@ -170,7 +172,7 @@ var PageBuilding = /** @class */ (function () {
             };
             object.popUpContainer.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {
-                    e.preventDefault(); //Makes the form not submit
+                    e.preventDefault();
                     var okButton = object.popUpContainer.querySelector('.ok-button');
                     okButton.click();
                 }
@@ -184,7 +186,6 @@ var PageBuilding = /** @class */ (function () {
 var UserInterface = /** @class */ (function () {
     function UserInterface() {
     }
-    //Expands the aside on click
     UserInterface.expandAside = function () {
         var aside = document.querySelector('aside');
         var div = aside.querySelector('.button-bar');
@@ -230,7 +231,6 @@ var UserInterface = /** @class */ (function () {
         };
     };
     ;
-    //To make the aside button follow the cursor
     UserInterface.makeAsideButtonFollow = function () {
         if (mobile)
             return;
@@ -246,16 +246,12 @@ var UserInterface = /** @class */ (function () {
         });
     };
     ;
-    //To toggle night mode
     UserInterface.nightModeToggle = function () {
         var label = document.querySelector('#night-mode-toggle');
-        // Create input if it doesn't exist
         var input = label.querySelector('input');
-        // Set initial state based on current theme
         var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
         input.checked = isDark;
-        // Listen for toggle
         input.addEventListener('change', function (ev) {
             if (input.checked) {
                 document.documentElement.setAttribute('data-theme', 'dark');
@@ -267,7 +263,6 @@ var UserInterface = /** @class */ (function () {
         });
     };
     ;
-    //Resizes header on scroll
     UserInterface.resizeHeader = function () {
         var header = document.querySelector('header');
         var nav = document.querySelector('nav');
@@ -280,7 +275,6 @@ var UserInterface = /** @class */ (function () {
         nav.style.top = newHeight + 'px';
     };
     ;
-    //To make all switches work
     UserInterface.makeSwitchesSlide = function () {
         var switches = document.querySelectorAll('.switch');
         switches.forEach(function (switchElement) {
@@ -303,7 +297,6 @@ var UserInterface = /** @class */ (function () {
         });
     };
     ;
-    // To make every pop-up draggable
     UserInterface.dragPopUps = function () {
         var popUps = document.querySelectorAll('.pop-up');
         var isDragging = false;
@@ -362,19 +355,17 @@ var UserInterface = /** @class */ (function () {
     ;
     UserInterface.resetPopUpsOnOpen = function () {
         var _this = this;
-        //To make the Close Button work
         var buttons = document.querySelectorAll('.close-button');
         buttons.forEach(function (button) {
             var parent = button.parentElement.parentElement;
             button.onclick = function () {
                 parent.style.display = 'none';
-                _this.setPopUpDefaults();
+                _this.setPopUpDefaultValues();
             };
         });
     };
     ;
-    // To make the search pop-ups defaults load within the window
-    UserInterface.setPopUpDefaults = function () {
+    UserInterface.setPopUpDefaultValues = function () {
         var keywordsReddit = document.getElementById('keywords-reddit');
         var subreddit = document.getElementById('subreddit');
         var toDate = document.getElementById('to-date');
@@ -387,7 +378,6 @@ var UserInterface = /** @class */ (function () {
         keywordsWikipedia.value = '';
     };
     ;
-    //To make the popups appear on click
     UserInterface.showPopUps = function () {
         var _this = this;
         var popUpShortcuts = [];
@@ -404,7 +394,7 @@ var UserInterface = /** @class */ (function () {
             object.button.onclick = function () {
                 var display = object.popUpContainer.style.display;
                 if ((display == '') || (display == 'none')) {
-                    object.popUpContainer.style.display = 'block'; //Makes the popUp appear
+                    object.popUpContainer.style.display = 'block';
                 }
                 else if (!(object.popUpContainer.classList.contains('create-shortcut') && object.button.classList.contains('create-shortcut') && !(object.button.id.replace('-button', '-item') === object.popUpContainer.getAttribute('x')))) {
                     object.popUpContainer.style.display = 'none'; //Makes the popUp disappear
@@ -420,32 +410,39 @@ var UserInterface = /** @class */ (function () {
                     floatingLabelElement.forEach(function (label) {
                         var parent = label.parentElement;
                         var siblings = Array.from(parent.children);
-                        var input = siblings[siblings.indexOf(label) - 1]; //Gets the imediate predecessor sibling
+                        var input = siblings[siblings.indexOf(label) - 1];
                         var rect = object.popUpContainer.getBoundingClientRect();
                         var inputRect = input.getBoundingClientRect();
                         var left = inputRect.left - rect.left;
-                        label.style.left = Math.max(left, 5) + 'px';
+                        label.style.left = '5px';
                         input.placeholder ? input.placeholder = input.placeholder : input.placeholder = ' ';
                     });
                 }, 10);
             };
             object.popUpContainer.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {
-                    e.preventDefault(); //Makes the form not submit
+                    e.preventDefault();
                     var okButton = object.popUpContainer.querySelector('.ok-button');
                     okButton.click();
                 }
             });
         });
-        //To make the Close Button work
         var buttons = document.querySelectorAll('.close-button');
         buttons.forEach(function (button) {
             var parent = button.parentElement.parentElement;
             button.onclick = function () {
                 parent.style.display = 'none';
-                _this.setPopUpDefaults();
+                _this.setPopUpDefaultValues();
             };
         });
+    };
+    ;
+    UserInterface.makeButtonFromAsideFollowHeader = function () {
+        if (!portrait)
+            return;
+        var height = document.querySelector('header').offsetHeight;
+        var button = document.querySelector('aside .button-bar');
+        var bubble = button.querySelector('#expand-button');
     };
     ;
     return UserInterface;
@@ -454,7 +451,6 @@ var UserInterface = /** @class */ (function () {
 var ExternalSearch = /** @class */ (function () {
     function ExternalSearch() {
     }
-    // To make the reddit search work
     ExternalSearch.redditSearchTrigger = function () {
         var okButtonReddit = document.querySelector('.pop-up.reddit-google .ok-button');
         okButtonReddit.onclick = redditSearch;
@@ -498,7 +494,6 @@ var ExternalSearch = /** @class */ (function () {
         }
     };
     ;
-    //To make the wikipedia search work
     ExternalSearch.wikipediaSearchTrigger = function () {
         var okButtonWikipedia = document.querySelector('.pop-up.wikipedia .ok-button');
         okButtonWikipedia.onclick = wikipediaSearch;
@@ -519,7 +514,23 @@ var ExternalSearch = /** @class */ (function () {
 var CloudStorageData = /** @class */ (function () {
     function CloudStorageData() {
     }
-    //To make all shortcuts available
+    CloudStorageData.load = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var response, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, fetch("".concat(server, "contents/"))];
+                    case 1:
+                        response = _b.sent();
+                        _a = this;
+                        return [4 /*yield*/, response.json()];
+                    case 2:
+                        _a.json = _b.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     CloudStorageData.loadContentFromJson = function () {
         return __awaiter(this, void 0, void 0, function () {
             function loadShortcuts() {
@@ -528,7 +539,7 @@ var CloudStorageData = /** @class */ (function () {
                     return __generator(this, function (_d) {
                         targetedNode = document.querySelectorAll('#shortcuts h2')[1];
                         shortcutsNode = document.querySelector('#shortcuts');
-                        for (_i = 0, _a = json.shortcuts.sort(function (a, b) { return a.index - b.index; }); _i < _a.length; _i++) { //Creates the section
+                        for (_i = 0, _a = content.shortcuts.sort(function (a, b) { return a.index - b.index; }); _i < _a.length; _i++) {
                             section = _a[_i];
                             container = document.createElement('section');
                             container.id = section.id;
@@ -536,8 +547,10 @@ var CloudStorageData = /** @class */ (function () {
                             p.innerHTML = section.title;
                             div = document.createElement('div');
                             div.classList.add('grid-container');
-                            for (_b = 0, _c = section.children.sort(function (a, b) { return a.index - b.index; }); _b < _c.length; _b++) { //Creates each shortcut
+                            for (_b = 0, _c = section.children.sort(function (a, b) { return a.index - b.index; }); _b < _c.length; _b++) {
                                 child = _c[_b];
+                                if (mobile && !child.showOnMobile)
+                                    continue;
                                 a = document.createElement('a');
                                 a.classList.add('shortcut-item');
                                 a.href = child.href;
@@ -549,10 +562,14 @@ var CloudStorageData = /** @class */ (function () {
                                 div.appendChild(a);
                             }
                             ;
-                            container.appendChild(p);
-                            container.appendChild(div);
-                            shortcutsNode.insertBefore(container, targetedNode); //Inserts the created element before the gaming cards
+                            if (div.childElementCount > 0) {
+                                container.appendChild(p);
+                                container.appendChild(div);
+                                shortcutsNode.insertBefore(container, targetedNode);
+                            }
+                            ;
                         }
+                        ;
                         return [2 /*return*/];
                     });
                 });
@@ -562,13 +579,13 @@ var CloudStorageData = /** @class */ (function () {
                     var targetedNode, _i, _a, gamecardData, outerGamecard, _b, _c, game, gameStyleString, _d, _e, cssAtttribute;
                     return __generator(this, function (_f) {
                         targetedNode = document.querySelector('#shortcuts #gaming');
-                        for (_i = 0, _a = json.gamecards.sort(function (a, b) { return a.position - b.position; }); _i < _a.length; _i++) { //Creates the gamecard
+                        for (_i = 0, _a = content.gamecards.sort(function (a, b) { return a.position - b.position; }); _i < _a.length; _i++) {
                             gamecardData = _a[_i];
                             outerGamecard = document.createElement('div');
                             outerGamecard.id = gamecardData.id;
                             outerGamecard.classList.add('gamecard-text');
                             outerGamecard.innerHTML = "<span><p>".concat(gamecardData.label, "</p></span><div class=\"gamecard-container\"></div>");
-                            for (_b = 0, _c = gamecardData.children.sort(function (a, b) { return a.position - b.position; }); _b < _c.length; _b++) { //Creates each link
+                            for (_b = 0, _c = gamecardData.children.sort(function (a, b) { return a.position - b.position; }); _b < _c.length; _b++) {
                                 game = _c[_b];
                                 gameStyleString = '';
                                 for (_d = 0, _e = game.img_css; _d < _e.length; _d++) {
@@ -576,7 +593,7 @@ var CloudStorageData = /** @class */ (function () {
                                     gameStyleString += "".concat(cssAtttribute.attribute, ": ").concat(cssAtttribute.value, "; ");
                                 }
                                 ;
-                                outerGamecard.querySelector('.gamecard-container').innerHTML += "<div class=\"gamecard\"><a href=\"".concat(game.href, "\" id=\"").concat(game.id, "\" style=\"background-image: url(").concat(game.img, "); ").concat(gameStyleString, "\"><span><b>").concat(game.label, "</b></span></a></div>");
+                                outerGamecard.querySelector('.gamecard-container').innerHTML += "<div class=\"gamecard\" id=\"".concat(game.id, "\"><a href=\"").concat(game.href, "\" style=\"background-image: url(").concat(game.img, "); ").concat(gameStyleString, "\"><span><b>").concat(game.label, "</b></span></a></div>");
                             }
                             ;
                             targetedNode.appendChild(outerGamecard);
@@ -589,11 +606,11 @@ var CloudStorageData = /** @class */ (function () {
                 return __awaiter(this, void 0, void 0, function () {
                     var index, src, header, h1;
                     return __generator(this, function (_a) {
-                        index = CustomFunctions.randomIntFromInterval(1, json.headers.length);
-                        src = json.headers[index - 1];
-                        json.headers.forEach(function (imgSrc) {
+                        index = CustomFunctions.randomIntFromInterval(0, content.headers.length - 1);
+                        src = content.headers[index].href;
+                        content.headers.forEach(function (imgSrc) {
                             var img = new Image();
-                            img.src = imgSrc;
+                            img.src = imgSrc.href;
                         });
                         header = document.querySelector('#header');
                         h1 = header.querySelector('h1');
@@ -612,91 +629,42 @@ var CloudStorageData = /** @class */ (function () {
                                     return;
                             }
                             ;
-                            var arr = json.headers.filter(function (headerImg) {
-                                return headerImg != src.split('/').pop();
+                            var newHeadersArr = content.headers.filter(function (headerObj) {
+                                return headerObj.href !== src;
                             });
-                            var indexArr = CustomFunctions.randomIntFromInterval(1, arr.length);
-                            src = arr[indexArr - 1];
+                            index = CustomFunctions.randomIntFromInterval(0, newHeadersArr.length - 1);
+                            src = newHeadersArr[index].href;
                             header.style.backgroundImage = "url('".concat(src, "')");
                         };
                         return [2 /*return*/];
                     });
                 });
             }
-            var json, _a, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0:
-                        _b = (_a = JSON).parse;
-                        return [4 /*yield*/, fetch("".concat(server, "contents?filename=contents"))];
-                    case 1: return [4 /*yield*/, (_c.sent()).text()];
-                    case 2:
-                        json = _b.apply(_a, [_c.sent()]);
-                        ;
-                        ;
-                        Array.from(document.body.children).concat(document.querySelector('footer')).forEach(function (element) {
-                            if (element.classList.contains('loader'))
-                                element.style.display = 'none';
-                            else
-                                element.removeAttribute('style');
-                        });
-                        loadShortcuts();
-                        loadGamecards();
-                        loadHeaders();
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    ;
-    //To create new shortcuts
-    CloudStorageData.createShortcutsTrigger = function () {
-        return __awaiter(this, void 0, void 0, function () {
+            var content;
             return __generator(this, function (_a) {
+                content = JSON.parse(JSON.stringify(this.json));
+                ;
+                ;
+                Array.from(document.body.children).concat(document.querySelector('footer')).forEach(function (element) {
+                    if (element.classList.contains('loader'))
+                        element.style.display = 'none';
+                    else
+                        element.removeAttribute('style');
+                });
+                loadShortcuts();
+                loadGamecards();
+                loadHeaders();
                 return [2 /*return*/];
             });
         });
     };
     ;
-    //Adds an shortcut tag on the Cloud Storage JSON.
-    CloudStorageData.dragAndDropHandler = function () {
+    CloudStorageData.createNewShortcuts = function () {
         return __awaiter(this, void 0, void 0, function () {
-            function toggleHeaderInput(header, forceText) {
-                if (header.querySelector('input') === null) {
-                    header.innerHTML = forceText ? header.innerHTML : "<img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg\" class=\"drag-handle\"><input type=\"text\" value=\"".concat(header.textContent, "\"><span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg\"></span>");
-                }
-                else {
-                    var input = header.querySelector('input');
-                    header.innerHTML = "<img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg\" class=\"drag-handle\">".concat(input.value, "<span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span>");
-                }
-                ;
-            }
-            function toggleShortcutInput(shorcut, forceText) {
-                if (shorcut.querySelector('input') === null) {
-                    shorcut.innerHTML = forceText ? shorcut.innerHTML : shorcut.innerHTML.replace(shorcut.textContent, "<input type=\"text\" value=\"".concat(shorcut.textContent, "\">")).replace('edit.svg', 'check.svg');
-                }
-                else {
-                    var input = shorcut.querySelector('input');
-                    input.outerHTML = "".concat(input.value);
-                    shorcut.innerHTML = shorcut.innerHTML.replace('check.svg', 'edit.svg');
-                }
-                ;
-            }
-            function updateIcon(shorcut) {
-                var icon = shorcut.querySelectorAll('img')[1];
-                var src = icon.src;
-                icon.outerHTML = "<input type=\"file\" accept=\"image/*\">";
-                var newIcon = Array.from(shorcut.querySelectorAll('input')).pop();
-                newIcon.files = null;
-            }
             function handleDropFile() {
-                function activeFileDrop() {
-                    fileDrop.style.border = '3px solid var(--pink-custom)';
-                }
+                function activeFileDrop() { fileDrop.style.border = '3px solid var(--pink-custom)'; }
                 ;
-                function inactiveFileDrop() {
-                    fileDrop.style.border = '3px dashed grey';
-                }
+                function inactiveFileDrop() { fileDrop.style.border = '3px dashed grey'; }
                 ;
                 var input = fileDrop.querySelector('input');
                 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (evName) { return fileDrop.addEventListener(evName, function (e) { return e.preventDefault(); }); });
@@ -721,195 +689,384 @@ var CloudStorageData = /** @class */ (function () {
                     ;
                 });
             }
-            var popUp, dragAndDrop, addItemButton, addItem, fileDrop, bttn, json, _a, _b, submitBttn, addNewEntryBttn;
+            var popUp, dragAndDrop, addItemButton, addItem, fileDrop, submitNewShortcutBttn, submitUpdateBttn;
             var _this = this;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0:
-                        ;
-                        ;
-                        ;
-                        popUp = document.querySelector('.pop-up.create-shortcut');
-                        dragAndDrop = popUp.querySelector('#drag-and-drop');
-                        addItemButton = popUp.querySelector('#add-drag-and-drop-button');
-                        addItem = popUp.querySelector('#add-drag-and-drop');
-                        fileDrop = addItem.querySelector('#drop-file');
-                        bttn = document.querySelector('.create-shortcut.pop-up-open');
-                        _b = (_a = JSON).parse;
-                        return [4 /*yield*/, fetch("".concat(server, "contents?filename=contents"))];
-                    case 1: return [4 /*yield*/, (_c.sent()).text()];
-                    case 2:
-                        json = _b.apply(_a, [_c.sent()]);
-                        submitBttn = popUp.querySelector('.ok-button');
-                        addNewEntryBttn = popUp.querySelector('#add-drag-and-drop-submit');
-                        bttn.addEventListener('click', function (ev) {
-                            fileDrop.querySelector('img').src = 'https://storage.googleapis.com/statisticshock_github_io_public/icons/static/image.svg';
-                            for (var _i = 0, _a = Array.from(addItem.querySelectorAll('input')); _i < _a.length; _i++) {
-                                var input = _a[_i];
-                                input.value = '';
-                            }
-                            addItemButton.classList.remove('active');
-                            dragAndDrop.style.display = 'grid';
-                            dragAndDrop.innerHTML = '';
-                            for (var _b = 0, _c = json.shortcuts; _b < _c.length; _b++) {
-                                var shortcut = _c[_b];
-                                dragAndDrop.insertAdjacentHTML('beforeend', "<div id=\"".concat(shortcut.id, "-list\" class=\"drag-and-drop-list\" draggable=\"false\" x=\"shown\"><h3 class=\"drag-and-drop-list-header\"><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg\" class=\"drag-handle\">").concat(shortcut.title, "<span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span></h3><div style=\"--children-length: ").concat(shortcut.children.length, ";\"></div></div>"));
-                                var dragAndDropList = dragAndDrop.querySelector("#".concat(shortcut.id, "-list div"));
-                                var dragAndDropListHeader = dragAndDropList.parentElement.querySelector('h3');
-                                for (var _d = 0, _e = shortcut.children; _d < _e.length; _d++) {
-                                    var child = _e[_d];
-                                    addItem.style.display = 'none';
-                                    dragAndDropList.innerHTML += "<div id=\"".concat(child.id, "-list\" class=\"drag-and-drop-item\" draggable=\"false\" y=\"").concat(child.href, "\"><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg\" class=\"drag-handle\">").concat(child.alt, "<span><img src=\"").concat(child.img, "\" draggable=\"false\"><input type=\"file\" accept=\"image/*\"></span><span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span></div>");
-                                }
-                                ;
-                            }
-                            ;
-                            fileDrop.querySelector('input').files = null;
-                            fileDrop.querySelector('p').innerHTML = "Solte uma imagem aqui";
-                        });
-                        addItemButton.onclick = function (ev) {
+            return __generator(this, function (_a) {
+                popUp = document.querySelector('.pop-up.create-shortcut');
+                dragAndDrop = popUp.querySelector('#drag-and-drop');
+                addItemButton = popUp.querySelector('#add-new-shortcut-button');
+                addItem = popUp.querySelector('#add-drag-and-drop');
+                fileDrop = addItem.querySelector('#drop-file');
+                submitNewShortcutBttn = popUp.querySelector('#add-new-shortcut-submit');
+                submitUpdateBttn = popUp.querySelector('.ok-button');
+                addItemButton.onclick = function (ev) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
                             if (addItemButton.classList.contains('active')) {
                                 addItemButton.classList.remove('active');
-                                addItem.style.display = 'none';
-                                dragAndDrop.style.display = 'grid';
-                                submitBttn.removeAttribute('style');
+                                addItem.style.height = '0';
+                                addItem.style.padding = '0';
+                                dragAndDrop.style.height = '60vh';
+                                dragAndDrop.style.padding = '10px';
+                                submitUpdateBttn.removeAttribute('style');
                             }
                             else {
                                 addItemButton.classList.add('active');
-                                addItem.style.display = 'block';
-                                dragAndDrop.style.display = 'none';
-                                submitBttn.style.display = 'none';
+                                addItem.style.height = addItem.scrollHeight + 'px';
+                                addItem.style.padding = '20px 0';
+                                dragAndDrop.style.height = '0';
+                                dragAndDrop.style.padding = '0 10px';
+                                submitUpdateBttn.style.display = 'none';
                             }
-                        };
-                        ;
-                        handleDropFile();
-                        popUp.addEventListener('submit', function (ev) { return __awaiter(_this, void 0, void 0, function () {
-                            var formData, _i, _a, _b, key, value, response, textJson, targetListToAddNewData, textJson, err_1;
-                            return __generator(this, function (_c) {
-                                switch (_c.label) {
-                                    case 0:
-                                        ev.preventDefault();
-                                        formData = new FormData(popUp);
-                                        addItem.querySelectorAll('input').forEach(function (input) {
-                                            if (input.type === 'text' && input.value === '') {
-                                                input.style.setProperty('--initial-color', getComputedStyle(input).backgroundColor);
-                                                input.classList.add('pulse');
-                                                setTimeout(function () {
-                                                    input.classList.remove('pulse');
-                                                    input.style.removeProperty('--initial-color');
-                                                }, 1800);
-                                            }
-                                            else if (input.type === 'file' && input.files.length === 0) {
-                                                input.parentElement.style.setProperty('--initial-color', getComputedStyle(input).backgroundColor);
-                                                input.parentElement.classList.add('pulse');
-                                                setTimeout(function () {
-                                                    input.parentElement.classList.remove('pulse');
-                                                    input.parentElement.style.removeProperty('--initial-color');
-                                                }, 1800);
-                                            }
-                                            ;
-                                        });
-                                        for (_i = 0, _a = Array.from(formData); _i < _a.length; _i++) {
-                                            _b = _a[_i], key = _b[0], value = _b[1];
-                                            if (typeof value === 'string' && value === '')
-                                                return [2 /*return*/];
-                                            if (value instanceof File && value.size === 0)
-                                                return [2 /*return*/];
-                                        }
-                                        ;
-                                        _c.label = 1;
-                                    case 1:
-                                        _c.trys.push([1, 7, , 8]);
-                                        return [4 /*yield*/, fetch("".concat(server, "upload/"), {
-                                                method: 'POST',
-                                                body: formData
-                                            })];
-                                    case 2:
-                                        response = _c.sent();
-                                        if (!response.ok) return [3 /*break*/, 4];
-                                        return [4 /*yield*/, response.json()];
-                                    case 3:
-                                        textJson = _c.sent();
-                                        targetListToAddNewData = dragAndDrop.querySelector("".concat(textJson.sectionId, "-list"));
-                                        if (targetListToAddNewData === null) {
-                                        }
-                                        else {
-                                        }
-                                        ;
-                                        return [3 /*break*/, 6];
-                                    case 4: return [4 /*yield*/, response.json()];
-                                    case 5:
-                                        textJson = _c.sent();
-                                        alert("ERRO:\n".concat(textJson.message));
-                                        _c.label = 6;
-                                    case 6: return [3 /*break*/, 8];
-                                    case 7:
-                                        err_1 = _c.sent();
-                                        return [3 /*break*/, 8];
-                                    case 8:
-                                        ;
+                            return [2 /*return*/];
+                        });
+                    });
+                };
+                ;
+                handleDropFile();
+                submitNewShortcutBttn.onclick = function (ev) { return __awaiter(_this, void 0, void 0, function () {
+                    var formData, _i, _a, _b, key, value, response, textJson, targetListToAddNewData_1, itemListStr, textJson;
+                    return __generator(this, function (_c) {
+                        switch (_c.label) {
+                            case 0:
+                                formData = new FormData(popUp);
+                                addItem.querySelectorAll('input').forEach(function (input) {
+                                    if (input.type === 'text' && (input.value.trim() === '' || input.value.match(/[a-zA-Z]+/) === null)) {
+                                        input.style.setProperty('--initial-color', getComputedStyle(input).backgroundColor);
+                                        input.value = '';
+                                        input.classList.add('pulse');
+                                        setTimeout(function () {
+                                            input.classList.remove('pulse');
+                                            input.style.removeProperty('--initial-color');
+                                        }, 1800);
+                                    }
+                                    else if (input.type === 'file' && input.files.length === 0) {
+                                        input.parentElement.style.setProperty('--initial-color', getComputedStyle(input).backgroundColor);
+                                        input.parentElement.classList.add('pulse');
+                                        setTimeout(function () {
+                                            input.parentElement.classList.remove('pulse');
+                                            input.parentElement.style.removeProperty('--initial-color');
+                                        }, 1800);
+                                    }
+                                    ;
+                                });
+                                for (_i = 0, _a = Array.from(formData); _i < _a.length; _i++) {
+                                    _b = _a[_i], key = _b[0], value = _b[1];
+                                    if (typeof value === 'string' && (value.trim() === '' || value.match(/[a-zA-Z]+/) === null))
+                                        return [2 /*return*/];
+                                    if (value instanceof File && value.size === 0)
                                         return [2 /*return*/];
                                 }
-                            });
-                        }); });
-                        dragAndDrop.addEventListener('click', function (ev) {
-                            var header = ev.target.closest('.drag-and-drop-list-header');
-                            if (!header)
-                                return;
-                            if (ev.target.tagName === 'INPUT')
-                                return;
-                            if (CustomFunctions.isParent(ev.target, header.querySelector('span'))) {
-                                toggleHeaderInput(header);
-                                return;
-                            }
-                            ;
-                            var container = header.parentElement;
-                            var isShown = container.getAttribute('x') === 'shown';
-                            container.setAttribute('x', isShown ? 'hidden' : 'shown');
-                            container.classList.toggle('hidden', isShown);
-                        });
-                        dragAndDrop.addEventListener('click', function (ev) {
-                            var shortcut = ev.target.closest('.drag-and-drop-item');
-                            if (!shortcut)
-                                return;
-                            else if (ev.target.tagName === 'INPUT')
-                                return;
-                            else if (shortcut.querySelector('input') !== null && shortcut.querySelector('input').value === '')
-                                return;
-                            else if (CustomFunctions.isParent(ev.target, shortcut.querySelector('span')))
-                                toggleShortcutInput(shortcut);
-                            else if (ev.target === shortcut.querySelectorAll('img')[1])
-                                updateIcon(shortcut);
-                        });
-                        dragAndDrop.addEventListener('mousemove', function (ev) {
-                            var sections = Array.from(document.querySelectorAll('.container .flex-container section:has(.grid-container)'));
-                            sections.forEach(function (section) {
-                                if (!ev.target.closest('.drag-and-drop-list'))
-                                    return;
-                                if (ev.target.closest('.drag-and-drop-list').id.replace('-list', '') === section.id) {
-                                    if (section.querySelector('p'))
-                                        section.querySelector('p').classList.add('animated');
+                                ;
+                                return [4 /*yield*/, fetch("".concat(server, "shortcuts/"), {
+                                        method: 'POST',
+                                        body: formData
+                                    })];
+                            case 1:
+                                response = _c.sent();
+                                if (!response.ok) return [3 /*break*/, 3];
+                                return [4 /*yield*/, response.json()];
+                            case 2:
+                                textJson = _c.sent();
+                                targetListToAddNewData_1 = null;
+                                dragAndDrop.querySelectorAll('h3').forEach(function (h3) {
+                                    if (h3.textContent === formData.get('folder').toString().trim()) {
+                                        targetListToAddNewData_1 = h3.parentElement;
+                                    }
+                                });
+                                itemListStr = "<div id=\"".concat(CustomFunctions.normalize(formData.get('title').toString()), "-list\" class=\"drag-and-drop-item\" draggable=\"false\" href=\"").concat(formData.get('url').toString(), "\">").concat(this.moveButtonsContainer40).concat(formData.get('title').toString(), "<span class=\"shortcut-icon\"><img src=\"").concat(textJson.newImgPath, "\" draggable=\"false\"><input type=\"file\" accept=\"image/*\"></span><span class=\"edit-shortcut\"><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span></div>");
+                                if (targetListToAddNewData_1 === null) {
+                                    targetListToAddNewData_1 = document.createElement('div');
+                                    targetListToAddNewData_1.id = "".concat(CustomFunctions.normalize(formData.get('folder').toString()), "-list");
+                                    targetListToAddNewData_1.classList.add('drag-and-drop-list');
+                                    targetListToAddNewData_1.classList.add('hidden');
+                                    targetListToAddNewData_1.setAttribute('x', 'hidden');
+                                    targetListToAddNewData_1.innerHTML = "<h3 class=\"drag-and-drop-list-header\">".concat(this.moveButtonsContainer60).concat(formData.get('folder').toString(), "<span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span></h3><div style=\"--children-length: 1;\">").concat(itemListStr, "</div>");
+                                    dragAndDrop.appendChild(targetListToAddNewData_1);
                                 }
                                 else {
-                                    if (section.querySelector('p'))
-                                        section.querySelector('p').classList.remove('animated');
                                 }
-                            });
-                        });
-                        dragAndDrop.addEventListener('mouseleave', function (ev) {
-                            var sections = Array.from(document.querySelectorAll('.container .flex-container section:has(.grid-container)'));
-                            sections.forEach(function (section) {
-                                if (section.querySelector('p'))
-                                    section.querySelector('p').classList.remove('animated');
-                            });
-                        });
-                        return [2 /*return*/];
-                }
+                                ;
+                                return [3 /*break*/, 5];
+                            case 3: return [4 /*yield*/, response.json()];
+                            case 4:
+                                textJson = _c.sent();
+                                alert("ERRO:\n".concat(textJson.message));
+                                _c.label = 5;
+                            case 5: return [2 /*return*/];
+                        }
+                    });
+                }); };
+                return [2 /*return*/];
             });
         });
     };
     ;
-    // To add MFC images in the aside
+    CloudStorageData.dragAndDropHandler = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var popUp, headerImg, dragAndDrop;
+            var _this = this;
+            return __generator(this, function (_a) {
+                popUp = document.querySelector('.pop-up.create-shortcut');
+                headerImg = popUp.querySelector('.pop-up-header img');
+                dragAndDrop = popUp.querySelector('#drag-and-drop');
+                headerImg.addEventListener('click', function (ev) {
+                    var containers = Array.from(dragAndDrop.querySelectorAll('.drag-and-drop-list'));
+                    if (containers.some(function (container) { return !container.classList.contains('hidden'); })) {
+                        containers.forEach(function (container) {
+                            container.classList.add('hidden');
+                            container.setAttribute('x', 'hidden');
+                        });
+                    }
+                    else {
+                        containers.forEach(function (container) {
+                            container.classList.remove('hidden');
+                            container.setAttribute('x', 'shown');
+                        });
+                    }
+                });
+                dragAndDrop.addEventListener('click', function (ev) { return __awaiter(_this, void 0, void 0, function () {
+                    function shrinkHeader() {
+                        var header = ev.target.closest('.drag-and-drop-list-header');
+                        if (!header)
+                            return;
+                        if (ev.target.tagName === 'INPUT')
+                            return;
+                        if (ev.target.closest('.move-buttons-container'))
+                            return;
+                        if (CustomFunctions.isParent(ev.target, header.querySelector('span')))
+                            return;
+                        var container = header.parentElement;
+                        var isShown = container.getAttribute('x') === 'shown';
+                        container.setAttribute('x', isShown ? 'hidden' : 'shown');
+                        container.classList.toggle('hidden', isShown);
+                    }
+                    function moveItemUpOrDown() {
+                        return __awaiter(this, void 0, void 0, function () {
+                            var moveButtonsContainer, parent, copyOfParent, bttn, transitionTime, previousSibling, computedHeight, nextSibling, computedHeight;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        moveButtonsContainer = ev.target.closest('.move-buttons-container');
+                                        if (!moveButtonsContainer)
+                                            return [2 /*return*/];
+                                        if (!ev.target.closest('button'))
+                                            return [2 /*return*/];
+                                        parent = (moveButtonsContainer.closest('.drag-and-drop-item') || moveButtonsContainer.closest('.drag-and-drop-list'));
+                                        copyOfParent = parent.cloneNode(true);
+                                        bttn = ev.target.closest('button');
+                                        transitionTime = Number(getComputedStyle(parent).transition.match(/[\d\.]+/)[0]) * 1000;
+                                        if (!bttn.classList.contains('move-up')) return [3 /*break*/, 8];
+                                        if (parent === parent.parentElement.firstChild)
+                                            return [2 /*return*/];
+                                        previousSibling = parent.previousElementSibling;
+                                        parent.classList.add('fade-out');
+                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
+                                    case 1:
+                                        _a.sent();
+                                        computedHeight = getComputedStyle(parent).height;
+                                        parent.style.height = computedHeight;
+                                        return [4 /*yield*/, CustomFunctions.sleep(10)];
+                                    case 2:
+                                        _a.sent();
+                                        parent.style.height = '0';
+                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
+                                    case 3:
+                                        _a.sent();
+                                        parent.remove();
+                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
+                                    case 4:
+                                        _a.sent();
+                                        copyOfParent.classList.add('fade-in');
+                                        copyOfParent.style.height = '0';
+                                        previousSibling.before(copyOfParent);
+                                        return [4 /*yield*/, CustomFunctions.sleep(10)];
+                                    case 5:
+                                        _a.sent();
+                                        copyOfParent.style.height = computedHeight;
+                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
+                                    case 6:
+                                        _a.sent();
+                                        copyOfParent.setAttribute('style', copyOfParent.getAttribute('style').replace(/height\: [\d\s\S]+\;/, ''));
+                                        if (copyOfParent.getAttribute('style') === '')
+                                            copyOfParent.removeAttribute('style');
+                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
+                                    case 7:
+                                        _a.sent();
+                                        copyOfParent.classList.remove('fade-in');
+                                        return [3 /*break*/, 16];
+                                    case 8:
+                                        if (!bttn.classList.contains('move-down')) return [3 /*break*/, 16];
+                                        if (parent === parent.parentElement.lastChild)
+                                            return [2 /*return*/];
+                                        nextSibling = parent.nextElementSibling;
+                                        parent.classList.add('fade-out');
+                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
+                                    case 9:
+                                        _a.sent();
+                                        computedHeight = getComputedStyle(parent).height;
+                                        parent.style.height = computedHeight;
+                                        return [4 /*yield*/, CustomFunctions.sleep(10)];
+                                    case 10:
+                                        _a.sent();
+                                        parent.style.height = '0';
+                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
+                                    case 11:
+                                        _a.sent();
+                                        parent.remove();
+                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
+                                    case 12:
+                                        _a.sent();
+                                        copyOfParent.classList.add('fade-in');
+                                        copyOfParent.style.height = '0';
+                                        nextSibling.after(copyOfParent);
+                                        return [4 /*yield*/, CustomFunctions.sleep(10)];
+                                    case 13:
+                                        _a.sent();
+                                        copyOfParent.style.height = computedHeight;
+                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
+                                    case 14:
+                                        _a.sent();
+                                        copyOfParent.setAttribute('style', copyOfParent.getAttribute('style').replace(/height\: [\d\s\S]+\;/, ''));
+                                        if (copyOfParent.getAttribute('style') === '')
+                                            copyOfParent.removeAttribute('style');
+                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
+                                    case 15:
+                                        _a.sent();
+                                        copyOfParent.classList.remove('fade-in');
+                                        _a.label = 16;
+                                    case 16: return [2 /*return*/];
+                                }
+                            });
+                        });
+                    }
+                    return __generator(this, function (_a) {
+                        ;
+                        ;
+                        shrinkHeader();
+                        moveItemUpOrDown();
+                        return [2 /*return*/];
+                    });
+                }); });
+                return [2 /*return*/];
+            });
+        });
+    };
+    ;
+    CloudStorageData.updateShortCut = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            function toggleHeaderInput(header, forceText) {
+                if (header.querySelector('input') === null) {
+                    header.innerHTML = forceText ? header.innerHTML : "".concat(CloudStorageData.moveButtonsContainer60, "</div><input type=\"text\" value=\"").concat(header.textContent, "\"><span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg\"></span>");
+                }
+                else {
+                    var input = header.querySelector('input');
+                    header.parentElement.id = "".concat(CustomFunctions.normalize(input.value), "-list");
+                    input.outerHTML = input.value;
+                    header.innerHTML = header.innerHTML.replace('check.svg', 'edit.svg');
+                }
+                ;
+            }
+            function toggleShortcutInput(shorcut, forceText) {
+                if (shorcut.querySelector(':scope > input') === null) {
+                    shorcut.innerHTML = forceText ? shorcut.innerHTML : "".concat(CloudStorageData.moveButtonsContainer40, "</div><input type=\"text\" value=\"").concat(shorcut.textContent, "\"><span class=\"delete-shortcut\" old-data=\"src: ").concat(shorcut.querySelectorAll('span img')[0].src, ";\"><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/x.svg\"></span><span class=\"edit-shortcut\"><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg\"></span>");
+                }
+                else {
+                    var input = shorcut.querySelector(':scope > input');
+                    shorcut.id = "".concat(CustomFunctions.normalize(input.value), "-list");
+                    shorcut.innerHTML = "".concat(CloudStorageData.moveButtonsContainer40).concat(input.value, "<span class=\"shortcut-icon\"><img src=\"").concat(shorcut.querySelector('.delete-shortcut').getAttribute('old-data').replace(/(src\: )|(\;)/g, ''), "\" draggable=\"false\"><input type=\"file\" accept=\"image/*\"></span><span class=\"edit-shortcut\"><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span>");
+                }
+                ;
+            }
+            function updateIcon(shorcut) {
+                var icon = shorcut.querySelectorAll('img')[1];
+                var src = icon.src;
+                icon.outerHTML = "<input type=\"file\" accept=\"image/*\">";
+                var newIcon = Array.from(shorcut.querySelectorAll('input')).pop();
+                newIcon.files = null;
+            }
+            var popUp, dragAndDrop;
+            return __generator(this, function (_a) {
+                ;
+                ;
+                ;
+                popUp = document.querySelector('.pop-up.create-shortcut');
+                dragAndDrop = popUp.querySelector('#drag-and-drop');
+                dragAndDrop.addEventListener('click', function (ev) {
+                    function handleToggleHeaderInput() {
+                        var header = ev.target.closest('.drag-and-drop-list-header');
+                        if (!header)
+                            return;
+                        if (ev.target.tagName === 'INPUT')
+                            return;
+                        if (CustomFunctions.isParent(ev.target, header.querySelector('span'))) {
+                            toggleHeaderInput(header);
+                            return;
+                        }
+                        ;
+                    }
+                    ;
+                    function handleToggleShortcutInput() {
+                        var shortcut = ev.target.closest('.drag-and-drop-item');
+                        if (!shortcut)
+                            return;
+                        else if (ev.target.tagName === 'INPUT')
+                            return;
+                        // else if ((ev.target as HTMLElement) === shortcut.querySelectorAll('img')[1]) updateIcon(shortcut);	I don't remember what was the purpose of this
+                        else if (shortcut.querySelector(':scope > input') !== null && shortcut.querySelector('input').value === '')
+                            return;
+                        else if (CustomFunctions.isParent(ev.target, shortcut.querySelector('.edit-shortcut')))
+                            toggleShortcutInput(shortcut);
+                    }
+                    ;
+                    handleToggleHeaderInput();
+                    handleToggleShortcutInput();
+                });
+                return [2 /*return*/];
+            });
+        });
+    };
+    ;
+    CloudStorageData.fillDragAndDrop = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var popUp, dragAndDrop, headerImg, addItem, fileDrop, bttn, content;
+            return __generator(this, function (_a) {
+                popUp = document.querySelector('.pop-up.create-shortcut');
+                dragAndDrop = popUp.querySelector('#drag-and-drop');
+                headerImg = popUp.querySelector('.pop-up-header img');
+                addItem = popUp.querySelector('#add-drag-and-drop');
+                fileDrop = addItem.querySelector('#drop-file');
+                bttn = document.querySelector('.create-shortcut.pop-up-open');
+                content = JSON.parse(JSON.stringify(this.json));
+                bttn.addEventListener('click', function (ev) {
+                    fileDrop.querySelector('img').src = 'https://storage.googleapis.com/statisticshock_github_io_public/icons/static/image.svg';
+                    fileDrop.querySelector('p').textContent = 'Solte uma imagem aqui';
+                    for (var _i = 0, _a = Array.from(addItem.querySelectorAll('input')); _i < _a.length; _i++) {
+                        var input = _a[_i];
+                        input.value = '';
+                    }
+                    ;
+                    dragAndDrop.style.display = 'grid';
+                    dragAndDrop.innerHTML = '';
+                    for (var _b = 0, _c = content.shortcuts; _b < _c.length; _b++) {
+                        var shortcut = _c[_b];
+                        dragAndDrop.insertAdjacentHTML('beforeend', "<div id=\"".concat(shortcut.id, "-list\" class=\"drag-and-drop-list\" draggable=\"false\" x=\"shown\"><h3 class=\"drag-and-drop-list-header\">").concat(CloudStorageData.moveButtonsContainer60).concat(shortcut.title, "<span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span></h3><div style=\"--children-length: ").concat(shortcut.children.length, ";\"></div></div>"));
+                        var dragAndDropList = dragAndDrop.querySelector("#".concat(shortcut.id, "-list > div"));
+                        var dragAndDropListHeader = dragAndDropList.parentElement.querySelector('h3');
+                        for (var _d = 0, _e = shortcut.children; _d < _e.length; _d++) {
+                            var child = _e[_d];
+                            dragAndDropList.innerHTML += "<div id=\"".concat(child.id, "-list\" class=\"drag-and-drop-item\" draggable=\"false\" href=\"").concat(child.href, "\">").concat(CloudStorageData.moveButtonsContainer40).concat(child.alt, "<span class=\"shortcut-icon\"><img src=\"").concat(child.img, "\" draggable=\"false\"><input type=\"file\" accept=\"image/*\"></span><span class=\"edit-shortcut\"><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span></div>");
+                        }
+                        ;
+                    }
+                    ;
+                    headerImg.click();
+                });
+                return [2 /*return*/];
+            });
+        });
+    };
+    ;
     CloudStorageData.addMfcImages = function () {
         return __awaiter(this, void 0, void 0, function () {
             function resizeMasonryItem(item) {
@@ -929,7 +1086,6 @@ var CloudStorageData = /** @class */ (function () {
                 item.style.gridRowEnd = 'span ' + rowSpan;
             }
             function resizeAllMasonryItems() {
-                // Get all item class objects in one list
                 var allItems = document.querySelectorAll('.pinterest-grid-item');
                 for (var i = 0; i < allItems.length; i++) {
                     resizeMasonryItem(allItems[i]);
@@ -937,8 +1093,8 @@ var CloudStorageData = /** @class */ (function () {
                 ;
             }
             function createElement(item) {
-                var div = document.createElement('div'); // The container
-                var img = new Image(); // The image
+                var div = document.createElement('div');
+                var img = new Image();
                 var card;
                 if (item.type !== 'Wished') {
                     card = document.getElementById('owned-ordered');
@@ -950,7 +1106,7 @@ var CloudStorageData = /** @class */ (function () {
                 div.setAttribute('alt', item.title);
                 div.classList.add('pinterest-grid-item');
                 div.id = item.id;
-                img.src = item.img;
+                img.src = item.icon;
                 if (item.category == 'Prepainted') {
                     div.style.color = 'green';
                 }
@@ -969,22 +1125,22 @@ var CloudStorageData = /** @class */ (function () {
                     var popUpImgAnchor = popUp.querySelector('#pop-up-img');
                     var popUpImg = popUpImgAnchor.childNodes[0];
                     var originalName = popUp.querySelector('#mfc-character-original-name');
-                    var originName = popUp.querySelector('#mfc-character-origin');
+                    var originName = popUp.querySelector('#mfc-character-source');
                     var classification = popUp.querySelector('#mfc-classification');
                     var a = popUp.querySelector('.pop-up-header > div > a');
                     var characterLink = '';
                     var originLink = '';
                     var classificationLink = '';
                     if (item.characterJap) {
-                        characterLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.characterJap), "/category/2084023782?sort=end&order=a&store=1");
+                        characterLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.characterJap), "/category/2084023782?sort=end&order=a&store=1&lang=en");
                     }
                     else {
-                        characterLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.character), "/category/2084023782?sort=end&order=a&store=1");
+                        characterLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.character), "/category/2084023782?sort=end&order=a&store=1&lang=en");
                     }
                     ;
-                    if (item.origin !== 'オリジナル' && item.origin !== undefined) {
+                    if (item.sourceJap !== 'オリジナル' && item.sourceJap !== undefined) {
                         originName.parentElement.style.display = '';
-                        originLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.origin), "/category/2084023782?sort=end&order=a&store=1");
+                        originLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.sourceJap), "/category/2084023782?sort=end&order=a&store=1&lang=en");
                     }
                     else {
                         originName.parentElement.style.display = 'none';
@@ -992,7 +1148,7 @@ var CloudStorageData = /** @class */ (function () {
                     ;
                     if (item.classification !== undefined) {
                         classification.parentElement.style.display = '';
-                        classificationLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.classification.replaceAll('#', '')), "/category/2084023782?sort=end&order=a&store=1");
+                        classificationLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.classification.replaceAll('#', '')), "/category/2084023782?sort=end&order=a&store=1&lang=en");
                     }
                     else {
                         classification.parentElement.style.display = 'none';
@@ -1001,21 +1157,22 @@ var CloudStorageData = /** @class */ (function () {
                     title.innerHTML = item.title;
                     popUpImgAnchor.href = item.href;
                     popUpImgAnchor.style.border = "".concat(imgBorder, " solid ").concat(div.style.color);
-                    popUpImg.src = img.src;
+                    popUpImg.src = item.img;
                     var copySvg = "<?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 20010904//EN\" \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\"><svg version=\"1.0\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200.000000 200.000000\" preserveAspectRatio=\"xMidYMid meet\"><g transform=\"translate(0.000000,200.000000) scale(0.100000,-0.100000)\" fill=\"currentColor\" stroke=\"none\"><path d=\"M721 1882 c-71 -36 -76 -51 -79 -268 l-3 -194 60 0 61 0 2 178 3 177 475 0 475 0 0 -475 0 -475 -117 -3 -118 -3 0 -60 0 -61 134 4 c151 3 175 12 209 79 16 31 17 73 15 531 -3 484 -4 497 -24 525 -47 64 -39 63 -574 63 -442 0 -488 -2 -519 -18z\"/><path d=\"M241 1282 c-19 -9 -44 -30 -55 -45 -20 -28 -21 -41 -24 -525 -3 -555 -4 -542 67 -589 l34 -23 496 0 c477 0 497 1 529 20 18 11 41 34 52 52 19 32 20 52 20 529 l0 496 -23 34 c-47 70 -36 69 -577 69 -442 0 -488 -2 -519 -18z m994 -582 l0 -475 -475 0 -475 0 -3 465 c-1 256 0 471 3 478 3 10 104 12 477 10 l473 -3 0 -475z\"/></g></svg>";
                     originalName.innerHTML = item.characterJap !== '' ? "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(copySvg, "&nbsp;").concat(item.characterJap, "</a>") : "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(copySvg, "&nbsp;").concat(item.character, "</div></a>");
-                    originName.innerHTML = "<a target=\"_blank\" href=\"".concat(originLink, "\">").concat(copySvg, "&nbsp;").concat(item.origin, "</a>");
+                    originName.innerHTML = "<a target=\"_blank\" href=\"".concat(originLink, "\">").concat(copySvg, "&nbsp;").concat(item.sourceJap, "</a>");
                     classification.innerHTML = "<a target=\"_blank\" href=\"".concat(classificationLink, "\">").concat(copySvg, "&nbsp;").concat(item.classification, "</a>");
-                    if (item.type == 'Owned') {
-                        a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
+                    switch (item.type) {
+                        case 'Owned':
+                            a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
+                        case 'Ordered':
+                            a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
+                        case 'Wished':
+                            a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
+                        default:
+                            console.error("Weird MFC item type: ".concat(item.type));
                     }
-                    else if (item.type == 'Ordered') {
-                        a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
-                    }
-                    else if (item.type == 'Wished') {
-                        a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
-                    }
-                    //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
+                    //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED
                     var links = [originalName.querySelector('a'), originName.querySelector('a'), classification.querySelector('a')];
                     links.forEach(function (link) {
                         link.addEventListener('click', function (ev) {
@@ -1041,14 +1198,11 @@ var CloudStorageData = /** @class */ (function () {
                 console.info("A string procurada \u00E9 ".concat(searchStr));
                 var figuresToHide = json.filter(function (figure) {
                     var count = 0;
-                    Object.keys(figure).forEach(function (key) {
-                        if (searchStr.test(figure[key])) {
-                            count += 1;
-                        }
-                    });
+                    Object.keys(figure).forEach(function (key) { if (searchStr.test(figure[key]))
+                        count++; });
                     return count === 0;
                 });
-                var divs = document.querySelectorAll('.pinterest-grid-item');
+                var divs = document.querySelectorAll('aside .card .pinterest-grid-item');
                 divs.forEach(function (div) {
                     div.style.display = 'block';
                     if (figuresToHide.filter(function (figure) { return figure.id === div.id; }).length > 0) {
@@ -1059,63 +1213,58 @@ var CloudStorageData = /** @class */ (function () {
             }
             var result, createElementPromise;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        return [4 /*yield*/, fetch("".concat(server, "contents?filename=mfc"))];
-                    case 1: return [4 /*yield*/, (_a.sent()).json()];
-                    case 2:
-                        result = _a.sent();
-                        createElementPromise = new Promise(function (resolve, reject) {
-                            resolve(result.sort(function (a, b) { return Number(a.id) - Number(b.id); }).map(createElement));
-                        });
-                        createElementPromise.then(function () {
-                            setTimeout(resizeAllMasonryItems, 1000);
-                            setTimeout(PageBuilding.resizeAside, 1000);
-                            var input = document.querySelector('#search-bar');
-                            var loader = document.querySelector('.container .flex-container aside > .loader');
-                            var timeout;
-                            input.addEventListener('keyup', function (ev) {
-                                clearTimeout(timeout);
-                                loader.style.display = '';
-                                timeout = setTimeout(function () {
-                                    searchFigure(input, result);
-                                    loader.style.display = 'none';
-                                }, 2000);
-                            });
-                        });
-                        ;
-                        ;
-                        setInterval(function () {
-                            resizeAllMasonryItems();
-                        }, 500);
-                        setTimeout(function () {
-                            var loader = document.querySelector('aside > .card > .loader');
-                            var pinterestGrids = document.querySelectorAll('aside > .card > .pinterest-grid');
+                result = JSON.parse(JSON.stringify(this.json.mfc));
+                createElementPromise = new Promise(function (resolve, reject) {
+                    resolve(result.sort(function (a, b) { return Number(a.id) - Number(b.id); }).map(createElement));
+                });
+                createElementPromise.then(function () {
+                    setTimeout(resizeAllMasonryItems, 1000);
+                    setTimeout(PageBuilding.resizeAside, 1000);
+                    var input = document.querySelector('#search-bar');
+                    var loader = document.querySelector('.container .flex-container aside > .loader');
+                    var timeout;
+                    input.addEventListener('keyup', function (ev) {
+                        clearTimeout(timeout);
+                        loader.style.display = '';
+                        timeout = setTimeout(function () {
+                            searchFigure(input, result);
                             loader.style.display = 'none';
-                            pinterestGrids.forEach(function (grid) {
-                                grid.style.opacity = '1';
-                            });
-                        }, 1000);
-                        setInterval(function () {
-                            var card = document.querySelector('aside .card');
-                            var grids = card.querySelectorAll('.pinterest-grid');
-                            grids.forEach(function (grid) {
-                                grid.style.width = (parseFloat(getComputedStyle(card).width) / 2) + 'px';
-                            });
-                        }, 500);
-                        return [2 /*return*/];
-                }
+                        }, 2000);
+                    });
+                });
+                ;
+                ;
+                setInterval(function () {
+                    resizeAllMasonryItems();
+                }, 500);
+                setTimeout(function () {
+                    var loader = document.querySelector('aside > .card > .loader');
+                    var pinterestGrids = document.querySelectorAll('aside > .card > .pinterest-grid');
+                    loader.style.display = 'none';
+                    pinterestGrids.forEach(function (grid) {
+                        grid.style.opacity = '1';
+                    });
+                }, 1000);
+                setInterval(function () {
+                    var card = document.querySelector('aside .card');
+                    var grids = card.querySelectorAll('.pinterest-grid');
+                    grids.forEach(function (grid) {
+                        grid.style.width = (parseFloat(getComputedStyle(card).width) / 2) + 'px';
+                    });
+                }, 500);
+                return [2 /*return*/];
             });
         });
     };
     ;
+    CloudStorageData.moveButtonsContainer60 = '<div class="move-buttons-container" style="height: 60px;"><button type="button" class="move-up"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(-90deg);"></button><button type="button" class="move-down"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(90deg);"></button></div>';
+    CloudStorageData.moveButtonsContainer40 = '<div class="move-buttons-container" style="height: 40px;"><button type="button" class="move-up"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(-90deg);"></button><button type="button" class="move-down"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(90deg);"></button></div>';
     return CloudStorageData;
 }());
 ;
 var ExternalData = /** @class */ (function () {
     function ExternalData() {
     }
-    // To add retroachievements awards
     ExternalData.addRetroAchievementsAwards = function () {
         return __awaiter(this, void 0, void 0, function () {
             function createRetroAchievementsAwardCard(award) {
@@ -1151,7 +1300,6 @@ var ExternalData = /** @class */ (function () {
                                 for (var _i = 0, _a = currentAwardData.allData; _i < _a.length; _i++) {
                                     var data = _a[_i];
                                     popUp.querySelector('.data-container').innerHTML += "<div style=\"border-top: 1px solid var(--contrast-color-3);\"><p>Pr\u00EAmio&nbsp;<span>".concat(data.awardType, "</span></p><p>Data&nbsp;<span>").concat(Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(data.awardedAt)), "</span></p></div>");
-                                    // a =
                                 }
                             });
                         });
@@ -1161,7 +1309,6 @@ var ExternalData = /** @class */ (function () {
         });
     };
     ;
-    // To add a MyAnimeList card
     ExternalData.scrapeMyAnimeList = function () {
         return __awaiter(this, void 0, void 0, function () {
             function scrapeDataFromMAL(offset) {
@@ -1267,13 +1414,13 @@ var ExternalData = /** @class */ (function () {
                     var center = rect.left + rect.width / 2;
                     var anchors = container.querySelectorAll('a');
                     var closestAnchor = null;
-                    var closestDistance = Infinity; //First distance as a number
+                    var closestDistance = Infinity;
                     anchors.forEach(function (anchor) {
                         var anchorRect = anchor.getBoundingClientRect();
                         var anchorCenter = anchorRect.left + anchorRect.width / 2;
                         var distance = Math.abs(center - anchorCenter);
                         if (distance < closestDistance) {
-                            closestDistance = distance; //Assigns the lowest possible distance
+                            closestDistance = distance;
                             closestAnchor = anchor;
                         }
                     });
@@ -1298,10 +1445,10 @@ var ExternalData = /** @class */ (function () {
                                 var previousOffset = frstChild.offsetLeft;
                                 createCards(entries, card, true);
                                 var newOffset = frstChild.offsetLeft;
-                                card.style.scrollBehavior = 'auto'; //Sets to 'auto' momentanely
+                                card.style.scrollBehavior = 'auto';
                                 card.scrollLeft += (newOffset - previousOffset);
                                 card.scrollBy({ left: -width / anchors.length, behavior: 'smooth' });
-                                card.style.scrollBehavior = 'smooth'; //Reverts it to 'smooth'
+                                card.style.scrollBehavior = 'smooth';
                                 var allAnchors = card.querySelectorAll('a');
                                 var anchorsToRemove = Array.from(allAnchors).slice(allAnchors.length - 10, allAnchors.length);
                                 anchorsToRemove.forEach(function (anchorToRemove) {
@@ -1322,10 +1469,10 @@ var ExternalData = /** @class */ (function () {
                                     anchorToRemove.remove();
                                 });
                                 var newOffset = frstChild.offsetLeft;
-                                card.style.scrollBehavior = 'auto'; //Sets to 'auto' momentanely
+                                card.style.scrollBehavior = 'auto';
                                 card.scrollLeft += (newOffset - previousOffset);
                                 card.scrollBy({ left: width / anchors.length, behavior: 'smooth' });
-                                card.style.scrollBehavior = 'smooth'; //Reverts it to 'smooth'
+                                card.style.scrollBehavior = 'smooth';
                             }
                             ;
                         }
@@ -1412,7 +1559,6 @@ var ExternalData = /** @class */ (function () {
 var PageBehaviour = /** @class */ (function () {
     function PageBehaviour() {
     }
-    // Stop image dragging
     PageBehaviour.stopImageDrag = function () {
         var images = document.getElementsByTagName('img');
         Array.from(images).forEach(function (img) {
@@ -1420,7 +1566,6 @@ var PageBehaviour = /** @class */ (function () {
         });
     };
     ;
-    // Open in new tab
     PageBehaviour.openLinksInNewTab = function () {
         var shortcuts = document.querySelectorAll('.shortcut-item');
         for (var _i = 0, _a = Array.from(shortcuts); _i < _a.length; _i++) {
@@ -1441,8 +1586,7 @@ var PageBehaviour = /** @class */ (function () {
         });
     };
     ;
-    //To make sheets open in edge
-    PageBehaviour.redirectToEdge = function () {
+    PageBehaviour.redirectLinksToEdge = function () {
         if (mobile)
             return;
         var links = document.querySelectorAll('a');
@@ -1465,14 +1609,20 @@ function onLoadFunctions(ev) {
             switch (_a.label) {
                 case 0:
                     PageBuilding.createLoaders(10);
-                    return [4 /*yield*/, Promise.all([
-                            CloudStorageData.loadContentFromJson(), // From my own Google Cloud Storage
-                            CloudStorageData.addMfcImages(), // From my own Google Cloud Storage
-                            CloudStorageData.dragAndDropHandler(), // From my own Google Cloud Storage
-                            ExternalData.scrapeMyAnimeList(), // From MAL API
-                            ExternalData.addRetroAchievementsAwards() // From RetroAchievements API
-                        ])];
+                    return [4 /*yield*/, CloudStorageData.load()];
                 case 1:
+                    _a.sent();
+                    return [4 /*yield*/, Promise.all([
+                            CloudStorageData.loadContentFromJson(),
+                            CloudStorageData.createNewShortcuts(),
+                            CloudStorageData.dragAndDropHandler(),
+                            CloudStorageData.updateShortCut(),
+                            CloudStorageData.fillDragAndDrop(),
+                            CloudStorageData.addMfcImages(),
+                            ExternalData.scrapeMyAnimeList(),
+                            ExternalData.addRetroAchievementsAwards()
+                        ])];
+                case 2:
                     _a.sent();
                     PageBuilding.figuresSitDown();
                     PageBuilding.adjustGamecard();
@@ -1482,13 +1632,13 @@ function onLoadFunctions(ev) {
                     UserInterface.makeSwitchesSlide();
                     UserInterface.nightModeToggle();
                     UserInterface.dragPopUps();
-                    UserInterface.setPopUpDefaults();
+                    UserInterface.setPopUpDefaultValues();
                     UserInterface.resetPopUpsOnOpen();
                     UserInterface.showPopUps();
                     ExternalSearch.redditSearchTrigger();
                     ExternalSearch.wikipediaSearchTrigger();
                     PageBehaviour.openLinksInNewTab();
-                    PageBehaviour.redirectToEdge();
+                    PageBehaviour.redirectLinksToEdge();
                     PageBehaviour.stopImageDrag();
                     return [2 /*return*/];
             }
@@ -1508,5 +1658,6 @@ function onResizeFunctions(ev) {
 window.addEventListener('scroll', onScrollFunctions, true);
 function onScrollFunctions(ev) {
     UserInterface.resizeHeader();
+    UserInterface.makeButtonFromAsideFollowHeader();
 }
 ;

@@ -8,10 +8,11 @@
     ],
     "noEmitOnError": true,
     "skipLibCheck": true,
+	"noImplicitAny": false,
   },
   "include": [
     ".",
-	"../types/types",
+	"../utils/types",
     "../src/functions"
   ]
 }

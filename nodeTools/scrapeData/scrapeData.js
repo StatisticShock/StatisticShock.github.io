@@ -17,7 +17,6 @@ export class GoogleClass {
 }
 ;
 const streamPipeline = util.promisify(pipeline);
-// To log to a .log file
 let logIsRunByBot = false;
 function log(message, isRunByBot) {
     const isBot = isRunByBot ?? logIsRunByBot;
@@ -36,9 +35,24 @@ function log(message, isRunByBot) {
     logFile.write(`[${Intl.DateTimeFormat('pt-BR', { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(new Date())}] ${message}\n`);
 }
 ;
+function leftPad(string, totalCharacters) {
+    if (string.length >= totalCharacters)
+        return string;
+    else {
+        let spaces = '';
+        for (let i = 1; i <= (totalCharacters - string.length); i++) {
+            spaces += ' ';
+        }
+        ;
+        return spaces + string;
+    }
+    ;
+}
+;
 const execute = util.promisify(exec);
+const unlink = util.promisify(fs.unlink);
 const mfcLink = 'https://pt.myfigurecollection.net';
-export async function sleep(ms) {
+async function sleep(ms) {
     return new Promise(res => setTimeout(res, ms));
 }
 ;
@@ -47,15 +61,28 @@ export const links = [
     ['Ordered', 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=0&categoryId=-1&output=2&sort=category&order=asc&_tb=user'],
     ['Wished', 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=0&categoryId=-1&output=2&sort=category&order=asc&_tb=user'],
 ];
-async function downloadImage(url, path) {
-    const response = await fetch(url);
-    if (!response.ok)
-        log(`Failed to download: ${response.statusText}`);
-    await streamPipeline(response.body, fs.createWriteStream(path));
-}
-;
 async function scrapeImages() {
     let imgLinks = [];
+    const mainImageFolder = 'mfc/main_images/';
+    const iconImageFolder = 'mfc/icons/';
+    async function downloadImageFromUrl(url, path) {
+        const response = await fetch(url);
+        if (!response.ok)
+            log(`Failed to download: ${response.statusText}`);
+        await streamPipeline(response.body, fs.createWriteStream(path));
+    }
+    ;
+    async function convertToWebp(imgPath) {
+        try {
+            await execute(`ffmpeg -i "${imgPath}" -y -lossless 1 "${imgPath.replace('.jpg', '.webp')}"`);
+        }
+        catch (e) {
+            log(e.code);
+            log(e.message);
+        }
+        ;
+    }
+    ;
     async function downloadNewImages() {
         for (const [type, link] of links) {
             const response = await fetch(link);
@@ -63,61 +90,76 @@ async function scrapeImages() {
             const $ = cheerio.load(html);
             $('.item-icon a img').each((i, el) => {
                 const imgSrc = $(el).attr('src');
-                if (imgSrc) {
-                    imgLinks.push(imgSrc.replace('/0/', '/2/'));
-                }
+                if (imgSrc)
+                    imgLinks.push([imgSrc, imgSrc.split('/').pop().split('-')[0] + '.jpg']);
             });
         }
-        for (const imgLink of imgLinks) {
-            let response = await fetch(imgLink);
-            let finalLink;
-            if (response.status === 404) {
-                finalLink = imgLink.replace('/2/', '/1/');
+        ;
+        const [existingImages] = await GoogleClass.publicBucket.getFiles({ prefix: 'mfc' });
+        const existingIconImages = [];
+        const existingMainImages = [];
+        for (const file of existingImages) {
+            if (file.name.includes(mainImageFolder) && file.name.includes('.webp'))
+                existingMainImages.push(file.name.replace(mainImageFolder, ''));
+            else if (file.name.includes(iconImageFolder) && file.name.includes('.webp'))
+                existingIconImages.push(file.name.replace(iconImageFolder, ''));
+        }
+        ;
+        for (const [imgLink, downloadedFileName] of imgLinks) {
+            const folderPath = process.env.TEMP_PATH;
+            const convertedFileName = downloadedFileName.replace('jpg', 'webp');
+            const downloadedFilePath = folderPath + downloadedFileName;
+            const convertedFilePath = folderPath + convertedFileName;
+            if (existingIconImages.indexOf(convertedFileName) !== -1) {
+                console.log(`${convertedFileName} already exists in the folder ${iconImageFolder}.`);
             }
             else {
-                finalLink = imgLink;
+                console.log(`Trying to download file "${downloadedFileName}"...`);
+                await downloadImageFromUrl(imgLink, downloadedFilePath).then(async () => {
+                    console.log(`Converting "${downloadedFileName}" to WEBP...`);
+                    await convertToWebp(downloadedFilePath).then(async () => {
+                        console.log(`Trying to upload file "${convertedFileName}"`);
+                        await GoogleClass.publicBucket.upload(convertedFilePath, { destination: iconImageFolder + convertedFileName }).then(() => log(`Successfully uploaded ${'"' + leftPad(convertedFileName, 9) + '"'} to bucket "${GoogleClass.publicBucket.name}" in the folder "${iconImageFolder}`));
+                        await Promise.all([unlink(convertedFilePath), unlink(downloadedFilePath)]);
+                    });
+                }).catch((err) => log(`FAILED: ${err.message}`));
             }
             ;
-            const folderPath = process.env.TEMP_PATH;
-            let path = folderPath + finalLink.split(/\/[1-2]\//)[1].split('-')[0] + '.jpg';
-            let finalPath = path.replace('jpg', 'webp');
-            const [exists] = await GoogleClass.publicBucket.file(finalPath.replace(folderPath, 'mfc/')).exists();
-            if (exists) {
-                console.log(finalPath.replace(folderPath, 'mfc/') + ' already uploaded.');
-                continue;
+            if (existingMainImages.indexOf(convertedFileName) !== -1) {
+                console.log(`${convertedFileName} already exists in the folder ${mainImageFolder}.`);
             }
             else {
-                await downloadImage(finalLink, path);
-                await convertToWebp(path);
-                GoogleClass.publicBucket.upload(finalPath, { destination: finalPath.replace(folderPath, 'mfc/') });
-                log(finalPath.replace(folderPath, '') + ' uploaded to bucket.');
-                await sleep(1000);
-                fs.unlink(path, (err) => {
-                    if (err) {
-                        log(err.message);
-                    }
-                    ;
-                });
-                fs.unlink(finalPath, (err) => {
-                    if (err) {
-                        log(err.message);
-                    }
-                    ;
-                });
+                let routeOfImage = '/2/';
+                let routeOfIcon = '/0/';
+                const response = await fetch(imgLink.replace(routeOfIcon, routeOfImage));
+                routeOfImage = response.status === 404 ? '/1/' : '/2/';
+                console.log(`Trying to download file "${downloadedFilePath}"...`);
+                await downloadImageFromUrl(imgLink.replace(routeOfIcon, routeOfImage), downloadedFilePath).then(async () => {
+                    console.log(`Converting "${downloadedFileName}" to WEBP...`);
+                    await convertToWebp(downloadedFilePath).then(async () => {
+                        console.log(`Trying to upload file "${convertedFileName}"`);
+                        await GoogleClass.publicBucket.upload(convertedFilePath, { destination: mainImageFolder + convertedFileName }).then(() => log(`Successfully uploaded ${'"' + leftPad(convertedFileName, 9) + '"'} to bucket "${GoogleClass.publicBucket.name}" in the folder "${mainImageFolder}".`));
+                        await Promise.all([unlink(convertedFilePath), unlink(downloadedFilePath)]);
+                    });
+                }).catch((err) => log(`FAILED: ${err.message}`));
             }
             ;
         }
         ;
     }
+    ;
     async function deleteOldImages() {
-        let imageFilesToKeep = imgLinks.map((link) => 'mfc/' + link.replace(/https\:\/\/static\.myfigurecollection\.net\/upload\/items\/[1-2]\//, '').split('-')[0] + '.webp');
-        const [imageFiles] = await GoogleClass.publicBucket.getFiles();
-        const imageFilesToDelete = imageFiles.filter((x) => !imageFilesToKeep.includes(x.name));
+        const imageFilesToKeep = imgLinks.map((linksArray) => linksArray[1].replace('.jpg', '.webp'));
+        const [imageFiles] = await GoogleClass.publicBucket.getFiles({ prefix: 'mfc' });
+        const imageFilesToDelete = imageFiles.filter((x) => {
+            const shouldKeep = imageFilesToKeep.includes((x.name.split('/').pop()));
+            const isFolder = x.name.substring(x.name.length - 1) === '/';
+            return !shouldKeep && !isFolder;
+        });
+        // fs.writeFileSync('values.txt', `imageFilesToKeep: ${JSON.stringify(imageFilesToKeep, null, 4)}\n\n\nimageFilesToDelete: ${JSON.stringify(imageFilesToDelete.map((file) => file.name), null, 4)}`);
         for (const fileToDelete of imageFilesToDelete) {
-            if (!fileToDelete.name.includes('mfc/'))
-                continue; //Skip every link that is not from "mfc" folder
-            log(`Deleting ${fileToDelete.name}...`);
-            fileToDelete.delete();
+            log(`Deleting file ${fileToDelete.name}...`);
+            await fileToDelete.delete();
         }
         ;
     }
@@ -126,19 +168,8 @@ async function scrapeImages() {
     await deleteOldImages();
 }
 ;
-async function convertToWebp(imgPath) {
-    try {
-        await execute(`ffmpeg -i "${imgPath}" -y -lossless 1 "${imgPath.replace('jpg', 'webp')}"`);
-    }
-    catch (e) {
-        log(e.code);
-        log(e.message);
-    }
-    ;
-}
-;
 export class ScrapeFunctions {
-    async readMFCItem(elementId, typeOfFigure) {
+    static async readMFCItem(elementId, typeOfFigure) {
         let response = await fetch(`${mfcLink}/item/${elementId}`);
         if (!response.ok) {
             await sleep(10000);
@@ -189,10 +220,12 @@ export class ScrapeFunctions {
         const itemData = {
             id: id,
             href: href,
+            icon: '',
             img: img,
             character: character,
             characterJap: characterJap,
-            origin: origin,
+            sourceJap: origin,
+            source: '',
             classification: classification,
             category: category,
             type: type,
@@ -200,16 +233,12 @@ export class ScrapeFunctions {
         };
         return itemData;
     }
-    async fetchJson() {
-        let json = JSON.parse(await fetch('https://statisticshock-github-io.onrender.com/contents?filename=mfc').then(res => res.text()));
-        return json;
-    }
+    ;
 }
 ;
 async function fetchData(addingData) {
-    const scrapeFunctions = new ScrapeFunctions();
     console.log('Starting to fetch items...');
-    let json = await scrapeFunctions.fetchJson();
+    let json = JSON.parse((await GoogleClass.mfcJsonGoogle.download()).toString()).figures;
     if (json instanceof Array) {
         log('JSON file sucessfully loaded');
     }
@@ -225,7 +254,7 @@ async function fetchData(addingData) {
             for (const item of itemsToUpdate) {
                 const index = json.indexOf(item);
                 let type = undefined;
-                for (const [typeOfFigure, link] of links) { //To check item type
+                for (const [typeOfFigure, link] of links) {
                     const response = await fetch(link);
                     const html = await response.text();
                     const $ = cheerio.load(html);
@@ -242,7 +271,7 @@ async function fetchData(addingData) {
                     await sleep(900);
                 }
                 ;
-                const itemData = await scrapeFunctions.readMFCItem(item.id, type);
+                const itemData = await ScrapeFunctions.readMFCItem(item.id, type);
                 if (item !== itemData) {
                     changes = true;
                     json[index] = itemData;
@@ -261,7 +290,10 @@ async function fetchData(addingData) {
     }
     else {
         for (const [typeOfFigure, link] of links) {
+            const dateFormat = Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            console.log(`\n[${dateFormat.format(new Date())}] Trying to access the url ${link}...`);
             const response = await fetch(link);
+            console.log(`[${dateFormat.format(new Date())}] Successfully loaded.`);
             const html = await response.text();
             const $ = cheerio.load(html);
             const itemIcons = $('.item-icon');
@@ -283,7 +315,8 @@ async function fetchData(addingData) {
                 }
                 else {
                     changes = true;
-                    const itemData = await scrapeFunctions.readMFCItem(elementId, typeOfFigure);
+                    console.log(`[${Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date())}] Trying to access figure from ID ${elementId}`);
+                    const itemData = await ScrapeFunctions.readMFCItem(elementId, typeOfFigure);
                     json.push(itemData);
                 }
                 ;
@@ -299,7 +332,7 @@ async function fetchData(addingData) {
             changes = true;
         }
         if (changes) {
-            GoogleClass.mfcJsonGoogle.save(JSON.stringify(outputJson, null, 2));
+            GoogleClass.mfcJsonGoogle.save(JSON.stringify({ figures: outputJson }, null, 2));
             log('Changes in the file "mfc.json" were made.');
         }
         else {
@@ -312,10 +345,7 @@ async function fetchData(addingData) {
 export async function main(addingData, isRunByBot) {
     logIsRunByBot = isRunByBot ?? false;
     if (isRunByBot)
-        log('ESTA EXECUÇÃO FOI ATIVADA POR CLEYTON PELO SEU DISPOSITIVO ANDROID.\n\n');
-    setInterval(() => {
-        console.log('Memory usage:', process.memoryUsage().heapUsed / 1024 / 1024, 'MB');
-    }, 5000);
+        log('ESTA EXECUÇÃO FOI ATIVADA POR CLEYTON PELO TELEGRAM.\n\n');
     try {
         await fetchData(addingData);
         await scrapeImages();
@@ -325,7 +355,7 @@ export async function main(addingData, isRunByBot) {
     }
     finally {
         console.log('Closing conections...');
-        setTimeout(() => process.exit(0), 1500); // Closes everything
+        setTimeout(() => process.exit(0), 1500);
     }
     ;
 }
@@ -333,3 +363,4 @@ export async function main(addingData, isRunByBot) {
 export async function fillData() {
     await main(true);
 }
+;

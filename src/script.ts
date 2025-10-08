@@ -1,17 +1,14 @@
-// Import custom functions from "./functions.Js"
-import CustomFunctions from "./functions.js";
-import * as MyTypes from "../types/types.js";
+import CustomFunctions from "../util/functions.js";
+import * as MyTypes from "../util/types.js";
 
-//A const that stores if the browser is mobile
 const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
 const mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 const portrait: boolean = (window.innerWidth < window.innerHeight);
 
-//The server
 const server: string = window.location.href === 'http://127.0.0.1:5500/' ? 'http://localhost:3000/' : 'https://statisticshock-github-io.onrender.com/';
 console.log(`Running server at ${server}`);
 
-class PageBuilding {	//CSS dynamic settings
+class PageBuilding {
 	static createLoaders(counter: number): void {	// NO NEED OF RESPONSIVENESS
 		let loaders: NodeListOf<HTMLDivElement> = document.querySelectorAll('.loader');
 
@@ -30,15 +27,21 @@ class PageBuilding {	//CSS dynamic settings
 	static resizeAside(counter?: number): void {	// RESPONSIVE
 		const aside: HTMLElement = document.querySelector('aside')!;
 		const shortcuts: HTMLElement = document.querySelector('#shortcuts')!;
+		const card: HTMLDivElement = aside.querySelector('.card')!;
 
 		aside.style.height = 'fit-content';
 		shortcuts.style.height = 'fit-content';
+		card.style.height = 'fit-content';
 
 		if (parseFloat(getComputedStyle(aside).height) < parseFloat(getComputedStyle(shortcuts).height)) {
 			aside.style.height = shortcuts.offsetHeight + 'px';
 		} else {
 			shortcuts.style.height = aside.offsetHeight + 'px';
 		};
+
+		aside.style.height = aside.offsetHeight + 'px';
+		shortcuts.style.height = shortcuts.offsetHeight + 'px';
+		card.style.height = card.offsetHeight + 'px';
 
 		if (counter == 0) {
 			setTimeout(() => {
@@ -124,12 +127,12 @@ class PageBuilding {	//CSS dynamic settings
 				let display: string = object.popUpContainer.style.display;
 
 				if ((display == '') || (display == 'none')) {
-					object.popUpContainer.style.display = 'block';   //Makes the popUp appear
+					object.popUpContainer.style.display = 'block';
 				} else if (!(object.popUpContainer.classList.contains('create-shortcut') && object.button.classList.contains('create-shortcut') && !(object.button.id.replace('-button', '-item') === object.popUpContainer.getAttribute('x')))) {
-					object.popUpContainer.style.display = 'none';    //Makes the popUp disappear
+					object.popUpContainer.style.display = 'none';
 				};
 
-				popUpClass.forEach((element) => {   //Makes every other popUp disappear once the shorcut button is clicked
+				popUpClass.forEach((element) => {
 					if (element != object.popUpContainer) {
 						element.style.display = 'none'
 					};
@@ -139,7 +142,7 @@ class PageBuilding {	//CSS dynamic settings
 					floatingLabelElement.forEach((label) => {
 						const parent = label.parentElement as HTMLElement;
 						const siblings = Array.from(parent.children) as Array<HTMLElement>;
-						const input = siblings[siblings.indexOf(label) - 1] as HTMLInputElement; //Gets the imediate predecessor sibling
+						const input = siblings[siblings.indexOf(label) - 1] as HTMLInputElement;
 						const rect = object.popUpContainer.getBoundingClientRect();
 						const inputRect = input.getBoundingClientRect();
 
@@ -153,7 +156,7 @@ class PageBuilding {	//CSS dynamic settings
 
 			object.popUpContainer.addEventListener('keydown', function (e) {
 				if (e.key === 'Enter') {
-					e.preventDefault();     //Makes the form not submit
+					e.preventDefault();
 					let okButton = object.popUpContainer.querySelector('.ok-button') as HTMLButtonElement;
 					okButton.click();
 				}
@@ -162,8 +165,7 @@ class PageBuilding {	//CSS dynamic settings
 	};
 };
 
-class UserInterface {	//Make user interaction with the page possible
-	//Expands the aside on click
+class UserInterface {
 	static expandAside(): void { // RESPONSIVE 
 		const aside: HTMLElement = document.querySelector('aside')!;
 		const div: HTMLDivElement = aside.querySelector('.button-bar')!;
@@ -178,11 +180,13 @@ class UserInterface {	//Make user interaction with the page possible
 				if (aside.getBoundingClientRect().width < window.innerWidth * 0.3) {
 					span.style.transform = `rotate(180deg) translate(0%,-10%)`;
 					flexContainer.style.gridTemplateColumns = '54vw 2vw 1fr';
-					input.style.width = `calc((46vw - 2vw - 10px) * 0.9)`; input.style.left = `calc(((44vw - 10px) * 0.1) / 2)`;
+					input.style.width = `calc((46vw - 2vw - 10px) * 0.9)`;
+					input.style.left = `calc(((44vw - 10px) * 0.1) / 2)`;
 				} else {
 					span.style.transform = `rotate(0deg) translate(0%,-10%)`;
 					flexContainer.style.gridTemplateColumns = '76vw 2vw 1fr';
-					input.style.width = `calc((24vw - 2vw - 10px) * 0.9)`; input.style.left = `calc(((22vw - 10px) * 0.1) / 2)`;
+					input.style.width = `calc((24vw - 2vw - 10px) * 0.9)`;
+					input.style.left = `calc(((22vw - 10px) * 0.1) / 2)`;
 				};
 			} else {
 				if (!aside.classList.contains('hidden')) {
@@ -204,8 +208,7 @@ class UserInterface {	//Make user interaction with the page possible
 		};
 	};
 
-	//To make the aside button follow the cursor
-	static makeAsideButtonFollow(): void { //NOT RESPONSIVE YET
+	static makeAsideButtonFollow(): void { // NOT RESPONSIVE YET
 		if (mobile) return;
 
 		const aside: HTMLElement = document.querySelector('aside')!;
@@ -222,19 +225,15 @@ class UserInterface {	//Make user interaction with the page possible
 		});
 	};
 
-	//To toggle night mode
-	static nightModeToggle(): void { //RESPONSIVE
+	static nightModeToggle(): void { // RESPONSIVE
 		const label = document.querySelector('#night-mode-toggle') as HTMLLabelElement;
 
-		// Create input if it doesn't exist
 		let input = label.querySelector('input') as HTMLInputElement;
 
-		// Set initial state based on current theme
 		const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 		document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
 		input.checked = isDark;
 
-		// Listen for toggle
 		input.addEventListener('change', (ev) => {
 			if (input.checked) {
 				document.documentElement.setAttribute('data-theme', 'dark');
@@ -244,7 +243,6 @@ class UserInterface {	//Make user interaction with the page possible
 		});
 	};
 
-	//Resizes header on scroll
 	static resizeHeader(): void { // NOT RESPONSIVE YET
 		const header: HTMLElement = document.querySelector('header')!;
 		const nav: HTMLElement = document.querySelector('nav')!;
@@ -259,7 +257,6 @@ class UserInterface {	//Make user interaction with the page possible
 		nav.style.top = newHeight + 'px';
 	};
 
-	//To make all switches work
 	static makeSwitchesSlide(): void { // NO NEED OF RESPONSIVENES
 		const switches: NodeListOf<HTMLLabelElement> = document.querySelectorAll('.switch');
 		switches.forEach((switchElement) => {
@@ -287,8 +284,7 @@ class UserInterface {	//Make user interaction with the page possible
 		})
 	};
 
-	// To make every pop-up draggable
-	static dragPopUps(): void {
+	static dragPopUps(): void {	// RESPONSIVE
 		const popUps: NodeListOf<HTMLElement> = document.querySelectorAll('.pop-up');
 		let isDragging: boolean = false;
 		let offsetX: number, offsetY: number;
@@ -343,20 +339,18 @@ class UserInterface {	//Make user interaction with the page possible
 		}
 	};
 
-	static resetPopUpsOnOpen (): void {
-		//To make the Close Button work
+	static resetPopUpsOnOpen (): void {	// NO NEED OF RESPONSIVENESS
 		const buttons = document.querySelectorAll('.close-button') as NodeListOf<HTMLButtonElement>;
 		buttons.forEach((button) => {
 			const parent = button.parentElement!.parentElement as HTMLElement;
 			button.onclick = () => {
 				parent.style.display = 'none';
-				this.setPopUpDefaults();
+				this.setPopUpDefaultValues();
 			};
 		});
 	};
 
-	// To make the search pop-ups defaults load within the window
-	static setPopUpDefaults(): void {
+	static setPopUpDefaultValues (): void {	// NO NEED OF RESPONSIVENESS
 		let keywordsReddit = document.getElementById('keywords-reddit') as HTMLInputElement;
 		let subreddit = document.getElementById('subreddit') as HTMLInputElement;
 		let toDate = document.getElementById('to-date') as HTMLInputElement;
@@ -372,7 +366,6 @@ class UserInterface {	//Make user interaction with the page possible
 		keywordsWikipedia.value = '';
 	};
 
-	//To make the popups appear on click
 	static showPopUps(): void { //NO NEED OF RESPONSIVENESS
 		type popUpInterface = { button: HTMLAnchorElement | HTMLButtonElement, popUpContainer: HTMLFormElement }
 		const popUpShortcuts: Array<popUpInterface> = [];
@@ -395,12 +388,12 @@ class UserInterface {	//Make user interaction with the page possible
 				let display: string = object.popUpContainer.style.display;
 
 				if ((display == '') || (display == 'none')) {
-					object.popUpContainer.style.display = 'block';   //Makes the popUp appear
+					object.popUpContainer.style.display = 'block';
 				} else if (!(object.popUpContainer.classList.contains('create-shortcut') && object.button.classList.contains('create-shortcut') && !(object.button.id.replace('-button', '-item') === object.popUpContainer.getAttribute('x')))) {
 					object.popUpContainer.style.display = 'none';    //Makes the popUp disappear
 				};
 
-				popUpClass.forEach((element) => {   //Makes every other popUp disappear once the shorcut button is clicked
+				popUpClass.forEach((element) => {   // Makes every other popUp disappear once the shorcut button is clicked
 					if (element != object.popUpContainer) {
 						element.style.display = 'none'
 					};
@@ -410,12 +403,13 @@ class UserInterface {	//Make user interaction with the page possible
 					floatingLabelElement.forEach((label) => {
 						const parent = label.parentElement as HTMLElement;
 						const siblings = Array.from(parent.children) as Array<HTMLElement>;
-						const input = siblings[siblings.indexOf(label) - 1] as HTMLInputElement; //Gets the imediate predecessor sibling
+						const input = siblings[siblings.indexOf(label) - 1] as HTMLInputElement;
 						const rect = object.popUpContainer.getBoundingClientRect();
 						const inputRect = input.getBoundingClientRect();
 
 						const left = inputRect.left - rect.left;
-						label.style.left = Math.max(left, 5) + 'px';
+
+						label.style.left = '5px';
 
 						input.placeholder ? input.placeholder = input.placeholder : input.placeholder = ' ';
 					});
@@ -424,28 +418,36 @@ class UserInterface {	//Make user interaction with the page possible
 
 			object.popUpContainer.addEventListener('keydown', function (e) {
 				if (e.key === 'Enter') {
-					e.preventDefault();     //Makes the form not submit
+					e.preventDefault();
 					let okButton = object.popUpContainer.querySelector('.ok-button') as HTMLButtonElement;
 					okButton.click();
 				}
 			});
 		});
 
-		//To make the Close Button work
 		let buttons = document.querySelectorAll('.close-button') as NodeListOf<HTMLButtonElement>;
 		buttons.forEach((button) => {
 			let parent = button.parentElement!.parentElement as HTMLElement;
 			button.onclick = () => {
 				parent.style.display = 'none';
-				this.setPopUpDefaults();
+				this.setPopUpDefaultValues();
 			};
 		})
 	};
+
+	static makeButtonFromAsideFollowHeader (): void { // RESPONSIVE
+		if (!portrait) return;
+		
+		const height: number = document.querySelector('header')!.offsetHeight;
+		const button: HTMLElement = document.querySelector('aside .button-bar')!;
+		const bubble: HTMLButtonElement = button.querySelector('#expand-button')!;
+
+		
+	};
 };
 
-class ExternalSearch {	//Make interaction with search possibilities possible
-	// To make the reddit search work
-	static redditSearchTrigger(): void { //NO NEED OF RESPONSIVENESS
+class ExternalSearch {
+	static redditSearchTrigger(): void { // NO NEED OF RESPONSIVENESS
 		let okButtonReddit: HTMLButtonElement = document.querySelector('.pop-up.reddit-google .ok-button')!;
 		okButtonReddit.onclick = redditSearch;
 
@@ -491,8 +493,7 @@ class ExternalSearch {	//Make interaction with search possibilities possible
 		}
 	};
 
-	//To make the wikipedia search work
-	static wikipediaSearchTrigger(): void { //NO NEED OF RESPONSIVENESS
+	static wikipediaSearchTrigger(): void { // NO NEED OF RESPONSIVENESS
 		let okButtonWikipedia: HTMLButtonElement = document.querySelector('.pop-up.wikipedia .ok-button')!;
 		okButtonWikipedia.onclick = wikipediaSearch;
 
@@ -510,16 +511,22 @@ class ExternalSearch {	//Make interaction with search possibilities possible
 	};
 };
 
-class CloudStorageData {	//Interacts with Google Cloud Storage
-	//To make all shortcuts available
-	static async loadContentFromJson(): Promise<void> {
-		const json: MyTypes.PageContent = JSON.parse(await (await fetch(`${server}contents?filename=contents`)).text());
+class CloudStorageData {
+	static json: MyTypes.PageContent;
+
+	static async load (): Promise<void> {
+		const response = await fetch(`${server}contents/`);
+		this.json = await response.json();
+	}
+
+	static async loadContentFromJson (): Promise<void> {
+		const content: MyTypes.PageContent = JSON.parse(JSON.stringify(this.json));
 
 		async function loadShortcuts(): Promise<void> {
 			const targetedNode: Element = document.querySelectorAll('#shortcuts h2')[1]!
 			const shortcutsNode: Element = document.querySelector('#shortcuts')!;
 
-			for (const section of json.shortcuts.sort((a, b) => a.index - b.index)) { //Creates the section
+			for (const section of content.shortcuts.sort((a, b) => a.index - b.index)) {
 				const container: HTMLElement = document.createElement('section');
 				container.id = section.id;
 				const p: HTMLParagraphElement = document.createElement('p');
@@ -527,7 +534,8 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 				const div: HTMLDivElement = document.createElement('div');
 				div.classList.add('grid-container');
 
-				for (const child of section.children.sort((a, b) => a.index - b.index)) { //Creates each shortcut
+				for (const child of section.children.sort((a, b) => a.index - b.index)) {
+					if (mobile && !child.showOnMobile) continue;
 					const a: HTMLAnchorElement = document.createElement('a');
 					a.classList.add('shortcut-item');
 					a.href = child.href;
@@ -541,28 +549,30 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 					div.appendChild(a);
 				};
 
-				container.appendChild(p);
-				container.appendChild(div);
-				shortcutsNode.insertBefore(container, targetedNode); //Inserts the created element before the gaming cards
-			}
+				if (div.childElementCount > 0) {
+					container.appendChild(p);
+					container.appendChild(div);
+					shortcutsNode.insertBefore(container, targetedNode);
+				};
+			};
 		};
 
 		async function loadGamecards (): Promise<void> {
 			const targetedNode: Element = document.querySelector('#shortcuts #gaming')!
 
-			for (const gamecardData of json.gamecards.sort((a, b) => a.position - b.position)) {	//Creates the gamecard
+			for (const gamecardData of content.gamecards.sort((a, b) => a.position - b.position)) {
 				const outerGamecard: HTMLDivElement = document.createElement('div');
 				outerGamecard.id = gamecardData.id;
 				outerGamecard.classList.add('gamecard-text');
 				outerGamecard.innerHTML = `<span><p>${gamecardData.label}</p></span><div class="gamecard-container"></div>`;
 
-				for (const game of gamecardData.children.sort((a, b) => a.position - b.position)) {	//Creates each link
+				for (const game of gamecardData.children.sort((a, b) => a.position - b.position)) {
 					let gameStyleString: string = '';
 					for (const cssAtttribute of game.img_css) {
 						gameStyleString += `${cssAtttribute.attribute}: ${cssAtttribute.value}; `;
 					};
 
-					outerGamecard.querySelector('.gamecard-container')!.innerHTML += `<div class="gamecard"><a href="${game.href}" id="${game.id}" style="background-image: url(${game.img}); ${gameStyleString}"><span><b>${game.label}</b></span></a></div>`
+					outerGamecard.querySelector('.gamecard-container')!.innerHTML += `<div class="gamecard" id="${game.id}"><a href="${game.href}" style="background-image: url(${game.img}); ${gameStyleString}"><span><b>${game.label}</b></span></a></div>`
 				};
 
 				targetedNode.appendChild(outerGamecard);
@@ -570,12 +580,12 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 		}
 
 		async function loadHeaders(): Promise<void> {
-			let index: number = CustomFunctions.randomIntFromInterval(1, json.headers.length);
-			let src: string = json.headers[index - 1];
+			let index: number = CustomFunctions.randomIntFromInterval(0, content.headers.length - 1);
+			let src: string = content.headers[index].href;
 
-			json.headers.forEach((imgSrc: string) => { //To load each header image
+			content.headers.forEach((imgSrc: MyTypes.Headers) => {
 				let img = new Image();
-				img.src = imgSrc;
+				img.src = imgSrc.href;
 			});
 
 			const header: HTMLElement = document.querySelector('#header')!;
@@ -594,11 +604,11 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 					if (window.getSelection()?.toString() !== '') return;
 				};
 
-				let arr: Array<string> = json.headers.filter((headerImg: string) => {
-					return headerImg != src.split('/').pop();
+				let newHeadersArr: Array<MyTypes.Headers> = content.headers.filter((headerObj: MyTypes.Headers) => {
+					return headerObj.href !== src;
 				})
-				let indexArr: number = CustomFunctions.randomIntFromInterval(1, arr.length);
-				src = arr[indexArr - 1];
+				index = CustomFunctions.randomIntFromInterval(0, newHeadersArr.length - 1);
+				src = newHeadersArr[index].href;
 
 				header.style.backgroundImage = `url('${src}')`;
 			};
@@ -614,102 +624,40 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 		loadHeaders();
 	};
 
-	//To create new shortcuts
-	static async createShortcutsTrigger(): Promise<void> {
-		//Code here
-	};
+	static moveButtonsContainer60 = '<div class="move-buttons-container" style="height: 60px;"><button type="button" class="move-up"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(-90deg);"></button><button type="button" class="move-down"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(90deg);"></button></div>';
+	static moveButtonsContainer40 = '<div class="move-buttons-container" style="height: 40px;"><button type="button" class="move-up"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(-90deg);"></button><button type="button" class="move-down"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(90deg);"></button></div>';
 
-	//Adds an shortcut tag on the Cloud Storage JSON.
-	static async dragAndDropHandler():Promise<void> {
-		function toggleHeaderInput(header: HTMLElement, forceText?: boolean): void {
-			if (header.querySelector('input') === null) {
-				header.innerHTML = forceText ? header.innerHTML : `<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg" class="drag-handle"><input type="text" value="${header.textContent}"><span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg"></span>`;
-			} else {
-				const input = header.querySelector('input') as HTMLInputElement;
-				header.innerHTML = `<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg" class="drag-handle">${input.value}<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span>`;
-			};
-		};
-
-		function toggleShortcutInput(shorcut: HTMLElement, forceText?: boolean): void {
-			if (shorcut.querySelector('input') === null) {
-				shorcut.innerHTML = forceText ? shorcut.innerHTML : shorcut.innerHTML.replace(shorcut.textContent!, `<input type="text" value="${shorcut.textContent!}">`).replace('edit.svg', 'check.svg');
-			} else {
-				const input = shorcut.querySelector('input') as HTMLInputElement;
-				input.outerHTML = `${input.value}`
-				shorcut.innerHTML = shorcut.innerHTML.replace('check.svg', 'edit.svg')
-			};
-		};
-
-		function updateIcon(shorcut: HTMLElement) {
-			const icon: HTMLImageElement = shorcut.querySelectorAll('img')[1];
-			const src: string = icon.src;
-
-			icon.outerHTML = `<input type="file" accept="image/*">`
-
-			const newIcon = Array.from(shorcut.querySelectorAll('input')).pop() as HTMLInputElement;
-
-			newIcon.files = null;
-		};
-
+	static async createNewShortcuts (): Promise<void> {	// NEED TO BE COMPLETED
 		const popUp: HTMLFormElement = document.querySelector('.pop-up.create-shortcut')!;
 		const dragAndDrop: HTMLDivElement = popUp.querySelector('#drag-and-drop')!;
-		const addItemButton: HTMLButtonElement = popUp.querySelector('#add-drag-and-drop-button')!;
+		const addItemButton: HTMLButtonElement = popUp.querySelector('#add-new-shortcut-button')!;
 		const addItem: HTMLDivElement = popUp.querySelector('#add-drag-and-drop')!;
 		const fileDrop: HTMLElement = addItem.querySelector('#drop-file')!;
-		const bttn: HTMLButtonElement = document.querySelector('.create-shortcut.pop-up-open')!;
-		const json: MyTypes.PageContent = JSON.parse(await (await fetch(`${server}contents?filename=contents`)).text());
-		const submitBttn: HTMLButtonElement = popUp.querySelector('.ok-button')!;
-		const addNewEntryBttn: HTMLButtonElement = popUp.querySelector('#add-drag-and-drop-submit')!;
+		const submitNewShortcutBttn: HTMLButtonElement = popUp.querySelector('#add-new-shortcut-submit')!
+		const submitUpdateBttn: HTMLButtonElement = popUp.querySelector('.ok-button')!;
 
-		bttn.addEventListener('click', (ev) => {
-			fileDrop.querySelector('img')!.src = 'https://storage.googleapis.com/statisticshock_github_io_public/icons/static/image.svg';
-
-			for (const input of Array.from(addItem.querySelectorAll('input'))) {
-				input.value = '';
-			}
-
-			addItemButton.classList.remove('active');
-			dragAndDrop.style.display = 'grid'
-			dragAndDrop.innerHTML = '';
-
-			for (const shortcut of json.shortcuts) {
-				dragAndDrop.insertAdjacentHTML('beforeend', `<div id="${shortcut.id}-list" class="drag-and-drop-list" draggable="false" x="shown"><h3 class="drag-and-drop-list-header"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg" class="drag-handle">${shortcut.title}<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></h3><div style="--children-length: ${shortcut.children.length};"></div></div>`);
-
-				const dragAndDropList: HTMLDivElement = dragAndDrop.querySelector(`#${shortcut.id}-list div`)!;
-				const dragAndDropListHeader: HTMLElement = dragAndDropList.parentElement!.querySelector('h3')!;
-
-				for (const child of shortcut.children) {
-					addItem.style.display = 'none';
-					dragAndDropList.innerHTML += `<div id="${child.id}-list" class="drag-and-drop-item" draggable="false" y="${child.href}"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/list-drag-handle.svg" class="drag-handle">${child.alt}<span><img src="${child.img}" draggable="false"><input type="file" accept="image/*"></span><span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></div>`;
-				};
-			};
-
-			fileDrop.querySelector('input')!.files = null;
-			fileDrop.querySelector('p')!.innerHTML = `Solte uma imagem aqui`;
-		});
-
-		addItemButton.onclick = function (ev) {
+		addItemButton.onclick = async function (ev) {
 			if (addItemButton.classList.contains('active')) {
 				addItemButton.classList.remove('active');
-				addItem.style.display = 'none';
-				dragAndDrop.style.display = 'grid'
-				submitBttn.removeAttribute('style')
+				addItem.style.height = '0';
+				addItem.style.padding = '0';
+				dragAndDrop.style.height = '60vh';
+				dragAndDrop.style.padding = '10px'
+				submitUpdateBttn.removeAttribute('style');
 			} else {
 				addItemButton.classList.add('active');
-				addItem.style.display = 'block';
-				dragAndDrop.style.display = 'none'
-				submitBttn.style.display = 'none'
+				addItem.style.height = addItem.scrollHeight + 'px';
+				addItem.style.padding = '20px 0';
+				dragAndDrop.style.height = '0';
+				dragAndDrop.style.padding = '0 10px';
+				submitUpdateBttn.style.display = 'none';
 			}
 		};
-
+		
 		function handleDropFile(): void {
-			function activeFileDrop(): void {
-				fileDrop.style.border = '3px solid var(--pink-custom)';
-			};
+			function activeFileDrop(): void {fileDrop.style.border = '3px solid var(--pink-custom)';};
 
-			function inactiveFileDrop(): void {
-				fileDrop.style.border = '3px dashed grey';
-			};
+			function inactiveFileDrop(): void {fileDrop.style.border = '3px dashed grey';};
 
 			const input: HTMLInputElement = fileDrop.querySelector('input')!;
 
@@ -741,13 +689,12 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 
 		handleDropFile();
 
-		popUp.addEventListener('submit', async (ev) => { //It submits the adition of a shortcut
-			ev.preventDefault();
+		submitNewShortcutBttn.onclick = async (ev) => {
 			const formData: FormData = new FormData(popUp);
-
-			addItem.querySelectorAll('input').forEach((input) => { //To alert if an input is empty
-				if (input.type === 'text' && input.value === '') {
+			addItem.querySelectorAll('input').forEach((input) => {
+				if (input.type === 'text' && (input.value.trim() === '' || input.value.match(/[a-zA-Z]+/) === null)) {
 					input.style.setProperty('--initial-color', getComputedStyle(input).backgroundColor);
+					input.value = '';
 					input.classList.add('pulse');
 					setTimeout(() => {
 						input.classList.remove('pulse');
@@ -764,83 +711,258 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 			});
 
 			for (const [key, value] of Array.from(formData)) {
-				if (typeof value === 'string' && value === '') return;
+				if (typeof value === 'string' && (value.trim() === '' || value.match(/[a-zA-Z]+/) === null)) return;
 				if (value instanceof File && value.size === 0) return;
 			};
 
-			try {
-				const response: Response = await fetch(`${server}upload/`, {
-					method: 'POST',
-					body: formData
+			const response: Response = await fetch(`${server}shortcuts/`, {
+				method: 'POST',
+				body: formData
+			});
+
+			if (response.ok) {
+				const textJson: MyTypes.UploadShortcutResponse = await response.json();
+				let targetListToAddNewData: HTMLDivElement | null = null;
+
+				dragAndDrop.querySelectorAll('h3').forEach((h3) => {
+					if (h3.textContent === formData.get('folder')!.toString().trim()) {
+						targetListToAddNewData = h3.parentElement as HTMLDivElement;
+					}
 				});
+				
+				const itemListStr: string = `<div id="${CustomFunctions.normalize(formData.get('title')!.toString())}-list" class="drag-and-drop-item" draggable="false" href="${formData.get('url')!.toString()}">${this.moveButtonsContainer40}${formData.get('title')!.toString()}<span class="shortcut-icon"><img src="${textJson.newImgPath}" draggable="false"><input type="file" accept="image/*"></span><span class="edit-shortcut"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></div>`
 
-				if (response.ok) {
-					const textJson: MyTypes.ShortcutResponse = await response.json();
-					const targetListToAddNewData: HTMLDivElement | null = dragAndDrop.querySelector(`${textJson.sectionId}-list`);
-
-					if (targetListToAddNewData === null) {
-
-					} else {
-
-					};
+				if (targetListToAddNewData === null) {
+					targetListToAddNewData = document.createElement('div');
+					targetListToAddNewData.id = `${CustomFunctions.normalize(formData.get('folder')!.toString())}-list`;
+					targetListToAddNewData.classList.add('drag-and-drop-list');
+					targetListToAddNewData.classList.add('hidden');
+					targetListToAddNewData.setAttribute('x', 'hidden');
+					targetListToAddNewData.innerHTML = `<h3 class="drag-and-drop-list-header">${this.moveButtonsContainer60}${formData.get('folder')!.toString()}<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></h3><div style="--children-length: 1;">${itemListStr}</div>`;
+					dragAndDrop.appendChild(targetListToAddNewData);
 				} else {
-					const textJson: MyTypes.ErrorJson = await response.json();
-					alert(`ERRO:\n${textJson.message}`)
-				}
 
-			} catch (err) {
+				};
+			} else {
+				const textJson: MyTypes.ErrorJson = await response.json();
+				alert(`ERRO:\n${textJson.message}`)
+			}
+		};
+	};
 
+	static async dragAndDropHandler (): Promise<void> {
+		const popUp: HTMLFormElement = document.querySelector('.pop-up.create-shortcut')!;
+		const headerImg: HTMLImageElement = popUp.querySelector('.pop-up-header img')!;
+		const dragAndDrop: HTMLDivElement = popUp.querySelector('#drag-and-drop')!;
+
+		headerImg.addEventListener('click', (ev) => {
+			const containers: Array<HTMLDivElement> = Array.from(dragAndDrop.querySelectorAll('.drag-and-drop-list'));
+
+			if (containers.some((container) => !container.classList.contains('hidden'))) {
+				containers.forEach((container) => {
+					container.classList.add('hidden');
+					container.setAttribute('x', 'hidden');
+				});
+			} else {
+				containers.forEach((container) => {
+					container.classList.remove('hidden');
+					container.setAttribute('x', 'shown');
+				});
+			}
+		});
+
+		dragAndDrop.addEventListener('click', async (ev) => {
+			function shrinkHeader (): void {
+				const header = (ev.target as HTMLElement).closest('.drag-and-drop-list-header');
+				if (!header) return;
+				if ((ev.target as HTMLElement).tagName === 'INPUT') return;
+				if ((ev.target as HTMLElement).closest('.move-buttons-container')) return;
+				if (CustomFunctions.isParent(ev.target as HTMLElement, header.querySelector('span') as HTMLSpanElement)) return;
+
+				const container = header.parentElement!;
+
+				const isShown = container.getAttribute('x') === 'shown';
+
+				container.setAttribute('x', isShown ? 'hidden' : 'shown');
+				container.classList.toggle('hidden', isShown);
 			};
-		});
 
-		dragAndDrop.addEventListener('click', (ev) => {
-			const header = (ev.target as HTMLElement).closest('.drag-and-drop-list-header');
-			if (!header) return;
-			if ((ev.target as HTMLElement).tagName === 'INPUT') return;
-			if (CustomFunctions.isParent(ev.target as HTMLElement, header.querySelector('span') as HTMLSpanElement)) {
-				toggleHeaderInput(header as HTMLElement);
-				return;
+			async function moveItemUpOrDown (): Promise<void> {
+				const moveButtonsContainer: HTMLDivElement | null = (ev.target as HTMLElement).closest('.move-buttons-container');
+				if (!moveButtonsContainer) return;
+				if (!(ev.target as HTMLElement).closest('button')) return;
+
+				const parent = (moveButtonsContainer.closest('.drag-and-drop-item') || moveButtonsContainer.closest('.drag-and-drop-list')) as HTMLDivElement;
+				const copyOfParent = parent.cloneNode(true) as HTMLElement;
+				const bttn: HTMLButtonElement = (ev.target as HTMLElement).closest('button')!;
+				const transitionTime: number = Number(getComputedStyle(parent).transition.match(/[\d\.]+/)![0]) * 1000;
+
+				if (bttn.classList.contains('move-up')) {
+					if (parent === parent.parentElement!.firstChild) return;
+					const previousSibling = parent.previousElementSibling! as HTMLElement;
+					parent.classList.add('fade-out');
+
+					await CustomFunctions.sleep(transitionTime);
+
+					const computedHeight: string = getComputedStyle(parent).height;
+					parent.style.height = computedHeight
+					await CustomFunctions.sleep(10);
+					parent.style.height = '0';
+					await CustomFunctions.sleep(transitionTime);
+					parent.remove();
+
+					await CustomFunctions.sleep(transitionTime);
+
+					copyOfParent.classList.add('fade-in');
+					copyOfParent.style.height = '0';
+					previousSibling.before(copyOfParent);
+
+					await CustomFunctions.sleep(10);
+
+					copyOfParent.style.height = computedHeight;
+
+					await CustomFunctions.sleep(transitionTime);
+					copyOfParent.setAttribute('style', copyOfParent.getAttribute('style')!.replace(/height\: [\d\s\S]+\;/, ''));
+					if (copyOfParent.getAttribute('style') === '') copyOfParent.removeAttribute('style');
+					
+
+					await CustomFunctions.sleep(transitionTime);
+
+					copyOfParent.classList.remove('fade-in');
+				} else if (bttn.classList.contains('move-down')) {
+					if (parent === parent.parentElement!.lastChild) return;
+					const nextSibling = parent.nextElementSibling! as HTMLElement;
+					parent.classList.add('fade-out');
+
+					await CustomFunctions.sleep(transitionTime);
+
+					const computedHeight: string = getComputedStyle(parent).height;
+					parent.style.height = computedHeight
+					await CustomFunctions.sleep(10);
+					parent.style.height = '0';
+					await CustomFunctions.sleep(transitionTime);
+					parent.remove();
+
+					await CustomFunctions.sleep(transitionTime);
+
+					copyOfParent.classList.add('fade-in');
+					copyOfParent.style.height = '0';
+					nextSibling.after(copyOfParent);
+
+					await CustomFunctions.sleep(10);
+
+					copyOfParent.style.height = computedHeight;
+
+					await CustomFunctions.sleep(transitionTime);
+					copyOfParent.setAttribute('style', copyOfParent.getAttribute('style')!.replace(/height\: [\d\s\S]+\;/, ''));
+					if (copyOfParent.getAttribute('style') === '') copyOfParent.removeAttribute('style');
+					
+
+					await CustomFunctions.sleep(transitionTime);
+
+					copyOfParent.classList.remove('fade-in');					
+				}
 			};
 
-			const container = header.parentElement!;
-
-			const isShown = container.getAttribute('x') === 'shown';
-
-			container.setAttribute('x', isShown ? 'hidden' : 'shown');
-			container.classList.toggle('hidden', isShown);
-		});
-
-		dragAndDrop.addEventListener('click', (ev) => {
-			const shortcut = (ev.target as HTMLElement).closest('.drag-and-drop-item') as HTMLDivElement;
-			if (!shortcut) return;
-			else if ((ev.target as HTMLElement).tagName === 'INPUT') return;
-			else if (shortcut.querySelector('input') !== null && shortcut.querySelector('input')!.value === '') return;
-			else if (CustomFunctions.isParent(ev.target as HTMLElement, shortcut.querySelector('span') as HTMLSpanElement)) toggleShortcutInput(shortcut as HTMLElement);
-			else if ((ev.target as HTMLElement) === shortcut.querySelectorAll('img')[1]) updateIcon(shortcut);
-		});
-
-		dragAndDrop.addEventListener('mousemove', (ev) => {
-			const sections: Array<HTMLElement> = Array.from(document.querySelectorAll('.container .flex-container section:has(.grid-container)'));
-
-			sections.forEach((section) => {
-				if (!(ev.target as HTMLElement).closest('.drag-and-drop-list')) return;
-				if ((ev.target as HTMLElement).closest('.drag-and-drop-list')!.id.replace('-list', '') === section.id) {
-					if (section.querySelector('p')) section.querySelector('p')!.classList.add('animated');
-				} else {
-					if (section.querySelector('p')) section.querySelector('p')!.classList.remove('animated')
-				}
-			})
-		});
-
-		dragAndDrop.addEventListener('mouseleave', (ev) => {
-			const sections: Array<HTMLElement> = Array.from(document.querySelectorAll('.container .flex-container section:has(.grid-container)'));
-			sections.forEach((section) => {
-				if (section.querySelector('p')) section.querySelector('p')!.classList.remove('animated')
-			})
+			shrinkHeader();
+			moveItemUpOrDown();
 		});
 	};
 
-	// To add MFC images in the aside
+	static async updateShortCut (): Promise<void> {
+		function toggleHeaderInput(header: HTMLElement, forceText?: boolean): void {
+			if (header.querySelector('input') === null) {
+				header.innerHTML = forceText ? header.innerHTML : `${CloudStorageData.moveButtonsContainer60}</div><input type="text" value="${header.textContent}"><span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg"></span>`;
+			} else {
+				const input = header.querySelector('input') as HTMLInputElement;
+				header.parentElement!.id = `${CustomFunctions.normalize(input.value)}-list`
+				input.outerHTML = input.value;
+				header.innerHTML = header.innerHTML.replace('check.svg', 'edit.svg')
+			};
+		};
+
+		function toggleShortcutInput(shorcut: HTMLElement, forceText?: boolean): void {
+			if (shorcut.querySelector(':scope > input') === null) {
+				shorcut.innerHTML = forceText ? shorcut.innerHTML : `${CloudStorageData.moveButtonsContainer40}</div><input type="text" value="${shorcut.textContent}"><span class="delete-shortcut" old-data="src: ${(shorcut.querySelectorAll('span img')[0] as HTMLImageElement).src};"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/x.svg"></span><span class="edit-shortcut"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg"></span>`;
+			} else {
+				const input = shorcut.querySelector(':scope > input') as HTMLInputElement;
+				shorcut.id = `${CustomFunctions.normalize(input.value)}-list`
+				shorcut.innerHTML = `${CloudStorageData.moveButtonsContainer40}${input.value}<span class="shortcut-icon"><img src="${shorcut.querySelector('.delete-shortcut')!.getAttribute('old-data')!.replace(/(src\: )|(\;)/g, '')}" draggable="false"><input type="file" accept="image/*"></span><span class="edit-shortcut"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span>`;
+			};
+		};
+
+		function updateIcon(shorcut: HTMLElement) {
+			const icon: HTMLImageElement = shorcut.querySelectorAll('img')[1];
+			const src: string = icon.src;
+
+			icon.outerHTML = `<input type="file" accept="image/*">`
+
+			const newIcon = Array.from(shorcut.querySelectorAll('input')).pop() as HTMLInputElement;
+
+			newIcon.files = null;
+		};
+
+		const popUp: HTMLFormElement = document.querySelector('.pop-up.create-shortcut')!;
+		const dragAndDrop: HTMLDivElement = popUp.querySelector('#drag-and-drop')!;
+
+		dragAndDrop.addEventListener('click', (ev) => {
+			function handleToggleHeaderInput (): void {
+				const header = (ev.target as HTMLElement).closest('.drag-and-drop-list-header');
+				if (!header) return;
+				if ((ev.target as HTMLElement).tagName === 'INPUT') return;
+				if (CustomFunctions.isParent(ev.target as HTMLElement, header.querySelector('span') as HTMLSpanElement)) {
+					toggleHeaderInput(header as HTMLElement);
+					return;
+				};
+			};
+
+			function handleToggleShortcutInput (): void {
+				const shortcut = (ev.target as HTMLElement).closest('.drag-and-drop-item') as HTMLDivElement;
+				if (!shortcut) return;
+				else if ((ev.target as HTMLElement).tagName === 'INPUT') return;
+				// else if ((ev.target as HTMLElement) === shortcut.querySelectorAll('img')[1]) updateIcon(shortcut);	I don't remember what was the purpose of this
+				else if (shortcut.querySelector(':scope > input') !== null && shortcut.querySelector('input')!.value === '') return;
+				else if (CustomFunctions.isParent(ev.target as HTMLElement, shortcut.querySelector('.edit-shortcut') as HTMLSpanElement)) toggleShortcutInput(shortcut as HTMLElement);
+			};
+
+			handleToggleHeaderInput();
+			handleToggleShortcutInput();
+		});
+	};
+
+	static async fillDragAndDrop (): Promise<void> {
+		const popUp: HTMLFormElement = document.querySelector('.pop-up.create-shortcut')!;
+		const dragAndDrop: HTMLDivElement = popUp.querySelector('#drag-and-drop')!;
+		const headerImg: HTMLImageElement = popUp.querySelector('.pop-up-header img')!;
+		const addItem: HTMLDivElement = popUp.querySelector('#add-drag-and-drop')!;
+		const fileDrop: HTMLElement = addItem.querySelector('#drop-file')!;
+		const bttn: HTMLButtonElement = document.querySelector('.create-shortcut.pop-up-open')!;
+		const content: MyTypes.PageContent = JSON.parse(JSON.stringify(this.json));
+
+		bttn.addEventListener('click', (ev) => {
+			fileDrop.querySelector('img')!.src = 'https://storage.googleapis.com/statisticshock_github_io_public/icons/static/image.svg';
+			fileDrop.querySelector('p')!.textContent = 'Solte uma imagem aqui';
+			for (const input of Array.from(addItem.querySelectorAll('input'))) {
+				input.value = '';
+			};
+			dragAndDrop.style.display = 'grid'
+			dragAndDrop.innerHTML = '';
+
+			for (const shortcut of content.shortcuts) {
+				dragAndDrop.insertAdjacentHTML('beforeend', `<div id="${shortcut.id}-list" class="drag-and-drop-list" draggable="false" x="shown"><h3 class="drag-and-drop-list-header">${CloudStorageData.moveButtonsContainer60}${shortcut.title}<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></h3><div style="--children-length: ${shortcut.children.length};"></div></div>`);
+
+				const dragAndDropList: HTMLDivElement = dragAndDrop.querySelector(`#${shortcut.id}-list > div`)!;
+				const dragAndDropListHeader: HTMLElement = dragAndDropList.parentElement!.querySelector('h3')!;
+
+				for (const child of shortcut.children) {
+					dragAndDropList.innerHTML += `<div id="${child.id}-list" class="drag-and-drop-item" draggable="false" href="${child.href}">${CloudStorageData.moveButtonsContainer40}${child.alt}<span class="shortcut-icon"><img src="${child.img}" draggable="false"><input type="file" accept="image/*"></span><span class="edit-shortcut"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></div>`;
+				};
+			};
+
+			headerImg.click();
+		});
+	};
+
 	static async addMfcImages(): Promise<void> {
 		function resizeMasonryItem(item: HTMLElement): void {
 			/* Get the grid object, its row-gap, and the size of its implicit rows */
@@ -864,7 +986,6 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 		}
 
 		function resizeAllMasonryItems(): void {
-			// Get all item class objects in one list
 			let allItems = document.querySelectorAll('.pinterest-grid-item') as NodeListOf<HTMLElement>;
 
 			for (let i = 0; i < allItems.length; i++) {
@@ -872,24 +993,10 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 			};
 		}
 
-		type mfc = {
-			[key: string]: string
-			id: string,
-			href: string,
-			img: string,
-			character: string,
-			characterJap: string,
-			origin: string,
-			classification: string,
-			category: string,
-			type: string,
-			title: string,
-		}
+		const result: MyTypes.MFC[] = JSON.parse(JSON.stringify(this.json.mfc));
 
-		let result: mfc[] = await (await fetch(`${server}contents?filename=mfc`)).json();
-
-		let createElementPromise = new Promise((resolve, reject) => { //This creates a promise that will create every item in the aside
-			resolve(result.sort((a: mfc, b: mfc) => Number(a.id) - Number(b.id)).map(createElement));
+		let createElementPromise = new Promise((resolve, reject) => {
+			resolve(result.sort((a: MyTypes.MFC, b: MyTypes.MFC) => Number(a.id) - Number(b.id)).map(createElement));
 		});
 
 		createElementPromise.then(() => {
@@ -911,9 +1018,9 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 			})
 		});
 
-		function createElement(item: mfc) { //To create the necessary elements
-			let div = document.createElement('div');   // The container
-			let img = new Image()                      // The image
+		function createElement(item: MyTypes.MFC) {
+			let div = document.createElement('div');
+			let img = new Image()
 			let card: HTMLElement;
 
 			if (item.type !== 'Wished') {
@@ -927,7 +1034,7 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 			div.setAttribute('alt', item.title);
 			div.classList.add('pinterest-grid-item');
 			div.id = item.id;
-			img.src = item.img;
+			img.src = item.icon;
 
 			if (item.category == 'Prepainted') {
 				div.style.color = 'green';
@@ -943,13 +1050,13 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 
 			img.style.width = `calc(100% - ${imgBorder} * 2)`
 
-			img.onclick = () => { //Format a pop-up for each item once it's image is clicked
+			img.onclick = () => {
 				let popUp = document.querySelector('.pop-up.mfc') as HTMLDivElement;
 				let title = popUp.querySelector('.pop-up-title') as HTMLSpanElement;
 				let popUpImgAnchor = popUp.querySelector('#pop-up-img') as HTMLAnchorElement;
 				let popUpImg = popUpImgAnchor.childNodes[0] as HTMLImageElement;
 				let originalName = popUp.querySelector('#mfc-character-original-name') as HTMLSpanElement;
-				let originName = popUp.querySelector('#mfc-character-origin') as HTMLSpanElement;
+				let originName = popUp.querySelector('#mfc-character-source') as HTMLSpanElement;
 				let classification = popUp.querySelector('#mfc-classification') as HTMLSpanElement;
 				let a = popUp.querySelector('.pop-up-header > div > a') as HTMLAnchorElement;
 
@@ -959,19 +1066,21 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 
 
 				if (item.characterJap) {
-					characterLink = `https://buyee.jp/item/search/query/${encodeURIComponent(item.characterJap)}/category/2084023782?sort=end&order=a&store=1`;
+					characterLink = `https://buyee.jp/item/search/query/${encodeURIComponent(item.characterJap)}/category/2084023782?sort=end&order=a&store=1&lang=en`;
 				} else {
-					characterLink = `https://buyee.jp/item/search/query/${encodeURIComponent(item.character)}/category/2084023782?sort=end&order=a&store=1`;
+					characterLink = `https://buyee.jp/item/search/query/${encodeURIComponent(item.character)}/category/2084023782?sort=end&order=a&store=1&lang=en`;
 				};
-				if (item.origin !== 'オリジナル' && item.origin !== undefined) {
+
+				if (item.sourceJap !== 'オリジナル' && item.sourceJap !== undefined) {
 					originName.parentElement!.style.display = '';
-					originLink = `https://buyee.jp/item/search/query/${encodeURIComponent(item.origin)}/category/2084023782?sort=end&order=a&store=1`;
+					originLink = `https://buyee.jp/item/search/query/${encodeURIComponent(item.sourceJap)}/category/2084023782?sort=end&order=a&store=1&lang=en`;
 				} else {
 					originName.parentElement!.style.display = 'none';
 				};
+
 				if (item.classification !== undefined) {
 					classification.parentElement!.style.display = '';
-					classificationLink = `https://buyee.jp/item/search/query/${encodeURIComponent(item.classification.replaceAll('#', ''))}/category/2084023782?sort=end&order=a&store=1`;
+					classificationLink = `https://buyee.jp/item/search/query/${encodeURIComponent(item.classification.replaceAll('#', ''))}/category/2084023782?sort=end&order=a&store=1&lang=en`;
 				} else {
 					classification.parentElement!.style.display = 'none';
 				};
@@ -979,23 +1088,26 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 				title.innerHTML = item.title;
 				popUpImgAnchor.href = item.href;
 				popUpImgAnchor.style.border = `${imgBorder} solid ${div.style.color}`
-				popUpImg.src = img.src;
+				popUpImg.src = item.img;
 
 				const copySvg: string = `<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200.000000 200.000000" preserveAspectRatio="xMidYMid meet"><g transform="translate(0.000000,200.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none"><path d="M721 1882 c-71 -36 -76 -51 -79 -268 l-3 -194 60 0 61 0 2 178 3 177 475 0 475 0 0 -475 0 -475 -117 -3 -118 -3 0 -60 0 -61 134 4 c151 3 175 12 209 79 16 31 17 73 15 531 -3 484 -4 497 -24 525 -47 64 -39 63 -574 63 -442 0 -488 -2 -519 -18z"/><path d="M241 1282 c-19 -9 -44 -30 -55 -45 -20 -28 -21 -41 -24 -525 -3 -555 -4 -542 67 -589 l34 -23 496 0 c477 0 497 1 529 20 18 11 41 34 52 52 19 32 20 52 20 529 l0 496 -23 34 c-47 70 -36 69 -577 69 -442 0 -488 -2 -519 -18z m994 -582 l0 -475 -475 0 -475 0 -3 465 c-1 256 0 471 3 478 3 10 104 12 477 10 l473 -3 0 -475z"/></g></svg>`;
 
 				originalName.innerHTML = item.characterJap !== '' ? `<a target="_blank" href="${characterLink}">${copySvg}&nbsp;${item.characterJap}</a>` : `<a target="_blank" href="${characterLink}">${copySvg}&nbsp;${item.character}</div></a>`;
-				originName.innerHTML = `<a target="_blank" href="${originLink}">${copySvg}&nbsp;${item.origin}</a>`;
+				originName.innerHTML = `<a target="_blank" href="${originLink}">${copySvg}&nbsp;${item.sourceJap}</a>`;
 				classification.innerHTML = `<a target="_blank" href="${classificationLink}">${copySvg}&nbsp;${item.classification}</a>`;
 
-				if (item.type == 'Owned') {
-					a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
-				} else if (item.type == 'Ordered') {
-					a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
-				} else if (item.type == 'Wished') {
-					a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user'
+				switch (item.type) {
+					case 'Owned':
+						a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
+					case 'Ordered':
+						a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
+					case 'Wished':
+						a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
+					default:
+						console.error(`Weird MFC item type: ${item.type}`);
 				}
 
-				//NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED 
+				//NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED
 				const links = [originalName.querySelector('a'), originName.querySelector('a'), classification.querySelector('a')] as HTMLSpanElement[];
 
 				links.forEach((link) => {
@@ -1019,24 +1131,20 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 			div.append(item.character);
 		};
 
-		function searchFigure(textInput: HTMLInputElement, json: mfc[]) {
+		function searchFigure(textInput: HTMLInputElement, json: MyTypes.MFC[]) {
 			let searchStr: RegExp = new RegExp(textInput.value, 'i');
 
 			console.info(`A string procurada é ${searchStr}`);
 
 			const figuresToHide = json.filter((figure) => {
-				let count = 0;
+				let count: number = 0;
 
-				Object.keys(figure).forEach((key: string) => {
-					if (searchStr.test(figure[key])) {
-						count += 1;
-					}
-				});
+				Object.keys(figure).forEach((key: string) => {if (searchStr.test(figure[key])) count++});
 
 				return count === 0;
 			});
 
-			const divs: NodeListOf<HTMLDivElement> = document.querySelectorAll('.pinterest-grid-item');
+			const divs: NodeListOf<HTMLDivElement> = document.querySelectorAll('aside .card .pinterest-grid-item');
 
 			divs.forEach((div) => {
 				div.style.display = 'block';
@@ -1051,7 +1159,7 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 			resizeAllMasonryItems();
 		}, 500)
 
-		setTimeout(() => { //Should run immeditialy after "resizeAllMasonryItems"
+		setTimeout(() => {
 			const loader: HTMLDivElement = document.querySelector('aside > .card > .loader')!;
 			const pinterestGrids: NodeListOf<HTMLSpanElement> = document.querySelectorAll('aside > .card > .pinterest-grid');
 
@@ -1072,8 +1180,7 @@ class CloudStorageData {	//Interacts with Google Cloud Storage
 	};
 };
 
-class ExternalData {	//Gets data from other webservices APIs
-	// To add retroachievements awards
+class ExternalData {
 	static async addRetroAchievementsAwards (): Promise<void> {
 		const raUrl: string = 'https://retroachievements.org';
 		const response: MyTypes.RetroAchievementsOutput = await fetch(`${server}retroAchievements/pt-BR/`).then((res) => res.json());
@@ -1105,14 +1212,12 @@ class ExternalData {	//Gets data from other webservices APIs
 				(popUp.querySelector('.data-container') as HTMLDivElement).innerHTML = '';
 
 				for (const data of currentAwardData.allData) {
-					(popUp.querySelector('.data-container') as HTMLDivElement).innerHTML += `<div style="border-top: 1px solid var(--contrast-color-3);"><p>Prêmio&nbsp;<span>${data.awardType}</span></p><p>Data&nbsp;<span>${Intl.DateTimeFormat('pt-BR', {day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'}).format(new Date(data.awardedAt))}</span></p></div>`
-					// a =
+					(popUp.querySelector('.data-container') as HTMLDivElement).innerHTML += `<div style="border-top: 1px solid var(--contrast-color-3);"><p>Prêmio&nbsp;<span>${data.awardType}</span></p><p>Data&nbsp;<span>${Intl.DateTimeFormat('pt-BR', {day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'}).format(new Date(data.awardedAt))}</span></p></div>`;
 				}
 			});
 		});
 	};
 
-	// To add a MyAnimeList card
 	static async scrapeMyAnimeList(): Promise<void> {
 		async function scrapeDataFromMAL(offset: number): Promise<[MyTypes.AnimeList['data'], MyTypes.MangaList['data']]> {
 			const animeData: MyTypes.AnimeList = await fetch(`${server}myanimelist/animelist?username=HikariMontgomery&offset=${offset}`)
@@ -1267,7 +1372,7 @@ class ExternalData {	//Gets data from other webservices APIs
 
 				const anchors: NodeListOf<HTMLAnchorElement> = container.querySelectorAll('a');
 				let closestAnchor: HTMLAnchorElement | null = null;
-				let closestDistance: number = Infinity; //First distance as a number
+				let closestDistance: number = Infinity;
 
 				anchors.forEach((anchor) => {
 					const anchorRect: DOMRect = anchor.getBoundingClientRect();
@@ -1275,7 +1380,7 @@ class ExternalData {	//Gets data from other webservices APIs
 					const distance: number = Math.abs(center - anchorCenter);
 
 					if (distance < closestDistance) {
-						closestDistance = distance; //Assigns the lowest possible distance
+						closestDistance = distance;
 						closestAnchor = anchor;
 					}
 				});
@@ -1306,10 +1411,10 @@ class ExternalData {	//Gets data from other webservices APIs
 
 							const newOffset: number = frstChild.offsetLeft;
 
-							card.style.scrollBehavior = 'auto'; //Sets to 'auto' momentanely
+							card.style.scrollBehavior = 'auto';
 							card.scrollLeft += (newOffset - previousOffset);
 							card.scrollBy({ left: - width / anchors.length, behavior: 'smooth' });
-							card.style.scrollBehavior = 'smooth'; //Reverts it to 'smooth'
+							card.style.scrollBehavior = 'smooth';
 
 							const allAnchors: NodeListOf<HTMLAnchorElement> = card.querySelectorAll('a');
 							const anchorsToRemove: Array<HTMLAnchorElement> = Array.from(allAnchors).slice(allAnchors.length - 10, allAnchors.length);
@@ -1334,10 +1439,10 @@ class ExternalData {	//Gets data from other webservices APIs
 
 							const newOffset: number = frstChild.offsetLeft;
 
-							card.style.scrollBehavior = 'auto'; //Sets to 'auto' momentanely
+							card.style.scrollBehavior = 'auto';
 							card.scrollLeft += (newOffset - previousOffset);
 							card.scrollBy({ left: width / anchors.length, behavior: 'smooth' });
-							card.style.scrollBehavior = 'smooth'; //Reverts it to 'smooth'
+							card.style.scrollBehavior = 'smooth';
 						};
 					};
 				};
@@ -1371,8 +1476,7 @@ class ExternalData {	//Gets data from other webservices APIs
 	};
 };
 
-class PageBehaviour {	//Sets how the page behaves
-	// Stop image dragging
+class PageBehaviour {
 	static stopImageDrag(): void { // NO NEED OF RESPONSIVENESS
 		let images: HTMLCollectionOf<HTMLImageElement> = document.getElementsByTagName('img');
 
@@ -1381,7 +1485,6 @@ class PageBehaviour {	//Sets how the page behaves
 		});
 	};
 
-	// Open in new tab
 	static openLinksInNewTab(): void { // RESPONSIVE
 		const shortcuts: NodeListOf<HTMLAnchorElement> = document.querySelectorAll('.shortcut-item');
 		for (const element of Array.from(shortcuts)) {
@@ -1401,8 +1504,7 @@ class PageBehaviour {	//Sets how the page behaves
 		});
 	};
 
-	//To make sheets open in edge
-	static redirectToEdge(): void { // RESPONSIVE
+	static redirectLinksToEdge(): void { // RESPONSIVE
 		if (mobile) return;
 
 		let links = document.querySelectorAll('a');
@@ -1419,13 +1521,18 @@ class PageBehaviour {	//Sets how the page behaves
 
 window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions(ev: Event) {
 	PageBuilding.createLoaders(10);
+
+	await CloudStorageData.load();
 	
 	await Promise.all([
-		CloudStorageData.loadContentFromJson(),		// From my own Google Cloud Storage
-		CloudStorageData.addMfcImages(),			// From my own Google Cloud Storage
-		CloudStorageData.dragAndDropHandler(),		// From my own Google Cloud Storage
-		ExternalData.scrapeMyAnimeList(),			// From MAL API
-		ExternalData.addRetroAchievementsAwards()	// From RetroAchievements API
+		CloudStorageData.loadContentFromJson(),
+		CloudStorageData.createNewShortcuts(),
+		CloudStorageData.dragAndDropHandler(),
+		CloudStorageData.updateShortCut(),
+		CloudStorageData.fillDragAndDrop(),
+		CloudStorageData.addMfcImages(),
+		ExternalData.scrapeMyAnimeList(),
+		ExternalData.addRetroAchievementsAwards()
 	]);
 	
 	PageBuilding.figuresSitDown();
@@ -1437,7 +1544,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 	UserInterface.makeSwitchesSlide();
 	UserInterface.nightModeToggle();
 	UserInterface.dragPopUps();
-	UserInterface.setPopUpDefaults();
+	UserInterface.setPopUpDefaultValues();
 	UserInterface.resetPopUpsOnOpen();
 	UserInterface.showPopUps();
 	
@@ -1445,7 +1552,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 	ExternalSearch.wikipediaSearchTrigger();
 
 	PageBehaviour.openLinksInNewTab();
-	PageBehaviour.redirectToEdge();
+	PageBehaviour.redirectLinksToEdge();
 	PageBehaviour.stopImageDrag();
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions(ev: Event) {
@@ -1457,4 +1564,5 @@ window.addEventListener('resize', onResizeFunctions, true); function onResizeFun
 };
 window.addEventListener('scroll', onScrollFunctions, true); function onScrollFunctions(ev: Event) {
 	UserInterface.resizeHeader();
+	UserInterface.makeButtonFromAsideFollowHeader();
 };

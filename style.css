@@ -40,6 +40,10 @@
 	--contrast-color-0: rgba(0, 0, 0, 1);
 }
 
+html, body {
+	overflow-anchor: none !important;
+}
+
 body {
 	position: relative;
 	font-family: OpenSans;
@@ -220,7 +224,7 @@ img {
 	z-index: 4;
 	
 	& #pop-up-img {
-		height: 40%;
+		height: 30%;
 		width: fit-content;
 		position: relative;
 		border-radius: 10px;
@@ -285,7 +289,7 @@ img {
 }
 
 .pop-up.retroachievements-awards {
-	min-height: 70vmin;
+	min-height: 50vmin;
 	max-height: 85vmin;
 	height: fit-content;
 	aspect-ratio: 1;
@@ -385,9 +389,19 @@ img {
 }
 
 .pop-up.create-shortcut {
+	--transition-time: 0.75s;
+
 	& img[src$=".svg"] {
 		-webkit-filter: invert(var(--invert));
 		filter: invert(var(--invert));
+	}
+
+	& .pop-up-header {
+		& div {
+			& img {
+				cursor: pointer;
+			}
+		}
 	}
 
 	& #drag-and-drop {
@@ -396,10 +410,8 @@ img {
 		-webkit-user-drag: none;
 		position: relative;
 		width: 280px;
-		min-height: 30px;
-		height: fit-content;
-		max-height: 60vh;
-		overflow-y: scroll;
+		height: 60vh;
+		overflow-y: auto;
 		padding: 10px;
 		gap: 10px;
 		display: grid;
@@ -408,12 +420,15 @@ img {
 		align-items: center;
 		justify-content: center;
 		border-radius: 10px;
+		transition: all var(--transition-time) ease;
 
 		& .drag-and-drop-list {
 			background-color: var(--contrast-color-3);
 			height: fit-content;
 			padding: 10px;
 			border-radius: 10px;
+			display: block;
+			transition: all 0.1s ease;
 			
 			& h3 {
 				display: grid;
@@ -424,18 +439,7 @@ img {
 				align-items: center;
 				cursor: pointer;
 				height: fit-content;
-
-				& > img {
-					position: relative;
-					display: block;
-					height: 30px;
-					width: auto;
-					cursor: grab;
-				}
-
-				& > img:active {
-					cursor: grabbing;
-				}
+				position: relative;
 
 				& input {
 					border: none;
@@ -447,7 +451,7 @@ img {
 					color: var(--contrast-color-0)
 				}
 
-				& span {
+				& > span {
 					cursor: pointer;
 					aspect-ratio: 1;
 					border-radius: 100%;
@@ -462,17 +466,16 @@ img {
 					}
 				}
 
-				& span:hover {
+				& > span:hover, & > span:active {
 					background-color: var(--contrast-color-5);
 				};
 			}
 
-			& div {
+			& > div {
 				gap: 10px;
 				height: fit-content;
 				display: grid;
 				max-height: calc(var(--children-length) * (10px + 40px));
-				/* background-color: attr(children-length); */
 				grid-template-columns: 100%;
 				align-items: center;
 				justify-content: center;
@@ -485,23 +488,15 @@ img {
 					height: 40px;
 					background-color: var(--contrast-color-4);
 					margin: 0;
-					display: flex;
 					align-items: center;
 					justify-content: left;
-					box-shadow: #000;
 					border-radius: 10px;
 					display: grid;
-					grid-template-columns: 20px 1fr 30px 30px;
+					grid-template-columns: 30px 1fr 30px 30px;
+					gap: 10px;
 					font-size: 0.75em;
 					padding: 0 10px;
-
-					& > img:nth-of-type(1) {
-						cursor: grab;
-						left: 5px;
-						position: relative;
-						height: 20px;
-						aspect-ratio: 3 / 4;
-					}
+					transition: all 0.1s ease;
 
 					& > input {
 						width: 100%;
@@ -512,7 +507,7 @@ img {
 						color: var(--contrast-color-0);
 					}
 
-					& > span:nth-of-type(1) {
+					& .shortcut-icon {
 						width: 100%;
 						aspect-ratio: 1;
 						display: flex;
@@ -539,7 +534,7 @@ img {
 						}
 					}
 
-					& > span:nth-of-type(2) {
+					& .delete-shortcut {
 						cursor: pointer;
 						height: 30px;
 						border-radius: 100%;
@@ -555,7 +550,31 @@ img {
 						}
 					}
 
-					& > span:nth-of-type(2):hover {
+					& .delete-shortcut:hover {
+						background-color: pink;
+						
+						& img {
+							color: cyan;
+						}
+					}
+
+					& .edit-shortcut {
+						cursor: pointer;
+						height: 30px;
+						border-radius: 100%;
+						overflow: hidden;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+
+						& img {
+							cursor: inherit;
+							height: 60%;
+							aspect-ratio: 1;
+						}
+					}
+
+					& .edit-shortcut:hover {
 						background-color: var(--contrast-color-5);
 						border: 1px solid var(--contrast-color-0);
 					}
@@ -569,6 +588,48 @@ img {
 					opacity: 0;
 				}
 			}
+
+			& .move-buttons-container {
+				position: relative;
+				max-width: 100%;
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+				justify-content: center;
+				gap: 5%;
+
+				& > button {
+					position: relative;
+					cursor: pointer;
+					background: none;
+					padding: 0;
+					border: none;
+					display: block;
+					height: 45%;
+					aspect-ratio: 1;
+					border-radius: 100%;
+					overflow: hidden;
+
+					& > img {
+						position: relative;
+						display: block;
+						width: 100%;
+						height: 100%;
+					}
+				}
+
+				& > button:hover, & > button:active {
+					background-color: var(--contrast-color-5);
+				};
+			}
+		}
+
+		& .fade-out {
+			opacity: 0;
+		}
+
+		& .fade-in {
+			opacity: 0;
 		}
 
 		& .drag-and-drop-list.ghost {
@@ -586,7 +647,7 @@ img {
 		}
 	}
 
-	& #add-drag-and-drop-button, & #add-drag-and-drop-submit {
+	& #add-new-shortcut-button, & #add-new-shortcut-submit {
 		text-transform: uppercase;
 		cursor: pointer;
 		background-image: var(--pink-purple);
@@ -595,23 +656,32 @@ img {
 		margin: 25px 0 0 0;
 	}
 
-	& #add-drag-and-drop-button {
+	& #add-new-shortcut-button {
 		width: 300px;
+		margin: 1em 0;
 	}
 
-	& #add-drag-and-drop-button:active, & #add-drag-and-drop-button.active, & #add-drag-and-drop-submit:active {
+	& #add-new-shortcut-submit {
+		position: relative;
+		width: 90%;
+		left: 50%;
+		transform: translate(-50%, 0);
+	}
+
+	& #add-new-shortcut-button:active, & #add-new-shortcut-button.active, & #add-drag-and-drop-submit:active {
 		background-image: none;
 		background-color: var(--contrast-color-4);
 		opacity: 0.75;
 	}
 
 	& #add-drag-and-drop {
-		display: none;
 		position: relative;
 		width: 300px;
 		border-radius: 10px;
 		background-color: var(--contrast-color-2);
-		padding: 20px 0;
+		padding: 0;
+		overflow: hidden;
+		transition: all var(--transition-time) ease;
 
 		& input {
 			position: relative;
@@ -623,6 +693,7 @@ img {
 		}
 
 		& .floating-label {
+			position: absolute;
 			margin-top: 2.5px;
 		}
 
@@ -835,8 +906,11 @@ nav {
 section {
 	margin: 0px 20px;
 }
-  
+
 .flex-container {
+	contain: layout style;
+	position: relative;
+	overflow-anchor: none;
 	/* SHORTCUTS SECTION */
 	& #shortcuts {
 		position: relative;
@@ -988,12 +1062,6 @@ section {
 		& .create-shortcut:hover, & .create-gaming:hover {
 			transform: scale(1.5);
 			opacity: 1;
-		}
-
-		& .chosen-drag-class {
-			& div {
-				height: 0px;
-			}
 		}
 
 		& .gamecard-text {
@@ -1166,14 +1234,14 @@ section {
 					top: -5%;
 					z-index: 1;
 					border: transparent;
-					color: var(--contrast-color-0);
+					color: rgba(255, 255, 255, 1);
 					font-size: 3vw;
 					transition: all .5s;
 				}
 
 				& .nav-button.left {
 					left: 0px;
-					background-color: var(--background-color);
+					background-color: rgba(49, 49, 49, 1);
 					mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)),
 								linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));;
 					-webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)),
@@ -1182,7 +1250,7 @@ section {
 
 				& .nav-button.right {
 					right: 0px;
-					background-color: var(--background-color);
+					background-color: rgba(49, 49, 49, 1);
 					mask-image: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0)),
 								linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
 					-webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0)),
@@ -1203,6 +1271,7 @@ section {
 		overflow-x: hidden;
 		overflow-y: auto;
 		background-color: var(--main-color);
+		grid-template-rows: 100px;
 
 		& input {
 			position: relative;
@@ -1238,11 +1307,12 @@ section {
 
 		& .card {
 			height: 100%;
+			position: relative;
+			top: 0;
 			border-radius: 10px;
 			text-decoration: none;
 			transition: all .2s;
 			display: flex;
-			overflow: hidden;
 			scrollbar-width: none;
 			gap: 0;
 			
@@ -1265,8 +1335,6 @@ section {
 					font-size: .75em;
 					text-decoration: none;
 					text-align: center;
-					/* background-color: #1a1a1a;
-					border: #1a1a1a 2px solid; */
 					border-radius: 10px;
 					padding: 2%;
 					transition: 0.3s all ;
@@ -1346,7 +1414,7 @@ section {
 	}
 }
 
-@media (orientation: landscape) { 
+@media (orientation: landscape) {
 	.flex-container{
 		display: grid;
 		grid-template-columns: 76vw 2vw 1fr;
@@ -1376,7 +1444,7 @@ section {
 					position: relative;
 					width: 50%;
 					padding: 10px;
-					grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+					grid-template-columns: repeat(auto-fill, minmax(20%, 1fr));
 				}
 			}
 
@@ -1419,7 +1487,7 @@ section {
 	}
 }
 
-@media (orientation: portrait) {    
+@media (orientation: portrait) {
 	.flex-container{
 		display: flex;
 
@@ -1430,6 +1498,7 @@ section {
 		& aside {
 			grid-template-columns: 20px 1fr;
 			z-index: 1;
+			transform: translateX(0);
 			position: absolute;
 			width: 100%;
 			overflow: visible;
@@ -1440,6 +1509,7 @@ section {
 			}
 
 			& .card {
+				overflow: hidden;
 				width: 99%;
 				grid-template-columns: calc((100vw - 20px) / 2) calc((100vw - 20px) / 2);
 				
@@ -1448,7 +1518,7 @@ section {
 					min-width: calc(50vw - 20px - 20px);
 					max-width: calc(50vw - 20px - 20px);
 					margin: 10px;
-					grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+					grid-template-columns: repeat(auto-fill, minmax(25%, 1fr));
 				}
 			}
 
@@ -1459,6 +1529,8 @@ section {
 
 			& .button-bar {
 				width: 20px;
+				position: sticky;
+				top: 0px;
 
 				& button {
 					top: 10px;
@@ -1485,16 +1557,6 @@ section {
 	.pop-up.mfc {
 		height: 90vmin;
 	}
-}
-
-@keyframes loader_5191 {
-  from {
-	opacity: 0;
-  }
-
-  to {
-	opacity: 1;
-  }
 }
 
 @keyframes spinner {

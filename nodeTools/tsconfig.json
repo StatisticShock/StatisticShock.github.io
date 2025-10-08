@@ -6,6 +6,11 @@
     "target": "ESNext",
     "types": [
       "node",
-    ]
-  }
+    ],
+	"noImplicitAny": false,
+  },
+  "include": [
+	".",
+	"../types/types.d.ts"
+  ]
 }

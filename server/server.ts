@@ -1,13 +1,19 @@
 import "dotenv/config";
 import express from "express";
 import cors from 'cors';
-import { Storage } from "@google-cloud/storage";
-import * as types from "../types/types.js";
+import { Bucket, GetFilesResponse, Storage } from "@google-cloud/storage";
+import { JWT } from "google-auth-library";
+import { GoogleSpreadsheet, GoogleSpreadsheetCell, GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from "google-spreadsheet";
+import * as MyTypes from "../util/types.js";
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 import multer from 'multer';
 import * as ra from '@retroachievements/api';
-import CustomFunctions from '../src/functions.js';
+import CustomFunctions from '../util/functions.js';
+import fs from 'fs';
+import util from 'util';
+
+const unlink = util.promisify(fs.unlink);
 
 const app: express.Application = express();
 const PORT = process.env.PORT || 3000;
@@ -18,8 +24,18 @@ const authorization: object = {username: RA_USERNAME, webApiKey: RA_API_KEY};
 const raAuthorization = (ra as any).buildAuthorization(authorization);
 const raUrl = 'https://retroachievements.org';
 
-const serviceAccount: object = JSON.parse(process.env.GOOGLE_JSON_KEY);
-const storage = new Storage({credentials: serviceAccount});
+const { SPREADSHEET_ID, GOOGLE_STORAGE_KEY, GOOGLE_SHEETS_KEY } = process.env;
+
+const storageServiceAccount: object = JSON.parse(GOOGLE_STORAGE_KEY);
+const storage = new Storage({credentials: storageServiceAccount});
+
+const sheetServiceAccount: object = JSON.parse(GOOGLE_SHEETS_KEY);
+const sheetServiceAccountAuthenticated = new JWT ({
+	email: (sheetServiceAccount as any).client_email,
+	key: (sheetServiceAccount as any).private_key,
+	scopes: ['https://www.googleapis.com/auth/spreadsheets']
+});
+const workbook = new GoogleSpreadsheet(SPREADSHEET_ID, sheetServiceAccountAuthenticated);
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
@@ -27,7 +43,7 @@ const corsHeaders = {
 	origin: [
 		'https://statisticshock.github.io',
 		'http://127.0.0.1:5500',
-		'http://localhost:3000',
+		`http://localhost:${PORT}`,
 	],
 	optionsSuccessStatus: 200,
 	
@@ -45,7 +61,6 @@ const upload: multer.Multer = multer({ storage: multerStorage });
 
 app.use(cors(corsHeaders), express.json());
 
-// MY ANIME LIST
 const MAL_API_URL: string = "https://api.myanimelist.net/v2/";
 const MAL_ACCESS_TOKEN: string = process.env.MAL_ACCESS_TOKEN;
 
@@ -53,8 +68,8 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 	const { type } = req.params;
 	let { username, offset } = req.query;
 
-	async function fetchMyAnimeList (type: string, username: string, offset: number | string, res: express.Response): Promise<types.AnimeList | types.MangaList> {
-		if (type !== 'animelist' && type !== 'mangalist') res.status(400).json({ error: `Couldn't fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".` });
+	async function fetchMyAnimeList (type: string, username: string, offset: number | string, res: express.Response): Promise<MyTypes.AnimeList | MyTypes.MangaList> {
+		if (type !== 'animelist' && type !== 'mangalist') res.status(400).json({ message: `Couldn't fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".` });
 		
 		const response: Response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=100&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank`, {
 			headers: {
@@ -62,14 +77,14 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 			},
 		});
 
-		if (!response.ok) res.status(response.status).json({ error: `Couldn't fetch ${MAL_API_URL}.` })
+		if (!response.ok) res.status(response.status).json({ message: `Couldn't fetch ${MAL_API_URL}.` })
 
-		let data: types.AnimeList | types.MangaList;
+		let data: MyTypes.AnimeList | MyTypes.MangaList;
 
 		if (type === 'animelist') {
-			data = await response.json() as types.AnimeList;
+			data = await response.json() as MyTypes.AnimeList;
 		} else if (type === 'mangalist') {
-			data = await response.json() as types.MangaList;
+			data = await response.json() as MyTypes.MangaList;
 		};
 
 		return data;
@@ -82,22 +97,55 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 
 		res.status(200).json(data);
 	} catch (err) {
-		res.status(500).json({ error: err.message });
+		res.status(500).json({ message: err.message });
 	};
 });
 
-app.get("/contents/", async (req: express.Request, res: express.Response) => {
-	const { filename } = req.query;
+app.get("/contents(/:update)?", async (req: express.Request, res: express.Response) => {
+	const { update } = req.params
+	
+	if (update) {
+		if (update !== 'update') res.status(400).json({message: 'Update should be named "update" only.'});
+	};
+
+	await workbook.loadInfo();
+	
+	const jsonToSend: Partial<MyTypes.PageContent> = {updated: false};
+
+	async function loadContent (sheet: GoogleSpreadsheetWorksheet): Promise<void> {
+		const rows: Array<GoogleSpreadsheetRow> = await sheet.getRows();
+		const headers: Array<Array<string>> = [sheet.headerValues];
+		const rowsData: Array<Array<string>> = rows.map((row, i) => row.toObject()).map((obj) => Object.keys(obj).map((key) => obj[key]));
+		const data: Array<Array<string|boolean|number|Date>> = headers.concat(rowsData);
+
+		for (let i = 1; i < data.length; i++) {
+			for (let j = 0; j < data[i].length; j++) {
+				if (data[i][j]) data[i][j] = CustomFunctions.getValueToProperType(data[i][j] as string);
+			};
+		};
+
+		jsonToSend[sheet.title] = CustomFunctions.csvToJson(data)['data'];
+	};
 
 	try {
-		const bucket = storage.bucket('statisticshock_github_io');
-		const file = bucket.file(`${filename}.json`);
+		if (update) {
+			for (const worksheet of workbook.sheetsByIndex) {
+				await worksheet.loadHeaderRow();
+			};
 
-		const json = JSON.parse((await file.download()).toString())
-		res.status(200).json(json);
+			jsonToSend.updated = true;
+
+			console.log()
+		};
+
+		for (const worksheet of workbook.sheetsByIndex) {
+			await loadContent(worksheet);
+		};
 	} catch (err) {
-		res.status(500).json({ error: err.message })
-	}
+		res.status(err.status).json({message: err.message});
+	};
+
+	res.status(200).json(jsonToSend);
 });
 
 app.get("/retroAchievements/:language/", async (req: express.Request, res: express.Response) => {
@@ -114,17 +162,17 @@ app.get("/retroAchievements/:language/", async (req: express.Request, res: expre
 	
 	if (translations[0].indexOf(language) === -1) res.status(400).json({ message: 'There is no such language as ' + language + ' available.' });
 
-	const formattedAwards: Array<types.RetroAchievementsFormattedAward> = [];
+	const formattedAwards: Array<MyTypes.RetroAchievementsFormattedAward> = [];
 	const consoles: any = [];
 
 	async function getAndFormatAwards (): Promise<void> {
-		let json: types.RetroAchievementsAwardsResponse = await (ra as any).getUserAwards(raAuthorization, userObject);
+		let json: MyTypes.RetroAchievementsAwardsResponse = await (ra as any).getUserAwards(raAuthorization, userObject);
 
-		for (const award of json.visibleUserAwards) {	//To format the json itself
+		for (const award of json.visibleUserAwards) {
 			if (award.awardType === 'Mastery/Completion') {
-				if (award.awardDataExtra === 1) {	//Hardcore mode
+				if (award.awardDataExtra === 1) {
 					award.awardType = 'Mastery';
-				} else if (award.awardDataExtra === 0) {	//Softcore mode
+				} else if (award.awardDataExtra === 0) {
 					award.awardType = 'Completion';
 				};
 			};
@@ -132,7 +180,7 @@ app.get("/retroAchievements/:language/", async (req: express.Request, res: expre
 			award.awardType = CustomFunctions.vlookup(award.awardType, translations, translations[0].indexOf(language) + 1);
 		};
 
-		json.visibleUserAwards = json.visibleUserAwards.sort((a, b) => {	//Sort awards in order of priority and date
+		json.visibleUserAwards = json.visibleUserAwards.sort((a, b) => {
 			const positionA: number = CustomFunctions.vlookup(a.awardType, translations, 3, translations[0].indexOf(language) + 1);
 			const positionB: number = CustomFunctions.vlookup(b.awardType, translations, 3, translations[0].indexOf(language) + 1);
 
@@ -160,7 +208,7 @@ app.get("/retroAchievements/:language/", async (req: express.Request, res: expre
 						displayOrder: award.displayOrder,
 					});
 				};
-			} else {	//Pushes awards to array
+			} else {
 				formattedAwards.push({
 					awardData: award.awardData,
 					awardDataExtra: award.awardDataExtra,
@@ -186,7 +234,7 @@ app.get("/retroAchievements/:language/", async (req: express.Request, res: expre
 
 	await Promise.all([getAndFormatConsoles(), getAndFormatAwards()]);
 
-	const output: types.RetroAchievementsOutput = {
+	const output: MyTypes.RetroAchievementsOutput = {
 		awards: formattedAwards,
 		consoles: consoles[0],
 	}
@@ -194,34 +242,37 @@ app.get("/retroAchievements/:language/", async (req: express.Request, res: expre
 	res.status(200).json(output);
 });
 
-type ShortcutRequest = express.Request<{}, {}, types.NewShortcutData>
-async function uploadShortcut (req: ShortcutRequest, res: express.Response, next: express.NextFunction) {
+app.post("/shortcuts/", upload.single('file'), async (req: express.Request<{}, {}, MyTypes.NewShortcutData>, res: express.Response, next: express.NextFunction): Promise<void> => {
 	['title', 'url', 'folder'].forEach((key) => {
-		if (!req.body[key]) next(); //Skips file upload if it isn't a shortcut upload
+		if (!req.body[key]) next();
 	});
 
-	const correctId = CustomFunctions.normalize(req.body.title).replaceAll(' ', '-');
-
-	async function uploadImage (): Promise<void> { //Converts the image to webp with FFMpeg and the uploads it on Google Cloud
+	const newShortcutId: string = CustomFunctions.normalize(req.body.title);
+	
+	async function uploadImage (): Promise<void> {
 		const fileExtension: string = req.file!.filename.split('.').pop();
-		const outputPath: string = `temp/${correctId}.webp`;
+		const outputPath: string = `temp/${newShortcutId}.webp`;
 
 		async function convertImage (): Promise<void> {
-			ffmpeg(req.file!.path)
-				.outputOptions([
-					'-y',
-					'-vf', 'scale=-1:256',
-					'-pix_fmt', 'rgba',
-					'-lossless', '1'
-				])
-				.output(outputPath)
-				.on('end', () => {
-					console.log(`Conversion finished: ${outputPath}`);
-				})
-				.on('error', (err) => {
-					res.json({message: `ffmpeg: ${err.message}`});
-				})
-				.run();
+			return new Promise((resolve, reject) => {
+				ffmpeg(req.file!.path)
+					.outputOptions([
+						'-y',
+						'-vf', 'scale=-1:256',
+						'-pix_fmt', 'rgba',
+						'-lossless', '1'
+					])
+					.output(outputPath)
+					.on('end', () => {
+						console.log(`Conversion finished: ${outputPath}`);
+						resolve();
+					})
+					.on('error', (err) => {
+						res.json({message: `ffmpeg: ${err.message}`});
+						return reject(new Error(err.message));
+					})
+					.run();
+			});
 		};
 
 		await convertImage();
@@ -229,7 +280,9 @@ async function uploadShortcut (req: ShortcutRequest, res: express.Response, next
 		const folderPath: string = 'icons/dynamic/';
 		const bucket = storage.bucket('statisticshock_github_io_public');
 		
+		console.log(`Trying to upload file: ${outputPath.split('/').pop()}`);
 		await bucket.upload(outputPath, { destination: outputPath.replace('temp/', folderPath)});
+		console.log(`Successfully uploaded: ${outputPath.split('/').pop()}`);
 
 		if (bucket.file(outputPath.replace('temp/', folderPath)).exists()) {
 			console.log(`File uploaded: ${outputPath.replace('temp/', folderPath)}`);
@@ -237,35 +290,87 @@ async function uploadShortcut (req: ShortcutRequest, res: express.Response, next
 			console.log("File didn't upload");
 			res.status(500).json({ message: "File didn't upload" });
 		};
+
+		await unlink(req.file.path);
+		await unlink(outputPath);
 	};
 
-	await uploadImage()
-
-	async function getDataToReturn (): Promise<void | types.ShortcutResponse> { //Updates contents.json on Google Cloud
+	async function getDataToReturn (): Promise<MyTypes.UploadShortcutResponse> {
 		try {
-			const bucket = storage.bucket('statisticshock_github_io');
-			const file = bucket.file('contents.json');
-			let contents: types.PageContent = JSON.parse((await file.download()).toString());
+			const newImgPath: string = `https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/${newShortcutId}.webp`;
 
-			const newImgPath: string = `https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/${correctId}.webp`;
-			const section: types.Shortcut = contents.shortcuts.filter((shortcut) => shortcut.title === req.body.folder)[0];
+			await uploadImage();
 
-			let id: string;
-			if (section === undefined) {
-				id = CustomFunctions.normalize(req.body.folder).replaceAll(' ', '-');
-			} else {
-				id = section.id;
-			}
-
-			return { sectionId: id, newImgPath: newImgPath }
+			return { newImgPath: newImgPath };
 		} catch (err) {
 			res.status(500).json({ message: err.message });
 		};
 	};
 
-	const requestResponseData = await getDataToReturn() as types.ShortcutResponse;
-	res.status(200).json(requestResponseData);
-};
-app.post("/upload/", upload.single('file'), uploadShortcut, async (req: express.Request, res: express.Response) => {res.status(400).json({message: 'Wrong upload.'})});
+	const requestResponseData = await getDataToReturn() as MyTypes.UploadShortcutResponse;
+	res.status(201).json(requestResponseData);
+}, async (req: express.Request, res: express.Response) => {res.status(400).json({message: 'Wrong upload.'})});
 
-app.listen(PORT, () => console.log(`Server running...`));
+app.put("/shortcuts/", async (req: express.Request<{}, {}, MyTypes.ShortcutsUpdateData>, res: express.Response, next: express.NextFunction): Promise<void> => {
+	async function deleteOldImages (data: MyTypes.PageContent): Promise<void> {
+		if (!data) return;
+		else if (!data.shortcuts) return;
+		else if (!(data.shortcuts.length > 0)) return;
+		else {
+			const folderPrefix: string = 'icons/dynamic/';
+			const bucket: Bucket = storage.bucket('statisticshock_github_io_public');
+			const [files]: GetFilesResponse = await bucket.getFiles({ prefix: folderPrefix });
+			
+			const filenamesToKeep: Array<string> = [];
+			
+			for (const section of data.shortcuts) {
+				for (const shortcut of section.children) {
+					filenamesToKeep.push(shortcut.img.split(folderPrefix).pop());
+				};
+			};
+
+			for (const file of files) {
+				const fileExtension: string =  file.name.split('.').pop();
+				if (fileExtension !== 'webp') continue;
+				if (!(file.name in filenamesToKeep)) {
+					// await file.delete();
+					console.log(`deleted ${file.name}`);
+				};
+			};
+		};
+	};
+	
+	async function updateContentsJson (): Promise<void> {
+		const bucket = storage.bucket('statisticshock_github_io');
+		const file = bucket.file(`contents.json`);
+
+		let json: MyTypes.PageContent = await JSON.parse((await file.download()).toString());
+		
+		json.shortcuts = req.body.shortcuts;
+
+		await file.save(JSON.stringify(json, null, 2));
+		await deleteOldImages(json);
+	};
+
+	async function getDataToReturn (): Promise<MyTypes.PageContent> {
+		try {
+			const bucket = storage.bucket('statisticshock_github_io');
+			const file = bucket.file(`contents.json`);
+
+			await updateContentsJson();
+
+			await CustomFunctions.sleep(1500);
+
+			let json: MyTypes.PageContent = await JSON.parse((await file.download()).toString());
+
+			return json;
+		} catch (err) {
+			next();
+		};
+	};
+
+	const requestResponseData = await getDataToReturn() as MyTypes.PageContent;
+	res.status(201).json(requestResponseData);
+}, async (req: express.Request, res: express.Response) => {res.status(400).json({message: 'Update failed.'})});
+
+app.listen(PORT, () => console.log(`[${Intl.DateTimeFormat('pt-BR', {hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(new Date())}] Server running...`));

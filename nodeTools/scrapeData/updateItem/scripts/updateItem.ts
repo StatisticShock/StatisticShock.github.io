@@ -1,11 +1,11 @@
 import * as cheerio from 'cheerio';
-import util, { callbackify } from 'util';
-import { ScrapeFunctions, GoogleClass, mfc, sleep, links, main } from '../../scrapeData.js';
+import util from 'util';
+import { ScrapeFunctions, GoogleClass, links, main } from '../../scrapeData.js';
+import { MFC } from '../../../../util/types.js';
+import CustomFunctions from '../../../../util/functions.js';
 
-const scrapeFunctions = new ScrapeFunctions();
-
-export async function getNewData (elementId: string, json: mfc[]): Promise<[Partial<mfc>, Array<any>, Partial<mfc>[]] | undefined> {
-    let oldItemData: mfc = json.filter((item) => {return item.id === elementId})[0];
+export async function getNewData (elementId: string, json: MFC[]): Promise<[Partial<MFC>, Array<any>, Partial<MFC>[]] | undefined> {
+    let oldItemData: MFC = json.filter((item) => {return item.id === elementId})[0];
     let typeOfFigure: string | undefined = undefined;
 
     for (let [type, link] of links) {
@@ -30,7 +30,7 @@ export async function getNewData (elementId: string, json: mfc[]): Promise<[Part
         console.log(`Figure now is from the type "${typeOfFigure}".`)
     }
 
-    let newItemData: mfc = await scrapeFunctions.readMFCItem(elementId, typeOfFigure); // Get new data from the item
+    let newItemData: MFC = await ScrapeFunctions.readMFCItem(elementId, typeOfFigure); // Get new data from the item
 
     console.log(`Fetched item: ${newItemData.title}${String.fromCharCode(10)}`);
     const newKeys = compareKeys(oldItemData, newItemData);
@@ -38,7 +38,7 @@ export async function getNewData (elementId: string, json: mfc[]): Promise<[Part
     return [removeUndefinedFromObject(newItemData), newKeys, json];    
 };
 
-export async function updateItem (elementId: string, json: Partial<mfc>[], newData: Partial<mfc>): Promise<undefined | Partial<mfc>[]> {
+export async function updateItem (elementId: string, json: Partial<MFC>[], newData: Partial<MFC>): Promise<undefined | Partial<MFC>[]> {
     if (isLooselyEqual(json.filter((item) => item.id === elementId), newData)) {
         console.log('No changes needed.');
         return;
@@ -55,7 +55,7 @@ export async function updateItem (elementId: string, json: Partial<mfc>[], newDa
     };
 };
 
-function compareKeys (a: Partial<mfc>, b: Partial<mfc>): string[] {
+function compareKeys (a: Partial<MFC>, b: Partial<MFC>): string[] {
     let aKeys = Object.keys(a).filter((key) => a[key] !== undefined).sort();
     let bKeys = Object.keys(b).filter((key) => b[key] !== undefined).sort();
 
@@ -83,7 +83,7 @@ function isLooselyEqual(a: any, b: any) {
     return util.isDeepStrictEqual(cleanA, cleanB);
 };
 
-function removeUndefinedFromObject (object: Partial<mfc>): Partial<mfc> {
+function removeUndefinedFromObject (object: Partial<MFC>): Partial<MFC> {
     const keys = Object.keys(object);
     keys.forEach((key) => {
         if (object[key] === undefined) {

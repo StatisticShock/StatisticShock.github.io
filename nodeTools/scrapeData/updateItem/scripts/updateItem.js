@@ -1,7 +1,6 @@
 import * as cheerio from 'cheerio';
 import util from 'util';
 import { ScrapeFunctions, GoogleClass, links } from '../../scrapeData.js';
-const scrapeFunctions = new ScrapeFunctions();
 export async function getNewData(elementId, json) {
     let oldItemData = json.filter((item) => { return item.id === elementId; })[0];
     let typeOfFigure = undefined;
@@ -25,7 +24,7 @@ export async function getNewData(elementId, json) {
     if (typeOfFigure !== oldItemData.type) {
         console.log(`Figure now is from the type "${typeOfFigure}".`);
     }
-    let newItemData = await scrapeFunctions.readMFCItem(elementId, typeOfFigure); // Get new data from the item
+    let newItemData = await ScrapeFunctions.readMFCItem(elementId, typeOfFigure); // Get new data from the item
     console.log(`Fetched item: ${newItemData.title}${String.fromCharCode(10)}`);
     const newKeys = compareKeys(oldItemData, newItemData);
     return [removeUndefinedFromObject(newItemData), newKeys, json];

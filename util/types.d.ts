@@ -64,10 +64,21 @@ export type MangaList = {
 };
 
 //PAGE CONTENT
-export type NewShortcutData = {
-	folder: string,
+export type MFC = {
+	[k: string]: string;
+
+	id: string,
+	href: string,
+	img: string,
+	icon: string,
+	character: string,
+	characterJap: string,
+	source: string,
+	sourceJap: string,
+	classification: string,
+	category: string,
+	type: string,
 	title: string,
-	url: string
 };
 export type Shortcut = {
 	id: string,
@@ -78,7 +89,8 @@ export type Shortcut = {
 		alt: string,
 		index: number,
 		href: string,
-		img: string
+		img: string,
+		showOnMobile: boolean,
 	}>
 };
 export type Gamecard = {
@@ -96,16 +108,30 @@ export type Gamecard = {
 			value: string
 		}>
 	}>
-}
+};
+export type Headers = {
+	href: string,
+	name: string,
+	active: boolean
+};
 export type PageContent = {
+	updated: boolean,
 	shortcuts: Array<Shortcut>,
 	gamecards: Array<Gamecard>,
-	headers: Array<string>
+	headers: Array<Headers>,
+	mfc: Array<MFC>
 };
-export type ShortcutResponse = {
-	sectionId: string,
+export type UploadShortcutResponse = {
 	newImgPath: string,
 };
+export type NewShortcutData = {
+	folder: string,
+	title: string,
+	url: string
+};
+export type ShortcutsUpdateData = {
+	shortcuts: Array<Shortcut>
+}
 
 //RETROACHIEVEMENTS
 export type RetroAchievementsAward = {

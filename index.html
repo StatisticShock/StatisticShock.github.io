@@ -83,7 +83,7 @@
 			<span class="pop-up-title"></span>
 			<div class="data-container">
 				<p>Personagens&nbsp;<span id="mfc-character-original-name"></span></p>
-				<p>Origem&nbsp;<span id="mfc-character-origin"></span></p>
+				<p>Origem&nbsp;<span id="mfc-character-source"></span></p>
 				<p>Classificação<span id="mfc-classification"></span></p>
 			</div>
 		</div>
@@ -130,7 +130,7 @@
 			<p></p>
 			<button type="button" class="ok-button">OK</button>
 		</form>
-		<form class="pop-up create-shortcut" enctype="multipart/form-data" action="http://localhost:3000/upload">
+		<form class="pop-up create-shortcut" enctype="multipart/form-data">
 			<div class="pop-up-header">
 				<div>
 					<img src="./icon/favicon.svg">
@@ -138,9 +138,9 @@
 				<button type="button" class="close-button">&times;</button>
 			</div>
 			<div id="drag-and-drop"></div>
-			<button id="add-drag-and-drop-button" type="button">Adicionar item</button>
-			<div id="add-drag-and-drop">
-				<input type="text" name="folder" autocomplete="on"><span class='floating-label'>Pasta</span>
+			<button id="add-new-shortcut-button" type="button">Adicionar item</button>
+			<div id="add-drag-and-drop" style="height: 0;">
+				<input type="text" name="folder" autocomplete="off"><span class='floating-label'>Pasta</span>
 				<input type="text" name="url"><span class='floating-label'>URL</span>
 				<input type="text" name="title"><span class='floating-label'>Título</span>
 				<section id="drop-file">
@@ -149,7 +149,7 @@
 					<p><small>Apenas um arquivo</small></p>
 					<input type="file" name="file" multiple="false" accept="image/*">
 				</section>
-				<button id="add-drag-and-drop-submit" type="submit">Adicionar</button>
+				<button id="add-new-shortcut-submit" type="button">Adicionar</button>
 			</div>
 			<p></p>
 			<button type="button" class="ok-button">OK</button>
@@ -163,51 +163,5 @@
 		<p>Nada a dizer.</p>
 	</footer>
 	<script type="module" src="./src/script.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-	<script>
-		const dragAndDrop = document.querySelector('#drag-and-drop');
-		const shortcutBttn = document.querySelector('.create-shortcut.pop-up-open');
-
-		new Sortable(dragAndDrop, {
-			handle: '.drag-handle',
-			animation: 150,
-			ghostClass: 'ghost',
-			chosenClass: 'chosen-drag-class',
-			onStart: (ev) => {
-				dragAndDrop.querySelectorAll('.drag-and-drop-list').forEach((element) => {
-					const div = element.querySelector('div');
-					div.style.maxHeight = '0px'
-				});
-
-				setTimeout(() => {
-					ev.item.setAttribute('draggable', 'false')
-				}, 10)
-			},
-			onEnd: () => {
-				dragAndDrop.querySelectorAll('.drag-and-drop-list').forEach((element) => {
-					const div = element.querySelector('div');
-
-					if (element.getAttribute('x') === 'shown') {
-						div.style.height = 'fit-content'
-					};
-
-					div.setAttribute('style', div.getAttribute('style').match(/\-\-children\-length: \d+\;/)[0]);
-					element.removeAttribute('style');
-				})
-			},
-		});
-
-		shortcutBttn.addEventListener('click', () => {
-			setTimeout(() => {
-				dragAndDrop.querySelectorAll('.drag-and-drop-list > div').forEach((element) => {
-					new Sortable(element, {
-						handle: '.drag-handle',
-						animation: 150,
-						ghostClass: 'ghost',
-					});
-				});
-			}, 500);
-		});
-	</script>
 </body>
 </html>
