@@ -1,5 +1,7 @@
+import { AsyncLocalStorage } from "async_hooks";
 import CustomFunctions from "../util/functions.js";
 import * as MyTypes from "../util/types.js";
+import { text } from "stream/consumers";
 
 const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
 const mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
@@ -34,7 +36,7 @@ class PageBuilding {
 		card.style.height = 'fit-content';
 
 		if (parseFloat(getComputedStyle(aside).height) < parseFloat(getComputedStyle(shortcuts).height)) {
-			aside.style.height = shortcuts.offsetHeight + 'px';
+			aside.style.height = (shortcuts.offsetHeight + 10) + 'px';
 		} else {
 			shortcuts.style.height = aside.offsetHeight + 'px';
 		};
@@ -166,7 +168,10 @@ class PageBuilding {
 };
 
 class UserInterface {
-	static expandAside(): void { // RESPONSIVE 
+	static expandAside(): void { // RESPONSIVE
+		const asideShownName: string = 'asideIsShown'
+		if (localStorage.getItem(asideShownName) === null) localStorage.setItem(asideShownName, 'true');
+
 		const aside: HTMLElement = document.querySelector('aside')!;
 		const div: HTMLDivElement = aside.querySelector('.button-bar')!;
 		const bttn: HTMLButtonElement = aside.querySelector('#expand-button')!;
@@ -175,26 +180,26 @@ class UserInterface {
 		const flexContainer: HTMLDivElement = document.querySelector('.flex-container')!;
 		const input: HTMLInputElement = aside.querySelector('input')!;
 
+		if (localStorage.getItem(asideShownName) !== 'false') aside.classList.remove('hidden');
+
 		bttn.onclick = function (ev) {
 			if (!portrait) {
-				if (aside.getBoundingClientRect().width < window.innerWidth * 0.3) {
+				if (!aside.classList.contains('hidden')) {
 					span.style.transform = `rotate(180deg) translate(0%,-10%)`;
-					flexContainer.style.gridTemplateColumns = '54vw 2vw 1fr';
-					input.style.width = `calc((46vw - 2vw - 10px) * 0.9)`;
-					input.style.left = `calc(((44vw - 10px) * 0.1) / 2)`;
+					aside.classList.add('hidden');
+					localStorage.setItem(asideShownName, 'false');
 				} else {
 					span.style.transform = `rotate(0deg) translate(0%,-10%)`;
-					flexContainer.style.gridTemplateColumns = '76vw 2vw 1fr';
-					input.style.width = `calc((24vw - 2vw - 10px) * 0.9)`;
-					input.style.left = `calc(((22vw - 10px) * 0.1) / 2)`;
+					aside.classList.remove('hidden');
+					localStorage.setItem(asideShownName, 'true');
 				};
 			} else {
 				if (!aside.classList.contains('hidden')) {
 					aside.classList.add('hidden');
-					bttn.style.transform = 'rotate(180deg) translate(20px, 0)'
+					localStorage.setItem(asideShownName, 'false');
 				} else {
 					aside.classList.remove('hidden');
-					bttn.style.transform = 'translate(20px, 0)'
+					localStorage.setItem(asideShownName, 'true');
 				};
 			};
 		};
@@ -230,16 +235,27 @@ class UserInterface {
 
 		let input = label.querySelector('input') as HTMLInputElement;
 
-		const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-		document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-		input.checked = isDark;
+		const themeStyleName: string = 'darkOrLightTheme';
+		if (localStorage.getItem(themeStyleName) === null) {
+			const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+			document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+			input.checked = isDark;
+		} else if (localStorage.getItem(themeStyleName) === 'dark') {
+			input.checked = true;
+		} else if (localStorage.getItem(themeStyleName) === 'light') {
+			document.documentElement.setAttribute('data-theme', 'light');
+		};
 
 		input.addEventListener('change', (ev) => {
-			if (input.checked) {
-				document.documentElement.setAttribute('data-theme', 'dark');
-			} else {
-				document.documentElement.setAttribute('data-theme', 'light');
-			};
+			setTimeout(() => {
+				if (input.checked) {
+					document.documentElement.setAttribute('data-theme', 'dark');
+					localStorage.setItem(themeStyleName, 'dark');
+				} else {
+					document.documentElement.setAttribute('data-theme', 'light');
+					localStorage.setItem(themeStyleName, 'light');
+				};
+			}, 100);
 		});
 	};
 
@@ -624,8 +640,14 @@ class CloudStorageData {
 		loadHeaders();
 	};
 
-	static moveButtonsContainer60 = '<div class="move-buttons-container" style="height: 60px;"><button type="button" class="move-up"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(-90deg);"></button><button type="button" class="move-down"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(90deg);"></button></div>';
-	static moveButtonsContainer40 = '<div class="move-buttons-container" style="height: 40px;"><button type="button" class="move-up"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(-90deg);"></button><button type="button" class="move-down"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(90deg);"></button></div>';
+	static shortcutButtons = {
+		editBttn: '<span class="edit-shortcut-wrapper"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span>',
+		checkBttn: '<span class="edit-shortcut-wrapper"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg"></span>',
+		deleteBttn (sourceImg: HTMLImageElement): string {return `<span class="delete-shortcut" old-data="src: ${sourceImg.src};"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/x.svg"></span>`},
+		imageWrapper (sourceImg: string): string {return `<span class="shortcut-icon-wrapper"><img src="${sourceImg}" draggable="false"><input type="file" accept="image/*"></span>`},
+		moveButtonsContainer60: '<div class="move-buttons-container" style="height: 60px;"><button type="button" class="move-up"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(-90deg);"></button><button type="button" class="move-down"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(90deg);"></button></div>',
+		moveButtonsContainer40: '<div class="move-buttons-container" style="height: 40px;"><button type="button" class="move-up"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(-90deg);"></button><button type="button" class="move-down"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(90deg);"></button></div>',
+	};
 
 	static async createNewShortcuts (): Promise<void> {	// NEED TO BE COMPLETED
 		const popUp: HTMLFormElement = document.querySelector('.pop-up.create-shortcut')!;
@@ -730,7 +752,7 @@ class CloudStorageData {
 					}
 				});
 				
-				const itemListStr: string = `<div id="${CustomFunctions.normalize(formData.get('title')!.toString())}-list" class="drag-and-drop-item" draggable="false" href="${formData.get('url')!.toString()}">${this.moveButtonsContainer40}${formData.get('title')!.toString()}<span class="shortcut-icon"><img src="${textJson.newImgPath}" draggable="false"><input type="file" accept="image/*"></span><span class="edit-shortcut"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></div>`
+				const itemListStr: string = `<div id="${CustomFunctions.normalize(formData.get('title')!.toString())}-list" class="drag-and-drop-item" draggable="false" href="${formData.get('url')!.toString()}">${CloudStorageData.shortcutButtons.moveButtonsContainer40}${formData.get('title')!.toString()}<span class="shortcut-icon-wrapper"><img src="${textJson.newImgPath}" draggable="false"><input type="file" accept="image/*"></span><span class="edit-shortcut-wrapper"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></div>`
 
 				if (targetListToAddNewData === null) {
 					targetListToAddNewData = document.createElement('div');
@@ -738,7 +760,7 @@ class CloudStorageData {
 					targetListToAddNewData.classList.add('drag-and-drop-list');
 					targetListToAddNewData.classList.add('hidden');
 					targetListToAddNewData.setAttribute('x', 'hidden');
-					targetListToAddNewData.innerHTML = `<h3 class="drag-and-drop-list-header">${this.moveButtonsContainer60}${formData.get('folder')!.toString()}<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></h3><div style="--children-length: 1;">${itemListStr}</div>`;
+					targetListToAddNewData.innerHTML = `<h3 class="drag-and-drop-list-header">${CloudStorageData.shortcutButtons.moveButtonsContainer60}${formData.get('folder')!.toString()}<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></h3><div style="--children-length: 1;">${itemListStr}</div>`;
 					dragAndDrop.appendChild(targetListToAddNewData);
 				} else {
 
@@ -872,7 +894,7 @@ class CloudStorageData {
 	static async updateShortCut (): Promise<void> {
 		function toggleHeaderInput(header: HTMLElement, forceText?: boolean): void {
 			if (header.querySelector('input') === null) {
-				header.innerHTML = forceText ? header.innerHTML : `${CloudStorageData.moveButtonsContainer60}</div><input type="text" value="${header.textContent}"><span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg"></span>`;
+				header.innerHTML = forceText ? header.innerHTML : `${CloudStorageData.shortcutButtons.moveButtonsContainer60}</div><input type="text" value="${header.textContent}"><span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg"></span>`;
 			} else {
 				const input = header.querySelector('input') as HTMLInputElement;
 				header.parentElement!.id = `${CustomFunctions.normalize(input.value)}-list`
@@ -883,24 +905,26 @@ class CloudStorageData {
 
 		function toggleShortcutInput(shorcut: HTMLElement, forceText?: boolean): void {
 			if (shorcut.querySelector(':scope > input') === null) {
-				shorcut.innerHTML = forceText ? shorcut.innerHTML : `${CloudStorageData.moveButtonsContainer40}</div><input type="text" value="${shorcut.textContent}"><span class="delete-shortcut" old-data="src: ${(shorcut.querySelectorAll('span img')[0] as HTMLImageElement).src};"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/x.svg"></span><span class="edit-shortcut"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg"></span>`;
+				const textWrapper: HTMLSpanElement = shorcut.querySelector('span.text-wrapper')!;
+				const imgWrapper: HTMLSpanElement = shorcut.querySelector('span.shortcut-icon-wrapper')!;
+				const editWrapper: HTMLSpanElement = shorcut.querySelector('span.edit-shortcut-wrapper')!;
+				
+				textWrapper.outerHTML = forceText ? textWrapper.outerHTML : `<input type="text" value="${textWrapper.textContent}">`;
+				imgWrapper.outerHTML = forceText ? imgWrapper.outerHTML : CloudStorageData.shortcutButtons.deleteBttn(imgWrapper.querySelector('img') as HTMLImageElement);
+				editWrapper.outerHTML = forceText ? editWrapper.outerHTML : CloudStorageData.shortcutButtons.checkBttn;
 			} else {
-				const input = shorcut.querySelector(':scope > input') as HTMLInputElement;
+				const input: HTMLInputElement = shorcut.querySelector(':scope > input') as HTMLInputElement;
+				const deleteBttn: HTMLSpanElement = shorcut.querySelector('span.delete-shortcut')!;
+				const checkBttn: HTMLSpanElement = shorcut.querySelector('span.edit-shortcut-wrapper')!;
+
 				shorcut.id = `${CustomFunctions.normalize(input.value)}-list`
-				shorcut.innerHTML = `${CloudStorageData.moveButtonsContainer40}${input.value}<span class="shortcut-icon"><img src="${shorcut.querySelector('.delete-shortcut')!.getAttribute('old-data')!.replace(/(src\: )|(\;)/g, '')}" draggable="false"><input type="file" accept="image/*"></span><span class="edit-shortcut"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span>`;
+				input.outerHTML = `<span class="text-wrapper">${input.value}</span>`;
+				deleteBttn.outerHTML = CloudStorageData.shortcutButtons.imageWrapper(deleteBttn.getAttribute('old-data')!.replace(/(src\: |\;)/g, ''));
+				checkBttn.outerHTML = CloudStorageData.shortcutButtons.editBttn;
 			};
 		};
 
-		function updateIcon(shorcut: HTMLElement) {
-			const icon: HTMLImageElement = shorcut.querySelectorAll('img')[1];
-			const src: string = icon.src;
-
-			icon.outerHTML = `<input type="file" accept="image/*">`
-
-			const newIcon = Array.from(shorcut.querySelectorAll('input')).pop() as HTMLInputElement;
-
-			newIcon.files = null;
-		};
+		function updateIcon(shorcut: HTMLElement) {};
 
 		const popUp: HTMLFormElement = document.querySelector('.pop-up.create-shortcut')!;
 		const dragAndDrop: HTMLDivElement = popUp.querySelector('#drag-and-drop')!;
@@ -922,7 +946,7 @@ class CloudStorageData {
 				else if ((ev.target as HTMLElement).tagName === 'INPUT') return;
 				// else if ((ev.target as HTMLElement) === shortcut.querySelectorAll('img')[1]) updateIcon(shortcut);	I don't remember what was the purpose of this
 				else if (shortcut.querySelector(':scope > input') !== null && shortcut.querySelector('input')!.value === '') return;
-				else if (CustomFunctions.isParent(ev.target as HTMLElement, shortcut.querySelector('.edit-shortcut') as HTMLSpanElement)) toggleShortcutInput(shortcut as HTMLElement);
+				else if (CustomFunctions.isParent(ev.target as HTMLElement, shortcut.querySelector('.edit-shortcut-wrapper') as HTMLSpanElement)) toggleShortcutInput(shortcut as HTMLElement);
 			};
 
 			handleToggleHeaderInput();
@@ -949,13 +973,13 @@ class CloudStorageData {
 			dragAndDrop.innerHTML = '';
 
 			for (const shortcut of content.shortcuts) {
-				dragAndDrop.insertAdjacentHTML('beforeend', `<div id="${shortcut.id}-list" class="drag-and-drop-list" draggable="false" x="shown"><h3 class="drag-and-drop-list-header">${CloudStorageData.moveButtonsContainer60}${shortcut.title}<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></h3><div style="--children-length: ${shortcut.children.length};"></div></div>`);
+				dragAndDrop.insertAdjacentHTML('beforeend', `<div id="${shortcut.id}-list" class="drag-and-drop-list" draggable="false" x="shown"><h3 class="drag-and-drop-list-header">${CloudStorageData.shortcutButtons.moveButtonsContainer60}${shortcut.title}<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></h3><div style="--children-length: ${shortcut.children.length};"></div></div>`);
 
 				const dragAndDropList: HTMLDivElement = dragAndDrop.querySelector(`#${shortcut.id}-list > div`)!;
 				const dragAndDropListHeader: HTMLElement = dragAndDropList.parentElement!.querySelector('h3')!;
 
 				for (const child of shortcut.children) {
-					dragAndDropList.innerHTML += `<div id="${child.id}-list" class="drag-and-drop-item" draggable="false" href="${child.href}">${CloudStorageData.moveButtonsContainer40}${child.alt}<span class="shortcut-icon"><img src="${child.img}" draggable="false"><input type="file" accept="image/*"></span><span class="edit-shortcut"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></div>`;
+					dragAndDropList.innerHTML += `<div id="${child.id}-list" class="drag-and-drop-item" draggable="false" href="${child.href}">${CloudStorageData.shortcutButtons.moveButtonsContainer40}<span class="text-wrapper">${child.alt}</span>${CloudStorageData.shortcutButtons.imageWrapper(child.img)}<span class="edit-shortcut-wrapper"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span></div>`;
 				};
 			};
 

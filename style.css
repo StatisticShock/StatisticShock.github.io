@@ -507,7 +507,7 @@ img {
 						color: var(--contrast-color-0);
 					}
 
-					& .shortcut-icon {
+					& .shortcut-icon-wrapper {
 						width: 100%;
 						aspect-ratio: 1;
 						display: flex;
@@ -558,7 +558,7 @@ img {
 						}
 					}
 
-					& .edit-shortcut {
+					& .edit-shortcut-wrapper {
 						cursor: pointer;
 						height: 30px;
 						border-radius: 100%;
@@ -574,7 +574,7 @@ img {
 						}
 					}
 
-					& .edit-shortcut:hover {
+					& .edit-shortcut-wrapper:hover {
 						background-color: var(--contrast-color-5);
 						border: 1px solid var(--contrast-color-0);
 					}
@@ -1417,7 +1417,7 @@ section {
 @media (orientation: landscape) {
 	.flex-container{
 		display: grid;
-		grid-template-columns: 76vw 2vw 1fr;
+		grid-template-columns: 54vw 2vw 1fr;
 		transition: grid-template-columns 0.3s ease;
 
 		& #shortcuts {
@@ -1433,8 +1433,8 @@ section {
 			grid-template-columns: 10px 43vw;
 
 			& input {
-				width: calc((24vw - 2vw - 10px) * 0.9);
-				left: calc(((22vw - 10px) * 0.1) / 2);
+				width: calc((46vw - 2vw - 10px) * 0.9);
+				left: calc(((44vw - 10px) * 0.1) / 2);
 			}
 
 			& .card {
@@ -1474,6 +1474,15 @@ section {
 					}
 				}
 			}
+		}
+	}
+
+	.flex-container:has(aside.hidden) {
+		grid-template-columns: 76vw 2vw 1fr;
+
+		& aside input {
+			width: calc((24vw - 2vw - 10px) * 0.9);
+			left: calc(((22vw - 10px) * 0.1) / 2);
 		}
 	}
 
@@ -1534,7 +1543,7 @@ section {
 
 				& button {
 					top: 10px;
-					transform: rotate(180deg) translate(20px, 0);
+					transform: translate(20px, 0);
 
 					& span {
 						color: black;
@@ -1546,6 +1555,10 @@ section {
 
 		& aside.hidden {
 			width: 20px;
+
+			& .button-bar button {
+				transform: rotate(180deg) translate(20px, 0);
+			}
 		}
 	}
 
