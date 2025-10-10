@@ -11,6 +11,11 @@ import * as ra from '@retroachievements/api';
 import CustomFunctions from '../util/functions.js';
 import fs from 'fs';
 import util from 'util';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { typeOfEndpoints } from './endpoints.js';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const unlink = util.promisify(fs.unlink);
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -47,12 +52,29 @@ const multerStorage = multer.diskStorage({
     }
 });
 const upload = multer({ storage: multerStorage });
-app.use(cors(corsHeaders), express.json());
 const MAL_API_URL = "https://api.myanimelist.net/v2/";
 const MAL_ACCESS_TOKEN = process.env.MAL_ACCESS_TOKEN;
+app.use(cors(corsHeaders), express.json());
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'views')));
+app.all("/", (req, res) => {
+    res.render('server', { typeOfEndpoints });
+});
+app.get("/version/", async (req, res) => {
+    const serverPath = path.join(__dirname, 'package.json');
+    const serverPckg = fs.readFileSync(serverPath, 'utf-8');
+    const serverVersion = serverPckg.match(/\"version\"\: \"[\d\.]+\"\,/)[0].match(/[\d\.]+/)[0];
+    const pagePath = path.join(__dirname.replace(path.basename(__dirname), ''), 'package.json');
+    const pagePckg = fs.readFileSync(pagePath, 'utf-8');
+    const pageVersion = pagePckg.match(/\"version\"\: \"[\d\.]+\"\,/)[0].match(/[\d\.]+/)[0];
+    res.status(200).json({ page: pageVersion, server: serverVersion });
+});
 app.get("/myanimelist/:type", async (req, res) => {
     const { type } = req.params;
     let { username, offset } = req.query;
+    if (username === undefined)
+        res.status(400).json({ message: `Error: There should be an username.` });
     async function fetchMyAnimeList(type, username, offset, res) {
         if (type !== 'animelist' && type !== 'mangalist')
             res.status(400).json({ message: `Couldn't fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".` });
@@ -348,4 +370,5 @@ app.put("/shortcuts/", async (req, res, next) => {
     const requestResponseData = await getDataToReturn();
     res.status(201).json(requestResponseData);
 }, async (req, res) => { res.status(400).json({ message: 'Update failed.' }); });
+app.delete("/shortcuts/", async (req, res) => { });
 app.listen(PORT, () => console.log(`[${Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date())}] Server running...`));

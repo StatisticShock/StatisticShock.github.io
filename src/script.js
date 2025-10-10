@@ -180,6 +180,22 @@ var PageBuilding = /** @class */ (function () {
         });
     };
     ;
+    PageBuilding.putVersionOnFooter = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var version, footer;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, fetch("".concat(server, "version")).then(function (res) { return res.json(); })];
+                    case 1:
+                        version = _a.sent();
+                        footer = document.querySelector('footer');
+                        footer.innerHTML += "<p><small>ver. ".concat(version.page, "</small></p>");
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    ;
     return PageBuilding;
 }());
 ;
@@ -1653,6 +1669,7 @@ function onLoadFunctions(ev) {
                     PageBuilding.figuresSitDown();
                     PageBuilding.adjustGamecard();
                     PageBuilding.adjustGamecardText(0);
+                    PageBuilding.putVersionOnFooter();
                     UserInterface.expandAside();
                     UserInterface.makeAsideButtonFollow();
                     UserInterface.makeSwitchesSlide();

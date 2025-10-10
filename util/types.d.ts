@@ -181,9 +181,13 @@ export type RetroAchievementsConsole = {
 export type RetroAchievementsOutput = {
 	"awards": Array<RetroAchievementsFormattedAward>,
 	"consoles": Array<RetroAchievementsConsole>,
-}
+};
 
 //SERVER INTERACTION
 export type ErrorJson = {
 	message: string
-}
+};
+export type Version = {
+	page: string,
+	server: string,
+};

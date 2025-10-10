@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>StatisticShock.GitHub.io Server</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<header>
+		StatisticShock.GitHub.io Server
+	</header>
+	<div id="container">
+		<aside>
+			<div class="language-wrapper" style="display: none;">
+				<p id="language">Language</p>
+				<div>
+					<input type="radio" id="languageChoice1" name="language" value="en-US" checked="true"/>
+					<label for="languageChoice1">English (US)</label>
+					<input type="radio" id="languageChoice2" name="language" value="pt-BR" />
+					<label for="languageChoice2">Português (Brasil)</label>
+				</div>
+			</div>
+			<nav>
+				<a href="#endpoints" style="color: var(--clr-primary-a0); text-decoration: none; margin: 3em 0;">Endpoints</a>
+				<div>
+					<% typeOfEndpoints.forEach(function (type) { %>
+						<% if (type.endpoints.length === 0) {} else { %>
+							<a href=<%= '#' + type.method.toLowerCase() %> style="color: var(--clr-primary-a0); text-decoration: none;"><%= type.method %></a>
+							<ul>
+								<% type.endpoints.forEach(function (endpoint) { %>
+									<% const shortcut = '/' + endpoint.route.split('/')[1] + '/' %>
+									<li><a href=<%= '#' + type.method.toLowerCase() + '-' + endpoint.id %>><%= shortcut %></a></li>
+								<% }); %>
+							</ul>
+						<% }; %>
+					<% }); %>
+				</div>
+			</nav>
+		</aside>
+		<div class="data-wrapper">
+			<h1 id="endpoints" style="margin: 0 auto; text-align: center;">ENDPOINTS</h1>
+			<% typeOfEndpoints.forEach(function (type) { %>
+				<% if (type.endpoints.length === 0) {} else { %>
+					<h2 id=<%= type.method.toLowerCase() %>><%= type.method %></h2>
+					<ul>
+						<% type.endpoints.forEach(function (endpoint) { %>
+							<div class="endpoint-wrapper" id=<%= type.method.toLowerCase() + '-' + endpoint.id %>>
+								<h3 class="route"><%= endpoint.route %></h1>
+								<div class="description"><%- endpoint.descriptionEnUs.map((line) => line.split('\n')).map((line) => `<p>${line}</p>`).join('') %></div>
+								<% if (endpoint.parameters) { %>
+									<div class="parameter">
+										<% endpoint.parameters.forEach((parameter) => { %>
+											<div class="parameter-name"><%- parameter[0] %></div>
+											<div class="parameter-description"><%- parameter[1].replaceAll('\n', '<br>') %></div>
+										<% }); %>
+									</div>
+								<% } %>
+								<% if (endpoint.examples) { %>
+									<div class="examples">
+										<% endpoint.examples.forEach((example) => { %>
+											<div class="example"><p><span pos="right">&gt;</span>&nbsp;<%- example[0] %></p></div>
+											<div class="example-output"><%- example[1].split('\n').map((line) => '<p>' + line.replaceAll('  ', '&nbsp;&nbsp;') + '</p>').join('') %></div>
+										<% }); %>
+									</div>
+								<% }; %>
+							</div>
+						<% }) %>
+					</ul>
+				<% }; %>
+			<% }); %>
+		</div>
+	</div>
+	<footer></footer>
+	<script src="./script.js"></script>
+	<script>
+		function getCheckedValue(groupName) {
+			const radios = document.getElementsByName(groupName);
+
+			for(const radio of radios) {
+				if(radio.checked) {
+					return radio.value;
+				};
+			};
+
+			return null;
+		};
+
+		function changeLanguage () {
+			const div = document.querySelector('.language-wrapper div');
+			div.addEventListener('click', detectLanguageChange);
+
+			function detectLanguageChange () {
+				switch (getCheckedValue('language')) {
+					case 'pt-BR':
+						document.querySelector('p#language').innerHTML = 'Idioma';
+					case 'en-US':
+						document.querySelector('p#language').innerHTML = 'Language';
+					default:
+						document.querySelector('p#language').innerHTML = 'Language';
+				}
+			};
+		};
+
+		function toggleExamples () {
+			const exampleHeaders = document.querySelectorAll('div.example');
+
+			exampleHeaders.forEach((example) => {
+				example.addEventListener('click', (ev) => {
+					if (example.querySelector(':scope > p > span').getAttribute('pos') === 'right') {
+						example.querySelector(':scope > p > span').setAttribute('pos', 'down');
+					} else {
+						example.querySelector(':scope > p > span').setAttribute('pos', 'right');
+					};
+				});
+			});
+		};
+
+		async function putVersionOnFooter () {
+			const version = await fetch(`/version`).then((res) => res.json());
+			const footer = document.querySelector('footer');
+
+			footer.innerHTML += `<p><small>ver. ${version.server}</small></p>`;
+		};
+
+		toggleExamples();
+		changeLanguage();
+		putVersionOnFooter();
+	</script>
+</body>
+</html>

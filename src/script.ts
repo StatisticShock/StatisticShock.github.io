@@ -165,6 +165,13 @@ class PageBuilding {
 			});
 		});
 	};
+
+	static async putVersionOnFooter (): Promise<void> {
+		const version: MyTypes.Version = await fetch(`${server}version`).then((res) => res.json());
+		const footer: HTMLElement = document.querySelector('footer')!;
+
+		footer.innerHTML += `<p><small>ver. ${version.page}</small></p>`;
+	};
 };
 
 class UserInterface {
@@ -1562,6 +1569,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 	PageBuilding.figuresSitDown();
 	PageBuilding.adjustGamecard();
 	PageBuilding.adjustGamecardText(0);
+	PageBuilding.putVersionOnFooter();
 
 	UserInterface.expandAside();
 	UserInterface.makeAsideButtonFollow();

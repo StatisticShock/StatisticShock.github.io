@@ -1,0 +1,288 @@
+@media (prefers-color-scheme: light) {
+	:root {
+		/** Base colors */
+		--clr-dark-a0: #000000;
+		--clr-light-a0: #ffffff;
+
+		/** Theme primary colors */
+		--clr-primary-a0: #121212;
+		--clr-primary-a10: #101010;
+		--clr-primary-a20: #0f0f0f;
+		--clr-primary-a30: #0d0d0d;
+		--clr-primary-a40: #0b0b0b;
+		--clr-primary-a50: #090909;
+
+		/** Theme surface colors */
+		--clr-surface-a0: #dddddd;
+		--clr-surface-a10: #d2d2d2;
+		--clr-surface-a20: #c8c8c8;
+		--clr-surface-a30: #bdbdbd;
+		--clr-surface-a40: #b3b3b3;
+		--clr-surface-a50: #a8a8a8;
+
+		/** Theme tonal surface colors */
+		--clr-surface-tonal-a0: #c6c6c6;
+		--clr-surface-tonal-a10: #bebebe;
+		--clr-surface-tonal-a20: #b6b6b6;
+		--clr-surface-tonal-a30: #aeaeae;
+		--clr-surface-tonal-a40: #a6a6a6;
+		--clr-surface-tonal-a50: #9e9e9e;
+
+		/** Success colors */
+		--clr-success-a0: #22946e;
+		--clr-success-a10: #32d09c;
+		--clr-success-a20: #71deba;
+
+		/** Warning colors */
+		--clr-warning-a0: #a87a2a;
+		--clr-warning-a10: #d2a14c;
+		--clr-warning-a20: #e2c189;
+
+		/** Danger colors */
+		--clr-danger-a0: #9c2121;
+		--clr-danger-a10: #d43535;
+		--clr-danger-a20: #e27474;
+
+		/** Info colors */
+		--clr-info-a0: #21498a;
+		--clr-info-a10: #306ac8;
+		--clr-info-a20: #6994db;
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		/** Base colors */
+		--clr-dark-a0: #000000;
+		--clr-light-a0: #ffffff;
+
+		/** Theme primary colors */
+		--clr-primary-a0: #dddddd;
+		--clr-primary-a10: #e1e1e1;
+		--clr-primary-a20: #e4e4e4;
+		--clr-primary-a30: #e8e8e8;
+		--clr-primary-a40: #ececec;
+		--clr-primary-a50: #f0f0f0;
+
+		/** Theme surface colors */
+		--clr-surface-a0: #121212;
+		--clr-surface-a10: #282828;
+		--clr-surface-a20: #3f3f3f;
+		--clr-surface-a30: #575757;
+		--clr-surface-a40: #717171;
+		--clr-surface-a50: #8b8b8b;
+
+		/** Theme tonal surface colors */
+		--clr-surface-tonal-a0: #232323;
+		--clr-surface-tonal-a10: #383838;
+		--clr-surface-tonal-a20: #4d4d4d;
+		--clr-surface-tonal-a30: #646464;
+		--clr-surface-tonal-a40: #7c7c7c;
+		--clr-surface-tonal-a50: #959595;
+
+		/** Success colors */
+		--clr-success-a0: #22946e;
+		--clr-success-a10: #47d5a6;
+		--clr-success-a20: #9ae8ce;
+
+		/** Warning colors */
+		--clr-warning-a0: #a87a2a;
+		--clr-warning-a10: #d7ac61;
+		--clr-warning-a20: #ecd7b2;
+
+		/** Danger colors */
+		--clr-danger-a0: #9c2121;
+		--clr-danger-a10: #d94a4a;
+		--clr-danger-a20: #eb9e9e;
+
+		/** Info colors */
+		--clr-info-a0: #21498a;
+		--clr-info-a10: #4077d1;
+		--clr-info-a20: #92b2e5;
+	}
+}
+
+body {
+	height: 100vh;
+	width: 100vw;
+	margin: 0;
+	padding: 0;
+	line-height: 1.25;
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: var(--clr-surface-a10);
+	color: var(--clr-primary-a0);
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	grid-template-columns: 100%;
+	overflow: scroll;
+
+	& header {
+		display: block;
+		position: relative;
+		height: fit-content;
+		margin: 0;
+		padding: 1em 10vw;
+		text-align: center;
+		font-size: 2em;
+		background-color: var(--clr-surface-a0);
+	}
+
+	& div#container {
+		display: grid;
+		width: 100%;
+		grid-template-columns: 15% 85%;
+		grid-auto-flow: column;
+		overflow: hidden;
+
+		& aside {
+			background-color: var(--clr-surface-a20);
+			padding: 0 20px;
+			font-family: monospace, monospace;
+
+			& div.language-wrapper {
+				border-bottom: 2px solid var(--clr-surface-a0);
+
+				& div {
+					display: grid;
+					grid-template-columns: auto 1fr;
+					align-items: center;
+					row-gap: 5px;
+					margin: 0 0 1em;
+				}
+			}
+
+			& nav {
+				position: relative;
+				line-height: 1.5em;
+				position: relative;
+				height: 100%;
+				top: 0;
+				max-width: 20vw;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+
+				& div {
+					width: auto;
+					overflow-x: hidden;
+					overflow-y: scroll;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					
+					& ul {
+						margin: 0 auto;
+					}
+				}
+			}
+		}
+
+		& div.data-wrapper {
+			position: relative;
+			padding: 0 0.75vw;
+			overflow-y: scroll;
+			padding: 1%;
+			scrollbar-width: none;
+			-ms-overflow-style: none;
+
+			& div.endpoint-wrapper {
+				border-bottom: 4px solid var(--clr-surface-tonal-a50);
+
+				& div.parameter {
+					display: grid;
+					grid-template-columns: auto 1fr;
+					padding: 0;
+					margin: 0 0 1em;
+
+					& div.parameter-name {
+						background-color: var(--clr-surface-tonal-a50);
+						color: var(--clr-surface-a0);
+						border: 2px solid var(--clr-primary-a0);
+						text-align: right;
+						padding: 5px;
+					}
+
+					& div.parameter-description {
+						background-color: var(--clr-surface-tonal-a50);
+						color: var(--clr-surface-a0);
+						border: 2px solid var(--clr-primary-a0);
+						text-align: left;
+						padding: 5px;
+					}
+				}
+
+				& div.examples {
+					display: grid;
+					grid-auto-flow: row;
+					margin: 0 0 1em;
+					font-family: monospace, monospace;
+
+					& div.example {
+						background-color: var(--clr-surface-a20);
+						color: var(--clr-info-a20);
+						line-height: 1;
+						font-size: 1;
+						cursor: pointer;
+					}
+
+					& div.example-output {
+						background-color: var(--clr-primary-a0);
+						color: var(--clr-success-a0);
+						transition: 0.3s ease all;
+						overflow-y: scroll;
+					}
+
+					& div.example, & div.example-output {
+						line-height: .125em;
+						font-size: 0.9em;
+						padding: 0 10px;
+					}
+
+					& div.example:has(p > span[pos="right"]) + div.example-output {
+						height: 0;
+					};
+					
+					& div.example > p > span {
+						display: inline-block;
+						transition: 0.3s ease all;
+					};
+
+					& div.example > p > span[pos="right"] {
+						transform: rotate(0deg);
+					}
+
+					& div.example:has(p > span[pos="down"]) + div.example-output {
+						height: 10em;
+					};
+
+					& div.example > p > span[pos="down"] {
+						transform:rotate(90deg);
+					}
+				}
+			}
+		}
+
+		& div.data-wrapper::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	& footer {
+		background-color: var(--clr-surface-a0);
+		margin: 0 auto;
+		text-align: center;
+		align-content: center;
+		height: 3em;
+		width: 100%;
+	}
+
+	& a {
+		color: var(--clr-info-a10);
+	}
+
+	& span.codeblock {
+		background-color: var(--clr-surface-tonal-a40);
+		color: var(--clr-surface-a0);
+		border-radius: 5px;
+		padding: 0.2em;
+		font-family: monospace, monospace;
+	}
+}
