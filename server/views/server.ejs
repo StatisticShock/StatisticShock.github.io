@@ -24,51 +24,52 @@
 			<nav>
 				<a href="#endpoints" style="color: var(--clr-primary-a0); text-decoration: none; margin: 3em 0;">Endpoints</a>
 				<div>
-					<% typeOfEndpoints.forEach(function (type) { %>
-						<% if (type.endpoints.length === 0) {} else { %>
-							<a href=<%= '#' + type.method.toLowerCase() %> style="color: var(--clr-primary-a0); text-decoration: none;"><%= type.method %></a>
+					<ç typeOfEndpoints.forEach(function (type) { ç>
+						<ç if (type.endpoints.length === 0) {} else { ç>
+							<a href=<ç= '#' + type.method.toLowerCase() ç> style="color: var(--clr-primary-a0); text-decoration: none;"><ç= type.method ç></a>
 							<ul>
-								<% type.endpoints.forEach(function (endpoint) { %>
-									<% const shortcut = '/' + endpoint.route.split('/')[1] + '/' %>
-									<li><a href=<%= '#' + type.method.toLowerCase() + '-' + endpoint.id %>><%= shortcut %></a></li>
-								<% }); %>
+								<ç type.endpoints.forEach(function (endpoint) { ç>
+									<ç const shortcut = '/' + endpoint.route.split('/')[1] + '/' ç>
+									<li><a href=<ç= '#' + type.method.toLowerCase() + '-' + endpoint.id ç>><ç= shortcut ç></a></li>
+								<ç }); ç>
 							</ul>
-						<% }; %>
-					<% }); %>
+						<ç }; ç>
+					<ç }); ç>
 				</div>
 			</nav>
 		</aside>
 		<div class="data-wrapper">
 			<h1 id="endpoints" style="margin: 0 auto; text-align: center;">ENDPOINTS</h1>
-			<% typeOfEndpoints.forEach(function (type) { %>
-				<% if (type.endpoints.length === 0) {} else { %>
-					<h2 id=<%= type.method.toLowerCase() %>><%= type.method %></h2>
+			<ç typeOfEndpoints.forEach(function (type) { ç>
+				<ç if (type.endpoints.length === 0) {} else { ç>
+					<h2 id=<ç= type.method.toLowerCase() ç>><ç= type.method ç></h2>
+					<p><ç- type.descriptionEnUs.split('\n').map((line) => '<p>' + line + '</p>').join('') ç></p>
 					<ul>
-						<% type.endpoints.forEach(function (endpoint) { %>
-							<div class="endpoint-wrapper" id=<%= type.method.toLowerCase() + '-' + endpoint.id %>>
-								<h3 class="route"><%= endpoint.route %></h1>
-								<div class="description"><%- endpoint.descriptionEnUs.map((line) => line.split('\n')).map((line) => `<p>${line}</p>`).join('') %></div>
-								<% if (endpoint.parameters) { %>
+						<ç type.endpoints.forEach(function (endpoint) { ç>
+							<div class="endpoint-wrapper" id=<ç= type.method.toLowerCase() + '-' + endpoint.id ç>>
+								<h3 class="route"><ç= endpoint.route ç></h1>
+								<div class="description"><ç- endpoint.descriptionEnUs.map((line) => line.split('\n')).map((line) => `<p>${line}</p>`).join('') ç></div>
+								<ç if (endpoint.parameters) { ç>
 									<div class="parameter">
-										<% endpoint.parameters.forEach((parameter) => { %>
-											<div class="parameter-name"><%- parameter[0] %></div>
-											<div class="parameter-description"><%- parameter[1].replaceAll('\n', '<br>') %></div>
-										<% }); %>
+										<ç endpoint.parameters.forEach((parameter) => { ç>
+											<div class="parameter-name"><ç- parameter[0] ç></div>
+											<div class="parameter-description"><ç- parameter[1].replaceAll('\n', '<br>') ç></div>
+										<ç }); ç>
 									</div>
-								<% } %>
-								<% if (endpoint.examples) { %>
+								<ç } ç>
+								<ç if (endpoint.examples) { ç>
 									<div class="examples">
-										<% endpoint.examples.forEach((example) => { %>
-											<div class="example"><p><span pos="right">&gt;</span>&nbsp;<%- example[0] %></p></div>
-											<div class="example-output"><%- example[1].split('\n').map((line) => '<p>' + line.replaceAll('  ', '&nbsp;&nbsp;') + '</p>').join('') %></div>
-										<% }); %>
+										<ç endpoint.examples.forEach((example) => { ç>
+											<div class="example"><p><span pos="right">&gt;</span>&nbsp;<ç- example[0] ç></p></div>
+											<div class="example-output"><ç- example[1].split('\n').map((line) => '<p>' + line.replaceAll('  ', '&nbsp;&nbsp;') + '</p>').join('') ç></div>
+										<ç }); ç>
 									</div>
-								<% }; %>
+								<ç }; ç>
 							</div>
-						<% }) %>
+						<ç }) ç>
 					</ul>
-				<% }; %>
-			<% }); %>
+				<ç }; ç>
+			<ç }); ç>
 		</div>
 	</div>
 	<footer></footer>

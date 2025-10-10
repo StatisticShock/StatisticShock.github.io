@@ -13,6 +13,7 @@ import fs from 'fs';
 import util from 'util';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import ejs from 'ejs';
 import { typeOfEndpoints } from './endpoints.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,6 +59,7 @@ app.use(cors(corsHeaders), express.json());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'views')));
+ejs.delimiter = 'ç';
 app.all("/", (req, res) => {
     res.render('server', { typeOfEndpoints });
 });

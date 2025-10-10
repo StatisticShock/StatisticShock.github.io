@@ -1,5 +1,3 @@
-import { JWTAccess } from "google-auth-library";
-
 type BaseEndpoint = {
 	id,
 	route,
@@ -13,6 +11,8 @@ type Endpoint = BaseEndpoint & {
 type AllStrings<T> = {[Key in keyof T]: T[Key] extends any ? (unknown extends T[Key] ? string : T[Key]) : T[Key]};
 type Methods = {
 	method: string,
+	descriptionEnUs: string,
+	descriptionPtBr: string,
 	endpoints: Array<AllStrings<Endpoint>>,
 }
 const cb = function (string: string): string {return `<span class="codeblock">${string}</span>`};
@@ -21,6 +21,8 @@ const tb = function (string: string): string {return `&lt;${string}&gt;`};
 export const typeOfEndpoints: Array<Methods> = [
 	{ // GET
 		method: 'GET',
+		descriptionEnUs: 'These methods only <b>get</b> data from the database.\nThis database is in a ' + cb('Google Sheets') + ' file.',
+		descriptionPtBr: '',
 		endpoints: [
 			{ // myanimelist
 				id: 'myanimelist',
@@ -74,9 +76,9 @@ export const typeOfEndpoints: Array<Methods> = [
 				],
 				examples: [],
 			},
-			{ // Server
-				id: 'server',
-				route: '/server/',
+			{ // Version
+				id: 'version',
+				route: '/version/',
 				descriptionEnUs: [
 					'Gets up-to-date version of the <a href="https://statisticshock.github.io/" target="_blank">webpage</a> and this API.'
 				],
@@ -89,6 +91,8 @@ export const typeOfEndpoints: Array<Methods> = [
 	},
 	{ // POST
 		method: 'POST',
+		descriptionEnUs: 'These methods can both <b>get</b> and <b>create</b> data in the database.\nThis database is in a ' + cb('Google Sheets') + ' file.',
+		descriptionPtBr: '',
 		endpoints: [
 			{
 				id: 'shortcuts',
@@ -104,6 +108,8 @@ export const typeOfEndpoints: Array<Methods> = [
 	},
 	{ // PUT
 		method: 'PUT',
+		descriptionEnUs: 'These methods should be used to <b>change</b> data in the database.\nThis database is in a ' + cb('Google Sheets') + ' file.',
+		descriptionPtBr: '',
 		endpoints: [
 			{
 				id: 'shortcuts',
@@ -119,6 +125,8 @@ export const typeOfEndpoints: Array<Methods> = [
 	},
 	{ // DELETE
 		method: 'DELETE',
+		descriptionEnUs: 'These methods should be used to <b>delete</b> data in the database.\nThis database is in a ' + cb('Google Sheets') + ' file.',
+		descriptionPtBr: '',
 		endpoints: [
 			{
 				id: 'shortcuts',

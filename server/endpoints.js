@@ -3,6 +3,8 @@ const tb = function (string) { return `&lt;${string}&gt;`; };
 export const typeOfEndpoints = [
     {
         method: 'GET',
+        descriptionEnUs: 'These methods only <b>get</b> data from the database.\nThis database is in a ' + cb('Google Sheets') + ' file.',
+        descriptionPtBr: '',
         endpoints: [
             {
                 id: 'myanimelist',
@@ -57,8 +59,8 @@ export const typeOfEndpoints = [
                 examples: [],
             },
             {
-                id: 'server',
-                route: '/server/',
+                id: 'version',
+                route: '/version/',
                 descriptionEnUs: [
                     'Gets up-to-date version of the <a href="https://statisticshock.github.io/" target="_blank">webpage</a> and this API.'
                 ],
@@ -71,6 +73,8 @@ export const typeOfEndpoints = [
     },
     {
         method: 'POST',
+        descriptionEnUs: 'These methods can both <b>get</b> and <b>create</b> data in the database.\nThis database is in a ' + cb('Google Sheets') + ' file.',
+        descriptionPtBr: '',
         endpoints: [
             {
                 id: 'shortcuts',
@@ -86,6 +90,8 @@ export const typeOfEndpoints = [
     },
     {
         method: 'PUT',
+        descriptionEnUs: 'These methods should be used to <b>change</b> data in the database.\nThis database is in a ' + cb('Google Sheets') + ' file.',
+        descriptionPtBr: '',
         endpoints: [
             {
                 id: 'shortcuts',
@@ -101,6 +107,8 @@ export const typeOfEndpoints = [
     },
     {
         method: 'DELETE',
+        descriptionEnUs: 'These methods should be used to <b>delete</b> data in the database.\nThis database is in a ' + cb('Google Sheets') + ' file.',
+        descriptionPtBr: '',
         endpoints: [
             {
                 id: 'shortcuts',
