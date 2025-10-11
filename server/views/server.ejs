@@ -36,13 +36,18 @@
 					<label for="languageChoice2">Português (Brasil)</label>
 				</div>
 			</div>
-			<nav>
+			<ç let length = 1 ç>
+			<ç typeOfEndpoints.forEach((type) => { ç>
+				<ç length++; ç>
+				<ç length += type.endpoints.length; ç>
+			<ç }); ç>
+			<nav style=<ç= '--child-count:' + (length * 1.65) + 'em;' ç>>
 				<a href="#endpoints" style="color: var(--clr-primary-a0); text-decoration: none; margin: 3em 0;">ENDPOINTS</a>
 				<div>
 					<ç typeOfEndpoints.forEach(function (type) { ç>
 						<ç if (type.endpoints.length === 0) {} else { ç>
 							<a href=<ç= '#' + type.method.toLowerCase() ç> style="color: var(--clr-primary-a0); text-decoration: none;"><ç= type.method ç></a>
-							<ul style=<ç= '--child-count:' + (type.endpoints.length * 1.65) + 'em;' ç>>
+							<ul>
 								<ç type.endpoints.forEach(function (endpoint) { ç>
 									<ç const shortcut = '/' + endpoint.route.split('/')[1] + '/' ç>
 									<li><a href=<ç= '#' + type.method.toLowerCase() + '-' + endpoint.id ç>><ç= shortcut ç></a></li>
@@ -147,7 +152,7 @@
 
 				const target = ev.touches ? ev.touches[0].target : ev.target;
 				
-				if (hb.contains(target) || target.contains(hb) || target === hb) {
+				if (hb.contains(target) || target === hb) {
 					hb.classList.toggle('hidden');
 				} else if (!(aside.contains(target)) && !(hb.classList.contains('hidden'))) {
 					hb.querySelector('#reverse').beginElement();

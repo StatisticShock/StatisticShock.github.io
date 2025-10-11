@@ -147,11 +147,9 @@ body {
 			transition: 0.3s ease width;
 
 			& div.hb-container {
-				height: 5vmax;
 				display: inline-block;
 				text-align: center;
 				position: relative;
-				left: 15px;
 
 				& svg#hb {
 					aspect-ratio: 1 / 1;
@@ -176,10 +174,11 @@ body {
 				line-height: 1.5em;
 				top: 0;
 				margin: 0 20px;
-				max-width: 20vw;
 				text-overflow: ellipsis;
 				white-space: nowrap;
 				width: fit-content;
+				height: var(--child-count);
+				overflow-y: hidden;
 
 				& div {
 					width: fit-content;
@@ -190,7 +189,6 @@ body {
 
 					& ul {
 						margin: 0;
-						height: var(--child-count);
 						transition: 0.3s ease height;
 						overflow: hidden;
 						width: fit-content;
@@ -319,9 +317,7 @@ body {
 			width: 100%;
 
 			& nav {
-				& ul {
-					height: 0;
-				}
+				height: 0;
 			}
 		}
 	}
@@ -351,7 +347,11 @@ body {
 @media (orientation: landscape) {
 	body {
 		& div#container {
-			grid-template-columns: 7% 1fr;
+			grid-template-columns: 3% 1fr;
+
+			& div.hb-container {
+				width: 3vw;
+			}
 		}
 	}
 }
@@ -359,7 +359,11 @@ body {
 @media (orientation: portrait) {
 	body {
 		& div#container {
-			grid-template-columns: 27.5% 1fr;
+			grid-template-columns: 10% 1fr;
+
+			& div.hb-container {
+				width: 10vw;
+			}
 		}
 	}
 }
