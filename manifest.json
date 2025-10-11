@@ -1,0 +1,23 @@
+{
+  "name": "StatisticShock Index",
+  "short_name": "SS Index",
+  "description": "A custom index webpage",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#fa1e4e",
+  "icons": [
+    {
+      "src": "/icon/book-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon/book-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "scope": "/",
+  "orientation": "portrait"
+}
