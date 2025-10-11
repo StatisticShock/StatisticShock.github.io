@@ -9,3 +9,5 @@ updateLogs
 **.vbs
 .gitignore
 **.map
+test
+test.**

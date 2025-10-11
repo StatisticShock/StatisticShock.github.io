@@ -108,6 +108,7 @@ body {
 	margin: 0;
 	padding: 0;
 	line-height: 1.25;
+	font-size: 100%;
 	font-family: Arial, Helvetica, sans-serif;
 	background-color: var(--clr-surface-a10);
 	color: var(--clr-primary-a0);
@@ -115,6 +116,7 @@ body {
 	grid-template-rows: auto 1fr auto;
 	grid-template-columns: 100%;
 	overflow: scroll;
+	transition: 0.3s ease all;
 
 	& header {
 		display: block;
@@ -123,21 +125,39 @@ body {
 		margin: 0;
 		padding: 1em 10vw;
 		text-align: center;
-		font-size: 2em;
+		font-size: min(2em, 5vw);
+		max-height: 2em;
+		text-overflow: shrink;
 		background-color: var(--clr-surface-a0);
 	}
 
 	& div#container {
 		display: grid;
 		width: 100%;
-		grid-template-columns: 15% 85%;
 		grid-auto-flow: column;
 		overflow: hidden;
+		transition: 0.3s ease grid;
 
 		& aside {
+			position: relative;
 			background-color: var(--clr-surface-a20);
-			padding: 0 20px;
 			font-family: monospace, monospace;
+			width: var(--min-width);
+			z-index: 1;
+			transition: 0.3s ease width;
+
+			& div.hb-container {
+				height: 5vmax;
+				display: inline-block;
+				text-align: center;
+				position: relative;
+				left: 15px;
+
+				& svg#hb {
+					aspect-ratio: 1 / 1;
+					height: 100%;
+				}
+			}
 
 			& div.language-wrapper {
 				border-bottom: 2px solid var(--clr-surface-a0);
@@ -154,37 +174,61 @@ body {
 			& nav {
 				position: relative;
 				line-height: 1.5em;
-				position: relative;
-				height: 100%;
 				top: 0;
+				margin: 0 20px;
 				max-width: 20vw;
 				text-overflow: ellipsis;
 				white-space: nowrap;
+				width: fit-content;
 
 				& div {
-					width: auto;
+					width: fit-content;
 					overflow-x: hidden;
 					overflow-y: scroll;
 					white-space: nowrap;
 					text-overflow: ellipsis;
-					
+
 					& ul {
-						margin: 0 auto;
+						margin: 0;
+						height: var(--child-count);
+						transition: 0.3s ease height;
+						overflow: hidden;
+						width: fit-content;
+						padding: 0 0 0 1.5em;
+
+						& li {
+							font-family: monospace, monospace;
+						}
 					}
 				}
 			}
 		}
 
+		& aside,
+		& aside:after,
+		& aside:before{
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+		}
+
+		& div.data-wrapper {scrollbar-width: none; -ms-overflow-style: none;}
+		& div.data-wrapper::-webkit-scrollbar {display: none;}
+
 		& div.data-wrapper {
 			position: relative;
-			padding: 0 0.75vw;
+			padding: 0 1vmax;
 			overflow-y: scroll;
-			padding: 1%;
-			scrollbar-width: none;
-			-ms-overflow-style: none;
+			scroll-behavior: smooth;
+			scroll-padding-top: 6em;
+
+			& h1 {
+				padding: 1em 0;
+			}
 
 			& div.endpoint-wrapper {
 				border-bottom: 4px solid var(--clr-surface-tonal-a50);
+				max-height: fit-content;
 
 				& div.parameter {
 					display: grid;
@@ -212,13 +256,12 @@ body {
 				& div.examples {
 					display: grid;
 					grid-auto-flow: row;
-					margin: 0 0 1em;
+					margin: 1em 0;
 					font-family: monospace, monospace;
 
 					& div.example {
 						background-color: var(--clr-surface-a20);
 						color: var(--clr-info-a20);
-						line-height: 1;
 						font-size: 1;
 						cursor: pointer;
 					}
@@ -228,10 +271,19 @@ body {
 						color: var(--clr-success-a0);
 						transition: 0.3s ease all;
 						overflow-y: scroll;
+						white-space: nowrap;
+
+						& p {
+							margin: .125em;
+						}
 					}
 
+					& div.example-output {scrollbar-width: none; -ms-overflow-style: none;}
+					
+					& div.example-output::-webkit-scrollbar {display: none;}
+
 					& div.example, & div.example-output {
-						line-height: .125em;
+						line-height: 1em;
 						font-size: 0.9em;
 						padding: 0 10px;
 					}
@@ -250,7 +302,7 @@ body {
 					}
 
 					& div.example:has(p > span[pos="down"]) + div.example-output {
-						height: 10em;
+						height: var(--example-height);
 					};
 
 					& div.example > p > span[pos="down"] {
@@ -259,9 +311,18 @@ body {
 				}
 			}
 		}
+	}
 
-		& div.data-wrapper::-webkit-scrollbar {
-			display: none;
+	& div#container:has(#hb.hidden) {
+		& aside {
+			display: block;
+			width: 100%;
+
+			& nav {
+				& ul {
+					height: 0;
+				}
+			}
 		}
 	}
 
@@ -284,5 +345,21 @@ body {
 		border-radius: 5px;
 		padding: 0.2em;
 		font-family: monospace, monospace;
+	}
+}
+
+@media (orientation: landscape) {
+	body {
+		& div#container {
+			grid-template-columns: 7% 1fr;
+		}
+	}
+}
+
+@media (orientation: portrait) {
+	body {
+		& div#container {
+			grid-template-columns: 27.5% 1fr;
+		}
 	}
 }

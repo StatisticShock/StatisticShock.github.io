@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>StatisticShock Server</title>
+	<title>StatisticShock Index Server</title>
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,6 +12,21 @@
 	</header>
 	<div id="container">
 		<aside>
+			<div class="hb-container">
+				<svg id="hb" class="hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" stroke="#eee" stroke-width=".6" fill="rgba(0,0,0,0)" stroke-linecap="round" style="cursor: pointer">
+					<path d="M2,3L5,3L8,3M2,5L8,5M2,7L5,7L8,7">
+						<animate dur="0.2s" attributeName="d" values="M2,3L5,3L8,3M2,5L8,5M2,7L5,7L8,7;M3,3L5,5L7,3M5,5L5,5M3,7L5,5L7,7" fill="freeze" begin="start.begin" />
+						<animate dur="0.2s" attributeName="d" values="M3,3L5,5L7,3M5,5L5,5M3,7L5,5L7,7;M2,3L5,3L8,3M2,5L8,5M2,7L5,7L8,7" fill="freeze" begin="reverse.begin" />
+					</path>
+					<rect width="10" height="10" stroke="none">
+						<animate dur="2s" id="reverse" attributeName="width" begin="click" />
+					</rect>
+					<rect width="10" height="10" stroke="none">
+						<animate dur="0.001s" id="start" attributeName="width" values="10;0" fill="freeze" begin="click" />
+						<animate dur="0.001s" attributeName="width" values="0;10" fill="freeze" begin="reverse.begin" />
+					</rect>
+				</svg>
+			</div>
 			<div class="language-wrapper" style="display: none;">
 				<p id="language">Language</p>
 				<div>
@@ -22,12 +37,12 @@
 				</div>
 			</div>
 			<nav>
-				<a href="#endpoints" style="color: var(--clr-primary-a0); text-decoration: none; margin: 3em 0;">Endpoints</a>
+				<a href="#endpoints" style="color: var(--clr-primary-a0); text-decoration: none; margin: 3em 0;">ENDPOINTS</a>
 				<div>
 					<ç typeOfEndpoints.forEach(function (type) { ç>
 						<ç if (type.endpoints.length === 0) {} else { ç>
 							<a href=<ç= '#' + type.method.toLowerCase() ç> style="color: var(--clr-primary-a0); text-decoration: none;"><ç= type.method ç></a>
-							<ul>
+							<ul style=<ç= '--child-count:' + (type.endpoints.length * 1.65) + 'em;' ç>>
 								<ç type.endpoints.forEach(function (endpoint) { ç>
 									<ç const shortcut = '/' + endpoint.route.split('/')[1] + '/' ç>
 									<li><a href=<ç= '#' + type.method.toLowerCase() + '-' + endpoint.id ç>><ç= shortcut ç></a></li>
@@ -73,9 +88,8 @@
 		</div>
 	</div>
 	<footer></footer>
-	<script src="./script.js"></script>
 	<script>
-		function getCheckedValue(groupName) {
+		(function getCheckedValue(groupName) {
 			const radios = document.getElementsByName(groupName);
 
 			for(const radio of radios) {
@@ -85,9 +99,9 @@
 			};
 
 			return null;
-		};
+		})();
 
-		function changeLanguage () {
+		(function changeLanguage () {
 			const div = document.querySelector('.language-wrapper div');
 			div.addEventListener('click', detectLanguageChange);
 
@@ -101,9 +115,9 @@
 						document.querySelector('p#language').innerHTML = 'Language';
 				}
 			};
-		};
+		})();
 
-		function toggleExamples () {
+		(function toggleExamples () {
 			const exampleHeaders = document.querySelectorAll('div.example');
 
 			exampleHeaders.forEach((example) => {
@@ -115,18 +129,55 @@
 					};
 				});
 			});
-		};
+		})();
 
-		async function putVersionOnFooter () {
+		(async function putVersionOnFooter () {
 			const version = await fetch(`/version`).then((res) => res.json());
 			const footer = document.querySelector('footer');
 
 			footer.innerHTML += `<p><small>ver. ${version.server}</small></p>`;
-		};
+		})();
 
-		toggleExamples();
-		changeLanguage();
-		putVersionOnFooter();
+		(function collapseAside () {
+			const aside = document.querySelector('aside');
+			const hb = aside.querySelector('#hb');
+
+			window.addEventListener('click' , (ev) => {
+				console.log(ev);
+
+				const target = ev.touches ? ev.touches[0].target : ev.target;
+				
+				if (hb.contains(target) || target.contains(hb) || target === hb) {
+					hb.classList.toggle('hidden');
+				} else if (!(aside.contains(target)) && !(hb.classList.contains('hidden'))) {
+					hb.querySelector('#reverse').beginElement();
+					hb.classList.toggle('hidden');
+				};
+			});
+		})();
+
+		(function setAsideMinWidth () {
+			const aside = document.querySelector('aside');
+			const container = document.querySelector('div#container');
+			const lis = container.querySelectorAll('ul li');
+
+			let minWidth = 0;
+			lis.forEach((li) => {
+				minWidth = Math.max(minWidth, li.textContent.length);
+			});
+
+			aside.style.setProperty('--min-width', (minWidth / 1.25) + 'em');
+		})();
+
+		(function setExampleHeight () {
+			const examples = document.querySelectorAll('.example-output');
+
+			examples.forEach((example) => {
+				const lines = Array.from(example.querySelectorAll('p')).length;
+
+				example.style.setProperty('--example-height', 'calc(' + (lines * 1.125) + 'em + 3px)')
+			})
+		})();
 	</script>
 </body>
 </html>
