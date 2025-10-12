@@ -12,7 +12,7 @@
 /* THE ACTUAL THING */
 /* Styling */
 :root {
-	--pink-custom: rgba(250,30,78,1);
+	--pink-custom: rgba(240, 36, 117, 1);
 	--pink-purple: linear-gradient(163deg, var(--pink-custom) 0%, #3700ff 100%);
 }
 
