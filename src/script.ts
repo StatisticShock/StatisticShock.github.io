@@ -172,6 +172,10 @@ class PageBuilding {
 
 		footer.innerHTML += `<p><small>ver. ${version.page}</small></p>`;
 	};
+
+	static removeHoverEffectsOnMobile (): void {
+		if (!mobile) document.querySelector('body')!.classList.add('has-hover');
+	};
 };
 
 class UserInterface {
@@ -1570,6 +1574,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 	PageBuilding.adjustGamecard();
 	PageBuilding.adjustGamecardText(0);
 	PageBuilding.putVersionOnFooter();
+	PageBuilding.removeHoverEffectsOnMobile();
 
 	UserInterface.expandAside();
 	UserInterface.makeAsideButtonFollow();

@@ -196,6 +196,11 @@ var PageBuilding = /** @class */ (function () {
         });
     };
     ;
+    PageBuilding.removeHoverEffectsOnMobile = function () {
+        if (!mobile)
+            document.querySelector('body').classList.add('has-hover');
+    };
+    ;
     return PageBuilding;
 }());
 ;
@@ -1670,6 +1675,7 @@ function onLoadFunctions(ev) {
                     PageBuilding.adjustGamecard();
                     PageBuilding.adjustGamecardText(0);
                     PageBuilding.putVersionOnFooter();
+                    PageBuilding.removeHoverEffectsOnMobile();
                     UserInterface.expandAside();
                     UserInterface.makeAsideButtonFollow();
                     UserInterface.makeSwitchesSlide();

@@ -7,9 +7,7 @@
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
-	<header>
-		StatisticShock.GitHub.io Server
-	</header>
+	<header>StatisticShock.GitHub.io Server</header>
 	<div id="container">
 		<aside>
 			<div class="hb-container">
@@ -60,6 +58,7 @@
 		</aside>
 		<div class="data-wrapper">
 			<h1 id="endpoints" style="margin: 0 auto; text-align: center;">ENDPOINTS</h1>
+			<p>This database is in a <span class="codeblock">Google Sheets</span> file.</p>
 			<ç typeOfEndpoints.forEach(function (type) { ç>
 				<ç if (type.endpoints.length === 0) {} else { ç>
 					<h2 id=<ç= type.method.toLowerCase() ç>><ç= type.method ç></h2>
@@ -154,7 +153,7 @@
 				
 				if (hb.contains(target) || target === hb) {
 					hb.classList.toggle('hidden');
-				} else if (!(aside.contains(target)) && !(hb.classList.contains('hidden'))) {
+				} else if (!(aside.contains(target)) && !(hb.classList.contains('hidden')) || target.tagName === 'A') {
 					hb.querySelector('#reverse').beginElement();
 					hb.classList.toggle('hidden');
 				};

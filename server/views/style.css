@@ -218,93 +218,109 @@ body {
 			padding: 0 1vmax;
 			overflow-y: scroll;
 			scroll-behavior: smooth;
-			scroll-padding-top: 6em;
+			scroll-padding-top: 1em;
 
 			& h1 {
 				padding: 1em 0;
 			}
 
-			& div.endpoint-wrapper {
-				border-bottom: 4px solid var(--clr-surface-tonal-a50);
-				max-height: fit-content;
+			& ul {
+				& div.endpoint-wrapper {
+					border-bottom: 4px solid var(--clr-surface-tonal-a50);
+					max-height: fit-content;
 
-				& div.parameter {
-					display: grid;
-					grid-template-columns: auto 1fr;
-					padding: 0;
-					margin: 0 0 1em;
-
-					& div.parameter-name {
-						background-color: var(--clr-surface-tonal-a50);
-						color: var(--clr-surface-a0);
-						border: 2px solid var(--clr-primary-a0);
-						text-align: right;
-						padding: 5px;
-					}
-
-					& div.parameter-description {
-						background-color: var(--clr-surface-tonal-a50);
-						color: var(--clr-surface-a0);
-						border: 2px solid var(--clr-primary-a0);
-						text-align: left;
-						padding: 5px;
-					}
-				}
-
-				& div.examples {
-					display: grid;
-					grid-auto-flow: row;
-					margin: 1em 0;
-					font-family: monospace, monospace;
-
-					& div.example {
-						background-color: var(--clr-surface-a20);
-						color: var(--clr-info-a20);
-						font-size: 1;
-						cursor: pointer;
-					}
-
-					& div.example-output {
-						background-color: var(--clr-primary-a0);
-						color: var(--clr-success-a0);
-						transition: 0.3s ease all;
-						overflow-y: scroll;
+					& h3 {
 						white-space: nowrap;
+						overflow-x: scroll;
+					}
 
-						& p {
-							margin: .125em;
+					& h3 {scrollbar-width: none; -ms-overflow-style: none;}
+					& h3::-webkit-scrollbar {display: none;}
+
+					& div.description {
+						& > p {
+							text-align: justify;
 						}
 					}
 
-					& div.example-output {scrollbar-width: none; -ms-overflow-style: none;}
-					
-					& div.example-output::-webkit-scrollbar {display: none;}
+					& div.parameter {
+						display: grid;
+						grid-template-columns: auto 1fr;
+						padding: 0;
+						margin: 0 0 1em;
 
-					& div.example, & div.example-output {
-						line-height: 1em;
-						font-size: 0.9em;
-						padding: 0 10px;
+						& div.parameter-name {
+							background-color: var(--clr-surface-tonal-a50);
+							color: var(--clr-surface-a0);
+							border: 2px solid var(--clr-primary-a0);
+							text-align: right;
+							padding: 5px;
+						}
+
+						& div.parameter-description {
+							background-color: var(--clr-surface-tonal-a50);
+							color: var(--clr-surface-a0);
+							border: 2px solid var(--clr-primary-a0);
+							text-align: left;
+							padding: 5px;
+						}
 					}
 
-					& div.example:has(p > span[pos="right"]) + div.example-output {
-						height: 0;
-					};
-					
-					& div.example > p > span {
-						display: inline-block;
-						transition: 0.3s ease all;
-					};
+					& div.examples {
+						display: grid;
+						grid-auto-flow: row;
+						margin: 1em 0;
+						font-family: monospace, monospace;
 
-					& div.example > p > span[pos="right"] {
-						transform: rotate(0deg);
-					}
+						& div.example {
+							background-color: var(--clr-surface-a20);
+							color: var(--clr-info-a20);
+							font-size: 1;
+							cursor: pointer;
+						}
 
-					& div.example:has(p > span[pos="down"]) + div.example-output {
-						height: var(--example-height);
-					};
+						& div.example-output {
+							background-color: var(--clr-primary-a0);
+							color: var(--clr-success-a0);
+							transition: 0.3s ease all;
+							overflow-y: scroll;
+							white-space: nowrap;
 
-					& div.example > p > span[pos="down"] {
-						transform:rotate(90deg);
+							& p {
+								margin: .125em;
+							}
+						}
+
+						& div.example-output {scrollbar-width: none; -ms-overflow-style: none;}
+						
+						& div.example-output::-webkit-scrollbar {display: none;}
+
+						& div.example, & div.example-output {
+							line-height: 1em;
+							font-size: 0.9em;
+							padding: 0 10px;
+						}
+
+						& div.example:has(p > span[pos="right"]) + div.example-output {
+							height: 0;
+						};
+						
+						& div.example > p > span {
+							display: inline-block;
+							transition: 0.3s ease all;
+						};
+
+						& div.example > p > span[pos="right"] {
+							transform: rotate(0deg);
+						}
+
+						& div.example:has(p > span[pos="down"]) + div.example-output {
+							height: var(--example-height);
+						};
+
+						& div.example > p > span[pos="down"] {
+							transform:rotate(90deg);
+						}
 					}
 				}
 			}
