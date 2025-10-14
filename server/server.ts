@@ -50,7 +50,7 @@ const corsHeaders = {
 	origin: [
 		'https://statisticshock.github.io',
 		'http://127.0.0.1:5500',
-		`http://localhost:${PORT}`,
+		'http://localhost:5500',
 	],
 	optionsSuccessStatus: 200,
 	

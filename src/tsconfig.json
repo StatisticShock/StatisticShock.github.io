@@ -6,8 +6,8 @@
       "ES2021",
       "DOM.Iterable"
     ],
-    "module": "ES6",
-    "moduleResolution": "node10",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "baseUrl": "src",
     "noEmitOnError": true,
     "esModuleInterop": true,

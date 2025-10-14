@@ -1,3 +1,18 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,28 +49,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import CustomFunctions from "../util/functions.js";
+import CustomFunctions from '../util/functions.js';
+import { server } from './server-url.js';
+import PageBuildingImport from './shared.js';
 var ua = navigator.userAgent || navigator.vendor || window.opera;
 var mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 var portrait = (window.innerWidth < window.innerHeight);
-var server = window.location.href === 'http://127.0.0.1:5500/' ? 'http://localhost:3000/' : 'https://statisticshock-github-io.onrender.com/';
 console.log("Running server at ".concat(server));
-var PageBuilding = /** @class */ (function () {
+var PageBuilding = /** @class */ (function (_super) {
+    __extends(PageBuilding, _super);
     function PageBuilding() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
-    PageBuilding.createLoaders = function (counter) {
-        var loaders = document.querySelectorAll('.loader');
-        loaders.forEach(function (loader) {
-            for (var i = 0; i < counter; i++) {
-                var div = document.createElement('div');
-                div.setAttribute('class', 'loading');
-                div.setAttribute('style', "--translation: 150; --index: ".concat(i + 1, "; --count: ").concat(counter));
-                loader.appendChild(div);
-            }
-            ;
-        });
-    };
-    ;
     PageBuilding.resizeAside = function (counter) {
         var _this = this;
         var aside = document.querySelector('aside');
@@ -130,56 +135,6 @@ var PageBuilding = /** @class */ (function () {
         toggleSwitch.style.transform = 'translate(50%, 0)';
     };
     ;
-    PageBuilding.formatPopUps = function () {
-        var popUpShortcuts = [];
-        document.querySelectorAll('form.pop-up').forEach(function (form) {
-            if (form.classList.length < 2)
-                return;
-            var otherClass = Array.from(form.classList).filter(function (className) { return className !== 'pop-up'; })[0];
-            var openBttn = Array.from(document.querySelectorAll(".".concat(otherClass))).filter(function (element) { return element.classList.contains('pop-up-open'); })[0];
-            popUpShortcuts.push({ button: openBttn, popUpContainer: form });
-        });
-        popUpShortcuts.forEach(function (object) {
-            var popUpClass = document.querySelectorAll('.pop-up');
-            var floatingLabelElement = object.popUpContainer.querySelectorAll('.floating-label');
-            object.button.onclick = function () {
-                var display = object.popUpContainer.style.display;
-                if ((display == '') || (display == 'none')) {
-                    object.popUpContainer.style.display = 'block';
-                }
-                else if (!(object.popUpContainer.classList.contains('create-shortcut') && object.button.classList.contains('create-shortcut') && !(object.button.id.replace('-button', '-item') === object.popUpContainer.getAttribute('x')))) {
-                    object.popUpContainer.style.display = 'none';
-                }
-                ;
-                popUpClass.forEach(function (element) {
-                    if (element != object.popUpContainer) {
-                        element.style.display = 'none';
-                    }
-                    ;
-                });
-                setTimeout(function () {
-                    floatingLabelElement.forEach(function (label) {
-                        var parent = label.parentElement;
-                        var siblings = Array.from(parent.children);
-                        var input = siblings[siblings.indexOf(label) - 1];
-                        var rect = object.popUpContainer.getBoundingClientRect();
-                        var inputRect = input.getBoundingClientRect();
-                        var left = inputRect.left - rect.left;
-                        label.style.left = Math.max(left, 5) + 'px';
-                        input.placeholder ? input.placeholder = input.placeholder : input.placeholder = ' ';
-                    });
-                }, 10);
-            };
-            object.popUpContainer.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    var okButton = object.popUpContainer.querySelector('.ok-button');
-                    okButton.click();
-                }
-            });
-        });
-    };
-    ;
     PageBuilding.putVersionOnFooter = function () {
         return __awaiter(this, void 0, void 0, function () {
             var version, footer;
@@ -202,7 +157,7 @@ var PageBuilding = /** @class */ (function () {
     };
     ;
     return PageBuilding;
-}());
+}(PageBuildingImport));
 ;
 var UserInterface = /** @class */ (function () {
     function UserInterface() {
@@ -485,6 +440,7 @@ var UserInterface = /** @class */ (function () {
     ;
     return UserInterface;
 }());
+export { UserInterface };
 ;
 var ExternalSearch = /** @class */ (function () {
     function ExternalSearch() {
@@ -548,6 +504,7 @@ var ExternalSearch = /** @class */ (function () {
     ;
     return ExternalSearch;
 }());
+export { ExternalSearch };
 ;
 var CloudStorageData = /** @class */ (function () {
     function CloudStorageData() {
@@ -642,11 +599,12 @@ var CloudStorageData = /** @class */ (function () {
             }
             function loadHeaders() {
                 return __awaiter(this, void 0, void 0, function () {
-                    var index, src, header, h1;
+                    var possibleHeaders, index, src, header, h1;
                     return __generator(this, function (_a) {
-                        index = CustomFunctions.randomIntFromInterval(0, content.headers.length - 1);
-                        src = content.headers[index].href;
-                        content.headers.forEach(function (imgSrc) {
+                        possibleHeaders = content.headers.filter(function (header) { return header.active; });
+                        index = CustomFunctions.randomIntFromInterval(0, possibleHeaders.length - 1);
+                        src = possibleHeaders[index].href;
+                        possibleHeaders.forEach(function (imgSrc) {
                             var img = new Image();
                             img.src = imgSrc.href;
                         });
@@ -667,7 +625,7 @@ var CloudStorageData = /** @class */ (function () {
                                     return;
                             }
                             ;
-                            var newHeadersArr = content.headers.filter(function (headerObj) {
+                            var newHeadersArr = possibleHeaders.filter(function (headerObj) {
                                 return headerObj.href !== src;
                             });
                             index = CustomFunctions.randomIntFromInterval(0, newHeadersArr.length - 1);
@@ -692,417 +650,6 @@ var CloudStorageData = /** @class */ (function () {
                 loadShortcuts();
                 loadGamecards();
                 loadHeaders();
-                return [2 /*return*/];
-            });
-        });
-    };
-    ;
-    CloudStorageData.createNewShortcuts = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            function handleDropFile() {
-                function activeFileDrop() { fileDrop.style.border = '3px solid var(--pink-custom)'; }
-                ;
-                function inactiveFileDrop() { fileDrop.style.border = '3px dashed grey'; }
-                ;
-                var input = fileDrop.querySelector('input');
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (evName) { return fileDrop.addEventListener(evName, function (e) { return e.preventDefault(); }); });
-                ['dragenter', 'dragover'].forEach(function (evName) { return fileDrop.addEventListener(evName, function (e) { return activeFileDrop(); }); });
-                ['dragleave', 'drop'].forEach(function (evName) { return fileDrop.addEventListener(evName, function (e) { return inactiveFileDrop(); }); });
-                fileDrop.addEventListener('drop', function (e) {
-                    var dt = e.dataTransfer;
-                    var filesDt = dt.files;
-                    input.files = filesDt;
-                    fileDrop.querySelector('p').innerHTML = "\"".concat(input.files[0].name, "\" selecionado.");
-                });
-                fileDrop.querySelector('input').addEventListener('change', function (e) {
-                    if (input.files && input.files[0]) {
-                        fileDrop.querySelector('p').innerHTML = "\"".concat(input.files[0].name, "\" selecionado.");
-                        var reader = new FileReader();
-                        reader.onload = function (ev) { fileDrop.querySelector('img').src = ev.target.result; };
-                        reader.readAsDataURL(input.files[0]);
-                    }
-                    else {
-                        fileDrop.querySelector('p').innerHTML = 'Solte uma imagem aqui';
-                    }
-                    ;
-                });
-            }
-            var popUp, dragAndDrop, addItemButton, addItem, fileDrop, submitNewShortcutBttn, submitUpdateBttn;
-            var _this = this;
-            return __generator(this, function (_a) {
-                popUp = document.querySelector('.pop-up.create-shortcut');
-                dragAndDrop = popUp.querySelector('#drag-and-drop');
-                addItemButton = popUp.querySelector('#add-new-shortcut-button');
-                addItem = popUp.querySelector('#add-drag-and-drop');
-                fileDrop = addItem.querySelector('#drop-file');
-                submitNewShortcutBttn = popUp.querySelector('#add-new-shortcut-submit');
-                submitUpdateBttn = popUp.querySelector('.ok-button');
-                addItemButton.onclick = function (ev) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            if (addItemButton.classList.contains('active')) {
-                                addItemButton.classList.remove('active');
-                                addItem.style.height = '0';
-                                addItem.style.padding = '0';
-                                dragAndDrop.style.height = '60vh';
-                                dragAndDrop.style.padding = '10px';
-                                submitUpdateBttn.removeAttribute('style');
-                            }
-                            else {
-                                addItemButton.classList.add('active');
-                                addItem.style.height = addItem.scrollHeight + 'px';
-                                addItem.style.padding = '20px 0';
-                                dragAndDrop.style.height = '0';
-                                dragAndDrop.style.padding = '0 10px';
-                                submitUpdateBttn.style.display = 'none';
-                            }
-                            return [2 /*return*/];
-                        });
-                    });
-                };
-                ;
-                handleDropFile();
-                submitNewShortcutBttn.onclick = function (ev) { return __awaiter(_this, void 0, void 0, function () {
-                    var formData, _i, _a, _b, key, value, response, textJson, targetListToAddNewData_1, itemListStr, textJson;
-                    return __generator(this, function (_c) {
-                        switch (_c.label) {
-                            case 0:
-                                formData = new FormData(popUp);
-                                addItem.querySelectorAll('input').forEach(function (input) {
-                                    if (input.type === 'text' && (input.value.trim() === '' || input.value.match(/[a-zA-Z]+/) === null)) {
-                                        input.style.setProperty('--initial-color', getComputedStyle(input).backgroundColor);
-                                        input.value = '';
-                                        input.classList.add('pulse');
-                                        setTimeout(function () {
-                                            input.classList.remove('pulse');
-                                            input.style.removeProperty('--initial-color');
-                                        }, 1800);
-                                    }
-                                    else if (input.type === 'file' && input.files.length === 0) {
-                                        input.parentElement.style.setProperty('--initial-color', getComputedStyle(input).backgroundColor);
-                                        input.parentElement.classList.add('pulse');
-                                        setTimeout(function () {
-                                            input.parentElement.classList.remove('pulse');
-                                            input.parentElement.style.removeProperty('--initial-color');
-                                        }, 1800);
-                                    }
-                                    ;
-                                });
-                                for (_i = 0, _a = Array.from(formData); _i < _a.length; _i++) {
-                                    _b = _a[_i], key = _b[0], value = _b[1];
-                                    if (typeof value === 'string' && (value.trim() === '' || value.match(/[a-zA-Z]+/) === null))
-                                        return [2 /*return*/];
-                                    if (value instanceof File && value.size === 0)
-                                        return [2 /*return*/];
-                                }
-                                ;
-                                return [4 /*yield*/, fetch("".concat(server, "shortcuts/"), {
-                                        method: 'POST',
-                                        body: formData
-                                    })];
-                            case 1:
-                                response = _c.sent();
-                                if (!response.ok) return [3 /*break*/, 3];
-                                return [4 /*yield*/, response.json()];
-                            case 2:
-                                textJson = _c.sent();
-                                targetListToAddNewData_1 = null;
-                                dragAndDrop.querySelectorAll('h3').forEach(function (h3) {
-                                    if (h3.textContent === formData.get('folder').toString().trim()) {
-                                        targetListToAddNewData_1 = h3.parentElement;
-                                    }
-                                });
-                                itemListStr = "<div id=\"".concat(CustomFunctions.normalize(formData.get('title').toString()), "-list\" class=\"drag-and-drop-item\" draggable=\"false\" href=\"").concat(formData.get('url').toString(), "\">").concat(CloudStorageData.shortcutButtons.moveButtonsContainer40).concat(formData.get('title').toString(), "<span class=\"shortcut-icon-wrapper\"><img src=\"").concat(textJson.newImgPath, "\" draggable=\"false\"><input type=\"file\" accept=\"image/*\"></span><span class=\"edit-shortcut-wrapper\"><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span></div>");
-                                if (targetListToAddNewData_1 === null) {
-                                    targetListToAddNewData_1 = document.createElement('div');
-                                    targetListToAddNewData_1.id = "".concat(CustomFunctions.normalize(formData.get('folder').toString()), "-list");
-                                    targetListToAddNewData_1.classList.add('drag-and-drop-list');
-                                    targetListToAddNewData_1.classList.add('hidden');
-                                    targetListToAddNewData_1.setAttribute('x', 'hidden');
-                                    targetListToAddNewData_1.innerHTML = "<h3 class=\"drag-and-drop-list-header\">".concat(CloudStorageData.shortcutButtons.moveButtonsContainer60).concat(formData.get('folder').toString(), "<span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span></h3><div style=\"--children-length: 1;\">").concat(itemListStr, "</div>");
-                                    dragAndDrop.appendChild(targetListToAddNewData_1);
-                                }
-                                else {
-                                }
-                                ;
-                                return [3 /*break*/, 5];
-                            case 3: return [4 /*yield*/, response.json()];
-                            case 4:
-                                textJson = _c.sent();
-                                alert("ERRO:\n".concat(textJson.message));
-                                _c.label = 5;
-                            case 5: return [2 /*return*/];
-                        }
-                    });
-                }); };
-                return [2 /*return*/];
-            });
-        });
-    };
-    ;
-    CloudStorageData.dragAndDropHandler = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var popUp, headerImg, dragAndDrop;
-            var _this = this;
-            return __generator(this, function (_a) {
-                popUp = document.querySelector('.pop-up.create-shortcut');
-                headerImg = popUp.querySelector('.pop-up-header img');
-                dragAndDrop = popUp.querySelector('#drag-and-drop');
-                headerImg.addEventListener('click', function (ev) {
-                    var containers = Array.from(dragAndDrop.querySelectorAll('.drag-and-drop-list'));
-                    if (containers.some(function (container) { return !container.classList.contains('hidden'); })) {
-                        containers.forEach(function (container) {
-                            container.classList.add('hidden');
-                            container.setAttribute('x', 'hidden');
-                        });
-                    }
-                    else {
-                        containers.forEach(function (container) {
-                            container.classList.remove('hidden');
-                            container.setAttribute('x', 'shown');
-                        });
-                    }
-                });
-                dragAndDrop.addEventListener('click', function (ev) { return __awaiter(_this, void 0, void 0, function () {
-                    function shrinkHeader() {
-                        var header = ev.target.closest('.drag-and-drop-list-header');
-                        if (!header)
-                            return;
-                        if (ev.target.tagName === 'INPUT')
-                            return;
-                        if (ev.target.closest('.move-buttons-container'))
-                            return;
-                        if (CustomFunctions.isParent(ev.target, header.querySelector('span')))
-                            return;
-                        var container = header.parentElement;
-                        var isShown = container.getAttribute('x') === 'shown';
-                        container.setAttribute('x', isShown ? 'hidden' : 'shown');
-                        container.classList.toggle('hidden', isShown);
-                    }
-                    function moveItemUpOrDown() {
-                        return __awaiter(this, void 0, void 0, function () {
-                            var moveButtonsContainer, parent, copyOfParent, bttn, transitionTime, previousSibling, computedHeight, nextSibling, computedHeight;
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0:
-                                        moveButtonsContainer = ev.target.closest('.move-buttons-container');
-                                        if (!moveButtonsContainer)
-                                            return [2 /*return*/];
-                                        if (!ev.target.closest('button'))
-                                            return [2 /*return*/];
-                                        parent = (moveButtonsContainer.closest('.drag-and-drop-item') || moveButtonsContainer.closest('.drag-and-drop-list'));
-                                        copyOfParent = parent.cloneNode(true);
-                                        bttn = ev.target.closest('button');
-                                        transitionTime = Number(getComputedStyle(parent).transition.match(/[\d\.]+/)[0]) * 1000;
-                                        if (!bttn.classList.contains('move-up')) return [3 /*break*/, 8];
-                                        if (parent === parent.parentElement.firstChild)
-                                            return [2 /*return*/];
-                                        previousSibling = parent.previousElementSibling;
-                                        parent.classList.add('fade-out');
-                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
-                                    case 1:
-                                        _a.sent();
-                                        computedHeight = getComputedStyle(parent).height;
-                                        parent.style.height = computedHeight;
-                                        return [4 /*yield*/, CustomFunctions.sleep(10)];
-                                    case 2:
-                                        _a.sent();
-                                        parent.style.height = '0';
-                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
-                                    case 3:
-                                        _a.sent();
-                                        parent.remove();
-                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
-                                    case 4:
-                                        _a.sent();
-                                        copyOfParent.classList.add('fade-in');
-                                        copyOfParent.style.height = '0';
-                                        previousSibling.before(copyOfParent);
-                                        return [4 /*yield*/, CustomFunctions.sleep(10)];
-                                    case 5:
-                                        _a.sent();
-                                        copyOfParent.style.height = computedHeight;
-                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
-                                    case 6:
-                                        _a.sent();
-                                        copyOfParent.setAttribute('style', copyOfParent.getAttribute('style').replace(/height\: [\d\s\S]+\;/, ''));
-                                        if (copyOfParent.getAttribute('style') === '')
-                                            copyOfParent.removeAttribute('style');
-                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
-                                    case 7:
-                                        _a.sent();
-                                        copyOfParent.classList.remove('fade-in');
-                                        return [3 /*break*/, 16];
-                                    case 8:
-                                        if (!bttn.classList.contains('move-down')) return [3 /*break*/, 16];
-                                        if (parent === parent.parentElement.lastChild)
-                                            return [2 /*return*/];
-                                        nextSibling = parent.nextElementSibling;
-                                        parent.classList.add('fade-out');
-                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
-                                    case 9:
-                                        _a.sent();
-                                        computedHeight = getComputedStyle(parent).height;
-                                        parent.style.height = computedHeight;
-                                        return [4 /*yield*/, CustomFunctions.sleep(10)];
-                                    case 10:
-                                        _a.sent();
-                                        parent.style.height = '0';
-                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
-                                    case 11:
-                                        _a.sent();
-                                        parent.remove();
-                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
-                                    case 12:
-                                        _a.sent();
-                                        copyOfParent.classList.add('fade-in');
-                                        copyOfParent.style.height = '0';
-                                        nextSibling.after(copyOfParent);
-                                        return [4 /*yield*/, CustomFunctions.sleep(10)];
-                                    case 13:
-                                        _a.sent();
-                                        copyOfParent.style.height = computedHeight;
-                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
-                                    case 14:
-                                        _a.sent();
-                                        copyOfParent.setAttribute('style', copyOfParent.getAttribute('style').replace(/height\: [\d\s\S]+\;/, ''));
-                                        if (copyOfParent.getAttribute('style') === '')
-                                            copyOfParent.removeAttribute('style');
-                                        return [4 /*yield*/, CustomFunctions.sleep(transitionTime)];
-                                    case 15:
-                                        _a.sent();
-                                        copyOfParent.classList.remove('fade-in');
-                                        _a.label = 16;
-                                    case 16: return [2 /*return*/];
-                                }
-                            });
-                        });
-                    }
-                    return __generator(this, function (_a) {
-                        ;
-                        ;
-                        shrinkHeader();
-                        moveItemUpOrDown();
-                        return [2 /*return*/];
-                    });
-                }); });
-                return [2 /*return*/];
-            });
-        });
-    };
-    ;
-    CloudStorageData.updateShortCut = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            function toggleHeaderInput(header, forceText) {
-                if (header.querySelector('input') === null) {
-                    header.innerHTML = forceText ? header.innerHTML : "".concat(CloudStorageData.shortcutButtons.moveButtonsContainer60, "</div><input type=\"text\" value=\"").concat(header.textContent, "\"><span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg\"></span>");
-                }
-                else {
-                    var input = header.querySelector('input');
-                    header.parentElement.id = "".concat(CustomFunctions.normalize(input.value), "-list");
-                    input.outerHTML = input.value;
-                    header.innerHTML = header.innerHTML.replace('check.svg', 'edit.svg');
-                }
-                ;
-            }
-            function toggleShortcutInput(shorcut, forceText) {
-                if (shorcut.querySelector(':scope > input') === null) {
-                    var textWrapper = shorcut.querySelector('span.text-wrapper');
-                    var imgWrapper = shorcut.querySelector('span.shortcut-icon-wrapper');
-                    var editWrapper = shorcut.querySelector('span.edit-shortcut-wrapper');
-                    textWrapper.outerHTML = forceText ? textWrapper.outerHTML : "<input type=\"text\" value=\"".concat(textWrapper.textContent, "\">");
-                    imgWrapper.outerHTML = forceText ? imgWrapper.outerHTML : CloudStorageData.shortcutButtons.deleteBttn(imgWrapper.querySelector('img'));
-                    editWrapper.outerHTML = forceText ? editWrapper.outerHTML : CloudStorageData.shortcutButtons.checkBttn;
-                }
-                else {
-                    var input = shorcut.querySelector(':scope > input');
-                    var deleteBttn = shorcut.querySelector('span.delete-shortcut');
-                    var checkBttn = shorcut.querySelector('span.edit-shortcut-wrapper');
-                    shorcut.id = "".concat(CustomFunctions.normalize(input.value), "-list");
-                    input.outerHTML = "<span class=\"text-wrapper\">".concat(input.value, "</span>");
-                    deleteBttn.outerHTML = CloudStorageData.shortcutButtons.imageWrapper(deleteBttn.getAttribute('old-data').replace(/(src\: |\;)/g, ''));
-                    checkBttn.outerHTML = CloudStorageData.shortcutButtons.editBttn;
-                }
-                ;
-            }
-            function updateIcon(shorcut) { }
-            var popUp, dragAndDrop;
-            return __generator(this, function (_a) {
-                ;
-                ;
-                ;
-                popUp = document.querySelector('.pop-up.create-shortcut');
-                dragAndDrop = popUp.querySelector('#drag-and-drop');
-                dragAndDrop.addEventListener('click', function (ev) {
-                    function handleToggleHeaderInput() {
-                        var header = ev.target.closest('.drag-and-drop-list-header');
-                        if (!header)
-                            return;
-                        if (ev.target.tagName === 'INPUT')
-                            return;
-                        if (CustomFunctions.isParent(ev.target, header.querySelector('span'))) {
-                            toggleHeaderInput(header);
-                            return;
-                        }
-                        ;
-                    }
-                    ;
-                    function handleToggleShortcutInput() {
-                        var shortcut = ev.target.closest('.drag-and-drop-item');
-                        if (!shortcut)
-                            return;
-                        else if (ev.target.tagName === 'INPUT')
-                            return;
-                        // else if ((ev.target as HTMLElement) === shortcut.querySelectorAll('img')[1]) updateIcon(shortcut);	I don't remember what was the purpose of this
-                        else if (shortcut.querySelector(':scope > input') !== null && shortcut.querySelector('input').value === '')
-                            return;
-                        else if (CustomFunctions.isParent(ev.target, shortcut.querySelector('.edit-shortcut-wrapper')))
-                            toggleShortcutInput(shortcut);
-                    }
-                    ;
-                    handleToggleHeaderInput();
-                    handleToggleShortcutInput();
-                });
-                return [2 /*return*/];
-            });
-        });
-    };
-    ;
-    CloudStorageData.fillDragAndDrop = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var popUp, dragAndDrop, headerImg, addItem, fileDrop, bttn, content;
-            return __generator(this, function (_a) {
-                popUp = document.querySelector('.pop-up.create-shortcut');
-                dragAndDrop = popUp.querySelector('#drag-and-drop');
-                headerImg = popUp.querySelector('.pop-up-header img');
-                addItem = popUp.querySelector('#add-drag-and-drop');
-                fileDrop = addItem.querySelector('#drop-file');
-                bttn = document.querySelector('.create-shortcut.pop-up-open');
-                content = JSON.parse(JSON.stringify(this.json));
-                bttn.addEventListener('click', function (ev) {
-                    fileDrop.querySelector('img').src = 'https://storage.googleapis.com/statisticshock_github_io_public/icons/static/image.svg';
-                    fileDrop.querySelector('p').textContent = 'Solte uma imagem aqui';
-                    for (var _i = 0, _a = Array.from(addItem.querySelectorAll('input')); _i < _a.length; _i++) {
-                        var input = _a[_i];
-                        input.value = '';
-                    }
-                    ;
-                    dragAndDrop.style.display = 'grid';
-                    dragAndDrop.innerHTML = '';
-                    for (var _b = 0, _c = content.shortcuts; _b < _c.length; _b++) {
-                        var shortcut = _c[_b];
-                        dragAndDrop.insertAdjacentHTML('beforeend', "<div id=\"".concat(shortcut.id, "-list\" class=\"drag-and-drop-list\" draggable=\"false\" x=\"shown\"><h3 class=\"drag-and-drop-list-header\">").concat(CloudStorageData.shortcutButtons.moveButtonsContainer60).concat(shortcut.title, "<span><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span></h3><div style=\"--children-length: ").concat(shortcut.children.length, ";\"></div></div>"));
-                        var dragAndDropList = dragAndDrop.querySelector("#".concat(shortcut.id, "-list > div"));
-                        var dragAndDropListHeader = dragAndDropList.parentElement.querySelector('h3');
-                        for (var _d = 0, _e = shortcut.children; _d < _e.length; _d++) {
-                            var child = _e[_d];
-                            dragAndDropList.innerHTML += "<div id=\"".concat(child.id, "-list\" class=\"drag-and-drop-item\" draggable=\"false\" href=\"").concat(child.href, "\">").concat(CloudStorageData.shortcutButtons.moveButtonsContainer40, "<span class=\"text-wrapper\">").concat(child.alt, "</span>").concat(CloudStorageData.shortcutButtons.imageWrapper(child.img), "<span class=\"edit-shortcut-wrapper\"><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg\"></span></div>");
-                        }
-                        ;
-                    }
-                    ;
-                    headerImg.click();
-                });
                 return [2 /*return*/];
             });
         });
@@ -1298,16 +845,9 @@ var CloudStorageData = /** @class */ (function () {
         });
     };
     ;
-    CloudStorageData.shortcutButtons = {
-        editBttn: '<span class="edit-shortcut-wrapper"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></span>',
-        checkBttn: '<span class="edit-shortcut-wrapper"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/check.svg"></span>',
-        deleteBttn: function (sourceImg) { return "<span class=\"delete-shortcut\" old-data=\"src: ".concat(sourceImg.src, ";\"><img src=\"https://storage.googleapis.com/statisticshock_github_io_public/icons/static/x.svg\"></span>"); },
-        imageWrapper: function (sourceImg) { return "<span class=\"shortcut-icon-wrapper\"><img src=\"".concat(sourceImg, "\" draggable=\"false\"><input type=\"file\" accept=\"image/*\"></span>"); },
-        moveButtonsContainer60: '<div class="move-buttons-container" style="height: 60px;"><button type="button" class="move-up"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(-90deg);"></button><button type="button" class="move-down"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(90deg);"></button></div>',
-        moveButtonsContainer40: '<div class="move-buttons-container" style="height: 40px;"><button type="button" class="move-up"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(-90deg);"></button><button type="button" class="move-down"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg" style="transform: rotate(90deg);"></button></div>',
-    };
     return CloudStorageData;
 }());
+export { CloudStorageData };
 ;
 var ExternalData = /** @class */ (function () {
     function ExternalData() {
@@ -1602,6 +1142,7 @@ var ExternalData = /** @class */ (function () {
     ;
     return ExternalData;
 }());
+export { ExternalData };
 ;
 var PageBehaviour = /** @class */ (function () {
     function PageBehaviour() {
@@ -1648,6 +1189,7 @@ var PageBehaviour = /** @class */ (function () {
     ;
     return PageBehaviour;
 }());
+export { PageBehaviour };
 ;
 window.addEventListener('load', onLoadFunctions, true);
 function onLoadFunctions(ev) {
@@ -1655,16 +1197,12 @@ function onLoadFunctions(ev) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    PageBuilding.createLoaders(10);
+                    PageBuilding.createLoaders(12);
                     return [4 /*yield*/, CloudStorageData.load()];
                 case 1:
                     _a.sent();
                     return [4 /*yield*/, Promise.all([
                             CloudStorageData.loadContentFromJson(),
-                            CloudStorageData.createNewShortcuts(),
-                            CloudStorageData.dragAndDropHandler(),
-                            CloudStorageData.updateShortCut(),
-                            CloudStorageData.fillDragAndDrop(),
                             CloudStorageData.addMfcImages(),
                             ExternalData.scrapeMyAnimeList(),
                             ExternalData.addRetroAchievementsAwards()

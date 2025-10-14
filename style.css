@@ -10,7 +10,7 @@
 }
 
 /* THE ACTUAL THING */
-/* Styling */
+/* Default */
 :root {
 	--pink-custom: rgba(240, 36, 117, 1);
 	--pink-purple: linear-gradient(163deg, var(--pink-custom) 0%, #3700ff 100%);
@@ -44,7 +44,6 @@ html, body {
 	overflow-anchor: none !important;
 }
 
-/* The Page */
 body {
 	position: relative;
 	font-family: OpenSans;
@@ -58,21 +57,6 @@ body {
 	background-position: -5px -5px;
 	transition: all 0.3s ease;
 	display: block;
-	min-height: 80vh;
-
-	& .loader {
-		/* Main loader */
-		position: relative;
-		top: 50vh;
-		height: 50px;
-		left: 50%;
-		transform: translate(-50%, -50%);
-
-		& .loading {
-			background-color: var(--contrast-color-0);
-			border: 5px double var(--main-color);
-		}
-	}
 
 	& .pop-up {
 		display: none;
@@ -159,6 +143,25 @@ body {
 
 		& img {
 			pointer-events: fill;
+		}
+	}
+}
+
+/* The Home Page */
+body.home {
+	min-height: 80vh;
+
+	& > .loader {
+		/* Main loader */
+		position: relative;
+		top: 50vh;
+		height: 50px;
+		left: 50%;
+		transform: translate(-50%, -50%);
+
+		& .loading {
+			background-color: var(--contrast-color-0);
+			border: 5px double var(--main-color);
 		}
 	}
 
@@ -322,349 +325,6 @@ body {
 			-webkit-filter: invert(var(--invert));
 			filter: invert(var(--invert));
 		} 
-	}
-
-	& .pop-up.create-shortcut {
-		--transition-time: 0.75s;
-
-		& img[src$=".svg"] {
-			-webkit-filter: invert(var(--invert));
-			filter: invert(var(--invert));
-		}
-
-		& .pop-up-header {
-			& div {
-				& img {
-					cursor: pointer;
-				}
-			}
-		}
-
-		& #drag-and-drop {
-			touch-action: manipulation;
-			user-select: none;
-			-webkit-user-drag: none;
-			position: relative;
-			width: 280px;
-			height: 60vh;
-			overflow-y: auto;
-			padding: 10px;
-			gap: 10px;
-			display: grid;
-			grid-template-columns: 100%;
-			background-color: var(--contrast-color-1);
-			align-items: center;
-			justify-content: center;
-			border-radius: 10px;
-			transition: all var(--transition-time) ease;
-
-			& .drag-and-drop-list {
-				background-color: var(--contrast-color-3);
-				height: fit-content;
-				padding: 10px;
-				border-radius: 10px;
-				display: block;
-				transition: all 0.1s ease;
-				
-				& h3 {
-					display: grid;
-					background-color: var(--contrast-color-4);
-					padding: 10px;
-					border-radius: 10px;
-					grid-template-columns: 40px 1fr 40px;
-					align-items: center;
-					cursor: pointer;
-					height: fit-content;
-					position: relative;
-
-					& input {
-						border: none;
-						border-bottom: 1px solid var(--pink-custom);
-						border-radius: 0;
-						background-color: transparent;
-						font-size: inherit;
-						width: 100%;
-						color: var(--contrast-color-0)
-					}
-
-					& > span {
-						cursor: pointer;
-						aspect-ratio: 1;
-						border-radius: 100%;
-						display: flex;
-						align-items: center;
-						justify-content: center;
-						transition: all 0.1s ease-out;
-
-						& img {
-							height: 60%;
-							aspect-ratio: 1;
-						}
-					}
-
-					& > span:active {
-						background-color: var(--contrast-color-5);
-					};
-				}
-
-				& > div {
-					gap: 10px;
-					height: fit-content;
-					display: grid;
-					max-height: calc(var(--children-length) * (10px + 40px));
-					grid-template-columns: 100%;
-					align-items: center;
-					justify-content: center;
-					border-radius: 10px;
-					overflow: hidden;
-					transition: max-height 0.5s ease;
-
-					& .drag-and-drop-item {
-						position: relative;
-						height: 40px;
-						background-color: var(--contrast-color-4);
-						margin: 0;
-						align-items: center;
-						justify-content: left;
-						border-radius: 10px;
-						display: grid;
-						grid-template-columns: 30px 1fr 30px 30px;
-						gap: 10px;
-						font-size: 0.75em;
-						padding: 0 10px;
-						transition: all 0.1s ease;
-
-						& > input {
-							width: 100%;
-							background-color: transparent;
-							border-radius: 0;
-							border: none;
-							border-bottom: 1px solid var(--contrast-color-0);
-							color: var(--contrast-color-0);
-						}
-
-						& .shortcut-icon-wrapper {
-							width: 100%;
-							aspect-ratio: 1;
-							display: flex;
-							cursor: pointer;
-							justify-content: center;
-
-							& input {
-								position: absolute;
-								height: 30px;
-								width: 30px;
-								z-index: 1;
-								opacity: 0;
-								border: none;
-								cursor: pointer;
-							}
-							
-							& img {
-								border-radius: 0.5em;
-								width: fit-content;
-								-webkit-filter: drop-shadow(0px 0px 2px black);
-								filter: drop-shadow(0px 0px 2px black);
-								z-index: 0;
-								cursor: pointer;
-							}
-						}
-
-						& .delete-shortcut {
-							cursor: pointer;
-							height: 30px;
-							border-radius: 100%;
-							overflow: hidden;
-							display: flex;
-							align-items: center;
-							justify-content: center;
-
-							& img {
-								cursor: inherit;
-								height: 60%;
-								aspect-ratio: 1;
-							}
-						}
-
-						& .edit-shortcut-wrapper {
-							cursor: pointer;
-							height: 30px;
-							border-radius: 100%;
-							overflow: hidden;
-							display: flex;
-							align-items: center;
-							justify-content: center;
-
-							& img {
-								cursor: inherit;
-								height: 60%;
-								aspect-ratio: 1;
-							}
-						}
-					}
-
-					& .drag-and-drop-item:active {
-						cursor: grabbing;
-					}
-
-					& .drag-and-drop-item.ghost {
-						opacity: 0;
-					}
-				}
-
-				& .move-buttons-container {
-					position: relative;
-					max-width: 100%;
-					display: flex;
-					flex-direction: column;
-					align-items: flex-start;
-					justify-content: center;
-					gap: 5%;
-
-					& > button {
-						position: relative;
-						cursor: pointer;
-						background: none;
-						padding: 0;
-						border: none;
-						display: block;
-						height: 45%;
-						aspect-ratio: 1;
-						border-radius: 100%;
-						overflow: hidden;
-
-						& > img {
-							position: relative;
-							display: block;
-							width: 100%;
-							height: 100%;
-						}
-					}
-
-					& > button:active {
-						background-color: var(--contrast-color-5);
-					};
-				}
-			}
-
-			& .fade-out {
-				opacity: 0;
-			}
-
-			& .fade-in {
-				opacity: 0;
-			}
-
-			& .drag-and-drop-list.ghost {
-				opacity: 0;
-			}
-
-			& .drag-and-drop-list:active {
-				cursor: grabbing;
-			}
-
-			& .drag-and-drop-list.hidden {
-				& > div {
-					max-height: 0px;
-				}
-			}
-		}
-
-		& #add-new-shortcut-button, & #add-new-shortcut-submit {
-			text-transform: uppercase;
-			cursor: pointer;
-			background-image: var(--pink-purple);
-			border: none;
-			height: 30px;
-			margin: 25px 0 0 0;
-		}
-
-		& #add-new-shortcut-button {
-			width: 300px;
-			margin: 1em 0;
-		}
-
-		& #add-new-shortcut-submit {
-			position: relative;
-			width: 90%;
-			left: 50%;
-			transform: translate(-50%, 0);
-		}
-
-		& #add-new-shortcut-button:active, & #add-new-shortcut-button.active, & #add-drag-and-drop-submit:active {
-			background-image: none;
-			background-color: var(--contrast-color-4);
-			opacity: 0.75;
-		}
-
-		& #add-drag-and-drop {
-			position: relative;
-			width: 300px;
-			border-radius: 10px;
-			background-color: var(--contrast-color-2);
-			padding: 0;
-			overflow: hidden;
-			transition: all var(--transition-time) ease;
-
-			& input {
-				position: relative;
-				border: none;
-				margin-bottom: 20px;
-				width: 286px;
-				left: 50%;
-				transform: translate(-50%, 0);
-			}
-
-			& .floating-label {
-				position: absolute;
-				margin-top: 2.5px;
-			}
-
-			& #drop-file {
-				position: relative;
-				border: 3px dashed grey;
-				border-radius: 20px;
-				margin: 0;
-				padding: 20px;
-				width: 240px;
-				left: 50%;
-				transform: translateX(-50%);
-				display: grid;
-				grid-auto-flow: row;
-				transition: border 0.5s;
-				overflow: hidden;
-
-				& img {
-					justify-self: center;
-					max-height: 80px;
-					max-width: 100%;
-					border-radius: 10px;
-				}
-
-				& p {
-					justify-self: center;
-					margin: 0;
-				}
-
-				& input {
-					position: absolute;
-					background: none;
-					width: 100%;
-					height: 100%;
-					opacity: 0;
-					cursor: pointer;
-				}
-			}
-
-			& #add-drag-and-drop-submit {
-				position: relative;
-				left: 50%;
-				transform: translate(-50%, 0);
-				margin: 20px 0 0 0;
-				width: 290px;
-				border-radius: 20px;
-			}
-		}
 	}
 
 	& header {
@@ -881,7 +541,7 @@ body {
 				}
 			}
 
-			& .create-shortcut, & .create-gaming {
+			& .update-link {
 				margin: 0 20px;
 				display: flex;
 				justify-content: center;
@@ -1105,7 +765,6 @@ body {
 				width: 90%;
 				height: 25px;
 				top: 10px;
-				left: 50%;
 				border-radius: 20px;
 				margin: 20px 0;
 				border: none;
@@ -1229,9 +888,14 @@ body {
 			}
 		}
 	}
+
+	& footer {
+		position: relative;
+		text-align: center;
+	}
 }
 
-body.has-hover {
+body.home.has-hover {
 	& .pop-up {
 		& button:hover {
 			border: 2px var(--pink-custom) solid;
@@ -1244,39 +908,6 @@ body.has-hover {
 				& span {
 					& a:hover {
 						text-decoration: underline overline dotted var(--pink-custom);
-					}
-				}
-			}
-		}
-	}
-
-	& .pop-up.create-shortcut {
-		& #drag-and-drop {
-			& .drag-and-drop-list {
-				& h3 {
-					& > span:hover {
-						background-color: var(--contrast-color-5);
-					}
-				}
-
-				& > div {
-					& .delete-shortcut:hover {
-						background-color: pink;
-						
-						& img {
-							color: cyan;
-						}
-					}
-					
-					& .edit-shortcut-wrapper:hover {
-						background-color: var(--contrast-color-5);
-						border: 1px solid var(--contrast-color-0);
-					}
-				}
-
-				& .move-buttons-container {
-					& > button:hover {
-						background-color: var(--contrast-color-5);
 					}
 				}
 			}
@@ -1367,11 +998,11 @@ body.has-hover {
 				}
 			}
 
-			& .create-shortcut:hover::after, & .create-gaming:hover::after {
+			& .update-link:hover::after {
 				display: none;
 			}
 
-			& .create-shortcut:hover, & .create-gaming:hover {
+			& .update-link:hover {
 				transform: scale(1.5);
 				opacity: 1;
 			}
@@ -1410,7 +1041,7 @@ body.has-hover {
 }
 
 @media (orientation: landscape) {
-	body{
+	body.home {
 		& .flex-container{
 			display: grid;
 			grid-template-columns: 54vw 2vw 1fr;
@@ -1500,7 +1131,7 @@ body.has-hover {
 }
 
 @media (orientation: portrait) {
-	body {
+	body.home {
 		& .flex-container{
 			display: flex;
 
@@ -1518,6 +1149,7 @@ body.has-hover {
 				right: 0;
 
 				& input {
+					left: 50%;
 					transform: translate(-50%, 0);
 				}
 
@@ -1577,57 +1209,130 @@ body.has-hover {
 	}
 }
 
-/* Helpers */
-img {
-	-moz-user-select: none;
-	user-select: none;
-	-webkit-user-select: none;
+/* Shortcuts */
+body.update {
+	& header {
+		background-image: url("https://storage.googleapis.com/statisticshock_github_io_public/headers/ps2.webp");
+		height: fit-content;
+		text-align: center;
+		position: relative;
+		top: 0;
+		margin: 0 auto;
+		padding: 2em;
+
+		& h1 {
+			margin: 0;
+		}
+	}
+
+	& > .loader {
+		height: 50%;
+	}
 }
 
-.switch {
-	/* font-size: 17px; */
-	text-transform: uppercase;
-	position: absolute;
-	top: 50%;
-	transform: translate(0, -50%);
-	display: inline-block;
-	height: 2em;
-	border-radius: 1em;
-	cursor: pointer;
+@media (orientation: landscape) {
+	body.update {
 
-	/* Hide default HTML checkbox */
-	& input {
-		opacity: 0;
-		width: 0;
-		height: 0;
+	}	
+}
+
+@media (orientation: portrait) {
+	body.update {
+
+	}	
+}
+
+/* HELPERS */
+body {
+	& img {
+		-moz-user-select: none;
+		user-select: none;
+		-webkit-user-select: none;
 	}
 
-	/* The slider */
-	& .slider {
+	& .switch {
+		/* font-size: 17px; */
+		text-transform: uppercase;
 		position: absolute;
-		border: 2px solid var(--pink-custom);
-		background-color: var(--contrast-color-2);
-		inset: 0;
-		border-radius: 1000px;
-		transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-	}
-
-	& .slider::before {
-		position: absolute;
-		content: "";
-		height: 80%;
-		aspect-ratio: 1;
-		left: 0.2em;
 		top: 50%;
-		transform: translateY(-50%);
-		bottom: 0.2em;
-		background-color: var(--contrast-color-0);
-		border-radius: inherit;
-		transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+		transform: translate(0, -50%);
+		display: inline-block;
+		height: 2em;
+		border-radius: 1em;
+		cursor: pointer;
+
+		/* Hide default HTML checkbox */
+		& input {
+			opacity: 0;
+			width: 0;
+			height: 0;
+		}
+
+		/* The slider */
+		& .slider {
+			position: absolute;
+			border: 2px solid var(--pink-custom);
+			background-color: var(--contrast-color-2);
+			inset: 0;
+			border-radius: 1000px;
+			transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		}
+
+		& .slider::before {
+			position: absolute;
+			content: "";
+			height: 80%;
+			aspect-ratio: 1;
+			left: 0.2em;
+			top: 50%;
+			transform: translateY(-50%);
+			bottom: 0.2em;
+			background-color: var(--contrast-color-0);
+			border-radius: inherit;
+			transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+		}
+
+		& input:checked + .slider::before {
+			transform: translateX(var(--total-transition)) translateY(-50%);
+		}
 	}
 
-	& input:checked + .slider::before {
-		transform: translateX(var(--total-transition)) translateY(-50%);
+	& .pulse {
+		animation: pulse 0.3s ease-in-out 6;
+	}
+
+	& .loader {
+		position: absolute;
+		max-height: 5%;
+		max-width: 5%;
+		aspect-ratio: 1;
+
+		& .loading {
+			--delay: calc(var(--index) / var(--count));
+			--rotation: calc((360 / var(--count) * var(--index)));
+			position: absolute;
+			top: -25%;
+			left: 25%;
+			width: 50%;
+			height: 150%;
+			background-color: black;
+			border: var(--border);
+			transform: rotate(calc(var(--rotation) * 1deg)) translate(0%, calc(var(--translation) * 1%));
+			animation: spinner 1s calc(var(--delay) * 1s) infinite ease;
+		}
+	}
+
+	& .follower {
+		pointer-events: none;
+		background-color: #1a1a1a;
+		transform: translateX(-25%);
+		position: absolute;
+		width: max-content;
+		height: fit-content;
+		border-radius: 0.75em;
+		padding: 5px;
+		top: 0px;
+		left: 0px;
 	}
 }
 
@@ -1639,104 +1344,4 @@ img {
 	50% {
 		transform: rotate(calc(var(--rotation) * 1deg)) translate(0, calc(var(--translation) * 1.5%));
 	}
-}
-
-@keyframes underlineBounce {
-	0% {
-		transform: scaleX(0);
-		transform-origin: left;
-	}
-	12.5% {
-		transform: scaleX(1);
-		transform-origin: left;
-	}
-	25% {
-		transform: scaleX(1);
-		transform-origin: left;
-	}
-	26% {
-		transform-origin: right;
-	}
-	37.5% {
-		transform: scaleX(0);
-		transform-origin: right;
-	}
-	50% {
-		transform: scaleX(0);
-		transform-origin: right;
-	}
-	62.5% {
-		transform: scaleX(1);
-		transform-origin: right;
-	}
-	75% {
-		transform: scaleX(1);
-		transform-origin: right;
-	}
-	76% {
-		transform-origin: left;
-	}
-	87.5% {
-		transform: scaleX(0);
-		transform-origin: left;
-	}
-	100% {
-		transform: scaleX(0);
-		transform-origin: left;
-	}
-}
-
-@keyframes pulse {
-	0% {
-		background-color: var(--initial-color);
-	}
-	50% {
-		background-color: yellow;
-	}
-	100% {
-		background-color: var(--initial-color);
-	}
-}
-
-.pulse {
-	animation: pulse 0.3s ease-in-out 6;
-}
-
-.loader {
-	position: absolute;
-	max-height: 5%;
-	max-width: 5%;
-	aspect-ratio: 1;
-
-	& .loading {
-		--delay: calc(var(--index) / var(--count));
-		--rotation: calc((360 / var(--count) * var(--index)));
-		position: absolute;
-		top: -25%;
-		left: 25%;
-		width: 50%;
-		height: 150%;
-		background-color: black;
-		border: var(--border);
-		transform: rotate(calc(var(--rotation) * 1deg)) translate(0%, calc(var(--translation) * 1%));
-		animation: spinner 1s calc(var(--delay) * 1s) infinite ease;
-	}
-}
-
-.follower {
-	pointer-events: none;
-	background-color: #1a1a1a;
-	transform: translateX(-25%);
-	position: absolute;
-	width: max-content;
-	height: fit-content;
-	border-radius: 0.75em;
-	padding: 5px;
-	top: 0px;
-	left: 0px;
-}
-
-footer {
-	position: relative;
-	text-align: center;
 }

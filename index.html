@@ -3,12 +3,12 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="shortcut icon" href="./icon/favicon.svg" type="image/x-icon">
+	<link rel="shortcut icon" href="./icon/favicon.svg" type="image/svg+xml">
 	<link rel="stylesheet" href="style.css">
 	<link rel="manifest" href="/manifest.json">
-	<title>Index</title>
+	<title>StatisticShock's Index</title>
 </head>
-<body>
+<body class="home">
 	<div class="loader"></div>
 	<header id="header" style="display: none;">
 		<h1>StatisticShock's Index</h1>
@@ -42,8 +42,8 @@
 				</div>
 			</aside>
 			<section id="shortcuts">
-				<h2>ATALHOS&nbsp;<button class="create-shortcut pop-up-open" type="button" alt="Adicionar"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></button></h2>
-				<h2>GAMING&nbsp;<button class="create-gaming pop-up-open" type="button" alt="Adicionar"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></button></h2>
+				<h2>ATALHOS&nbsp;<a class="update-link" href="/update/shortcuts"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></a></h2>
+				<h2>GAMING&nbsp;<a class="update-link" href="/update/gaming"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></a></h2>
 				<section id="gaming">
 					<!-- From Uiverse.io by joe-watson-sbf -->
 				</section>
@@ -131,30 +131,6 @@
 			<p></p>
 			<button type="button" class="ok-button">OK</button>
 		</form>
-		<form class="pop-up create-shortcut" enctype="multipart/form-data">
-			<div class="pop-up-header">
-				<div>
-					<img src="./icon/favicon.svg">
-				</div>
-				<button type="button" class="close-button">&times;</button>
-			</div>
-			<div id="drag-and-drop"></div>
-			<button id="add-new-shortcut-button" type="button">Adicionar item</button>
-			<div id="add-drag-and-drop" style="height: 0;">
-				<input type="text" name="folder" autocomplete="off"><span class='floating-label'>Pasta</span>
-				<input type="text" name="url"><span class='floating-label'>URL</span>
-				<input type="text" name="title"><span class='floating-label'>Título</span>
-				<section id="drop-file">
-					<img>
-					<p>Solte uma imagem aqui</p>
-					<p><small>Apenas um arquivo</small></p>
-					<input type="file" name="file" multiple="false" accept="image/*">
-				</section>
-				<button id="add-new-shortcut-submit" type="button">Adicionar</button>
-			</div>
-			<p></p>
-			<button type="button" class="ok-button">OK</button>
-		</form>
 		<section id="about">
 			<h2>SOBRE</h2>
 			<p>Esta é uma página em HTML desenvolvida por StatisticShock para uso próprio.</p>
@@ -163,15 +139,31 @@
 	<footer style="display: none;">
 		<p>&copy;&nbsp;StatisticShock. Nada a dizer.</p>
 	</footer>
+	<script type="module" src="./src/shared.js"></script>
 	<script type="module" src="./src/script.js"></script>
 	<script>
-		if ('serviceWorker' in navigator) {
-		  navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
-		    console.log('Service Worker registered with scope:', registration.scope);
-		  }).catch(function(error) {
-		    console.log('Service Worker registration failed:', error);
-		  });
-		}
+		if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+			// Do nothing
+		} else {
+			if ('serviceWorker' in navigator) {
+			  navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+			    console.log('Service Worker registered with scope:', registration.scope);
+			  }).catch(function(error) {
+			    console.log('Service Worker registration failed:', error);
+			  });
+			};
+		};
+	</script>
+	<script>
+		const buttons = document.querySelectorAll('a.update-link');
+		const url = window.location.href;
+
+		buttons.forEach((bttn) => {
+			bttn.addEventListener('click', (ev) => {
+				ev.preventDefault();
+				history.pushState({}, '', 'update/index.html');
+			});
+		});
 	</script>
 </body>
 </html>
