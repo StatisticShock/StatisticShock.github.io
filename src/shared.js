@@ -1,6 +1,25 @@
 var SharedDomFunctions = /** @class */ (function () {
-    function SharedDomFunctions() {
+    function SharedDomFunctions(template, data) {
+        var element = document.createElement('span');
+        function createNestedTagInThisLevel(currentElement, currentData, prefix) {
+            if (currentElement === void 0) { currentElement = element; }
+            if (currentData === void 0) { currentData = data; }
+            if (prefix === void 0) { prefix = ''; }
+            var string = '';
+            for (var key in currentData) {
+                if (currentData[key] instanceof Array) {
+                }
+                else {
+                }
+            }
+            ;
+            return string;
+        }
+        ;
+        element.outerHTML = createNestedTagInThisLevel();
+        this.html = element.outerHTML;
     }
+    ;
     SharedDomFunctions.createLoaders = function (counter) {
         var loaders = document.querySelectorAll('.loader');
         loaders.forEach(function (loader) {
@@ -50,7 +69,11 @@ var SharedDomFunctions = /** @class */ (function () {
                         var inputRect = input.getBoundingClientRect();
                         var left = inputRect.left - rect.left;
                         label.style.left = Math.max(left, 5) + 'px';
-                        input.placeholder ? input.placeholder = input.placeholder : input.placeholder = ' ';
+                        if (input.placeholder)
+                            input.placeholder = input.placeholder;
+                        else
+                            input.placeholder = ' ';
+                        console.log(left);
                     });
                 }, 10);
             };
@@ -64,6 +87,22 @@ var SharedDomFunctions = /** @class */ (function () {
         });
     };
     ;
+    SharedDomFunctions.createPageLoadAwaiter = function () {
+    };
     return SharedDomFunctions;
 }());
 export default SharedDomFunctions;
+var ua = navigator.userAgent || navigator.vendor || window.opera;
+var mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
+if (!mobile)
+    document.querySelector('body').classList.add('has-hover');
+switch (localStorage.getItem('darkOrLightTheme')) {
+    case 'light':
+        document.documentElement.setAttribute('data-theme', 'light');
+        break;
+    case 'dark':
+        document.documentElement.setAttribute('data-theme', 'dark');
+        break;
+    default:
+        break;
+}

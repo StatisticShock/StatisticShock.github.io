@@ -145,22 +145,37 @@ body {
 			width: var(--min-width);
 			z-index: 1;
 			transition: 0.3s ease width;
+			overflow: hidden;
+
+			& > * {
+				border-top: 2px solid var(--clr-surface-a0);
+				border-bottom: 2px solid var(--clr-surface-a0);
+				margin: 0 auto;
+				padding: 0 20px;
+				overflow: hidden;
+			}
 
 			& div.hb-container {
 				display: inline-block;
-				text-align: center;
+				text-align: start;
 				position: relative;
+				padding: 0;
+				overflow: visible;
+				width: 100%;
 
 				& svg#hb {
 					aspect-ratio: 1 / 1;
-					height: 100%;
+					height: auto;
 				}
 			}
 
 			& div.language-wrapper {
-				border-bottom: 2px solid var(--clr-surface-a0);
+				height: 7em;
+				overflow: hidden;
+				transition: 0.3s ease height;
 
 				& div {
+					height: max-content;
 					display: grid;
 					grid-template-columns: auto 1fr;
 					align-items: center;
@@ -173,12 +188,11 @@ body {
 				position: relative;
 				line-height: 1.5em;
 				top: 0;
-				margin: 0 20px;
 				text-overflow: ellipsis;
 				white-space: nowrap;
-				width: fit-content;
 				height: var(--child-count);
 				overflow-y: hidden;
+				transition: 0.3s ease all;
 
 				& div {
 					width: fit-content;
@@ -331,6 +345,9 @@ body {
 		& aside {
 			display: block;
 			width: 100%;
+			& div.language-wrapper {
+				height: 0;
+			}
 
 			& nav {
 				height: 0;
@@ -366,7 +383,10 @@ body {
 			grid-template-columns: 3% 1fr;
 
 			& div.hb-container {
-				width: 3vw;
+
+				& svg#hb {
+					width: 3vw;
+				}
 			}
 		}
 	}
@@ -378,7 +398,10 @@ body {
 			grid-template-columns: 10% 1fr;
 
 			& div.hb-container {
-				width: 10vw;
+
+				& svg#hb {
+					width: 10vw;
+				}
 			}
 		}
 	}

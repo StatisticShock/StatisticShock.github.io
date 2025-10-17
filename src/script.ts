@@ -3,9 +3,15 @@ import * as MyTypes from '../util/types.js';
 import { server } from './server-url.js';
 import PageBuildingImport from './shared.js';
 
+const toggleExternalDataLoad: boolean = true;
+
 const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
 const mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 const portrait: boolean = (window.innerWidth < window.innerHeight);
+
+const template = (document.querySelector('template#flex-container-template') as HTMLTemplateElement)
+
+console.log(document.querySelector('template#shortcuts-template')!.innerHTML);
 
 console.log(`Running server at ${server}`);
 
@@ -68,29 +74,6 @@ class PageBuilding extends PageBuildingImport {
 		};
 	};
 
-	static figuresSitDown(): void {	// RESPONSIVE
-		const twoB: HTMLElement = document.getElementById('twoB')!;
-		const twoB_Ass = Math.floor(parseFloat(getComputedStyle(twoB).height) * 493 / 920);
-		const twoB_Pussy = Math.floor(parseFloat(getComputedStyle(twoB).width) * 182 / 356);
-		const aside: HTMLElement = document.querySelector('aside')!;
-
-		twoB.style.top = (- twoB_Ass) + 'px';
-		twoB.style.right = (!mobile) ? (aside.offsetWidth / 2 - twoB_Pussy) + 'px' : '5%';
-
-		const ohto: HTMLElement = document.getElementById('ohto')!;
-		const ohto_panties = getComputedStyle(ohto).height;
-		const ohto_mouth = Math.floor(parseFloat(getComputedStyle(ohto).width) / 2);
-
-		ohto.style.top = '-' + ohto_panties;
-		ohto.style.left = getComputedStyle(twoB).right;
-
-		const toggleSwitch: HTMLElement = document.getElementById('mfc-switch')!;
-
-		toggleSwitch.style.width = twoB.style.width;
-		toggleSwitch.style.right = parseFloat(twoB.style.right) + twoB.offsetWidth / 2 + 'px';
-		toggleSwitch.style.transform = 'translate(50%, 0)'
-	};
-
 	static async putVersionOnFooter (): Promise<void> {
 		const version: MyTypes.Version = await fetch(`${server}version`).then((res) => res.json());
 		const footer: HTMLElement = document.querySelector('footer')!;
@@ -98,12 +81,88 @@ class PageBuilding extends PageBuildingImport {
 		footer.innerHTML += `<p><small>ver. ${version.page}</small></p>`;
 	};
 
-	static removeHoverEffectsOnMobile (): void {
-		if (!mobile) document.querySelector('body')!.classList.add('has-hover');
+	static createSkeletons (): void {
+		const skeletons = document.getElementById('flex-container-template') as HTMLTemplateElement;
+		const shortcuts: HTMLElement = document.querySelector('.flex-container #shortcuts')!;
+		const aside: HTMLElement = document.querySelector('.flex-container aside')!;
+
+		function createShortcutSkeletons (title: 'Atalhos'|'Gaming'|'RetroAchievements'|'MyAnimeList'): void {
+			const section = document.importNode(skeletons.content.querySelector('.grid-container')!.parentElement as HTMLElement, true);
+			section.classList.add('skeleton-container');
+
+			section.querySelector('p')!.classList.add('skeleton');
+			section.querySelector('.shortcut-item')!.setAttribute('alt', '...');
+			section.querySelector('.shortcut-item')!.firstElementChild!.outerHTML = '<svg class="skeleton"></svg>'
+			
+			for (let i = 0; i < Math.floor((parseFloat(getComputedStyle(shortcuts).width) - 30) / (50 + 30)); i++) {
+				const shortcut = document.importNode(section.querySelector('.shortcut-item') as HTMLAnchorElement, true);
+				section.lastElementChild!.appendChild(shortcut);
+			};
+
+			const target: HTMLElement = Array.from(document.querySelectorAll('h2')).filter((h2) => h2.textContent!.trim() === title)[0];
+
+			if (target.nextElementSibling){
+				shortcuts.insertBefore(section, target.nextElementSibling);
+			} else {
+				shortcuts.appendChild(section);
+			}
+		};
+		
+		function createGamecardSkeletons (): void {
+			const title: HTMLHeadingElement = Array.from(shortcuts.querySelectorAll('h2')).filter((h2) => h2.textContent!.trim() === 'Gaming')[0];
+
+			const gamecard: HTMLDivElement = document.importNode(skeletons.content.querySelector('div.gamecard-container')!, true);
+			gamecard.querySelectorAll('span, .gamecard-outercard a, .gamecard-outercard .gamecard').forEach((el) => el.classList.add('skeleton'));
+			gamecard.classList.add('skeleton-container');
+
+			if (title.nextElementSibling){
+				shortcuts.insertBefore(gamecard, title.nextElementSibling);
+			} else {
+				shortcuts.appendChild(gamecard);
+			}
+		}
+
+		function createMfcSkeletons (): void {
+			const card: HTMLDivElement = document.querySelector('aside .card')!;
+			let firstGridItem: HTMLDivElement|null = null;
+			let count: number = 0;
+
+			do {
+				for (const card of Array.from(document.querySelectorAll('aside .card .pinterest-grid'))) {
+					for (let i = 0; i < (portrait ? 2 : 4); i++) {
+						const div = document.importNode(skeletons.content.querySelector('.pinterest-grid-item')!, true) as HTMLDivElement;
+						div.classList.add('skeleton', 'skeleton-container')
+						card.appendChild(div);
+					};
+				};
+
+				if (!firstGridItem) firstGridItem = document.querySelector('aside .card .pinterest-grid .pinterest-grid-item')!;
+
+				count++;
+			} while (count < 20 && count < parseFloat(getComputedStyle(card).height) / (parseFloat(getComputedStyle(firstGridItem!).height) + 10) - 1);
+		};
+
+		for (let i = 0; i < 2; i++) {
+			createShortcutSkeletons('Atalhos');
+		}
+
+		createShortcutSkeletons('RetroAchievements');
+		createGamecardSkeletons()
+		createMfcSkeletons();
+	};
+
+	static deleteSkeletons (prefixes: Array<string>): void {
+		for (const prefix of prefixes) {
+			const skeletons: NodeListOf<HTMLElement> = document.querySelectorAll(prefix + '.skeleton-container');
+
+			skeletons.forEach((skeleton) => {
+				skeleton.remove();
+			});
+		};
 	};
 };
 
-export class UserInterface {
+class UserInterface {
 	static expandAside(): void { // RESPONSIVE
 		const asideShownName: string = 'asideIsShown'
 		if (localStorage.getItem(asideShownName) === null) localStorage.setItem(asideShownName, 'true');
@@ -121,11 +180,9 @@ export class UserInterface {
 		bttn.onclick = function (ev) {
 			if (!portrait) {
 				if (!aside.classList.contains('hidden')) {
-					span.style.transform = `rotate(180deg) translate(0%,-10%)`;
 					aside.classList.add('hidden');
 					localStorage.setItem(asideShownName, 'false');
 				} else {
-					span.style.transform = `rotate(0deg) translate(0%,-10%)`;
 					aside.classList.remove('hidden');
 					localStorage.setItem(asideShownName, 'true');
 				};
@@ -172,14 +229,19 @@ export class UserInterface {
 		let input = label.querySelector('input') as HTMLInputElement;
 
 		const themeStyleName: string = 'darkOrLightTheme';
-		if (localStorage.getItem(themeStyleName) === null) {
-			const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-			document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-			input.checked = isDark;
-		} else if (localStorage.getItem(themeStyleName) === 'dark') {
-			input.checked = true;
-		} else if (localStorage.getItem(themeStyleName) === 'light') {
-			document.documentElement.setAttribute('data-theme', 'light');
+		switch (`${localStorage.getItem(themeStyleName)}`) {
+			case 'null':
+				const isDark: boolean = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+				document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+				input.checked = isDark;
+				localStorage.setItem('darkOrLightTheme', isDark ? 'dark' : 'light')
+				break;
+			case 'dark':
+				input.checked = true;
+				break;
+			case 'light':
+				document.documentElement.setAttribute('data-theme', 'light');
+				break;
 		};
 
 		input.addEventListener('change', (ev) => {
@@ -196,7 +258,7 @@ export class UserInterface {
 	};
 
 	static resizeHeader(): void { // NOT RESPONSIVE YET
-		const header: HTMLElement = document.querySelector('header')!;
+		const header: HTMLElement = document.querySelector('header div')!;
 		const nav: HTMLElement = document.querySelector('nav')!;
 		const height: number = parseFloat(getComputedStyle(header).height);
 		const windowWidth: number = document.documentElement.scrollWidth;
@@ -398,7 +460,7 @@ export class UserInterface {
 	};
 };
 
-export class ExternalSearch {
+class ExternalSearch {
 	static redditSearchTrigger(): void { // NO NEED OF RESPONSIVENESS
 		let okButtonReddit: HTMLButtonElement = document.querySelector('.pop-up.reddit-google .ok-button')!;
 		okButtonReddit.onclick = redditSearch;
@@ -463,7 +525,7 @@ export class ExternalSearch {
 	};
 };
 
-export class CloudStorageData {
+class CloudStorageData {
 	static json: MyTypes.PageContent;
 
 	static async load (): Promise<void> {
@@ -474,60 +536,22 @@ export class CloudStorageData {
 	static async loadContentFromJson (): Promise<void> {
 		const content: MyTypes.PageContent = JSON.parse(JSON.stringify(this.json));
 
-		async function loadShortcuts(): Promise<void> {
+		async function loadShortcuts (): Promise<void> {
 			const targetedNode: Element = document.querySelectorAll('#shortcuts h2')[1]!
 			const shortcutsNode: Element = document.querySelector('#shortcuts')!;
-
-			for (const section of content.shortcuts.sort((a, b) => a.index - b.index)) {
-				const container: HTMLElement = document.createElement('section');
-				container.id = section.id;
-				const p: HTMLParagraphElement = document.createElement('p');
-				p.innerHTML = section.title;
-				const div: HTMLDivElement = document.createElement('div');
-				div.classList.add('grid-container');
-
-				for (const child of section.children.sort((a, b) => a.index - b.index)) {
-					if (mobile && !child.showOnMobile) continue;
-					const a: HTMLAnchorElement = document.createElement('a');
-					a.classList.add('shortcut-item');
-					a.href = child.href;
-					a.setAttribute('alt', child.alt);
-					a.id = child.id;
-
-					const img: HTMLImageElement = document.createElement('img');
-					img.src = child.img;
-
-					a.appendChild(img);
-					div.appendChild(a);
-				};
-
-				if (div.childElementCount > 0) {
-					container.appendChild(p);
-					container.appendChild(div);
-					shortcutsNode.insertBefore(container, targetedNode);
-				};
+			const tpt: DocumentFragment = (template.querySelector('template#shortcuts-template') as HTMLTemplateElement).content;
+			const data = CloudStorageData.json.shortcuts.sort((a, b) => a.index - b.index);
+			for (const key in data) {
+				console.log(key);
 			};
 		};
 
 		async function loadGamecards (): Promise<void> {
 			const targetedNode: Element = document.querySelector('#shortcuts #gaming')!
+			const minimunFlexGrowNeeded: number = 2;
 
 			for (const gamecardData of content.gamecards.sort((a, b) => a.position - b.position)) {
-				const outerGamecard: HTMLDivElement = document.createElement('div');
-				outerGamecard.id = gamecardData.id;
-				outerGamecard.classList.add('gamecard-text');
-				outerGamecard.innerHTML = `<span><p>${gamecardData.label}</p></span><div class="gamecard-container"></div>`;
-
-				for (const game of gamecardData.children.sort((a, b) => a.position - b.position)) {
-					let gameStyleString: string = '';
-					for (const cssAtttribute of game.img_css) {
-						gameStyleString += `${cssAtttribute.attribute}: ${cssAtttribute.value}; `;
-					};
-
-					outerGamecard.querySelector('.gamecard-container')!.innerHTML += `<div class="gamecard" id="${game.id}"><a href="${game.href}" style="background-image: url(${game.img}); ${gameStyleString}"><span><b>${game.label}</b></span></a></div>`
-				};
-
-				targetedNode.appendChild(outerGamecard);
+				
 			}
 		}
 
@@ -541,7 +565,7 @@ export class CloudStorageData {
 				img.src = imgSrc.href;
 			});
 
-			const header: HTMLElement = document.querySelector('#header')!;
+			const header: HTMLElement = document.querySelector('#header div')!;
 			const h1: HTMLElement = header.querySelector('h1')!;
 			header.style.backgroundImage = `url('${src}')`;
 
@@ -566,11 +590,6 @@ export class CloudStorageData {
 				header.style.backgroundImage = `url('${src}')`;
 			};
 		};
-
-		(Array.from(document.body.children) as Array<HTMLElement>).concat(document.querySelector('footer')!).forEach((element) => {
-			if (element.classList.contains('loader')) element.style.display = 'none';
-			else element.removeAttribute('style');
-		});
 
 		loadShortcuts();
 		loadGamecards();
@@ -633,15 +652,19 @@ export class CloudStorageData {
 		});
 
 		function createElement(item: MyTypes.MFC) {
-			let div = document.createElement('div');
-			let img = new Image()
+			const div: HTMLDivElement = document.importNode(template.querySelector('.pinterest-grid-item')!, true);
+			const img: HTMLImageElement = div.querySelector('img')!;
+			const bigImage = new Image()
+			bigImage.src = item.img;
 			let card: HTMLElement;
 
-			if (item.type !== 'Wished') {
-				card = document.getElementById('owned-ordered') as HTMLElement;
-			} else {
-				card = document.getElementById('wished') as HTMLElement;
-				div.classList.add('wished');
+			switch (item.type) {
+				case 'Wished':
+					card = document.getElementById('wished') as HTMLElement;
+					break;
+				default:
+					card = document.getElementById('owned-ordered') as HTMLElement;
+					break;
 			}
 
 
@@ -650,29 +673,34 @@ export class CloudStorageData {
 			div.id = item.id;
 			img.src = item.icon;
 
-			if (item.category == 'Prepainted') {
-				div.style.color = 'green';
-			} else if (item.category == 'Action/Dolls') {
-				div.style.color = '#0080ff';
-			} else {
-				div.style.color = 'orange';
+			switch (item.category) {
+				case 'Prepainted':
+					div.style.color = 'green';
+					break;
+				case 'Action/Dolls':
+					div.style.color = '#0080ff';
+					break;
+				default:
+					div.style.color = 'orange';
+					break
 			}
 
 			img.style.border = `4px solid ${div.style.color}`;
 
-			let imgBorder = img.style.border.split(' ')[0];
+			const imgBorder = img.style.border.split(' ')[0];
 
-			img.style.width = `calc(100% - ${imgBorder} * 2)`
+			img.style.width = `calc(100% - ${imgBorder} * 2)`;
 
 			img.onclick = () => {
-				let popUp = document.querySelector('.pop-up.mfc') as HTMLDivElement;
-				let title = popUp.querySelector('.pop-up-title') as HTMLSpanElement;
-				let popUpImgAnchor = popUp.querySelector('#pop-up-img') as HTMLAnchorElement;
-				let popUpImg = popUpImgAnchor.childNodes[0] as HTMLImageElement;
-				let originalName = popUp.querySelector('#mfc-character-original-name') as HTMLSpanElement;
-				let originName = popUp.querySelector('#mfc-character-source') as HTMLSpanElement;
-				let classification = popUp.querySelector('#mfc-classification') as HTMLSpanElement;
-				let a = popUp.querySelector('.pop-up-header > div > a') as HTMLAnchorElement;
+				const popUp = document.querySelector('.pop-up.mfc') as HTMLDivElement;
+				const title = popUp.querySelector('.pop-up-title') as HTMLSpanElement;
+				const popUpImgAnchor = popUp.querySelector('#pop-up-img') as HTMLAnchorElement;
+				const popUpImg = popUpImgAnchor.childNodes[0] as HTMLImageElement;
+				const originalName = popUp.querySelector('#mfc-character-original-name') as HTMLSpanElement;
+				const originName = popUp.querySelector('#mfc-character-source') as HTMLSpanElement;
+				const classification = popUp.querySelector('#mfc-classification') as HTMLSpanElement;
+				const a = popUp.querySelector('.pop-up-header > div > a') as HTMLAnchorElement;
+				const updateLink = popUp.querySelector('a.update-link') as HTMLAnchorElement;
 
 				let characterLink: string = '';
 				let originLink: string = '';
@@ -702,9 +730,10 @@ export class CloudStorageData {
 				title.innerHTML = item.title;
 				popUpImgAnchor.href = item.href;
 				popUpImgAnchor.style.border = `${imgBorder} solid ${div.style.color}`
-				popUpImg.src = item.img;
+				popUpImg.src = bigImage.src;
 
 				const copySvg: string = `<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200.000000 200.000000" preserveAspectRatio="xMidYMid meet"><g transform="translate(0.000000,200.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none"><path d="M721 1882 c-71 -36 -76 -51 -79 -268 l-3 -194 60 0 61 0 2 178 3 177 475 0 475 0 0 -475 0 -475 -117 -3 -118 -3 0 -60 0 -61 134 4 c151 3 175 12 209 79 16 31 17 73 15 531 -3 484 -4 497 -24 525 -47 64 -39 63 -574 63 -442 0 -488 -2 -519 -18z"/><path d="M241 1282 c-19 -9 -44 -30 -55 -45 -20 -28 -21 -41 -24 -525 -3 -555 -4 -542 67 -589 l34 -23 496 0 c477 0 497 1 529 20 18 11 41 34 52 52 19 32 20 52 20 529 l0 496 -23 34 c-47 70 -36 69 -577 69 -442 0 -488 -2 -519 -18z m994 -582 l0 -475 -475 0 -475 0 -3 465 c-1 256 0 471 3 478 3 10 104 12 477 10 l473 -3 0 -475z"/></g></svg>`;
+				updateLink.href = '/update/mfc/' + item.id + '/'
 
 				originalName.innerHTML = item.characterJap !== '' ? `<a target="_blank" href="${characterLink}">${copySvg}&nbsp;${item.characterJap}</a>` : `<a target="_blank" href="${characterLink}">${copySvg}&nbsp;${item.character}</div></a>`;
 				originName.innerHTML = `<a target="_blank" href="${originLink}">${copySvg}&nbsp;${item.sourceJap}</a>`;
@@ -742,7 +771,6 @@ export class CloudStorageData {
 
 			div.append(img);
 			card.append(div);
-			div.append(item.character);
 		};
 
 		function searchFigure(textInput: HTMLInputElement, json: MyTypes.MFC[]) {
@@ -771,17 +799,7 @@ export class CloudStorageData {
 
 		setInterval(() => {
 			resizeAllMasonryItems();
-		}, 500)
-
-		setTimeout(() => {
-			const loader: HTMLDivElement = document.querySelector('aside > .card > .loader')!;
-			const pinterestGrids: NodeListOf<HTMLSpanElement> = document.querySelectorAll('aside > .card > .pinterest-grid');
-
-			loader.style.display = 'none';
-			pinterestGrids.forEach((grid) => {
-				grid.style.opacity = '1'
-			});
-		}, 1000);
+		}, 500);
 
 		setInterval(() => {
 			const card: HTMLDivElement = document.querySelector('aside .card')!;
@@ -794,7 +812,7 @@ export class CloudStorageData {
 	};
 };
 
-export class ExternalData {
+class ExternalData {
 	static async addRetroAchievementsAwards (): Promise<void> {
 		const raUrl: string = 'https://retroachievements.org';
 		const response: MyTypes.RetroAchievementsOutput = await fetch(`${server}retroAchievements/pt-BR/`).then((res) => res.json());
@@ -802,11 +820,25 @@ export class ExternalData {
 		const consoles = response.consoles;
 		const gridContainer: HTMLDivElement = document.querySelector('#retroachievements-awards > .grid-container')!;
 		const popUp: HTMLDivElement = document.querySelector('.pop-up.retroachievements-awards')!;
+		const h3: HTMLElement = document.querySelector('#retroachievements-awards > h3')!;
 
 		awards.map(createRetroAchievementsAwardCard);
 
 		function createRetroAchievementsAwardCard (award: MyTypes.RetroAchievementsFormattedAward): void {
-			gridContainer.innerHTML += `<div id="${CustomFunctions.normalize(award.title)}" class="shortcut-item retroachievements-award" alt="${award.title}" target="_blank"><img src="${award.imageIcon}" style="border: 2px solid ${award.allData.some((a) => a.awardType.includes('Platinado')) ? 'gold' : '#e5e7eb'};" draggable="false"></div>`;
+			const shortcut: HTMLAnchorElement = document.importNode(template.querySelector('.grid-container a')!, true);
+			const img: HTMLImageElement = shortcut.querySelector('img')!;
+
+			shortcut.classList.add('retroachievements-award');
+			shortcut.id = CustomFunctions.normalize(award.title);
+			shortcut.setAttribute('alt', award.title);
+			img.src = award.imageIcon;
+
+			if (award.allData[0].awardType.includes('Mastered') || award.allData[0].awardType.includes('Platinado')) {
+				shortcut.classList.add('mastered');
+			}
+			
+			gridContainer.appendChild(shortcut);
+			h3.removeAttribute('style');
 		};
 
 		gridContainer.querySelectorAll('.retroachievements-award').forEach((awardCard) => {
@@ -1006,7 +1038,7 @@ export class ExternalData {
 			navBttns.forEach((bttn) => {
 				bttn.addEventListener('click', scrollFunction); function scrollFunction(e: MouseEvent | TouchEvent) {
 					const target = e.target as HTMLButtonElement;
-					const direction: string = target.classList.contains('left') ? 'left' : 'right';
+					const direction: string = target.closest('button')!.classList.contains('left') ? 'left' : 'right';
 					let anchor: HTMLAnchorElement = getClosestAnchor(card);
 					const anchors: NodeListOf<HTMLAnchorElement> = card.querySelectorAll('a');
 
@@ -1090,7 +1122,7 @@ export class ExternalData {
 	};
 };
 
-export class PageBehaviour {
+class PageBehaviour {
 	static stopImageDrag(): void { // NO NEED OF RESPONSIVENESS
 		let images: HTMLCollectionOf<HTMLImageElement> = document.getElementsByTagName('img');
 
@@ -1134,23 +1166,6 @@ export class PageBehaviour {
 };
 
 window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions(ev: Event) {
-	PageBuilding.createLoaders(12);
-
-	await CloudStorageData.load();
-	
-	await Promise.all([
-		CloudStorageData.loadContentFromJson(),
-		CloudStorageData.addMfcImages(),
-		ExternalData.scrapeMyAnimeList(),
-		ExternalData.addRetroAchievementsAwards()
-	]);
-	
-	PageBuilding.figuresSitDown();
-	PageBuilding.adjustGamecard();
-	PageBuilding.adjustGamecardText(0);
-	PageBuilding.putVersionOnFooter();
-	PageBuilding.removeHoverEffectsOnMobile();
-
 	UserInterface.expandAside();
 	UserInterface.makeAsideButtonFollow();
 	UserInterface.makeSwitchesSlide();
@@ -1159,9 +1174,32 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 	UserInterface.setPopUpDefaultValues();
 	UserInterface.resetPopUpsOnOpen();
 	UserInterface.showPopUps();
+
+	await CustomFunctions.sleep(300);
+
+	PageBuilding.createLoaders(12);
+	PageBuilding.createSkeletons();	
+	PageBuilding.adjustGamecard();
+	PageBuilding.putVersionOnFooter();
+	PageBuilding.formatPopUps();
 	
 	ExternalSearch.redditSearchTrigger();
 	ExternalSearch.wikipediaSearchTrigger();
+
+	if (toggleExternalDataLoad) {
+		await CloudStorageData.load();
+
+		await Promise.all([
+			Promise.all([
+				CloudStorageData.loadContentFromJson(),
+				CloudStorageData.addMfcImages(),
+			]).then((res) => PageBuilding.deleteSkeletons(['#shortcuts > ', 'aside .card .pinterest-grid ', 'header '])),
+			Promise.all([
+				ExternalData.scrapeMyAnimeList(),
+				ExternalData.addRetroAchievementsAwards(),
+			])
+		]);
+	};
 
 	PageBehaviour.openLinksInNewTab();
 	PageBehaviour.redirectLinksToEdge();
@@ -1170,7 +1208,6 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions(ev: Event) {
 	setTimeout(() => {
 		PageBuilding.resizeAside();
-		PageBuilding.figuresSitDown();
 		PageBuilding.adjustGamecardText(0);
 	}, 500);
 };

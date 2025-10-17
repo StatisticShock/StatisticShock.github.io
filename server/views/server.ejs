@@ -62,12 +62,12 @@
 			<ç typeOfEndpoints.forEach(function (type) { ç>
 				<ç if (type.endpoints.length === 0) {} else { ç>
 					<h2 id=<ç= type.method.toLowerCase() ç>><ç= type.method ç></h2>
-					<p><ç- type.descriptionEnUs.split('\n').map((line) => '<p>' + line + '</p>').join('') ç></p>
+					<p><ç- type.description[0].split('\n').map((line) => '<p>' + line + '</p>').join('') ç></p>
 					<ul>
 						<ç type.endpoints.forEach(function (endpoint) { ç>
 							<div class="endpoint-wrapper" id=<ç= type.method.toLowerCase() + '-' + endpoint.id ç>>
 								<h3 class="route"><ç= endpoint.route ç></h1>
-								<div class="description"><ç- endpoint.descriptionEnUs.map((line) => line.split('\n')).map((line) => `<p>${line}</p>`).join('') ç></div>
+								<div class="description"><ç- endpoint.description[0].split('\n').map((text) => `<p>${text}</p>`).join('') ç></div>
 								<ç if (endpoint.parameters) { ç>
 									<div class="parameter">
 										<ç endpoint.parameters.forEach((parameter) => { ç>
@@ -181,6 +181,16 @@
 
 				example.style.setProperty('--example-height', 'calc(' + (lines * 1.125) + 'em + 3px)')
 			})
+		})();
+
+		(function toggleLanguage () {
+			const languageInputs = document.querySelectorAll('input[name="language"]');
+			
+			languageInputs.forEach((input) => {
+				input.addEventListener('click', (ev) => {
+
+				});
+			});
 		})();
 	</script>
 </body>

@@ -1,7 +1,7 @@
 type BaseEndpoint = {
 	id,
 	route,
-	descriptionEnUs: Array<string>, descriptionPtBr: Array<string>,
+	description: [string, string],
 	parameters?: Array<[string, string]>,
 	examples?: Array<[string, string]>,
 };
@@ -11,8 +11,7 @@ type Endpoint = BaseEndpoint & {
 type AllStrings<T> = {[Key in keyof T]: T[Key] extends any ? (unknown extends T[Key] ? string : T[Key]) : T[Key]};
 type Methods = {
 	method: string,
-	descriptionEnUs: string,
-	descriptionPtBr: string,
+	description: [string, string],
 	endpoints: Array<AllStrings<Endpoint>>,
 }
 const cb = function (string: string): string {return `<span class="codeblock">${string}</span>`};
@@ -21,17 +20,17 @@ const tb = function (string: string): string {return `&lt;${string}&gt;`};
 export const typeOfEndpoints: Array<Methods> = [
 	{ // GET
 		method: 'GET',
-		descriptionEnUs: 'These methods only <b>get</b> data from the database.',
-		descriptionPtBr: '',
+		description: [
+			'These methods only <b>get</b> data from the database.',
+			'Esses métodos apenas <b>obtém</b> dados da base de dados.'
+		],
 		endpoints: [
 			{ // myanimelist
 				id: 'myanimelist',
 				route: "/myanimelist/<type>/?username&offset",
-				descriptionEnUs: [
-					`Returns a list of 100 last updated anime watched/manga readed.`,
-				],
-				descriptionPtBr: [
-					'',
+				description: [
+					`Returns a list of 100 last updated anime/manga.`,
+					'Retorna uma lista dos 100 últimos animes/mangá atualizados.'
 				],
 				parameters: [
 					['type', 'Obligatory. Needs to be either ' + cb('animelist') + ' or ' + cb('mangalist') + '.\nDefines what will be returned'],
@@ -51,26 +50,26 @@ export const typeOfEndpoints: Array<Methods> = [
 			},
 			{ // contents
 				id: 'contents',
-				route: "/contents/update?",
-				descriptionEnUs: [
-					`This endpoint returns a JSON that contains <b>shortcut</b> data, <b>headers</b> links,` +
-					` <b>MyFigureCollection</b> figure data and <b>gamecards</b> data.`,
-				],
-				descriptionPtBr: [
-					'',
+				route: "/contents/<type>?",
+				description: [
+					`This endpoint returns a JSON that contains <b>shortcut</b> data, <b>headers</b> links, <b>MyFigureCollection</b> figure data and <b>gamecards</b> data.`,
+					`Este endpoint retorna um JSON que contém dados de <b>shortcut</b>, links de <b>headers</b>, dados de figura de <b>MyFigureCollection</b> e dados de <b>gamecards</b>.`
 				],
 				parameters: [
-					['update', 'Optional.\nUpdates the headers of the CSVs that store the data.']
+					['type', 'Optional. Accepts '+ cb('shortcuts') + ', ' + cb('headers') + ', ' + cb('mfc') + ' and ' + cb('gamecards') + '.\nSelects which type of data will be colected.']
 				],
 				examples: [
-					['/contents/', JSON.stringify({"shortcuts":{"id":"redes-sociais","index":1,"title":"Redes Sociais","children":[{"id":"reddit","alt":"Reddit","index":1,"href":"https://www.reddit.com/","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/reddit.webp","showOnMobile":false},{"id":"facebook","alt":"Facebook","index":2,"href":"https://www.facebook.com/","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/fb.webp","showOnMobile":false},{"id":"instagram","alt":"Instagram","index":3,"href":"https://www.instagram.com/","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/insta.webp","showOnMobile":false},{"id":"x-twitter","alt":"X (Twitter)","index":4,"href":"https://x.com/home","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/x.webp","showOnMobile":false},{"id":"tiktok","alt":"TikTok","index":5,"href":"https://www.tiktok.com/","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/tiktok.webp","showOnMobile":false},{"id":"discord","alt":"Discord","index":6,"href":"https://discord.com/app","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/discord.webp","showOnMobile":false}]},"gamecards":{"label":"Links","id":"links","position":1,"children":[{"id":"retroachievements","label":"RetroAchievements","position":1,"href":"https://retroachievements.org/user/assdeper","img":"https://storage.googleapis.com/statisticshock_github_io_public/pageImages/ra-ps.webp","img_css":[{"attribute":"background-size","value":"contain"}]},{"id":"rroms-megathread","label":"r/Roms Megathread","position":2,"href":"https://r-roms.github.io/","img":"https://storage.googleapis.com/statisticshock_github_io_public/pageImages/rroms.webp","img_css":[]},{"id":"fitgirl-repacks","label":"FitGirl Repacks","position":3,"href":"https://fitgirl-repacks.site/","img":"https://storage.googleapis.com/statisticshock_github_io_public/pageImages/fitgirl-ps.webp","img_css":[]},{"id":"pkmds-for-web","label":"PKMDS for Web","position":4,"href":"https://pkmds.app/","img":"https://storage.googleapis.com/statisticshock_github_io_public/pageImages/pokemon.webp","img_css":[{"attribute":"background-size","value":"contain"}]}]},"headers":{"href":"https://storage.googleapis.com/statisticshock_github_io_public/headers/arthur_sword_ruan.webp","name":"arthur_sword_ruan","active":true},"mfc":{"id":"16888","href":"https://pt.myfigurecollection.net/item/16888","img":"https://storage.googleapis.com/statisticshock_github_io_public/mfc/main_images/16888.webp","icon":"https://storage.googleapis.com/statisticshock_github_io_public/mfc/icons/16888.webp","character":"Sarugaki Hiyori","characterJap":"猿柿 ひよ里","sourceJap":"ブリーチ","category":"Prepainted","type":"Wished","title":"Bleach - Sarugaki Hiyori - 1/8 (Alpha x Omega)"}}, null, 4)]
+					['/contents/', JSON.stringify({"shortcuts":{"id":"redes-sociais","index":1,"title":"Redes Sociais","children":[{"id":"reddit","alt":"Reddit","index":1,"href":"https://www.reddit.com/","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/reddit.webp","showOnMobile":false},{"id":"facebook","alt":"Facebook","index":2,"href":"https://www.facebook.com/","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/fb.webp","showOnMobile":false},{"id":"instagram","alt":"Instagram","index":3,"href":"https://www.instagram.com/","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/insta.webp","showOnMobile":false},{"id":"x-twitter","alt":"X (Twitter)","index":4,"href":"https://x.com/home","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/x.webp","showOnMobile":false},{"id":"tiktok","alt":"TikTok","index":5,"href":"https://www.tiktok.com/","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/tiktok.webp","showOnMobile":false},{"id":"discord","alt":"Discord","index":6,"href":"https://discord.com/app","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/discord.webp","showOnMobile":false}]},"gamecards":{"label":"Links","id":"links","position":1,"children":[{"id":"retroachievements","label":"RetroAchievements","position":1,"href":"https://retroachievements.org/user/assdeper","img":"https://storage.googleapis.com/statisticshock_github_io_public/pageImages/ra-ps.webp","img_css":[{"attribute":"background-size","value":"contain"}]},{"id":"rroms-megathread","label":"r/Roms Megathread","position":2,"href":"https://r-roms.github.io/","img":"https://storage.googleapis.com/statisticshock_github_io_public/pageImages/rroms.webp","img_css":[]},{"id":"fitgirl-repacks","label":"FitGirl Repacks","position":3,"href":"https://fitgirl-repacks.site/","img":"https://storage.googleapis.com/statisticshock_github_io_public/pageImages/fitgirl-ps.webp","img_css":[]},{"id":"pkmds-for-web","label":"PKMDS for Web","position":4,"href":"https://pkmds.app/","img":"https://storage.googleapis.com/statisticshock_github_io_public/pageImages/pokemon.webp","img_css":[{"attribute":"background-size","value":"contain"}]}]},"headers":{"href":"https://storage.googleapis.com/statisticshock_github_io_public/headers/arthur_sword_ruan.webp","name":"arthur_sword_ruan","active":true},"mfc":{"id":"16888","href":"https://pt.myfigurecollection.net/item/16888","img":"https://storage.googleapis.com/statisticshock_github_io_public/mfc/main_images/16888.webp","icon":"https://storage.googleapis.com/statisticshock_github_io_public/mfc/icons/16888.webp","character":"Sarugaki Hiyori","characterJap":"猿柿 ひよ里","sourceJap":"ブリーチ","category":"Prepainted","type":"Wished","title":"Bleach - Sarugaki Hiyori - 1/8 (Alpha x Omega)"}}, null, 4)],
+					['/contents/shortcuts/', JSON.stringify({"shortcuts":{"id":"redes-sociais","index":1,"title":"Redes Sociais","children":[{"id":"reddit","alt":"Reddit","index":1,"href":"https://www.reddit.com/","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/reddit.webp","showOnMobile":false},{"id":"facebook","alt":"Facebook","index":2,"href":"https://www.facebook.com/","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/fb.webp","showOnMobile":false},{"id":"instagram","alt":"Instagram","index":3,"href":"https://www.instagram.com/","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/insta.webp","showOnMobile":false},{"id":"x-twitter","alt":"X (Twitter)","index":4,"href":"https://x.com/home","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/x.webp","showOnMobile":false},{"id":"tiktok","alt":"TikTok","index":5,"href":"https://www.tiktok.com/","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/tiktok.webp","showOnMobile":false},{"id":"discord","alt":"Discord","index":6,"href":"https://discord.com/app","img":"https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/discord.webp","showOnMobile":false}]}}, null, 4)],
 				],
 			},
 			{ // retroAchievements
 				id: 'retro-achievements',
 				route: '/retroAchievements/<language>/',
-				descriptionEnUs: [],
-				descriptionPtBr: [],
+				description: [
+					'',
+					''
+				],
 				parameters: [
 					['language', 'The language of display.\nAccepts both ' + cb('pt-BR') + ' and ' + cb('en-US') + '.']
 				],
@@ -81,10 +80,10 @@ export const typeOfEndpoints: Array<Methods> = [
 			{ // Version
 				id: 'version',
 				route: '/version/',
-				descriptionEnUs: [
-					'Gets up-to-date version of the <a href="https://statisticshock.github.io/" target="_blank">webpage</a> and this API.'
+				description: [
+					'Gets up-to-date version of the <a href="https://statisticshock.github.io/" target="_blank">webpage</a> and this API.',
+					'Obtém a versão atualizada da <a href="https://statisticshock.github.io/" target="_blank">página da web</a> e desta API.'
 				],
-				descriptionPtBr: [],
 				examples: [
 					['/version/', JSON.stringify({page: '1.3.0', server: '2.1.0'}, null, 4)]
 				]
@@ -93,52 +92,52 @@ export const typeOfEndpoints: Array<Methods> = [
 	},
 	{ // POST
 		method: 'POST',
-		descriptionEnUs: 'These methods can both <b>get</b> and <b>create</b> data in the database.',
-		descriptionPtBr: '',
+		description: [
+			'These methods both <b>get</b> and <b>create</b> data from the database.',
+			'Esses métodos tanto <b>obtém</b> quanto <b>criar</b> dados da base de dados.'
+		],
 		endpoints: [
 			{
 				id: 'shortcuts',
 				route: "/shortcuts/",
-				descriptionEnUs: [
-					`This endpoint is not ready yet`
-				],
-				descriptionPtBr: [
-					'',
+				description: [
+					'This endpoint is not ready yet',
+					'Este endpoint não está pronto ainda.'
 				],
 			}
 		]
 	},
 	{ // PUT
 		method: 'PUT',
-		descriptionEnUs: 'These methods should be used to <b>change</b> data in the database.',
-		descriptionPtBr: '',
+		description: [
+			'These methods should be used to <b>change</b> data in the database.',
+			'Esses métodos devem ser utilizados para <b>mudar</b> dados da base de dados.'
+		],
 		endpoints: [
 			{
 				id: 'shortcuts',
 				route: "/shortcuts/",
-				descriptionEnUs: [
-					`This endpoint is not ready yet`
-				],
-				descriptionPtBr: [
-					'',
+				description: [
+					'This endpoint is not ready yet',
+					'Este endpoint não está pronto ainda.'
 				],
 			}
 		]
 	},
 	{ // DELETE
 		method: 'DELETE',
-		descriptionEnUs: 'These methods should be used to <b>delete</b> data in the database.',
-		descriptionPtBr: '',
+		description: [
+			'These methods should be used to <b>delete</b> data in the database.',
+			'Esses métodos devem ser utilizados para <b>deletar</b> dados da base de dados.'
+		],
 		endpoints: [
 			{
 				id: 'shortcuts',
 				route: "/shortcuts/",
-				descriptionEnUs: [
-					`This endpoint is not ready yet`
+				description: [
+					'This endpoint is not ready yet',
+					'Este endpoint não está pronto ainda.'
 				],
-				descriptionPtBr: [
-					'',
-				]
 			}
 		]
 	}

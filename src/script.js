@@ -52,9 +52,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import CustomFunctions from '../util/functions.js';
 import { server } from './server-url.js';
 import PageBuildingImport from './shared.js';
+var toggleExternalDataLoad = true;
 var ua = navigator.userAgent || navigator.vendor || window.opera;
 var mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 var portrait = (window.innerWidth < window.innerHeight);
+var template = document.querySelector('template#flex-container-template');
+console.log(document.querySelector('template#shortcuts-template').innerHTML);
 console.log("Running server at ".concat(server));
 var PageBuilding = /** @class */ (function (_super) {
     __extends(PageBuilding, _super);
@@ -117,24 +120,6 @@ var PageBuilding = /** @class */ (function (_super) {
         ;
     };
     ;
-    PageBuilding.figuresSitDown = function () {
-        var twoB = document.getElementById('twoB');
-        var twoB_Ass = Math.floor(parseFloat(getComputedStyle(twoB).height) * 493 / 920);
-        var twoB_Pussy = Math.floor(parseFloat(getComputedStyle(twoB).width) * 182 / 356);
-        var aside = document.querySelector('aside');
-        twoB.style.top = (-twoB_Ass) + 'px';
-        twoB.style.right = (!mobile) ? (aside.offsetWidth / 2 - twoB_Pussy) + 'px' : '5%';
-        var ohto = document.getElementById('ohto');
-        var ohto_panties = getComputedStyle(ohto).height;
-        var ohto_mouth = Math.floor(parseFloat(getComputedStyle(ohto).width) / 2);
-        ohto.style.top = '-' + ohto_panties;
-        ohto.style.left = getComputedStyle(twoB).right;
-        var toggleSwitch = document.getElementById('mfc-switch');
-        toggleSwitch.style.width = twoB.style.width;
-        toggleSwitch.style.right = parseFloat(twoB.style.right) + twoB.offsetWidth / 2 + 'px';
-        toggleSwitch.style.transform = 'translate(50%, 0)';
-    };
-    ;
     PageBuilding.putVersionOnFooter = function () {
         return __awaiter(this, void 0, void 0, function () {
             var version, footer;
@@ -151,9 +136,80 @@ var PageBuilding = /** @class */ (function (_super) {
         });
     };
     ;
-    PageBuilding.removeHoverEffectsOnMobile = function () {
-        if (!mobile)
-            document.querySelector('body').classList.add('has-hover');
+    PageBuilding.createSkeletons = function () {
+        var skeletons = document.getElementById('flex-container-template');
+        var shortcuts = document.querySelector('.flex-container #shortcuts');
+        var aside = document.querySelector('.flex-container aside');
+        function createShortcutSkeletons(title) {
+            var section = document.importNode(skeletons.content.querySelector('.grid-container').parentElement, true);
+            section.classList.add('skeleton-container');
+            section.querySelector('p').classList.add('skeleton');
+            section.querySelector('.shortcut-item').setAttribute('alt', '...');
+            section.querySelector('.shortcut-item').firstElementChild.outerHTML = '<svg class="skeleton"></svg>';
+            for (var i = 0; i < Math.floor((parseFloat(getComputedStyle(shortcuts).width) - 30) / (50 + 30)); i++) {
+                var shortcut = document.importNode(section.querySelector('.shortcut-item'), true);
+                section.lastElementChild.appendChild(shortcut);
+            }
+            ;
+            var target = Array.from(document.querySelectorAll('h2')).filter(function (h2) { return h2.textContent.trim() === title; })[0];
+            if (target.nextElementSibling) {
+                shortcuts.insertBefore(section, target.nextElementSibling);
+            }
+            else {
+                shortcuts.appendChild(section);
+            }
+        }
+        ;
+        function createGamecardSkeletons() {
+            var title = Array.from(shortcuts.querySelectorAll('h2')).filter(function (h2) { return h2.textContent.trim() === 'Gaming'; })[0];
+            var gamecard = document.importNode(skeletons.content.querySelector('div.gamecard-container'), true);
+            gamecard.querySelectorAll('span, .gamecard-outercard a, .gamecard-outercard .gamecard').forEach(function (el) { return el.classList.add('skeleton'); });
+            gamecard.classList.add('skeleton-container');
+            if (title.nextElementSibling) {
+                shortcuts.insertBefore(gamecard, title.nextElementSibling);
+            }
+            else {
+                shortcuts.appendChild(gamecard);
+            }
+        }
+        function createMfcSkeletons() {
+            var card = document.querySelector('aside .card');
+            var firstGridItem = null;
+            var count = 0;
+            do {
+                for (var _i = 0, _a = Array.from(document.querySelectorAll('aside .card .pinterest-grid')); _i < _a.length; _i++) {
+                    var card_1 = _a[_i];
+                    for (var i = 0; i < (portrait ? 2 : 4); i++) {
+                        var div = document.importNode(skeletons.content.querySelector('.pinterest-grid-item'), true);
+                        div.classList.add('skeleton', 'skeleton-container');
+                        card_1.appendChild(div);
+                    }
+                    ;
+                }
+                ;
+                if (!firstGridItem)
+                    firstGridItem = document.querySelector('aside .card .pinterest-grid .pinterest-grid-item');
+                count++;
+            } while (count < 20 && count < parseFloat(getComputedStyle(card).height) / (parseFloat(getComputedStyle(firstGridItem).height) + 10) - 1);
+        }
+        ;
+        for (var i = 0; i < 2; i++) {
+            createShortcutSkeletons('Atalhos');
+        }
+        createShortcutSkeletons('RetroAchievements');
+        createGamecardSkeletons();
+        createMfcSkeletons();
+    };
+    ;
+    PageBuilding.deleteSkeletons = function (prefixes) {
+        for (var _i = 0, prefixes_1 = prefixes; _i < prefixes_1.length; _i++) {
+            var prefix = prefixes_1[_i];
+            var skeletons = document.querySelectorAll(prefix + '.skeleton-container');
+            skeletons.forEach(function (skeleton) {
+                skeleton.remove();
+            });
+        }
+        ;
     };
     ;
     return PageBuilding;
@@ -178,12 +234,10 @@ var UserInterface = /** @class */ (function () {
         bttn.onclick = function (ev) {
             if (!portrait) {
                 if (!aside.classList.contains('hidden')) {
-                    span.style.transform = "rotate(180deg) translate(0%,-10%)";
                     aside.classList.add('hidden');
                     localStorage.setItem(asideShownName, 'false');
                 }
                 else {
-                    span.style.transform = "rotate(0deg) translate(0%,-10%)";
                     aside.classList.remove('hidden');
                     localStorage.setItem(asideShownName, 'true');
                 }
@@ -229,16 +283,19 @@ var UserInterface = /** @class */ (function () {
         var label = document.querySelector('#night-mode-toggle');
         var input = label.querySelector('input');
         var themeStyleName = 'darkOrLightTheme';
-        if (localStorage.getItem(themeStyleName) === null) {
-            var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-            input.checked = isDark;
-        }
-        else if (localStorage.getItem(themeStyleName) === 'dark') {
-            input.checked = true;
-        }
-        else if (localStorage.getItem(themeStyleName) === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
+        switch ("".concat(localStorage.getItem(themeStyleName))) {
+            case 'null':
+                var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                input.checked = isDark;
+                localStorage.setItem('darkOrLightTheme', isDark ? 'dark' : 'light');
+                break;
+            case 'dark':
+                input.checked = true;
+                break;
+            case 'light':
+                document.documentElement.setAttribute('data-theme', 'light');
+                break;
         }
         ;
         input.addEventListener('change', function (ev) {
@@ -257,7 +314,7 @@ var UserInterface = /** @class */ (function () {
     };
     ;
     UserInterface.resizeHeader = function () {
-        var header = document.querySelector('header');
+        var header = document.querySelector('header div');
         var nav = document.querySelector('nav');
         var height = parseFloat(getComputedStyle(header).height);
         var windowWidth = document.documentElement.scrollWidth;
@@ -440,7 +497,6 @@ var UserInterface = /** @class */ (function () {
     ;
     return UserInterface;
 }());
-export { UserInterface };
 ;
 var ExternalSearch = /** @class */ (function () {
     function ExternalSearch() {
@@ -504,7 +560,6 @@ var ExternalSearch = /** @class */ (function () {
     ;
     return ExternalSearch;
 }());
-export { ExternalSearch };
 ;
 var CloudStorageData = /** @class */ (function () {
     function CloudStorageData() {
@@ -530,39 +585,14 @@ var CloudStorageData = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             function loadShortcuts() {
                 return __awaiter(this, void 0, void 0, function () {
-                    var targetedNode, shortcutsNode, _i, _a, section, container, p, div, _b, _c, child, a, img;
-                    return __generator(this, function (_d) {
+                    var targetedNode, shortcutsNode, tpt, data, key;
+                    return __generator(this, function (_a) {
                         targetedNode = document.querySelectorAll('#shortcuts h2')[1];
                         shortcutsNode = document.querySelector('#shortcuts');
-                        for (_i = 0, _a = content.shortcuts.sort(function (a, b) { return a.index - b.index; }); _i < _a.length; _i++) {
-                            section = _a[_i];
-                            container = document.createElement('section');
-                            container.id = section.id;
-                            p = document.createElement('p');
-                            p.innerHTML = section.title;
-                            div = document.createElement('div');
-                            div.classList.add('grid-container');
-                            for (_b = 0, _c = section.children.sort(function (a, b) { return a.index - b.index; }); _b < _c.length; _b++) {
-                                child = _c[_b];
-                                if (mobile && !child.showOnMobile)
-                                    continue;
-                                a = document.createElement('a');
-                                a.classList.add('shortcut-item');
-                                a.href = child.href;
-                                a.setAttribute('alt', child.alt);
-                                a.id = child.id;
-                                img = document.createElement('img');
-                                img.src = child.img;
-                                a.appendChild(img);
-                                div.appendChild(a);
-                            }
-                            ;
-                            if (div.childElementCount > 0) {
-                                container.appendChild(p);
-                                container.appendChild(div);
-                                shortcutsNode.insertBefore(container, targetedNode);
-                            }
-                            ;
+                        tpt = template.querySelector('template#shortcuts-template').content;
+                        data = CloudStorageData.json.shortcuts.sort(function (a, b) { return a.index - b.index; });
+                        for (key in data) {
+                            console.log(key);
                         }
                         ;
                         return [2 /*return*/];
@@ -571,27 +601,12 @@ var CloudStorageData = /** @class */ (function () {
             }
             function loadGamecards() {
                 return __awaiter(this, void 0, void 0, function () {
-                    var targetedNode, _i, _a, gamecardData, outerGamecard, _b, _c, game, gameStyleString, _d, _e, cssAtttribute;
-                    return __generator(this, function (_f) {
+                    var targetedNode, minimunFlexGrowNeeded, _i, _a, gamecardData;
+                    return __generator(this, function (_b) {
                         targetedNode = document.querySelector('#shortcuts #gaming');
+                        minimunFlexGrowNeeded = 2;
                         for (_i = 0, _a = content.gamecards.sort(function (a, b) { return a.position - b.position; }); _i < _a.length; _i++) {
                             gamecardData = _a[_i];
-                            outerGamecard = document.createElement('div');
-                            outerGamecard.id = gamecardData.id;
-                            outerGamecard.classList.add('gamecard-text');
-                            outerGamecard.innerHTML = "<span><p>".concat(gamecardData.label, "</p></span><div class=\"gamecard-container\"></div>");
-                            for (_b = 0, _c = gamecardData.children.sort(function (a, b) { return a.position - b.position; }); _b < _c.length; _b++) {
-                                game = _c[_b];
-                                gameStyleString = '';
-                                for (_d = 0, _e = game.img_css; _d < _e.length; _d++) {
-                                    cssAtttribute = _e[_d];
-                                    gameStyleString += "".concat(cssAtttribute.attribute, ": ").concat(cssAtttribute.value, "; ");
-                                }
-                                ;
-                                outerGamecard.querySelector('.gamecard-container').innerHTML += "<div class=\"gamecard\" id=\"".concat(game.id, "\"><a href=\"").concat(game.href, "\" style=\"background-image: url(").concat(game.img, "); ").concat(gameStyleString, "\"><span><b>").concat(game.label, "</b></span></a></div>");
-                            }
-                            ;
-                            targetedNode.appendChild(outerGamecard);
                         }
                         return [2 /*return*/];
                     });
@@ -608,7 +623,7 @@ var CloudStorageData = /** @class */ (function () {
                             var img = new Image();
                             img.src = imgSrc.href;
                         });
-                        header = document.querySelector('#header');
+                        header = document.querySelector('#header div');
                         h1 = header.querySelector('h1');
                         header.style.backgroundImage = "url('".concat(src, "')");
                         header.onclick = function (event) {
@@ -641,12 +656,6 @@ var CloudStorageData = /** @class */ (function () {
                 content = JSON.parse(JSON.stringify(this.json));
                 ;
                 ;
-                Array.from(document.body.children).concat(document.querySelector('footer')).forEach(function (element) {
-                    if (element.classList.contains('loader'))
-                        element.style.display = 'none';
-                    else
-                        element.removeAttribute('style');
-                });
                 loadShortcuts();
                 loadGamecards();
                 loadHeaders();
@@ -681,28 +690,33 @@ var CloudStorageData = /** @class */ (function () {
                 ;
             }
             function createElement(item) {
-                var div = document.createElement('div');
-                var img = new Image();
+                var div = document.importNode(template.querySelector('.pinterest-grid-item'), true);
+                var img = div.querySelector('img');
+                var bigImage = new Image();
+                bigImage.src = item.img;
                 var card;
-                if (item.type !== 'Wished') {
-                    card = document.getElementById('owned-ordered');
-                }
-                else {
-                    card = document.getElementById('wished');
-                    div.classList.add('wished');
+                switch (item.type) {
+                    case 'Wished':
+                        card = document.getElementById('wished');
+                        break;
+                    default:
+                        card = document.getElementById('owned-ordered');
+                        break;
                 }
                 div.setAttribute('alt', item.title);
                 div.classList.add('pinterest-grid-item');
                 div.id = item.id;
                 img.src = item.icon;
-                if (item.category == 'Prepainted') {
-                    div.style.color = 'green';
-                }
-                else if (item.category == 'Action/Dolls') {
-                    div.style.color = '#0080ff';
-                }
-                else {
-                    div.style.color = 'orange';
+                switch (item.category) {
+                    case 'Prepainted':
+                        div.style.color = 'green';
+                        break;
+                    case 'Action/Dolls':
+                        div.style.color = '#0080ff';
+                        break;
+                    default:
+                        div.style.color = 'orange';
+                        break;
                 }
                 img.style.border = "4px solid ".concat(div.style.color);
                 var imgBorder = img.style.border.split(' ')[0];
@@ -716,6 +730,7 @@ var CloudStorageData = /** @class */ (function () {
                     var originName = popUp.querySelector('#mfc-character-source');
                     var classification = popUp.querySelector('#mfc-classification');
                     var a = popUp.querySelector('.pop-up-header > div > a');
+                    var updateLink = popUp.querySelector('a.update-link');
                     var characterLink = '';
                     var originLink = '';
                     var classificationLink = '';
@@ -745,8 +760,9 @@ var CloudStorageData = /** @class */ (function () {
                     title.innerHTML = item.title;
                     popUpImgAnchor.href = item.href;
                     popUpImgAnchor.style.border = "".concat(imgBorder, " solid ").concat(div.style.color);
-                    popUpImg.src = item.img;
+                    popUpImg.src = bigImage.src;
                     var copySvg = "<?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 20010904//EN\" \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\"><svg version=\"1.0\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200.000000 200.000000\" preserveAspectRatio=\"xMidYMid meet\"><g transform=\"translate(0.000000,200.000000) scale(0.100000,-0.100000)\" fill=\"currentColor\" stroke=\"none\"><path d=\"M721 1882 c-71 -36 -76 -51 -79 -268 l-3 -194 60 0 61 0 2 178 3 177 475 0 475 0 0 -475 0 -475 -117 -3 -118 -3 0 -60 0 -61 134 4 c151 3 175 12 209 79 16 31 17 73 15 531 -3 484 -4 497 -24 525 -47 64 -39 63 -574 63 -442 0 -488 -2 -519 -18z\"/><path d=\"M241 1282 c-19 -9 -44 -30 -55 -45 -20 -28 -21 -41 -24 -525 -3 -555 -4 -542 67 -589 l34 -23 496 0 c477 0 497 1 529 20 18 11 41 34 52 52 19 32 20 52 20 529 l0 496 -23 34 c-47 70 -36 69 -577 69 -442 0 -488 -2 -519 -18z m994 -582 l0 -475 -475 0 -475 0 -3 465 c-1 256 0 471 3 478 3 10 104 12 477 10 l473 -3 0 -475z\"/></g></svg>";
+                    updateLink.href = '/update/mfc/' + item.id + '/';
                     originalName.innerHTML = item.characterJap !== '' ? "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(copySvg, "&nbsp;").concat(item.characterJap, "</a>") : "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(copySvg, "&nbsp;").concat(item.character, "</div></a>");
                     originName.innerHTML = "<a target=\"_blank\" href=\"".concat(originLink, "\">").concat(copySvg, "&nbsp;").concat(item.sourceJap, "</a>");
                     classification.innerHTML = "<a target=\"_blank\" href=\"".concat(classificationLink, "\">").concat(copySvg, "&nbsp;").concat(item.classification, "</a>");
@@ -779,7 +795,6 @@ var CloudStorageData = /** @class */ (function () {
                 };
                 div.append(img);
                 card.append(div);
-                div.append(item.character);
             }
             function searchFigure(textInput, json) {
                 var searchStr = new RegExp(textInput.value, 'i');
@@ -825,14 +840,6 @@ var CloudStorageData = /** @class */ (function () {
                 setInterval(function () {
                     resizeAllMasonryItems();
                 }, 500);
-                setTimeout(function () {
-                    var loader = document.querySelector('aside > .card > .loader');
-                    var pinterestGrids = document.querySelectorAll('aside > .card > .pinterest-grid');
-                    loader.style.display = 'none';
-                    pinterestGrids.forEach(function (grid) {
-                        grid.style.opacity = '1';
-                    });
-                }, 1000);
                 setInterval(function () {
                     var card = document.querySelector('aside .card');
                     var grids = card.querySelectorAll('.pinterest-grid');
@@ -847,7 +854,6 @@ var CloudStorageData = /** @class */ (function () {
     ;
     return CloudStorageData;
 }());
-export { CloudStorageData };
 ;
 var ExternalData = /** @class */ (function () {
     function ExternalData() {
@@ -855,9 +861,19 @@ var ExternalData = /** @class */ (function () {
     ExternalData.addRetroAchievementsAwards = function () {
         return __awaiter(this, void 0, void 0, function () {
             function createRetroAchievementsAwardCard(award) {
-                gridContainer.innerHTML += "<div id=\"".concat(CustomFunctions.normalize(award.title), "\" class=\"shortcut-item retroachievements-award\" alt=\"").concat(award.title, "\" target=\"_blank\"><img src=\"").concat(award.imageIcon, "\" style=\"border: 2px solid ").concat(award.allData.some(function (a) { return a.awardType.includes('Platinado'); }) ? 'gold' : '#e5e7eb', ";\" draggable=\"false\"></div>");
+                var shortcut = document.importNode(template.querySelector('.grid-container a'), true);
+                var img = shortcut.querySelector('img');
+                shortcut.classList.add('retroachievements-award');
+                shortcut.id = CustomFunctions.normalize(award.title);
+                shortcut.setAttribute('alt', award.title);
+                img.src = award.imageIcon;
+                if (award.allData[0].awardType.includes('Mastered') || award.allData[0].awardType.includes('Platinado')) {
+                    shortcut.classList.add('mastered');
+                }
+                gridContainer.appendChild(shortcut);
+                h3.removeAttribute('style');
             }
-            var raUrl, response, awards, consoles, gridContainer, popUp;
+            var raUrl, response, awards, consoles, gridContainer, popUp, h3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -869,6 +885,7 @@ var ExternalData = /** @class */ (function () {
                         consoles = response.consoles;
                         gridContainer = document.querySelector('#retroachievements-awards > .grid-container');
                         popUp = document.querySelector('.pop-up.retroachievements-awards');
+                        h3 = document.querySelector('#retroachievements-awards > h3');
                         awards.map(createRetroAchievementsAwardCard);
                         ;
                         gridContainer.querySelectorAll('.retroachievements-award').forEach(function (awardCard) {
@@ -1019,7 +1036,7 @@ var ExternalData = /** @class */ (function () {
                     bttn.addEventListener('click', scrollFunction);
                     function scrollFunction(e) {
                         var target = e.target;
-                        var direction = target.classList.contains('left') ? 'left' : 'right';
+                        var direction = target.closest('button').classList.contains('left') ? 'left' : 'right';
                         var anchor = getClosestAnchor(card);
                         var anchors = card.querySelectorAll('a');
                         var width = card.scrollWidth;
@@ -1142,7 +1159,6 @@ var ExternalData = /** @class */ (function () {
     ;
     return ExternalData;
 }());
-export { ExternalData };
 ;
 var PageBehaviour = /** @class */ (function () {
     function PageBehaviour() {
@@ -1189,7 +1205,6 @@ var PageBehaviour = /** @class */ (function () {
     ;
     return PageBehaviour;
 }());
-export { PageBehaviour };
 ;
 window.addEventListener('load', onLoadFunctions, true);
 function onLoadFunctions(ev) {
@@ -1197,23 +1212,6 @@ function onLoadFunctions(ev) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    PageBuilding.createLoaders(12);
-                    return [4 /*yield*/, CloudStorageData.load()];
-                case 1:
-                    _a.sent();
-                    return [4 /*yield*/, Promise.all([
-                            CloudStorageData.loadContentFromJson(),
-                            CloudStorageData.addMfcImages(),
-                            ExternalData.scrapeMyAnimeList(),
-                            ExternalData.addRetroAchievementsAwards()
-                        ])];
-                case 2:
-                    _a.sent();
-                    PageBuilding.figuresSitDown();
-                    PageBuilding.adjustGamecard();
-                    PageBuilding.adjustGamecardText(0);
-                    PageBuilding.putVersionOnFooter();
-                    PageBuilding.removeHoverEffectsOnMobile();
                     UserInterface.expandAside();
                     UserInterface.makeAsideButtonFollow();
                     UserInterface.makeSwitchesSlide();
@@ -1222,8 +1220,35 @@ function onLoadFunctions(ev) {
                     UserInterface.setPopUpDefaultValues();
                     UserInterface.resetPopUpsOnOpen();
                     UserInterface.showPopUps();
+                    return [4 /*yield*/, CustomFunctions.sleep(300)];
+                case 1:
+                    _a.sent();
+                    PageBuilding.createLoaders(12);
+                    PageBuilding.createSkeletons();
+                    PageBuilding.adjustGamecard();
+                    PageBuilding.putVersionOnFooter();
+                    PageBuilding.formatPopUps();
                     ExternalSearch.redditSearchTrigger();
                     ExternalSearch.wikipediaSearchTrigger();
+                    if (!toggleExternalDataLoad) return [3 /*break*/, 4];
+                    return [4 /*yield*/, CloudStorageData.load()];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, Promise.all([
+                            Promise.all([
+                                CloudStorageData.loadContentFromJson(),
+                                CloudStorageData.addMfcImages(),
+                            ]).then(function (res) { return PageBuilding.deleteSkeletons(['#shortcuts > ', 'aside .card .pinterest-grid ', 'header ']); }),
+                            Promise.all([
+                                ExternalData.scrapeMyAnimeList(),
+                                ExternalData.addRetroAchievementsAwards(),
+                            ])
+                        ])];
+                case 3:
+                    _a.sent();
+                    _a.label = 4;
+                case 4:
+                    ;
                     PageBehaviour.openLinksInNewTab();
                     PageBehaviour.redirectLinksToEdge();
                     PageBehaviour.stopImageDrag();
@@ -1237,7 +1262,6 @@ window.addEventListener('resize', onResizeFunctions, true);
 function onResizeFunctions(ev) {
     setTimeout(function () {
         PageBuilding.resizeAside();
-        PageBuilding.figuresSitDown();
         PageBuilding.adjustGamecardText(0);
     }, 500);
 }

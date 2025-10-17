@@ -106,7 +106,7 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 			},
 		});
 
-		if (!response.ok) res.status(response.status).json({ message: `Couldn't fetch ${MAL_API_URL}.` })
+		if (!response.ok) res.status(200).json({ message: `Couldn't fetch ${MAL_API_URL}.` })
 
 		let data: MyTypes.AnimeList | MyTypes.MangaList;
 
@@ -130,16 +130,12 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 	};
 });
 
-app.get("/contents(/:update)?", async (req: express.Request, res: express.Response) => {
-	const { update } = req.params
-	
-	if (update) {
-		if (update !== 'update') res.status(400).json({message: 'Update should be named "update" only.'});
-	};
+app.get("/contents(/:type)?", async (req: express.Request, res: express.Response) => {
+	const { type } = req.params
 
 	await workbook.loadInfo();
 	
-	const jsonToSend: Partial<MyTypes.PageContent> = {updated: false};
+	const jsonToSend: Partial<MyTypes.PageContent> = {};
 
 	async function loadContent (sheet: GoogleSpreadsheetWorksheet): Promise<void> {
 		const rows: Array<GoogleSpreadsheetRow> = await sheet.getRows();
@@ -157,18 +153,14 @@ app.get("/contents(/:update)?", async (req: express.Request, res: express.Respon
 	};
 
 	try {
-		if (update) {
+		if (type) {
+			await workbook.sheetsByTitle[type].loadHeaderRow();
+			await loadContent(workbook.sheetsByTitle[type])
+		} else {
 			for (const worksheet of workbook.sheetsByIndex) {
 				await worksheet.loadHeaderRow();
+				await loadContent(worksheet);
 			};
-
-			jsonToSend.updated = true;
-
-			console.log()
-		};
-
-		for (const worksheet of workbook.sheetsByIndex) {
-			await loadContent(worksheet);
 		};
 	} catch (err) {
 		res.status(err.status).json({message: err.message});

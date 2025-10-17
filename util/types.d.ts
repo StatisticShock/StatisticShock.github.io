@@ -90,6 +90,7 @@ export type Shortcut = {
 		index: number,
 		href: string,
 		img: string,
+		floatingLabel: string,
 		showOnMobile: boolean,
 	}>
 };
@@ -115,7 +116,6 @@ export type Headers = {
 	active: boolean
 };
 export type PageContent = {
-	updated: boolean,
 	shortcuts: Array<Shortcut>,
 	gamecards: Array<Gamecard>,
 	headers: Array<Headers>,

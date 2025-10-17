@@ -1,4 +1,28 @@
 export default class SharedDomFunctions {
+	html: string;
+
+	constructor (template: DocumentFragment, data: object) {
+		const element: HTMLSpanElement = document.createElement('span');
+
+		function createNestedTagInThisLevel (currentElement: HTMLElement = element, currentData: object = data, prefix: string = ''): string {
+			let string: string = '';
+			
+			for (const key in currentData) {
+				if (currentData[key] instanceof Array) {
+					
+				} else {
+					
+				}
+			};
+
+			return string
+		};
+
+		element.outerHTML = createNestedTagInThisLevel()
+
+		this.html = element.outerHTML;
+	};
+
 	static createLoaders(counter: number): void {	// NO NEED OF RESPONSIVENESS
 		let loaders: NodeListOf<HTMLDivElement> = document.querySelectorAll('.loader');
 
@@ -58,7 +82,10 @@ export default class SharedDomFunctions {
 						const left = inputRect.left - rect.left;
 						label.style.left = Math.max(left, 5) + 'px';
 
-						input.placeholder ? input.placeholder = input.placeholder : input.placeholder = ' ';
+						if (input.placeholder) input.placeholder = input.placeholder;
+						else input.placeholder = ' ';
+
+						console.log(left)
 					});
 				}, 10);
 			}
@@ -72,4 +99,23 @@ export default class SharedDomFunctions {
 			});
 		});
 	};
+
+	static createPageLoadAwaiter () {
+		
+	}
+}
+
+const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
+const mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
+if (!mobile) document.querySelector('body')!.classList.add('has-hover');
+
+switch (localStorage.getItem('darkOrLightTheme')) {
+	case 'light':
+		document.documentElement.setAttribute('data-theme', 'light');
+		break;
+	case 'dark':
+		document.documentElement.setAttribute('data-theme', 'dark');
+		break;
+	default:
+		break;
 }

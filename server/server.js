@@ -86,7 +86,7 @@ app.get("/myanimelist/:type", async (req, res) => {
             },
         });
         if (!response.ok)
-            res.status(response.status).json({ message: `Couldn't fetch ${MAL_API_URL}.` });
+            res.status(200).json({ message: `Couldn't fetch ${MAL_API_URL}.` });
         let data;
         if (type === 'animelist') {
             data = await response.json();
@@ -109,15 +109,10 @@ app.get("/myanimelist/:type", async (req, res) => {
     }
     ;
 });
-app.get("/contents(/:update)?", async (req, res) => {
-    const { update } = req.params;
-    if (update) {
-        if (update !== 'update')
-            res.status(400).json({ message: 'Update should be named "update" only.' });
-    }
-    ;
+app.get("/contents(/:type)?", async (req, res) => {
+    const { type } = req.params;
     await workbook.loadInfo();
-    const jsonToSend = { updated: false };
+    const jsonToSend = {};
     async function loadContent(sheet) {
         const rows = await sheet.getRows();
         const headers = [sheet.headerValues];
@@ -135,17 +130,16 @@ app.get("/contents(/:update)?", async (req, res) => {
     }
     ;
     try {
-        if (update) {
+        if (type) {
+            await workbook.sheetsByTitle[type].loadHeaderRow();
+            await loadContent(workbook.sheetsByTitle[type]);
+        }
+        else {
             for (const worksheet of workbook.sheetsByIndex) {
                 await worksheet.loadHeaderRow();
+                await loadContent(worksheet);
             }
             ;
-            jsonToSend.updated = true;
-            console.log();
-        }
-        ;
-        for (const worksheet of workbook.sheetsByIndex) {
-            await loadContent(worksheet);
         }
         ;
     }

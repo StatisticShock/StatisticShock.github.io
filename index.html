@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,26 +9,34 @@
 	<link rel="manifest" href="/manifest.json">
 	<title>StatisticShock's Index</title>
 </head>
+
 <body class="home">
-	<div class="loader"></div>
-	<header id="header" style="display: none;">
-		<h1>StatisticShock's Index</h1>
+	<header id="header">
+		<div>
+			<h1>StatisticShock's Index</h1>
+		</div>
+		<a href="/update/headers" class="svg-img update-link"></a>
+		<svg class="skeleton-container skeleton"></svg>
 	</header>
-	<nav class="menu" style="display: none;">
+	<nav class="menu">
 		<label id="night-mode-toggle" class="switch"></label>
-		<div id="twoB"><img src="https://storage.googleapis.com/statisticshock_github_io_public/pageImages/2b.webp"></div>
-		<div id="ohto"><img src="https://storage.googleapis.com/statisticshock_github_io_public/pageImages/Ohto_Ai_Flamengo.webp"></div>
+		<div id="twoB"><img src="./images/2b.webp">
+		</div>
+		<div id="ohto">
+			<img src="./images/Ohto_Ai_Flamengo.webp">
+		</div>
 		<label id="mfc-switch" class="switch" style="display: none;"></label>
 		<div class="grid-container">
 			<a class="pop-up-open reddit-google" alt="Reddit Google Search" style="cursor: pointer;">
-				<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/google-reddit.ico">
+				<img
+					src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/google-reddit.ico">
 			</a>
 			<a class="pop-up-open wikipedia" alt="Wikipedia Search" style="cursor: pointer;">
 				<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/wikipedia.ico">
 			</a>
 		</div>
 	</nav>
-	<div class="container" style="display: none;">
+	<div class="container">
 		<div class="flex-container">
 			<aside class="hidden">
 				<div class="button-bar">
@@ -36,20 +45,17 @@
 				<input type="text" placeholder="Pesquise uma figure" id="search-bar">
 				<div class="loader" style="display: none;"></div>
 				<div class="card">
-					<div class="loader"></div>
-					<span style="opacity: 0;" id="owned-ordered" class="pinterest-grid"></span>
-					<span style="opacity: 0;" id="wished" class="pinterest-grid"></span>
+					<span id="owned-ordered" class="pinterest-grid"></span>
+					<span id="wished" class="pinterest-grid"></span>
 				</div>
 			</aside>
 			<section id="shortcuts">
-				<h2>ATALHOS&nbsp;<a class="update-link" href="/update/shortcuts"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></a></h2>
-				<h2>GAMING&nbsp;<a class="update-link" href="/update/gaming"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/edit.svg"></a></h2>
-				<section id="gaming">
-					<!-- From Uiverse.io by joe-watson-sbf -->
-				</section>
-				<h2>RETROACHIEVEMENTS</h2>
+				<h2>Atalhos&nbsp;<a class="svg-img update-link" href="/update/shortcuts"></a></h2>
+				<h2>Gaming&nbsp;<a class="svg-img update-link" href="/update/gamecards"></a></h2>
+				<section id="gaming"></section>
+				<h2>RetroAchievements</h2>
 				<section id="retroachievements-awards">
-					<h3>Prêmios</h3>
+					<h3 style="display: none;">Prêmios</h3>
 					<div class="grid-container"></div>
 				</section>
 				<h2>MyAnimeList</h2>
@@ -57,16 +63,20 @@
 					<h3>Anime</h3>
 					<div class="card">
 						<div class="loader"></div>
-						<button class="nav-button left" type="button">&lt;</button>
+						<button class="nav-button left" type="button"><img
+								src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg"></button>
 						<div class="inner-card anime" style="opacity: 0;"></div>
-						<button class="nav-button right" type="button">&gt;</button>
+						<button class="nav-button right" type="button"><img
+								src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg"></button>
 					</div>
 					<h3>Mangá</h3>
 					<div class="card">
 						<div class="loader"></div>
-						<button class="nav-button left" type="button">&lt;</button>
+						<button class="nav-button left" type="button"><img
+								src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg"></button>
 						<div class="inner-card manga" style="opacity: 0;"></div>
-						<button class="nav-button right" type="button">&gt;</button>
+						<button class="nav-button right" type="button"><img
+								src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg"></button>
 					</div>
 				</section>
 			</section>
@@ -78,6 +88,7 @@
 						<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/mfc.ico">
 					</a>
 				</div>
+				<a href="" class="svg-img update-link"></a>
 				<button type="button" class="close-button">&times;</button>
 			</div>
 			<a id="pop-up-img" target="_blank"><img></a>
@@ -92,7 +103,8 @@
 			<div class="pop-up-header">
 				<div>
 					<a target="_blank" href="https://retroachievements.org/user/assdeper">
-						<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/ra.webp?v=2">
+						<img
+							src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/ra.webp?v=2">
 					</a>
 					<a target="_blank">
 						<img>
@@ -107,27 +119,36 @@
 		<form class="pop-up reddit-google">
 			<div class="pop-up-header">
 				<div>
-					<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/google.ico">
-					<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/reddit-icon.ico">
+					<img src="./images/google.ico">
+					<img src="./images/reddit-icon.ico">
 				</div>
 				<button type="button" class="close-button">&times;</button>
 			</div>
-			<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/key-multiple.svg"><input id="keywords-reddit"><span class='floating-label'>Palavras-chave</span></span>
+			<span>
+				<div id="keys-container" class="svg-img"></div>
+				<input id="keywords-reddit"><span class='floating-label'>Palavras-chave</span></span>
 			<p></p>
-			<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/r.svg"><input id="subreddit"><span class='floating-label'>Subreddit</span></span>
+			<span>
+				<div id="subreddit-container" class="svg-img"></div>
+				<input id="subreddit"><span class='floating-label'>Subreddit</span>
+			</span>
 			<p></p>
-			<span><input type="date" id="from-date"><span class='floating-label'>Data início</span>a<input type="date" id="to-date"><span class='floating-label'>Data fim</span></span>
+			<span><input type="date" id="from-date"><span class='floating-label'>Data início</span>a<input type="date"
+					id="to-date"><span class='floating-label'>Data fim</span></span>
 			<p></p>
 			<button type="button" class="ok-button">OK</button>
 		</form>
 		<form class="pop-up wikipedia">
 			<div class="pop-up-header">
 				<div>
-					<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/wikipedia.ico">
+					<img
+						src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/wikipedia.ico">
 				</div>
 				<button type="button" class="close-button">&times;</button>
 			</div>
-			<span><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/key-multiple.svg"><input id="keywords-wikipedia"><span class='floating-label'>Palavras-chave</span></span>
+			<span><img
+					src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/key-multiple.svg"><input
+					id="keywords-wikipedia"><span class='floating-label'>Palavras-chave</span></span>
 			<p></p>
 			<button type="button" class="ok-button">OK</button>
 		</form>
@@ -136,21 +157,21 @@
 			<p>Esta é uma página em HTML desenvolvida por StatisticShock para uso próprio.</p>
 		</section>
 	</div>
-	<footer style="display: none;">
+	<footer>
 		<p>&copy;&nbsp;StatisticShock. Nada a dizer.</p>
 	</footer>
-	<script type="module" src="./src/shared.js"></script>
 	<script type="module" src="./src/script.js"></script>
+	<script type="module" src="./src/shared.js"></script>
 	<script>
 		if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
 			// Do nothing
 		} else {
 			if ('serviceWorker' in navigator) {
-			  navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
-			    console.log('Service Worker registered with scope:', registration.scope);
-			  }).catch(function(error) {
-			    console.log('Service Worker registration failed:', error);
-			  });
+				navigator.serviceWorker.register('/service-worker.js').then(function (registration) {
+					console.log('Service Worker registered with scope:', registration.scope);
+				}).catch(function (error) {
+					console.log('Service Worker registration failed:', error);
+				});
 			};
 		};
 	</script>
@@ -161,9 +182,45 @@
 		buttons.forEach((bttn) => {
 			bttn.addEventListener('click', (ev) => {
 				ev.preventDefault();
-				history.pushState({}, '', 'update/index.html');
+				const route = bttn.href.replace(url, '');
+				const parts = route.split('/');
+
+				window.location.href = `${url}update.html?page=${parts[1]}&id=${parts[2] ?? '0'}`
 			});
 		});
 	</script>
+
+	<template id="shortcuts-template">
+		<section id="{{id}}">
+			<p>{{title}}</p>
+			<div class="grid-container">
+				<a class="shortcut-item children" href="{{href}}" alt="{{alt}}" id="{{id}}" target="_blank">
+					<img src="{{img}}" draggable="false">
+				</a>
+			</div>
+		</section>
+
+		<a id="{{id}}" alt="{{alt}}" class="shortcut-item" target="_blank">
+			<img src="{{}}" draggable="false">
+			<span class="floating-label" style="display: none;"></span>
+		</a>
+	</template>
+
+	<template>
+		<div class="gamecard-container"><!-- gamecards -->
+			<span><p></p></span>
+			<div class="gamecard-outercard">
+				<div class="gamecard">
+					<a target="_blank">
+						<span><b></b></span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="pinterest-grid-item"><!-- mfc -->
+			<img draggable="false">
+		</div>
+	</template>
 </body>
+
 </html>
