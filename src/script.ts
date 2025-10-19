@@ -566,6 +566,9 @@ class CloudStorageData {
 	};
 
 	static async addMfcImages(): Promise<void> {
+		const input: HTMLInputElement = document.querySelector('#search-bar')!;
+		input.value = '';
+		
 		const wished: Array<MyTypes.MFC> = CustomFunctions.shuffle(this.json.mfc.filter((figure) => figure.type === 'Wished'));
 		const owned: Array<MyTypes.MFC> = CustomFunctions.shuffle(this.json.mfc.filter((figure) => figure.type !== 'Wished'));
 
@@ -579,9 +582,61 @@ class CloudStorageData {
 
 		document.querySelectorAll('.mfc').forEach((item) => {
 			try {
-				item.classList.add(CustomFunctions.normalize(this.json.mfc.filter((figure) => figure.id === item.id)[0].category.replace('/', '-')));
+				item.classList.add(CustomFunctions.normalize(this.json.mfc.filter((figure) => 'mfc-' + figure.id === item.id)[0].category.replace('/', '-')));
 			} catch (err) {}
-		})
+		});
+
+		const figureDict: Array<any> = [];
+
+		this.json.mfc.forEach((figure) => {
+			const newObj: object = {};
+
+			for (const key of Object.keys(figure)) {
+				if (figure[key] instanceof Array) {
+					newObj[key] = figure[key].join(', ');
+				} else {
+					newObj[key] = figure[key];
+				};
+			};
+
+			figureDict.push(newObj);
+		});
+
+		const loader: HTMLDivElement = document.querySelector('aside > .loader')!;
+
+		function searchFigure (): void {
+			const regEx = new RegExp(JSON.stringify(input.value).slice(1, -1), 'gi');
+			console.info(`A expressão procurada é ${regEx}`);
+
+			const figuresThatMatch: Array<MyTypes.MFC> = [];
+			
+			for (const figure of figureDict) {
+				if (Object.keys(figure).some((key) => regEx.test(figure[key]))) {
+					figuresThatMatch.push(figure);
+				};
+			};
+
+			console.table(figuresThatMatch, ['id', 'title']);
+
+			for (const figure of figureDict) {
+				if (figuresThatMatch.some((figureThatMatch) => figure.id === figureThatMatch.id)) {
+					(document.querySelector('#mfc-' + figure.id)as HTMLElement).style.display = 'block';
+				} else {
+					(document.querySelector('#mfc-' + figure.id)as HTMLElement).style.display = 'none';
+				}
+			};
+
+			loader.style.display = 'none';
+		}
+
+		let timeout: ReturnType<typeof setTimeout>|undefined;
+		input.addEventListener('keyup', (ev: KeyboardEvent) => {
+			loader.style.display = 'block';
+			
+			if (timeout) clearTimeout(timeout);
+
+			timeout = setTimeout(searchFigure, 2000);
+		});
 	};
 };
 
@@ -952,6 +1007,8 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 				PageBuilding.deleteSkeletons(['#shortcuts ', 'header ']);
 			}),
 		]);
+
+		console.clear();
 	};
 
 	PageBehaviour.openLinksInNewTab();

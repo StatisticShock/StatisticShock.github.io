@@ -638,9 +638,42 @@ var CloudStorageData = /** @class */ (function () {
     ;
     CloudStorageData.addMfcImages = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var wished, owned, wishedCard, ownedCard, template;
+            function searchFigure() {
+                var regEx = new RegExp(JSON.stringify(input.value).slice(1, -1), 'gi');
+                console.info("A express\u00E3o procurada \u00E9 ".concat(regEx));
+                var figuresThatMatch = [];
+                var _loop_1 = function (figure) {
+                    if (Object.keys(figure).some(function (key) { return regEx.test(figure[key]); })) {
+                        figuresThatMatch.push(figure);
+                    }
+                    ;
+                };
+                for (var _i = 0, figureDict_1 = figureDict; _i < figureDict_1.length; _i++) {
+                    var figure = figureDict_1[_i];
+                    _loop_1(figure);
+                }
+                ;
+                console.table(figuresThatMatch, ['id', 'title']);
+                var _loop_2 = function (figure) {
+                    if (figuresThatMatch.some(function (figureThatMatch) { return figure.id === figureThatMatch.id; })) {
+                        document.querySelector('#mfc-' + figure.id).style.display = 'block';
+                    }
+                    else {
+                        document.querySelector('#mfc-' + figure.id).style.display = 'none';
+                    }
+                };
+                for (var _a = 0, figureDict_2 = figureDict; _a < figureDict_2.length; _a++) {
+                    var figure = figureDict_2[_a];
+                    _loop_2(figure);
+                }
+                ;
+                loader.style.display = 'none';
+            }
+            var input, wished, owned, wishedCard, ownedCard, template, figureDict, loader, timeout;
             var _this = this;
             return __generator(this, function (_a) {
+                input = document.querySelector('#search-bar');
+                input.value = '';
                 wished = CustomFunctions.shuffle(this.json.mfc.filter(function (figure) { return figure.type === 'Wished'; }));
                 owned = CustomFunctions.shuffle(this.json.mfc.filter(function (figure) { return figure.type !== 'Wished'; }));
                 wishedCard = document.querySelector('.flex-container aside .card #wished');
@@ -650,9 +683,32 @@ var CloudStorageData = /** @class */ (function () {
                 new TemplateConstructor(template, owned).insert(ownedCard);
                 document.querySelectorAll('.mfc').forEach(function (item) {
                     try {
-                        item.classList.add(CustomFunctions.normalize(_this.json.mfc.filter(function (figure) { return figure.id === item.id; })[0].category.replace('/', '-')));
+                        item.classList.add(CustomFunctions.normalize(_this.json.mfc.filter(function (figure) { return 'mfc-' + figure.id === item.id; })[0].category.replace('/', '-')));
                     }
                     catch (err) { }
+                });
+                figureDict = [];
+                this.json.mfc.forEach(function (figure) {
+                    var newObj = {};
+                    for (var _i = 0, _a = Object.keys(figure); _i < _a.length; _i++) {
+                        var key = _a[_i];
+                        if (figure[key] instanceof Array) {
+                            newObj[key] = figure[key].join(', ');
+                        }
+                        else {
+                            newObj[key] = figure[key];
+                        }
+                        ;
+                    }
+                    ;
+                    figureDict.push(newObj);
+                });
+                loader = document.querySelector('aside > .loader');
+                input.addEventListener('keyup', function (ev) {
+                    loader.style.display = 'block';
+                    if (timeout)
+                        clearTimeout(timeout);
+                    timeout = setTimeout(searchFigure, 2000);
                 });
                 return [2 /*return*/];
             });
@@ -1034,6 +1090,7 @@ function onLoadFunctions(ev) {
                         ])];
                 case 3:
                     _a.sent();
+                    console.clear();
                     _a.label = 4;
                 case 4:
                     ;
