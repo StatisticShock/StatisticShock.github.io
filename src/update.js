@@ -49,8 +49,8 @@ var HistoryState = /** @class */ (function () {
     };
     ;
     HistoryState.updateContent = function (_a) {
-        // history.replaceState('', '', `update/${page}/${Number(id) > 0 ? id : ''}`)
         var page = _a.page, id = _a.id;
+        history.replaceState('', '', "update/".concat(page, "/").concat(Number(id) > 0 ? id : ''));
         var route = this.routes.filter(function (route) { return route.type === page; })[0] || { title: '404', type: 'Not Found' };
         if (route.title === '404') {
             window.location.href = window.location.origin + '/404.html';
