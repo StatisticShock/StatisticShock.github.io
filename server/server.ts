@@ -187,7 +187,7 @@ app.get("/retroAchievements/:language/", async (req: express.Request, res: expre
 	const consoles: any = [];
 
 	async function getAndFormatAwards (): Promise<void> {
-		let json: MyTypes.RetroAchievementsAwardsResponse = await (ra as any).getUserAwards(raAuthorization, userObject);
+		let json: MyTypes.RetroAchievementsUserAwards = await (ra as any).getUserAwards(raAuthorization, userObject);
 
 		for (const award of json.visibleUserAwards) {
 			if (award.awardType === 'Mastery/Completion') {

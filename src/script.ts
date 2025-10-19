@@ -1,4 +1,3 @@
-import { it } from 'node:test';
 import CustomFunctions from '../util/functions.js';
 import * as MyTypes from '../util/types.js';
 import { server } from './server-url.js';
@@ -9,10 +8,6 @@ const toggleExternalDataLoad: boolean = true;
 const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
 const mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 const portrait: boolean = (window.innerWidth < window.innerHeight);
-
-const template = (document.querySelectorAll('template')[1] as HTMLTemplateElement).content
-
-console.log(`Running server at ${server}`);
 
 class PageBuilding extends PageBuildingImport {
 	static resizeAside(counter?: number): void {	// RESPONSIVE
@@ -82,6 +77,7 @@ class PageBuilding extends PageBuildingImport {
 
 	static createSkeletons (): void {
 		const skeleton: string = 'skeleton';
+		const container: string = 'skeleton-container';
 
 		function createShortcutSkeletons (): void {
 			const shortcuts: HTMLElement = document.querySelector('#shortcuts')!;
@@ -91,8 +87,8 @@ class PageBuilding extends PageBuildingImport {
 
 			const row: Array<string> = Array(maxIcons).fill({joker: skeleton, alt: '. . .'});
 
-			new TemplateConstructor((document.querySelector('#shortcuts-template') as HTMLTemplateElement).content, Array(2).fill({joker: skeleton, children: row})).insert(shortcuts, 'after', atalhos);
-			new TemplateConstructor((document.querySelector('#shortcuts-template') as HTMLTemplateElement).content, Array(1).fill({joker: skeleton, children: row})).insert(shortcuts, 'after', ra);
+			new TemplateConstructor((document.querySelector('#shortcuts-template') as HTMLTemplateElement).content, Array(2).fill({jokerContainer: container, joker: skeleton, children: row})).insert(shortcuts, 'after', atalhos);
+			new TemplateConstructor((document.querySelector('#shortcuts-template') as HTMLTemplateElement).content, Array(1).fill({jokerContainer: container, joker: skeleton, children: row})).insert(shortcuts, 'after', ra);
 
 			shortcuts.querySelectorAll('img').forEach((img) => img.src = './icon/blank.svg')
 		};
@@ -591,7 +587,18 @@ class CloudStorageData {
 
 class ExternalData {
 	static async addRetroAchievementsAwards (): Promise<void> {
+		const data: MyTypes.RetroAchievementsOutput = await fetch(`${server}retroAchievements/pt-BR/`).then((res) => res.json());
+		
+		const shortcuts: HTMLElement = document.querySelector('#shortcuts')!;
+		const h2: HTMLElement = Array.from(shortcuts.querySelectorAll('h2') as NodeListOf<HTMLElement>).filter((h2) => h2.textContent!.trim() === 'RetroAchievements')[0];
 
+		new TemplateConstructor((document.querySelector('#ra-template') as HTMLTemplateElement).content, [data]).insert(shortcuts, 'after', h2);
+
+		data.awards.filter((award) => award.allData.some((data) => {
+			return data.awardType.includes('Platinado');
+		})).forEach((award) => {
+			(document.querySelector('#ra-award-' + award.awardData) as HTMLElement).classList.add('mastered');
+		});
 	};
 
 	static async scrapeMyAnimeList(): Promise<void> {
@@ -932,7 +939,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 	ExternalSearch.redditSearchTrigger();
 	ExternalSearch.wikipediaSearchTrigger();
 
-	if (toggleExternalDataLoad) {
+	if ((window.location.hostname === 'statisticshock.github.io') ? true : toggleExternalDataLoad) {
 		await CloudStorageData.load();
 
 		await Promise.all([
@@ -942,7 +949,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 				ExternalData.scrapeMyAnimeList(),
 				ExternalData.addRetroAchievementsAwards(),
 			]).then((res) => {
-				PageBuilding.deleteSkeletons(['#shortcuts > ', 'aside .card .mfc-card ', 'header ']);
+				PageBuilding.deleteSkeletons(['#shortcuts ', 'header ']);
 			}),
 		]);
 	};
@@ -951,6 +958,8 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 	PageBehaviour.redirectLinksToEdge();
 	PageBehaviour.stopImageDrag();
 	PageBehaviour.redirectToUpdatePage();
+
+	setTimeout(() => document.body.offsetHeight, 10)
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions(ev: Event) {
 	PageBuilding.resizeAside();

@@ -4,6 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="robots" content="noindex">
 	<link rel="shortcut icon" href="./icon/favicon.svg" type="image/svg+xml">
 	<link rel="stylesheet" href="style.css">
 	<link rel="manifest" href="/manifest.json">
@@ -53,10 +54,6 @@
 				<h2>Gaming&nbsp;<a class="svg-img update-link" href="/update/gamecards"></a></h2>
 				<section id="gaming"></section>
 				<h2>RetroAchievements</h2>
-				<section id="retroachievements-awards">
-					<h3 style="display: none;">Prêmios</h3>
-					<div class="grid-container"></div>
-				</section>
 				<h2>MyAnimeList</h2>
 				<section id="my-anime-list">
 					<h3>Anime</h3>
@@ -76,23 +73,6 @@
 				</section>
 			</section>
 		</div>
-		<div class="pop-up retroachievements-awards">
-			<div class="pop-up-header">
-				<div>
-					<a target="_blank" href="https://retroachievements.org/user/assdeper">
-						<img
-							src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/ra.webp?v=2">
-					</a>
-					<a target="_blank">
-						<img>
-					</a>
-				</div>
-				<button type="button" class="close-button">&times;</button>
-			</div>
-			<a id="pop-up-img" target="_blank"><img></a>
-			<span class="pop-up-title"></span>
-			<div class="data-container"></div>
-		</div>
 		<form class="pop-up reddit-google">
 			<div class="pop-up-header">
 				<div>
@@ -102,31 +82,25 @@
 				<button type="button" class="close-button">&times;</button>
 			</div>
 			<span>
-				<div id="keys-container" class="svg-img"></div>
+				<keys></keys>
 				<input id="keywords-reddit"><span class='floating-label'>Palavras-chave</span></span>
-			<p></p>
 			<span>
 				<div id="subreddit-container" class="svg-img"></div>
 				<input id="subreddit"><span class='floating-label'>Subreddit</span>
 			</span>
-			<p></p>
-			<span><input type="date" id="from-date"><span class='floating-label'>Data início</span>a<input type="date"
-					id="to-date"><span class='floating-label'>Data fim</span></span>
-			<p></p>
+			<span><input type="date" id="from-date"><span class='floating-label'>Data início</span>a<input type="date" id="to-date"><span class='floating-label'>Data fim</span></span>
 			<button type="button" class="ok-button">OK</button>
 		</form>
 		<form class="pop-up wikipedia">
 			<div class="pop-up-header">
 				<div>
-					<img
-						src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/wikipedia.ico">
+					<img src="./images/wikipedia.ico">
 				</div>
 				<button type="button" class="close-button">&times;</button>
 			</div>
-			<span><img
-					src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/key-multiple.svg"><input
-					id="keywords-wikipedia"><span class='floating-label'>Palavras-chave</span></span>
-			<p></p>
+			<span>
+				<keys></keys>
+				<input id="keywords-wikipedia"><span class='floating-label'>Palavras-chave</span></span>
 			<button type="button" class="ok-button">OK</button>
 		</form>
 		<section id="about">
@@ -139,12 +113,23 @@
 	</footer>
 	
 	<template id="shortcuts-template">
-		<section id="{{id}}">
+		<section id="{{id}}" class="{{jokerContainer}}">
 			<p class="{{joker}}">{{title}}</p>
 			<div class="grid-container">
 				<a class="shortcut-item children-template" href="{{children-href}}" alt="{{children-alt}}" id="{{children-id}}" target="_blank">
 					<img src="{{children-img}}" class="{{joker}}" draggable="false">
 					<span>{{children-floatingLabel}}</span>
+				</a>
+			</div>
+		</section>
+	</template>
+
+	<template id="ra-template">
+		<section id="retroachievements-awards">
+			<p class="{{joker}}">Prêmios</p>
+			<div class="grid-container">
+				<a class="shortcut-item retroachievements-award awards-template" href="https://retroachievements.org/game/{{awards-awardData}}" alt="{{awards-title}}" target="_blank" id="ra-award-{{awards-awardData}}">
+					<img src="{{awards-imageIcon}}" draggable="false">
 				</a>
 			</div>
 		</section>

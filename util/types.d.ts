@@ -132,9 +132,9 @@ export type ShortcutsUpdateData = {
 }
 
 //RETROACHIEVEMENTS
-export type RetroAchievementsAward = {
+type RetroAchievementsAward = {
 	"awardedAt": string,
-	"awardType": string,
+	"awardType": 'Game Beaten'|'Mastery/Completion'|'Mastery'|'Completion',
 	"awardData": number,
 	"awardDataExtra": number,
 	"displayOrder": number,
@@ -144,7 +144,7 @@ export type RetroAchievementsAward = {
 	"flags": any,
 	"imageIcon": string
 };
-export type RetroAchievementsAwardsResponse = {
+type RetroAchievementsUserAwards = {
 	"totalAwardsCount": number,
 	"hiddenAwardsCount": number,
 	"masteryAwardsCount": number,
@@ -155,7 +155,7 @@ export type RetroAchievementsAwardsResponse = {
 	"siteAwardsCount": number,
 	"visibleUserAwards": Array<RetroAchievementsAward>
 };
-export type RetroAchievementsFormattedAward = {
+type RetroAchievementsFormattedAward = {
 	"awardData": number,
 	"awardDataExtra": number,
 	"title": string,
@@ -169,7 +169,7 @@ export type RetroAchievementsFormattedAward = {
 		"displayOrder": number,
 	}>
 };
-export type RetroAchievementsConsole = {
+type RetroAchievementsConsole = {
 	"active": boolean,
 	"iconUrl": string,
 	"id": number,

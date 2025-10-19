@@ -81,6 +81,16 @@ body {
 	}
 
 	& .pop-up {
+		cursor: grab;
+
+		& * {
+			cursor: default;
+		}
+	} & .pop-up:active {
+		cursor: grabbing;
+	}
+
+	& .pop-up {
 		display: none;
 		position: fixed;
 		transform: translate(-50%, -50%);
@@ -124,10 +134,15 @@ body {
 				}
 			}
 		}
+		
+		& > * {
+			margin: 1em;
+		}
 
 		& > span {
 			display: flex;
 			gap: 10px;
+			height: 1.5em;
 		}
 
 		& button {
@@ -165,6 +180,15 @@ body {
 
 		& img {
 			pointer-events: fill;
+		}
+
+		& keys {
+			mask-image: var(--keys);
+			background-color: var(--contrast-color-0);
+			height: 100%;
+			aspect-ratio: 1;
+			position: relative;
+			display: inline-block;
 		}
 	}
 
@@ -381,7 +405,6 @@ body.home {
 	& .pop-up.reddit-google {
 		& span {
 			& > div.svg-img {
-				height: 20px;
 				aspect-ratio: 1 / 1;
 				-webkit-filter: invert(var(--invert));
 				filter: invert(var(--invert));
@@ -399,14 +422,6 @@ body.home {
 		& #keywords-reddit, & #subreddit {
 			width: 100%;
 		}
-	}
-
-	& .pop-up.wikipedia {
-		& span img {
-			height: 20px;
-			-webkit-filter: invert(var(--invert));
-			filter: invert(var(--invert));
-		} 
 	}
 
 	& header {
@@ -601,7 +616,7 @@ body.home {
 					max-width: 100%;
 					margin-bottom: 40px;
 
-					& a.shortcut-item {
+					& a.shortcut-item, & a.shortcut-item.retroachievements-award {
 						text-decoration: none;
 						position: relative;
 						height: min(50px, 20vw);
@@ -625,12 +640,13 @@ body.home {
 							height: 1em;
 							padding: 0;
 							color: var(--contrast-color-0);
-							text-shadow: 2px 2px var(--main-color);
+							text-shadow: 1px 1px var(--main-color);
 							transform: translate(50%, 0);
+							transition: ease 0.3s all;
 						}
 					}
 
-					& .shortcut-item.retroachievements-award {
+					& a.shortcut-item.retroachievements-award {
 						cursor: pointer;
 
 						& img {
@@ -638,8 +654,8 @@ body.home {
 						}
 					}
 
-					& .shortcut-item.retroachievements-award.mastered img {border: 2px solid gold;}
-					& .shortcut-item.retroachievements-award:not(.mastered) img {border: 2px solid #e5e7eb}
+					& a.shortcut-item.retroachievements-award.mastered img {border: 2px solid gold;}
+					& a.shortcut-item.retroachievements-award:not(.mastered) img {border: 2px solid #e5e7eb}
 				}
 
 				& > p {
@@ -1109,11 +1125,6 @@ body.home.has-hover {
 						text-align: center;
 						border-radius: 0 3ex 3ex 3ex;
 						padding: 0.5em 1em;
-					}
-
-					& a.shortcut-item.retroachievements-award:hover::after {
-						left: calc(-12px - 1px);
-						top: calc(65px + 2px);
 					}
 				}
 			}

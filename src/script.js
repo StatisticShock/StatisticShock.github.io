@@ -56,8 +56,6 @@ var toggleExternalDataLoad = true;
 var ua = navigator.userAgent || navigator.vendor || window.opera;
 var mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 var portrait = (window.innerWidth < window.innerHeight);
-var template = document.querySelectorAll('template')[1].content;
-console.log("Running server at ".concat(server));
 var PageBuilding = /** @class */ (function (_super) {
     __extends(PageBuilding, _super);
     function PageBuilding() {
@@ -137,14 +135,15 @@ var PageBuilding = /** @class */ (function (_super) {
     ;
     PageBuilding.createSkeletons = function () {
         var skeleton = 'skeleton';
+        var container = 'skeleton-container';
         function createShortcutSkeletons() {
             var shortcuts = document.querySelector('#shortcuts');
             var maxIcons = Math.floor((parseFloat(getComputedStyle(shortcuts).width)) / (Math.min(50, document.documentElement.clientWidth * 0.2) + 30));
             var atalhos = Array.from(shortcuts.querySelectorAll('h2')).filter(function (h2) { return h2.textContent.trim() === 'Atalhos'; })[0];
             var ra = Array.from(shortcuts.querySelectorAll('h2')).filter(function (h2) { return h2.textContent.trim() === 'RetroAchievements'; })[0];
             var row = Array(maxIcons).fill({ joker: skeleton, alt: '. . .' });
-            new TemplateConstructor(document.querySelector('#shortcuts-template').content, Array(2).fill({ joker: skeleton, children: row })).insert(shortcuts, 'after', atalhos);
-            new TemplateConstructor(document.querySelector('#shortcuts-template').content, Array(1).fill({ joker: skeleton, children: row })).insert(shortcuts, 'after', ra);
+            new TemplateConstructor(document.querySelector('#shortcuts-template').content, Array(2).fill({ jokerContainer: container, joker: skeleton, children: row })).insert(shortcuts, 'after', atalhos);
+            new TemplateConstructor(document.querySelector('#shortcuts-template').content, Array(1).fill({ jokerContainer: container, joker: skeleton, children: row })).insert(shortcuts, 'after', ra);
             shortcuts.querySelectorAll('img').forEach(function (img) { return img.src = './icon/blank.svg'; });
         }
         ;
@@ -668,8 +667,22 @@ var ExternalData = /** @class */ (function () {
     }
     ExternalData.addRetroAchievementsAwards = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var data, shortcuts, h2;
             return __generator(this, function (_a) {
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, fetch("".concat(server, "retroAchievements/pt-BR/")).then(function (res) { return res.json(); })];
+                    case 1:
+                        data = _a.sent();
+                        shortcuts = document.querySelector('#shortcuts');
+                        h2 = Array.from(shortcuts.querySelectorAll('h2')).filter(function (h2) { return h2.textContent.trim() === 'RetroAchievements'; })[0];
+                        new TemplateConstructor(document.querySelector('#ra-template').content, [data]).insert(shortcuts, 'after', h2);
+                        data.awards.filter(function (award) { return award.allData.some(function (data) {
+                            return data.awardType.includes('Platinado');
+                        }); }).forEach(function (award) {
+                            document.querySelector('#ra-award-' + award.awardData).classList.add('mastered');
+                        });
+                        return [2 /*return*/];
+                }
             });
         });
     };
@@ -1005,7 +1018,7 @@ function onLoadFunctions(ev) {
                     PageBuilding.createSkeletons();
                     ExternalSearch.redditSearchTrigger();
                     ExternalSearch.wikipediaSearchTrigger();
-                    if (!toggleExternalDataLoad) return [3 /*break*/, 4];
+                    if (!((window.location.hostname === 'statisticshock.github.io') ? true : toggleExternalDataLoad)) return [3 /*break*/, 4];
                     return [4 /*yield*/, CloudStorageData.load()];
                 case 2:
                     _a.sent();
@@ -1016,7 +1029,7 @@ function onLoadFunctions(ev) {
                                 ExternalData.scrapeMyAnimeList(),
                                 ExternalData.addRetroAchievementsAwards(),
                             ]).then(function (res) {
-                                PageBuilding.deleteSkeletons(['#shortcuts > ', 'aside .card .mfc-card ', 'header ']);
+                                PageBuilding.deleteSkeletons(['#shortcuts ', 'header ']);
                             }),
                         ])];
                 case 3:
@@ -1028,6 +1041,7 @@ function onLoadFunctions(ev) {
                     PageBehaviour.redirectLinksToEdge();
                     PageBehaviour.stopImageDrag();
                     PageBehaviour.redirectToUpdatePage();
+                    setTimeout(function () { return document.body.offsetHeight; }, 10);
                     return [2 /*return*/];
             }
         });
