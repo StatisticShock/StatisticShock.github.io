@@ -1,4 +1,4 @@
-import PageBuilding from './shared.js';
+import PageBuilding, { TemplateConstructor } from './shared.js';
 import CustomFunctions from '../util/functions.js';
 import * as MyTypes from '../util/types.js';
 import { server } from './server-url.js';
@@ -15,7 +15,7 @@ class HistoryState {
 		},
 		{
 			type: 'mfc',
-			title: 'Atualização de figure'
+			title: 'MyFigureCollection'
 		},
 		{
 			type: 'headers',
@@ -38,7 +38,7 @@ class HistoryState {
 	};
 
 	static updateContent({page, id}): void {
-		history.replaceState('', '', `update/${page}/${Number(id) > 0 ? id : ''}`)
+		// history.replaceState('', '', `update/${page}/${Number(id) > 0 ? id : ''}`)
 
 		const route = this.routes.filter((route) => route.type === page)[0] || { title: '404', type: 'Not Found'};
 		if (route.title === '404') {
@@ -51,57 +51,23 @@ class HistoryState {
 	static async load ({page, id}): Promise<void> {
 		// x
 		const content: HTMLDivElement = document.querySelector('#content')!;
-		const json: Partial<MyTypes.PageContent> = await fetch(`${server}contents/${page}`).then((res) => res.json());
+		const json: Promise<Partial<MyTypes.PageContent>> = fetch(`${server}contents/${page}`).then((res) => res.json());
 
 		const upload = document.importNode((document.getElementById('upload-template') as HTMLTemplateElement).content, true);
 
 		switch (page) {
 			case 'shortcuts':
-				const shortcutFolders: Array<MyTypes.Shortcut> = json[page]
-				
-				for (const folder of shortcutFolders) {
-					const div: HTMLDivElement = document.createElement('div');
-					div.id = folder.id;
-					div.classList.add('folder');
+				json.then((res) => {
+					const shortcutFolders: Array<MyTypes.Shortcut> = res[page];
 					
-					const div2: HTMLDivElement = document.createElement('div');
-					div2.classList.add('folder-wrapper');
-					const header: HTMLElement = document.createElement('h2');
-					header.innerHTML = folder.title;
+					new TemplateConstructor((document.querySelector('#shortcuts-template') as HTMLTemplateElement).content, shortcutFolders).insert(content);
 
-					div2.appendChild(header);
-					
-					const div3: HTMLDivElement = document.createElement('div');
-					div3.classList.add('shortcuts-wrapper')
-					
-					for (const shortcut of folder.children) {
-						const shortcutDiv: HTMLDivElement = document.createElement('div');
-						shortcutDiv.id = shortcut.id;
-						shortcutDiv.classList.add('shortcut')
-						shortcutDiv.innerHTML = `<span class="shortcut-img-container">` +
-								`<img src="${shortcut.img}">` +
-							`</span>` +
-							`<div class="text-container">` +
-								`<span class="shortcut-name-container">` +
-									`<span>${shortcut.alt}</span>` +
-								`</span>` +
-								`<span class="shortcut-link-container">` +
-									`<span>${shortcut.href}</span>` +
-								`</span>` +
-								`<span class="shortcut-parent-container">` +
-									`<span>${folder.title}</span>` +
-								`</span>` +
-							`</div>` +
-							`<span class="shortcut-mobile-container">` +
-								`<input type="checkbox" checked="${shortcut.showOnMobile}">` +
-							`</span>`;
-
-						div3.appendChild(shortcutDiv);
+					for (const folder of shortcutFolders) {
+						for (const shortcut of folder.children) {
+							(document.querySelector('#' + folder.id + ' #' + shortcut.id + ' input') as HTMLInputElement).checked = shortcut.showOnMobile;
+						}
 					};
-					div.appendChild(div2);
-					div.appendChild(div3);
-					content.appendChild(div);
-				};
+				});
 
 				break;
 			case 'gamecards':
@@ -109,80 +75,79 @@ class HistoryState {
 
 				break;
 			case 'mfc':
-				const item: MyTypes.MFC = json[page].filter((item) => item.id === id)[0];
-				const keys: Array<{title: string, locked: boolean}> = [
-					{title: 'title', locked: false},
-					{title: 'character', locked: false},
-					{title: 'characterJap', locked: false},
-					{title: 'source', locked: false},
-					{title: 'sourceJap', locked: false},
-					{title: 'classification', locked: false},
-					{title: 'category', locked: false},
-				];
-
-				const div1: HTMLDivElement = document.createElement('div');
-				const div2: HTMLDivElement = document.createElement('div');
-				const div3: HTMLDivElement = document.createElement('div');
-
-				div1.classList.add('mfc');
-				div2.classList.add('img-wrapper');
-				div3.classList.add('data-wrapper');
+				new TemplateConstructor((document.querySelector('#mfc-template') as HTMLTemplateElement).content, [{joker: 'skeleton'}]).insert(content);
 				
-				let imgBorderColor: string;
+				json.then((res) => {
+					const figure = res.mfc!.filter((figure) => figure.id === id)[0];
+					const template = new TemplateConstructor((document.querySelector('#mfc-template') as HTMLTemplateElement).content, [figure]);
+					template.insert(content);
 
-				switch (item.category) {
-					case 'Prepainted':
-						imgBorderColor = 'green';
-						break;
-					case 'Action/Dolls':
-						imgBorderColor = '#0080ff';
-						break;
-					default:
-						imgBorderColor = 'orange';
-						break
-				}
-				div2.innerHTML = `<img class="icon-image" style="border: 4px solid ${imgBorderColor};" src="${item.icon}"><img class="main-image" style="border: 4px solid ${imgBorderColor};" src="${item.img}">`
+					document.querySelector('div.mfc')!.classList.add(CustomFunctions.normalize(figure.category.replace('/', '-')));
 
-				for (const key of keys) {
-					div3.innerHTML += `<div class="data-${key.title}"><p>${key.title}</p><p>${item[key.title] ?? '<span class="null">empty</span>'}</p></div>`;
-				};
+					document.querySelector('#update-trigger')!.removeAttribute('style');
 
-				div1.appendChild(div2);
-				div1.appendChild(div3);
+					document.querySelectorAll('div.mfc div.data-wrapper p').forEach((p) => {
+						if (p.textContent === '') p.innerHTML = '<span class="null">Vazio</span>';
+					});
 
-				div3.innerHTML += `<button id="update-trigger">Atualizar</button>`
-				content.appendChild(div1);
+					document.querySelector('div.img-wrapper')!.removeAttribute('style');
+
+					(document.querySelectorAll('div.mfc div.data-wrapper a') as NodeListOf<HTMLAnchorElement>).forEach((anchor) => {
+						if (anchor.textContent!.trim() !== '') {
+							anchor.href = `https://buyee.jp/item/search/query/${encodeURI(anchor.textContent!)}/category/2084023782?sort=end&order=a&store=1&lang=en`
+							anchor.nextElementSibling!.outerHTML = `<copy></copy>`;
+						} else {
+							anchor.outerHTML = '<null></null>';
+						};
+						
+						anchor.addEventListener('click', (ev: Event) => {
+							if ((ev.target as HTMLElement).tagName.toLocaleLowerCase() === 'copy') {
+								ev.preventDefault();
+								
+								navigator.clipboard.writeText(anchor.textContent!);
+							};
+						})
+					});
+
+					(document.querySelectorAll('copy') as NodeListOf<HTMLElement>).forEach((copy) => {
+						copy.addEventListener('click', (ev: Event) => {
+							navigator.clipboard.writeText(copy.previousElementSibling!.textContent!.trim());
+						});
+					});
+				});
 
 				break;
 			case 'headers':
-				const headers: Array<MyTypes.Headers> = json[page];
-				const headerContainer: HTMLDivElement = document.createElement('div');
-				headerContainer.classList.add('headers')
+				json.then((res) => {
+					const headers: Array<MyTypes.Headers> = res[page];
+					const headerContainer: HTMLDivElement = document.createElement('div');
+					headerContainer.classList.add('headers')
 
-				for (const header of headers) {
-					const tpt = document.getElementById('header-template') as HTMLTemplateElement;
-					const div = tpt.content.querySelector('div') as HTMLDivElement;
-					const img = div.querySelector('img') as HTMLImageElement;
-					const box = div.querySelector('input') as HTMLInputElement;
-					const prg = div.querySelector('p') as HTMLParagraphElement;
-					
-					img.src = header.href;
-					box.checked = header.active;
-					prg.textContent = header.name;
+					for (const header of headers) {
+						const tpt = document.getElementById('header-template') as HTMLTemplateElement;
+						const div = tpt.content.querySelector('div') as HTMLDivElement;
+						const img = div.querySelector('img') as HTMLImageElement;
+						const box = div.querySelector('input') as HTMLInputElement;
+						const prg = div.querySelector('p') as HTMLParagraphElement;
+						
+						img.src = header.href;
+						box.checked = header.active;
+						prg.textContent = header.name;
 
-					const node = document.importNode(tpt.content, true);
-					headerContainer.appendChild(node);
-				};
+						const node = document.importNode(tpt.content, true);
+						headerContainer.appendChild(node);
+					};
 
-				content.appendChild(headerContainer);
+					content.appendChild(headerContainer);
 
-				(content.querySelectorAll('div.headers img') as NodeListOf<HTMLImageElement>).forEach((img: HTMLImageElement) => {
-					img.onclick = function (ev) {
-						img.parentElement!.classList.toggle('hidden');
-					}
+					(content.querySelectorAll('div.headers img') as NodeListOf<HTMLImageElement>).forEach((img: HTMLImageElement) => {
+						img.onclick = function (ev) {
+							img.parentElement!.classList.toggle('hidden');
+						}
+					});
+
+					headerContainer.appendChild(upload);
 				});
-
-				headerContainer.appendChild(upload);
 
 				break;
 			default:

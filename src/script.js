@@ -51,13 +51,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 import CustomFunctions from '../util/functions.js';
 import { server } from './server-url.js';
-import PageBuildingImport from './shared.js';
+import PageBuildingImport, { TemplateConstructor } from './shared.js';
 var toggleExternalDataLoad = true;
 var ua = navigator.userAgent || navigator.vendor || window.opera;
 var mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 var portrait = (window.innerWidth < window.innerHeight);
-var template = document.querySelector('template#flex-container-template');
-console.log(document.querySelector('template#shortcuts-template').innerHTML);
+var template = document.querySelectorAll('template')[1].content;
 console.log("Running server at ".concat(server));
 var PageBuilding = /** @class */ (function (_super) {
     __extends(PageBuilding, _super);
@@ -134,71 +133,6 @@ var PageBuilding = /** @class */ (function (_super) {
                 }
             });
         });
-    };
-    ;
-    PageBuilding.createSkeletons = function () {
-        var skeletons = document.getElementById('flex-container-template');
-        var shortcuts = document.querySelector('.flex-container #shortcuts');
-        var aside = document.querySelector('.flex-container aside');
-        function createShortcutSkeletons(title) {
-            var section = document.importNode(skeletons.content.querySelector('.grid-container').parentElement, true);
-            section.classList.add('skeleton-container');
-            section.querySelector('p').classList.add('skeleton');
-            section.querySelector('.shortcut-item').setAttribute('alt', '...');
-            section.querySelector('.shortcut-item').firstElementChild.outerHTML = '<svg class="skeleton"></svg>';
-            for (var i = 0; i < Math.floor((parseFloat(getComputedStyle(shortcuts).width) - 30) / (50 + 30)); i++) {
-                var shortcut = document.importNode(section.querySelector('.shortcut-item'), true);
-                section.lastElementChild.appendChild(shortcut);
-            }
-            ;
-            var target = Array.from(document.querySelectorAll('h2')).filter(function (h2) { return h2.textContent.trim() === title; })[0];
-            if (target.nextElementSibling) {
-                shortcuts.insertBefore(section, target.nextElementSibling);
-            }
-            else {
-                shortcuts.appendChild(section);
-            }
-        }
-        ;
-        function createGamecardSkeletons() {
-            var title = Array.from(shortcuts.querySelectorAll('h2')).filter(function (h2) { return h2.textContent.trim() === 'Gaming'; })[0];
-            var gamecard = document.importNode(skeletons.content.querySelector('div.gamecard-container'), true);
-            gamecard.querySelectorAll('span, .gamecard-outercard a, .gamecard-outercard .gamecard').forEach(function (el) { return el.classList.add('skeleton'); });
-            gamecard.classList.add('skeleton-container');
-            if (title.nextElementSibling) {
-                shortcuts.insertBefore(gamecard, title.nextElementSibling);
-            }
-            else {
-                shortcuts.appendChild(gamecard);
-            }
-        }
-        function createMfcSkeletons() {
-            var card = document.querySelector('aside .card');
-            var firstGridItem = null;
-            var count = 0;
-            do {
-                for (var _i = 0, _a = Array.from(document.querySelectorAll('aside .card .pinterest-grid')); _i < _a.length; _i++) {
-                    var card_1 = _a[_i];
-                    for (var i = 0; i < (portrait ? 2 : 4); i++) {
-                        var div = document.importNode(skeletons.content.querySelector('.pinterest-grid-item'), true);
-                        div.classList.add('skeleton', 'skeleton-container');
-                        card_1.appendChild(div);
-                    }
-                    ;
-                }
-                ;
-                if (!firstGridItem)
-                    firstGridItem = document.querySelector('aside .card .pinterest-grid .pinterest-grid-item');
-                count++;
-            } while (count < 20 && count < parseFloat(getComputedStyle(card).height) / (parseFloat(getComputedStyle(firstGridItem).height) + 10) - 1);
-        }
-        ;
-        for (var i = 0; i < 2; i++) {
-            createShortcutSkeletons('Atalhos');
-        }
-        createShortcutSkeletons('RetroAchievements');
-        createGamecardSkeletons();
-        createMfcSkeletons();
     };
     ;
     PageBuilding.deleteSkeletons = function (prefixes) {
@@ -487,14 +421,6 @@ var UserInterface = /** @class */ (function () {
         });
     };
     ;
-    UserInterface.makeButtonFromAsideFollowHeader = function () {
-        if (!portrait)
-            return;
-        var height = document.querySelector('header').offsetHeight;
-        var button = document.querySelector('aside .button-bar');
-        var bubble = button.querySelector('#expand-button');
-    };
-    ;
     return UserInterface;
 }());
 ;
@@ -585,29 +511,47 @@ var CloudStorageData = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             function loadShortcuts() {
                 return __awaiter(this, void 0, void 0, function () {
-                    var targetedNode, shortcutsNode, tpt, data, key;
+                    var shortcuts, h2, shortcutsOnMobile;
                     return __generator(this, function (_a) {
-                        targetedNode = document.querySelectorAll('#shortcuts h2')[1];
-                        shortcutsNode = document.querySelector('#shortcuts');
-                        tpt = template.querySelector('template#shortcuts-template').content;
-                        data = CloudStorageData.json.shortcuts.sort(function (a, b) { return a.index - b.index; });
-                        for (key in data) {
-                            console.log(key);
-                        }
-                        ;
+                        shortcuts = document.querySelector('section#shortcuts');
+                        h2 = Array.from(shortcuts.querySelectorAll('h2')).filter(function (heading) { return heading.textContent.trim() === 'Atalhos'; })[0];
+                        shortcutsOnMobile = content.shortcuts.map(function (folder) {
+                            var folderClone = structuredClone(folder);
+                            folderClone.children = folderClone.children.filter(function (child) {
+                                return child.showOnMobile;
+                            });
+                            return folderClone;
+                        }).filter(function (folder) {
+                            return folder.children.length > 0;
+                        });
+                        new TemplateConstructor(document.querySelector('template#shortcuts-template').content, mobile ? shortcutsOnMobile : content.shortcuts).insert(shortcuts, 'after', h2);
                         return [2 /*return*/];
                     });
                 });
             }
             function loadGamecards() {
                 return __awaiter(this, void 0, void 0, function () {
-                    var targetedNode, minimunFlexGrowNeeded, _i, _a, gamecardData;
-                    return __generator(this, function (_b) {
-                        targetedNode = document.querySelector('#shortcuts #gaming');
-                        minimunFlexGrowNeeded = 2;
-                        for (_i = 0, _a = content.gamecards.sort(function (a, b) { return a.position - b.position; }); _i < _a.length; _i++) {
-                            gamecardData = _a[_i];
+                    var shortcuts, h2, _i, _a, gamecard, gamecardAnchor, outerGamecard, _b, _c, child, _d, _e, css;
+                    return __generator(this, function (_f) {
+                        shortcuts = document.querySelector('section#shortcuts');
+                        h2 = Array.from(shortcuts.querySelectorAll('h2')).filter(function (heading) { return heading.textContent.trim() === 'Gaming'; })[0];
+                        new TemplateConstructor(document.querySelector('template#gamecard-template').content, content.gamecards).insert(shortcuts, 'after', h2);
+                        for (_i = 0, _a = content.gamecards; _i < _a.length; _i++) {
+                            gamecard = _a[_i];
+                            gamecardAnchor = document.querySelector('#' + gamecard.id + ' a');
+                            outerGamecard = document.querySelector('div#' + gamecard.id + ' .gamecard-outercard');
+                            outerGamecard.style.setProperty('--gamecard-count', Math.max(gamecard.children.length, 2).toString());
+                            for (_b = 0, _c = gamecard.children; _b < _c.length; _b++) {
+                                child = _c[_b];
+                                for (_d = 0, _e = child.img_css; _d < _e.length; _d++) {
+                                    css = _e[_d];
+                                    gamecardAnchor.style.setProperty(css.attribute, css.value);
+                                }
+                                ;
+                            }
+                            ;
                         }
+                        ;
                         return [2 /*return*/];
                     });
                 });
@@ -656,6 +600,7 @@ var CloudStorageData = /** @class */ (function () {
                 content = JSON.parse(JSON.stringify(this.json));
                 ;
                 ;
+                ;
                 loadShortcuts();
                 loadGamecards();
                 loadHeaders();
@@ -666,187 +611,22 @@ var CloudStorageData = /** @class */ (function () {
     ;
     CloudStorageData.addMfcImages = function () {
         return __awaiter(this, void 0, void 0, function () {
-            function resizeMasonryItem(item) {
-                /* Get the grid object, its row-gap, and the size of its implicit rows */
-                var grid = document.getElementsByClassName('pinterest-grid')[0], rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap')), rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
-                /*
-                * Spanning for any brick = S
-                * Grid's row-gap = G
-                * Size of grid's implicitly create row-track = R
-                * Height of item content = H
-                * Net height of the item = H1 = H + G
-                * Net height of the implicit row-track = T = G + R
-                * S = H1 / T
-                */
-                var rowSpan = Math.ceil((item.offsetHeight + rowGap) / (rowHeight + rowGap));
-                /* Set the spanning as calculated above (S) */
-                item.style.gridRowEnd = 'span ' + rowSpan;
-            }
-            function resizeAllMasonryItems() {
-                var allItems = document.querySelectorAll('.pinterest-grid-item');
-                for (var i = 0; i < allItems.length; i++) {
-                    resizeMasonryItem(allItems[i]);
-                }
-                ;
-            }
-            function createElement(item) {
-                var div = document.importNode(template.querySelector('.pinterest-grid-item'), true);
-                var img = div.querySelector('img');
-                var bigImage = new Image();
-                bigImage.src = item.img;
-                var card;
-                switch (item.type) {
-                    case 'Wished':
-                        card = document.getElementById('wished');
-                        break;
-                    default:
-                        card = document.getElementById('owned-ordered');
-                        break;
-                }
-                div.setAttribute('alt', item.title);
-                div.classList.add('pinterest-grid-item');
-                div.id = item.id;
-                img.src = item.icon;
-                switch (item.category) {
-                    case 'Prepainted':
-                        div.style.color = 'green';
-                        break;
-                    case 'Action/Dolls':
-                        div.style.color = '#0080ff';
-                        break;
-                    default:
-                        div.style.color = 'orange';
-                        break;
-                }
-                img.style.border = "4px solid ".concat(div.style.color);
-                var imgBorder = img.style.border.split(' ')[0];
-                img.style.width = "calc(100% - ".concat(imgBorder, " * 2)");
-                img.onclick = function () {
-                    var popUp = document.querySelector('.pop-up.mfc');
-                    var title = popUp.querySelector('.pop-up-title');
-                    var popUpImgAnchor = popUp.querySelector('#pop-up-img');
-                    var popUpImg = popUpImgAnchor.childNodes[0];
-                    var originalName = popUp.querySelector('#mfc-character-original-name');
-                    var originName = popUp.querySelector('#mfc-character-source');
-                    var classification = popUp.querySelector('#mfc-classification');
-                    var a = popUp.querySelector('.pop-up-header > div > a');
-                    var updateLink = popUp.querySelector('a.update-link');
-                    var characterLink = '';
-                    var originLink = '';
-                    var classificationLink = '';
-                    if (item.characterJap) {
-                        characterLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.characterJap), "/category/2084023782?sort=end&order=a&store=1&lang=en");
-                    }
-                    else {
-                        characterLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.character), "/category/2084023782?sort=end&order=a&store=1&lang=en");
-                    }
-                    ;
-                    if (item.sourceJap !== 'オリジナル' && item.sourceJap !== undefined) {
-                        originName.parentElement.style.display = '';
-                        originLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.sourceJap), "/category/2084023782?sort=end&order=a&store=1&lang=en");
-                    }
-                    else {
-                        originName.parentElement.style.display = 'none';
-                    }
-                    ;
-                    if (item.classification !== undefined) {
-                        classification.parentElement.style.display = '';
-                        classificationLink = "https://buyee.jp/item/search/query/".concat(encodeURIComponent(item.classification.replaceAll('#', '')), "/category/2084023782?sort=end&order=a&store=1&lang=en");
-                    }
-                    else {
-                        classification.parentElement.style.display = 'none';
-                    }
-                    ;
-                    title.innerHTML = item.title;
-                    popUpImgAnchor.href = item.href;
-                    popUpImgAnchor.style.border = "".concat(imgBorder, " solid ").concat(div.style.color);
-                    popUpImg.src = bigImage.src;
-                    var copySvg = "<?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 20010904//EN\" \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\"><svg version=\"1.0\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200.000000 200.000000\" preserveAspectRatio=\"xMidYMid meet\"><g transform=\"translate(0.000000,200.000000) scale(0.100000,-0.100000)\" fill=\"currentColor\" stroke=\"none\"><path d=\"M721 1882 c-71 -36 -76 -51 -79 -268 l-3 -194 60 0 61 0 2 178 3 177 475 0 475 0 0 -475 0 -475 -117 -3 -118 -3 0 -60 0 -61 134 4 c151 3 175 12 209 79 16 31 17 73 15 531 -3 484 -4 497 -24 525 -47 64 -39 63 -574 63 -442 0 -488 -2 -519 -18z\"/><path d=\"M241 1282 c-19 -9 -44 -30 -55 -45 -20 -28 -21 -41 -24 -525 -3 -555 -4 -542 67 -589 l34 -23 496 0 c477 0 497 1 529 20 18 11 41 34 52 52 19 32 20 52 20 529 l0 496 -23 34 c-47 70 -36 69 -577 69 -442 0 -488 -2 -519 -18z m994 -582 l0 -475 -475 0 -475 0 -3 465 c-1 256 0 471 3 478 3 10 104 12 477 10 l473 -3 0 -475z\"/></g></svg>";
-                    updateLink.href = '/update/mfc/' + item.id + '/';
-                    originalName.innerHTML = item.characterJap !== '' ? "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(copySvg, "&nbsp;").concat(item.characterJap, "</a>") : "<a target=\"_blank\" href=\"".concat(characterLink, "\">").concat(copySvg, "&nbsp;").concat(item.character, "</div></a>");
-                    originName.innerHTML = "<a target=\"_blank\" href=\"".concat(originLink, "\">").concat(copySvg, "&nbsp;").concat(item.sourceJap, "</a>");
-                    classification.innerHTML = "<a target=\"_blank\" href=\"".concat(classificationLink, "\">").concat(copySvg, "&nbsp;").concat(item.classification, "</a>");
-                    switch (item.type) {
-                        case 'Owned':
-                            a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=2&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
-                        case 'Ordered':
-                            a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
-                        case 'Wished':
-                            a.href = 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=-1&categoryId=-1&output=3&sort=since&order=desc&_tb=user';
-                        default:
-                            console.error("Weird MFC item type: ".concat(item.type));
-                    }
-                    //NEXT LINE MUST BE CHANGED EACH TIME A LINK IS ADDED
-                    var links = [originalName.querySelector('a'), originName.querySelector('a'), classification.querySelector('a')];
-                    links.forEach(function (link) {
-                        link.addEventListener('click', function (ev) {
-                            var _a;
-                            var target = ev.touches ? ((_a = ev.touches[0]) === null || _a === void 0 ? void 0 : _a.target) || ev.target : ev.target;
-                            var copyToClipboard = function (ev, target) {
-                                ev.preventDefault();
-                                navigator.clipboard.writeText(target.parentElement.textContent.trim());
-                                console.log("Copied ".concat(target.parentElement.textContent));
-                            };
-                            if (target instanceof SVGElement)
-                                copyToClipboard(ev, target);
-                        });
-                    });
-                    popUp.style.display = 'block';
-                };
-                div.append(img);
-                card.append(div);
-            }
-            function searchFigure(textInput, json) {
-                var searchStr = new RegExp(textInput.value, 'i');
-                console.info("A string procurada \u00E9 ".concat(searchStr));
-                var figuresToHide = json.filter(function (figure) {
-                    var count = 0;
-                    Object.keys(figure).forEach(function (key) { if (searchStr.test(figure[key]))
-                        count++; });
-                    return count === 0;
-                });
-                var divs = document.querySelectorAll('aside .card .pinterest-grid-item');
-                divs.forEach(function (div) {
-                    div.style.display = 'block';
-                    if (figuresToHide.filter(function (figure) { return figure.id === div.id; }).length > 0) {
-                        div.style.display = 'none';
-                    }
-                    ;
-                });
-            }
-            var result, createElementPromise;
+            var wished, owned, wishedCard, ownedCard, template;
+            var _this = this;
             return __generator(this, function (_a) {
-                result = JSON.parse(JSON.stringify(this.json.mfc));
-                createElementPromise = new Promise(function (resolve, reject) {
-                    resolve(result.sort(function (a, b) { return Number(a.id) - Number(b.id); }).map(createElement));
+                wished = CustomFunctions.shuffle(this.json.mfc.filter(function (figure) { return figure.type === 'Wished'; }));
+                owned = CustomFunctions.shuffle(this.json.mfc.filter(function (figure) { return figure.type !== 'Wished'; }));
+                wishedCard = document.querySelector('.flex-container aside .card #wished');
+                ownedCard = document.querySelector('.flex-container aside .card #owned-ordered');
+                template = document.querySelector('#mfc-item-template').content;
+                new TemplateConstructor(template, wished).insert(wishedCard);
+                new TemplateConstructor(template, owned).insert(ownedCard);
+                document.querySelectorAll('.mfc').forEach(function (item) {
+                    try {
+                        item.classList.add(CustomFunctions.normalize(_this.json.mfc.filter(function (figure) { return figure.id === item.id; })[0].category.replace('/', '-')));
+                    }
+                    catch (err) { }
                 });
-                createElementPromise.then(function () {
-                    setTimeout(resizeAllMasonryItems, 1000);
-                    setTimeout(PageBuilding.resizeAside, 1000);
-                    var input = document.querySelector('#search-bar');
-                    var loader = document.querySelector('.container .flex-container aside > .loader');
-                    var timeout;
-                    input.addEventListener('keyup', function (ev) {
-                        clearTimeout(timeout);
-                        loader.style.display = '';
-                        timeout = setTimeout(function () {
-                            searchFigure(input, result);
-                            loader.style.display = 'none';
-                        }, 2000);
-                    });
-                });
-                ;
-                ;
-                setInterval(function () {
-                    resizeAllMasonryItems();
-                }, 500);
-                setInterval(function () {
-                    var card = document.querySelector('aside .card');
-                    var grids = card.querySelectorAll('.pinterest-grid');
-                    grids.forEach(function (grid) {
-                        grid.style.width = (parseFloat(getComputedStyle(card).width) / 2) + 'px';
-                    });
-                }, 500);
                 return [2 /*return*/];
             });
         });
@@ -860,55 +640,8 @@ var ExternalData = /** @class */ (function () {
     }
     ExternalData.addRetroAchievementsAwards = function () {
         return __awaiter(this, void 0, void 0, function () {
-            function createRetroAchievementsAwardCard(award) {
-                var shortcut = document.importNode(template.querySelector('.grid-container a'), true);
-                var img = shortcut.querySelector('img');
-                shortcut.classList.add('retroachievements-award');
-                shortcut.id = CustomFunctions.normalize(award.title);
-                shortcut.setAttribute('alt', award.title);
-                img.src = award.imageIcon;
-                if (award.allData[0].awardType.includes('Mastered') || award.allData[0].awardType.includes('Platinado')) {
-                    shortcut.classList.add('mastered');
-                }
-                gridContainer.appendChild(shortcut);
-                h3.removeAttribute('style');
-            }
-            var raUrl, response, awards, consoles, gridContainer, popUp, h3;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        raUrl = 'https://retroachievements.org';
-                        return [4 /*yield*/, fetch("".concat(server, "retroAchievements/pt-BR/")).then(function (res) { return res.json(); })];
-                    case 1:
-                        response = _a.sent();
-                        awards = response.awards;
-                        consoles = response.consoles;
-                        gridContainer = document.querySelector('#retroachievements-awards > .grid-container');
-                        popUp = document.querySelector('.pop-up.retroachievements-awards');
-                        h3 = document.querySelector('#retroachievements-awards > h3');
-                        awards.map(createRetroAchievementsAwardCard);
-                        ;
-                        gridContainer.querySelectorAll('.retroachievements-award').forEach(function (awardCard) {
-                            var currentAwardData = awards.filter(function (award) { return CustomFunctions.normalize(award.title) === awardCard.id; })[0];
-                            var currentConsoleData = consoles.filter(function (consoleId) { return consoleId.id === currentAwardData.consoleId; })[0];
-                            awardCard.addEventListener('click', function (ev) {
-                                popUp.style.display = 'block';
-                                popUp.querySelector('#pop-up-img').href = "".concat(raUrl, "/game/").concat(currentAwardData.awardData);
-                                popUp.querySelector('#pop-up-img').style.border = "2px solid ".concat(currentAwardData.allData.some(function (a) { return a.awardType.includes('Platinado'); }) ? 'gold' : '#e5e7eb');
-                                popUp.querySelector('#pop-up-img').style.aspectRatio = '1';
-                                popUp.querySelector('#pop-up-img > img').src = currentAwardData.imageIcon;
-                                popUp.querySelectorAll('.pop-up-header > div > a')[1].href = "".concat(raUrl, "/system/").concat(currentConsoleData.id, "-").concat(CustomFunctions.normalize(currentConsoleData.name), "/games");
-                                popUp.querySelectorAll('.pop-up-header > div > a > img')[1].src = consoles.filter(function (consoleId) { return consoleId.id === currentAwardData.consoleId; })[0].iconUrl;
-                                popUp.querySelector('.pop-up-title').innerHTML = "<p>".concat(currentAwardData.title, "</p><p><small>").concat(currentConsoleData.name, "</small></p>");
-                                popUp.querySelector('.data-container').innerHTML = '';
-                                for (var _i = 0, _a = currentAwardData.allData; _i < _a.length; _i++) {
-                                    var data = _a[_i];
-                                    popUp.querySelector('.data-container').innerHTML += "<div style=\"border-top: 1px solid var(--contrast-color-3);\"><p>Pr\u00EAmio&nbsp;<span>".concat(data.awardType, "</span></p><p>Data&nbsp;<span>").concat(Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(data.awardedAt)), "</span></p></div>");
-                                }
-                            });
-                        });
-                        return [2 /*return*/];
-                }
+                return [2 /*return*/];
             });
         });
     };
@@ -1203,6 +936,19 @@ var PageBehaviour = /** @class */ (function () {
         });
     };
     ;
+    PageBehaviour.redirectToUpdatePage = function () {
+        var anchors = document.querySelectorAll('a.update-link');
+        var url = window.location.href;
+        anchors.forEach(function (anchor) {
+            anchor.addEventListener('click', function (ev) {
+                var _a;
+                ev.preventDefault();
+                var route = anchor.href.replace(url, '');
+                var parts = route.split('/');
+                window.location.href = "".concat(url, "update.html?page=").concat(parts[1], "&id=").concat((_a = parts[2]) !== null && _a !== void 0 ? _a : '0');
+            });
+        });
+    };
     return PageBehaviour;
 }());
 ;
@@ -1220,11 +966,11 @@ function onLoadFunctions(ev) {
                     UserInterface.setPopUpDefaultValues();
                     UserInterface.resetPopUpsOnOpen();
                     UserInterface.showPopUps();
+                    UserInterface.resizeHeader();
                     return [4 /*yield*/, CustomFunctions.sleep(300)];
                 case 1:
                     _a.sent();
                     PageBuilding.createLoaders(12);
-                    PageBuilding.createSkeletons();
                     PageBuilding.adjustGamecard();
                     PageBuilding.putVersionOnFooter();
                     PageBuilding.formatPopUps();
@@ -1238,11 +984,11 @@ function onLoadFunctions(ev) {
                             Promise.all([
                                 CloudStorageData.loadContentFromJson(),
                                 CloudStorageData.addMfcImages(),
-                            ]).then(function (res) { return PageBuilding.deleteSkeletons(['#shortcuts > ', 'aside .card .pinterest-grid ', 'header ']); }),
-                            Promise.all([
                                 ExternalData.scrapeMyAnimeList(),
                                 ExternalData.addRetroAchievementsAwards(),
-                            ])
+                            ]).then(function (res) {
+                                PageBuilding.deleteSkeletons(['#shortcuts > ', 'aside .card .mfc-card ', 'header ']);
+                            }),
                         ])];
                 case 3:
                     _a.sent();
@@ -1252,6 +998,7 @@ function onLoadFunctions(ev) {
                     PageBehaviour.openLinksInNewTab();
                     PageBehaviour.redirectLinksToEdge();
                     PageBehaviour.stopImageDrag();
+                    PageBehaviour.redirectToUpdatePage();
                     return [2 /*return*/];
             }
         });
@@ -1260,15 +1007,12 @@ function onLoadFunctions(ev) {
 ;
 window.addEventListener('resize', onResizeFunctions, true);
 function onResizeFunctions(ev) {
-    setTimeout(function () {
-        PageBuilding.resizeAside();
-        PageBuilding.adjustGamecardText(0);
-    }, 500);
+    PageBuilding.resizeAside();
+    UserInterface.resizeHeader();
 }
 ;
 window.addEventListener('scroll', onScrollFunctions, true);
 function onScrollFunctions(ev) {
     UserInterface.resizeHeader();
-    UserInterface.makeButtonFromAsideFollowHeader();
 }
 ;

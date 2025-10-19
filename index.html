@@ -45,8 +45,8 @@
 				<input type="text" placeholder="Pesquise uma figure" id="search-bar">
 				<div class="loader" style="display: none;"></div>
 				<div class="card">
-					<span id="owned-ordered" class="pinterest-grid"></span>
-					<span id="wished" class="pinterest-grid"></span>
+					<span id="owned-ordered" class="mfc-card"></span>
+					<span id="wished" class="mfc-card"></span>
 				</div>
 			</aside>
 			<section id="shortcuts">
@@ -80,24 +80,6 @@
 					</div>
 				</section>
 			</section>
-		</div>
-		<div class="pop-up mfc">
-			<div class="pop-up-header">
-				<div>
-					<a target="_blank">
-						<img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/mfc.ico">
-					</a>
-				</div>
-				<a href="" class="svg-img update-link"></a>
-				<button type="button" class="close-button">&times;</button>
-			</div>
-			<a id="pop-up-img" target="_blank"><img></a>
-			<span class="pop-up-title"></span>
-			<div class="data-container">
-				<p>Personagens&nbsp;<span id="mfc-character-original-name"></span></p>
-				<p>Origem&nbsp;<span id="mfc-character-source"></span></p>
-				<p>Classificação<span id="mfc-classification"></span></p>
-			</div>
 		</div>
 		<div class="pop-up retroachievements-awards">
 			<div class="pop-up-header">
@@ -160,6 +142,40 @@
 	<footer>
 		<p>&copy;&nbsp;StatisticShock. Nada a dizer.</p>
 	</footer>
+	
+	<template id="shortcuts-template">
+		<section id="{{id}}">
+			<p class="{{joker}}">{{title}}</p>
+			<div class="grid-container">
+				<a class="shortcut-item children-template {{joker}}" href="{{children-href}}" alt="{{children-alt}}" id="{{children-id}}" target="_blank">
+					<img src="{{children-img}}" draggable="false">
+					<span>{{children-floatingLabel}}</span>
+				</a>
+			</div>
+		</section>
+	</template>
+
+	<template id="gamecard-template">
+		<div id="{{id}}" class="gamecard-container">
+			<span>
+				<p>{{label}}</p>
+			</span>
+			<div class="gamecard-outercard">
+				<div class="gamecard children-template" id="{{children-id}}">
+					<a href="{{children-href}}" style="background-image: url({{children-img}});" target="_blank">
+						<span><b>{{children-label}}</b></span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</template>
+
+	<template id="mfc-item-template">
+		<a alt="" class="mfc update-link" id="{{id}}" type="button" href="/update/mfc/{{id}}">
+			<img src="{{icon}}" draggable="false">
+		</a>
+	</template>
+
 	<script type="module" src="./src/script.js"></script>
 	<script type="module" src="./src/shared.js"></script>
 	<script>
@@ -175,52 +191,6 @@
 			};
 		};
 	</script>
-	<script>
-		const buttons = document.querySelectorAll('a.update-link');
-		const url = window.location.href;
-
-		buttons.forEach((bttn) => {
-			bttn.addEventListener('click', (ev) => {
-				ev.preventDefault();
-				const route = bttn.href.replace(url, '');
-				const parts = route.split('/');
-
-				window.location.href = `${url}update.html?page=${parts[1]}&id=${parts[2] ?? '0'}`
-			});
-		});
-	</script>
-
-	<template id="shortcuts-template">
-		<section id="{{id}}">
-			<p>{{title}}</p>
-			<div class="grid-container">
-				<a class="shortcut-item children" href="{{href}}" alt="{{alt}}" id="{{id}}" target="_blank">
-					<img src="{{img}}" draggable="false">
-				</a>
-			</div>
-		</section>
-
-		<a id="{{id}}" alt="{{alt}}" class="shortcut-item" target="_blank">
-			<img src="{{}}" draggable="false">
-			<span class="floating-label" style="display: none;"></span>
-		</a>
-	</template>
-
-	<template>
-		<div class="gamecard-container"><!-- gamecards -->
-			<span><p></p></span>
-			<div class="gamecard-outercard">
-				<div class="gamecard">
-					<a target="_blank">
-						<span><b></b></span>
-					</a>
-				</div>
-			</div>
-		</div>
-		<div class="pinterest-grid-item"><!-- mfc -->
-			<img draggable="false">
-		</div>
-	</template>
 </body>
 
 </html>

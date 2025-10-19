@@ -34,7 +34,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import PageBuilding from './shared.js';
+import PageBuilding, { TemplateConstructor } from './shared.js';
+import CustomFunctions from '../util/functions.js';
 import { server } from './server-url.js';
 var HistoryState = /** @class */ (function () {
     function HistoryState() {
@@ -48,8 +49,8 @@ var HistoryState = /** @class */ (function () {
     };
     ;
     HistoryState.updateContent = function (_a) {
+        // history.replaceState('', '', `update/${page}/${Number(id) > 0 ? id : ''}`)
         var page = _a.page, id = _a.id;
-        history.replaceState('', '', "update/".concat(page, "/").concat(Number(id) > 0 ? id : ''));
         var route = this.routes.filter(function (route) { return route.type === page; })[0] || { title: '404', type: 'Not Found' };
         if (route.title === '404') {
             window.location.href = window.location.origin + '/404.html';
@@ -61,137 +62,99 @@ var HistoryState = /** @class */ (function () {
     ;
     HistoryState.load = function (_a) {
         return __awaiter(this, arguments, void 0, function (_b) {
-            var content, json, upload, shortcutFolders, _i, shortcutFolders_1, folder, div, div2_1, header, div3_1, _c, _d, shortcut, shortcutDiv, gamecards, item, keys, div1, div2, div3, imgBorderColor, _e, keys_1, key, headers, headerContainer, _f, headers_1, header, tpt, div, img, box, prg, node;
-            var _g;
+            var content, json, upload, gamecards;
             var page = _b.page, id = _b.id;
-            return __generator(this, function (_h) {
-                switch (_h.label) {
-                    case 0:
-                        content = document.querySelector('#content');
-                        return [4 /*yield*/, fetch("".concat(server, "contents/").concat(page)).then(function (res) { return res.json(); })];
-                    case 1:
-                        json = _h.sent();
-                        upload = document.importNode(document.getElementById('upload-template').content, true);
-                        switch (page) {
-                            case 'shortcuts':
-                                shortcutFolders = json[page];
-                                for (_i = 0, shortcutFolders_1 = shortcutFolders; _i < shortcutFolders_1.length; _i++) {
-                                    folder = shortcutFolders_1[_i];
-                                    div = document.createElement('div');
-                                    div.id = folder.id;
-                                    div.classList.add('folder');
-                                    div2_1 = document.createElement('div');
-                                    div2_1.classList.add('folder-wrapper');
-                                    header = document.createElement('h2');
-                                    header.innerHTML = folder.title;
-                                    div2_1.appendChild(header);
-                                    div3_1 = document.createElement('div');
-                                    div3_1.classList.add('shortcuts-wrapper');
-                                    for (_c = 0, _d = folder.children; _c < _d.length; _c++) {
-                                        shortcut = _d[_c];
-                                        shortcutDiv = document.createElement('div');
-                                        shortcutDiv.id = shortcut.id;
-                                        shortcutDiv.classList.add('shortcut');
-                                        shortcutDiv.innerHTML = "<span class=\"shortcut-img-container\">" +
-                                            "<img src=\"".concat(shortcut.img, "\">") +
-                                            "</span>" +
-                                            "<div class=\"text-container\">" +
-                                            "<span class=\"shortcut-name-container\">" +
-                                            "<span>".concat(shortcut.alt, "</span>") +
-                                            "</span>" +
-                                            "<span class=\"shortcut-link-container\">" +
-                                            "<span>".concat(shortcut.href, "</span>") +
-                                            "</span>" +
-                                            "<span class=\"shortcut-parent-container\">" +
-                                            "<span>".concat(folder.title, "</span>") +
-                                            "</span>" +
-                                            "</div>" +
-                                            "<span class=\"shortcut-mobile-container\">" +
-                                            "<input type=\"checkbox\" checked=\"".concat(shortcut.showOnMobile, "\">") +
-                                            "</span>";
-                                        div3_1.appendChild(shortcutDiv);
+            return __generator(this, function (_c) {
+                content = document.querySelector('#content');
+                json = fetch("".concat(server, "contents/").concat(page)).then(function (res) { return res.json(); });
+                upload = document.importNode(document.getElementById('upload-template').content, true);
+                switch (page) {
+                    case 'shortcuts':
+                        json.then(function (res) {
+                            var shortcutFolders = res[page];
+                            new TemplateConstructor(document.querySelector('#shortcuts-template').content, shortcutFolders).insert(content);
+                            for (var _i = 0, shortcutFolders_1 = shortcutFolders; _i < shortcutFolders_1.length; _i++) {
+                                var folder = shortcutFolders_1[_i];
+                                for (var _a = 0, _b = folder.children; _a < _b.length; _a++) {
+                                    var shortcut = _b[_a];
+                                    document.querySelector('#' + folder.id + ' #' + shortcut.id + ' input').checked = shortcut.showOnMobile;
+                                }
+                            }
+                            ;
+                        });
+                        break;
+                    case 'gamecards':
+                        gamecards = json[page];
+                        break;
+                    case 'mfc':
+                        new TemplateConstructor(document.querySelector('#mfc-template').content, [{ joker: 'skeleton' }]).insert(content);
+                        json.then(function (res) {
+                            var figure = res.mfc.filter(function (figure) { return figure.id === id; })[0];
+                            var template = new TemplateConstructor(document.querySelector('#mfc-template').content, [figure]);
+                            template.insert(content);
+                            document.querySelector('div.mfc').classList.add(CustomFunctions.normalize(figure.category.replace('/', '-')));
+                            document.querySelector('#update-trigger').removeAttribute('style');
+                            document.querySelectorAll('div.mfc div.data-wrapper p').forEach(function (p) {
+                                if (p.textContent === '')
+                                    p.innerHTML = '<span class="null">Vazio</span>';
+                            });
+                            document.querySelector('div.img-wrapper').removeAttribute('style');
+                            document.querySelectorAll('div.mfc div.data-wrapper a').forEach(function (anchor) {
+                                if (anchor.textContent.trim() !== '') {
+                                    anchor.href = "https://buyee.jp/item/search/query/".concat(encodeURI(anchor.textContent), "/category/2084023782?sort=end&order=a&store=1&lang=en");
+                                    anchor.nextElementSibling.outerHTML = "<copy></copy>";
+                                }
+                                else {
+                                    anchor.outerHTML = '<null></null>';
+                                }
+                                ;
+                                anchor.addEventListener('click', function (ev) {
+                                    if (ev.target.tagName.toLocaleLowerCase() === 'copy') {
+                                        ev.preventDefault();
+                                        navigator.clipboard.writeText(anchor.textContent);
                                     }
                                     ;
-                                    div.appendChild(div2_1);
-                                    div.appendChild(div3_1);
-                                    content.appendChild(div);
-                                }
-                                ;
-                                break;
-                            case 'gamecards':
-                                gamecards = json[page];
-                                break;
-                            case 'mfc':
-                                item = json[page].filter(function (item) { return item.id === id; })[0];
-                                keys = [
-                                    { title: 'title', locked: false },
-                                    { title: 'character', locked: false },
-                                    { title: 'characterJap', locked: false },
-                                    { title: 'source', locked: false },
-                                    { title: 'sourceJap', locked: false },
-                                    { title: 'classification', locked: false },
-                                    { title: 'category', locked: false },
-                                ];
-                                div1 = document.createElement('div');
-                                div2 = document.createElement('div');
-                                div3 = document.createElement('div');
-                                div1.classList.add('mfc');
-                                div2.classList.add('img-wrapper');
-                                div3.classList.add('data-wrapper');
-                                imgBorderColor = void 0;
-                                switch (item.category) {
-                                    case 'Prepainted':
-                                        imgBorderColor = 'green';
-                                        break;
-                                    case 'Action/Dolls':
-                                        imgBorderColor = '#0080ff';
-                                        break;
-                                    default:
-                                        imgBorderColor = 'orange';
-                                        break;
-                                }
-                                div2.innerHTML = "<img class=\"icon-image\" style=\"border: 4px solid ".concat(imgBorderColor, ";\" src=\"").concat(item.icon, "\"><img class=\"main-image\" style=\"border: 4px solid ").concat(imgBorderColor, ";\" src=\"").concat(item.img, "\">");
-                                for (_e = 0, keys_1 = keys; _e < keys_1.length; _e++) {
-                                    key = keys_1[_e];
-                                    div3.innerHTML += "<div class=\"data-".concat(key.title, "\"><p>").concat(key.title, "</p><p>").concat((_g = item[key.title]) !== null && _g !== void 0 ? _g : '<span class="null">empty</span>', "</p></div>");
-                                }
-                                ;
-                                div1.appendChild(div2);
-                                div1.appendChild(div3);
-                                div3.innerHTML += "<button id=\"update-trigger\">Atualizar</button>";
-                                content.appendChild(div1);
-                                break;
-                            case 'headers':
-                                headers = json[page];
-                                headerContainer = document.createElement('div');
-                                headerContainer.classList.add('headers');
-                                for (_f = 0, headers_1 = headers; _f < headers_1.length; _f++) {
-                                    header = headers_1[_f];
-                                    tpt = document.getElementById('header-template');
-                                    div = tpt.content.querySelector('div');
-                                    img = div.querySelector('img');
-                                    box = div.querySelector('input');
-                                    prg = div.querySelector('p');
-                                    img.src = header.href;
-                                    box.checked = header.active;
-                                    prg.textContent = header.name;
-                                    node = document.importNode(tpt.content, true);
-                                    headerContainer.appendChild(node);
-                                }
-                                ;
-                                content.appendChild(headerContainer);
-                                content.querySelectorAll('div.headers img').forEach(function (img) {
-                                    img.onclick = function (ev) {
-                                        img.parentElement.classList.toggle('hidden');
-                                    };
                                 });
-                                headerContainer.appendChild(upload);
-                                break;
-                            default:
-                                content.innerHTML = 'Page Not Found';
-                        }
-                        return [2 /*return*/];
+                            });
+                            document.querySelectorAll('copy').forEach(function (copy) {
+                                copy.addEventListener('click', function (ev) {
+                                    navigator.clipboard.writeText(copy.previousElementSibling.textContent.trim());
+                                });
+                            });
+                        });
+                        break;
+                    case 'headers':
+                        json.then(function (res) {
+                            var headers = res[page];
+                            var headerContainer = document.createElement('div');
+                            headerContainer.classList.add('headers');
+                            for (var _i = 0, headers_1 = headers; _i < headers_1.length; _i++) {
+                                var header = headers_1[_i];
+                                var tpt = document.getElementById('header-template');
+                                var div = tpt.content.querySelector('div');
+                                var img = div.querySelector('img');
+                                var box = div.querySelector('input');
+                                var prg = div.querySelector('p');
+                                img.src = header.href;
+                                box.checked = header.active;
+                                prg.textContent = header.name;
+                                var node = document.importNode(tpt.content, true);
+                                headerContainer.appendChild(node);
+                            }
+                            ;
+                            content.appendChild(headerContainer);
+                            content.querySelectorAll('div.headers img').forEach(function (img) {
+                                img.onclick = function (ev) {
+                                    img.parentElement.classList.toggle('hidden');
+                                };
+                            });
+                            headerContainer.appendChild(upload);
+                        });
+                        break;
+                    default:
+                        content.innerHTML = 'Page Not Found';
                 }
+                return [2 /*return*/];
             });
         });
     };
@@ -207,7 +170,7 @@ var HistoryState = /** @class */ (function () {
         },
         {
             type: 'mfc',
-            title: 'Atualização de figure'
+            title: 'MyFigureCollection'
         },
         {
             type: 'headers',

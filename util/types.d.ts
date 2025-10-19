@@ -65,8 +65,6 @@ export type MangaList = {
 
 //PAGE CONTENT
 export type MFC = {
-	[k: string]: string;
-
 	id: string,
 	href: string,
 	img: string,
@@ -76,8 +74,8 @@ export type MFC = {
 	source: string,
 	sourceJap: string,
 	classification: string,
-	category: string,
-	type: string,
+	category: 'Prepainted'|'Action/Dolls'|'Trading',
+	type: 'Wished'|'Owned'|'Ordered',
 	title: string,
 };
 export type Shortcut = {
