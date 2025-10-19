@@ -959,7 +959,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 	PageBehaviour.stopImageDrag();
 	PageBehaviour.redirectToUpdatePage();
 
-	setTimeout(() => document.body.offsetHeight, 10)
+	setTimeout(() => window.dispatchEvent(new Event('resize')), 250);
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions(ev: Event) {
 	PageBuilding.resizeAside();

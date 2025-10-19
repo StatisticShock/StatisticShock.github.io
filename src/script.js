@@ -1041,7 +1041,7 @@ function onLoadFunctions(ev) {
                     PageBehaviour.redirectLinksToEdge();
                     PageBehaviour.stopImageDrag();
                     PageBehaviour.redirectToUpdatePage();
-                    setTimeout(function () { return document.body.offsetHeight; }, 10);
+                    setTimeout(function () { return window.dispatchEvent(new Event('resize')); }, 250);
                     return [2 /*return*/];
             }
         });
