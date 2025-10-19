@@ -62,20 +62,16 @@
 					<h3>Anime</h3>
 					<div class="card">
 						<div class="loader"></div>
-						<button class="nav-button left" type="button"><img
-								src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg"></button>
+						<button class="nav-button left" type="button"><arrow-img></arrow-img></button>
 						<div class="inner-card anime" style="opacity: 0;"></div>
-						<button class="nav-button right" type="button"><img
-								src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg"></button>
+						<button class="nav-button right" type="button"><arrow-img></arrow-img></button>
 					</div>
 					<h3>Mangá</h3>
 					<div class="card">
 						<div class="loader"></div>
-						<button class="nav-button left" type="button"><img
-								src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg"></button>
+						<button class="nav-button left" type="button"><arrow-img></arrow-img></button>
 						<div class="inner-card manga" style="opacity: 0;"></div>
-						<button class="nav-button right" type="button"><img
-								src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/arrow.svg"></button>
+						<button class="nav-button right" type="button"><arrow-img></arrow-img></button>
 					</div>
 				</section>
 			</section>
@@ -146,8 +142,8 @@
 		<section id="{{id}}">
 			<p class="{{joker}}">{{title}}</p>
 			<div class="grid-container">
-				<a class="shortcut-item children-template {{joker}}" href="{{children-href}}" alt="{{children-alt}}" id="{{children-id}}" target="_blank">
-					<img src="{{children-img}}" draggable="false">
+				<a class="shortcut-item children-template" href="{{children-href}}" alt="{{children-alt}}" id="{{children-id}}" target="_blank">
+					<img src="{{children-img}}" class="{{joker}}" draggable="false">
 					<span>{{children-floatingLabel}}</span>
 				</a>
 			</div>
@@ -170,7 +166,7 @@
 	</template>
 
 	<template id="mfc-item-template">
-		<a alt="" class="mfc update-link" id="{{id}}" type="button" href="/update/mfc/{{id}}">
+		<a alt="" class="mfc update-link {{joker}}" id="{{id}}" type="button" href="/update/mfc/{{id}}">
 			<img src="{{icon}}" draggable="false">
 		</a>
 	</template>

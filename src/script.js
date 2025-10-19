@@ -135,6 +135,34 @@ var PageBuilding = /** @class */ (function (_super) {
         });
     };
     ;
+    PageBuilding.createSkeletons = function () {
+        var skeleton = 'skeleton';
+        function createShortcutSkeletons() {
+            var shortcuts = document.querySelector('#shortcuts');
+            var maxIcons = Math.floor((parseFloat(getComputedStyle(shortcuts).width)) / (Math.min(50, document.documentElement.clientWidth * 0.2) + 30));
+            var atalhos = Array.from(shortcuts.querySelectorAll('h2')).filter(function (h2) { return h2.textContent.trim() === 'Atalhos'; })[0];
+            var ra = Array.from(shortcuts.querySelectorAll('h2')).filter(function (h2) { return h2.textContent.trim() === 'RetroAchievements'; })[0];
+            var row = Array(maxIcons).fill({ joker: skeleton, alt: '. . .' });
+            new TemplateConstructor(document.querySelector('#shortcuts-template').content, Array(2).fill({ joker: skeleton, children: row })).insert(shortcuts, 'after', atalhos);
+            new TemplateConstructor(document.querySelector('#shortcuts-template').content, Array(1).fill({ joker: skeleton, children: row })).insert(shortcuts, 'after', ra);
+            shortcuts.querySelectorAll('img').forEach(function (img) { return img.src = './icon/blank.svg'; });
+        }
+        ;
+        function createMfcSkeletons() {
+            var cards = document.querySelectorAll('aside .card .mfc-card');
+            var maxColumns = !mobile ? 4 : 2;
+            var maxRows = Math.ceil(cards[0].parentElement.offsetHeight / (parseFloat(getComputedStyle(cards[0]).width) / maxColumns + 10));
+            cards.forEach(function (card) {
+                new TemplateConstructor(document.querySelector('#mfc-item-template').content, Array(maxColumns * maxRows).fill({ joker: skeleton })).insert(card);
+                card.querySelectorAll('.mfc').forEach(function (mfc) {
+                    mfc.removeAttribute('href');
+                    mfc.firstElementChild.remove();
+                });
+            });
+        }
+        createShortcutSkeletons();
+        createMfcSkeletons();
+    };
     PageBuilding.deleteSkeletons = function (prefixes) {
         for (var _i = 0, prefixes_1 = prefixes; _i < prefixes_1.length; _i++) {
             var prefix = prefixes_1[_i];
@@ -974,6 +1002,7 @@ function onLoadFunctions(ev) {
                     PageBuilding.adjustGamecard();
                     PageBuilding.putVersionOnFooter();
                     PageBuilding.formatPopUps();
+                    PageBuilding.createSkeletons();
                     ExternalSearch.redditSearchTrigger();
                     ExternalSearch.wikipediaSearchTrigger();
                     if (!toggleExternalDataLoad) return [3 /*break*/, 4];

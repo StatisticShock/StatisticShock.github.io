@@ -80,6 +80,41 @@ class PageBuilding extends PageBuildingImport {
 		footer.innerHTML += `<p><small>ver. ${version.page}</small></p>`;
 	};
 
+	static createSkeletons (): void {
+		const skeleton: string = 'skeleton';
+
+		function createShortcutSkeletons (): void {
+			const shortcuts: HTMLElement = document.querySelector('#shortcuts')!;
+			const maxIcons: number = Math.floor((parseFloat(getComputedStyle(shortcuts).width)) / (Math.min(50, document.documentElement.clientWidth * 0.2) + 30));
+			const atalhos: HTMLElement = Array.from(shortcuts.querySelectorAll('h2')).filter((h2) => h2.textContent!.trim() === 'Atalhos')[0];
+			const ra: HTMLElement = Array.from(shortcuts.querySelectorAll('h2')).filter((h2) => h2.textContent!.trim() === 'RetroAchievements')[0];
+
+			const row: Array<string> = Array(maxIcons).fill({joker: skeleton, alt: '. . .'});
+
+			new TemplateConstructor((document.querySelector('#shortcuts-template') as HTMLTemplateElement).content, Array(2).fill({joker: skeleton, children: row})).insert(shortcuts, 'after', atalhos);
+			new TemplateConstructor((document.querySelector('#shortcuts-template') as HTMLTemplateElement).content, Array(1).fill({joker: skeleton, children: row})).insert(shortcuts, 'after', ra);
+
+			shortcuts.querySelectorAll('img').forEach((img) => img.src = './icon/blank.svg')
+		};
+
+		function createMfcSkeletons (): void {
+			const cards: NodeListOf<HTMLElement> = document.querySelectorAll('aside .card .mfc-card');
+			const maxColumns: number = !mobile ? 4 : 2;
+			const maxRows: number = Math.ceil(cards[0].parentElement!.offsetHeight! / (parseFloat(getComputedStyle(cards[0]).width) / maxColumns + 10));
+			
+			cards.forEach((card) => {
+				new TemplateConstructor((document.querySelector('#mfc-item-template') as HTMLTemplateElement).content, Array(maxColumns * maxRows).fill({joker: skeleton})).insert(card);
+				(card.querySelectorAll('.mfc') as NodeListOf<HTMLAnchorElement>).forEach((mfc) => {
+					mfc.removeAttribute('href');
+					mfc.firstElementChild!.remove();
+				})
+			});
+		}
+
+		createShortcutSkeletons();
+		createMfcSkeletons();
+	}
+
 	static deleteSkeletons (prefixes: Array<string>): void {
 		for (const prefix of prefixes) {
 			const skeletons: NodeListOf<HTMLElement> = document.querySelectorAll(prefix + '.skeleton-container');
@@ -892,6 +927,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 	PageBuilding.adjustGamecard();
 	PageBuilding.putVersionOnFooter();
 	PageBuilding.formatPopUps();
+	PageBuilding.createSkeletons();
 	
 	ExternalSearch.redditSearchTrigger();
 	ExternalSearch.wikipediaSearchTrigger();

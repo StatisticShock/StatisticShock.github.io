@@ -609,7 +609,7 @@ body.home {
 						color: black;
 						border-radius: 0.5em;
 
-						& > * {
+						& > img, & > skeleton {
 							position: relative;
 							height: 100%;
 							width: 100%;
@@ -620,9 +620,13 @@ body.home {
 
 						& span {
 							position: absolute;
-							transform: translate(0%, 100%);
-							transition: .2s;
+							bottom: 0;
+							right: 0;
+							height: 1em;
+							padding: 0;
 							color: var(--contrast-color-0);
+							text-shadow: 2px 2px var(--main-color);
+							transform: translate(50%, 0);
 						}
 					}
 
@@ -813,21 +817,29 @@ body.home {
 						border: transparent;
 						color: rgba(255, 255, 255, 1);
 						font-size: 3vw;
-						transition: all .5s;
-					}
+						transition: all 0.5s;						
 
+						& arrow-img {
+							display: inline-block;
+							background-image: var(--arrow);
+							width: 100%;
+							aspect-ratio: 1;
+						}
+					}
+					
 					& .nav-button.left {
 						left: 0px;
 						background-color: rgba(49, 49, 49, 1);
 						mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)),
-									linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));;
+									linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));
 						-webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)),
 											linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));
-						& img {
+						
+						& arrow-img {
 							transform: rotate(180deg);
 						}
 					}
-
+					
 					& .nav-button.right {
 						right: -1px;
 						background-color: rgba(49, 49, 49, 1);
