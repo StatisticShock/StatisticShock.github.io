@@ -362,7 +362,6 @@ body.home {
 		z-index: 2;
 		position: sticky;
 		top: 0;
-		transition: 0.3s ease all;
 
 		& > div {
 			overflow: hidden;
@@ -377,7 +376,8 @@ body.home {
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			transition: 0.3s ease height;
+			max-height: calc(min(170px, 20vmin) * 2);
+			transition: 0.3s ease-out max-height;
 
 			& h1 {
 				text-shadow: 2px 2px black;
@@ -471,6 +471,14 @@ body.home {
 				display: flex;
 				align-items: center;
 				overflow: hidden;
+
+				& g {
+					transition: 0.3s ease-out all;
+				}
+				
+				& g.dark {
+					transform: translateX(-100%);
+				}
 			}
 			
 			& .grid-container {
@@ -533,7 +541,7 @@ body.home {
 
 	& header.hidden {
 		& > div {
-			height: 0;
+			max-height: 0;
 		}
 	}
 

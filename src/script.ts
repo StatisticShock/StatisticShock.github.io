@@ -183,19 +183,18 @@ class UserInterface {
 		});
 	};
 
-	static nightModeToggle(): void { // RESPONSIVE
+	static async nightModeToggle(): Promise<void> { // RESPONSIVE
 		const darkOrLightTheme: string = 'darkOrLightTheme';
-		const svg: HTMLInputElement = document.querySelector('switch svg')!;
+		const svg: HTMLInputElement = document.querySelector('switch svg#theme-toggle')!;
 
 		if (localStorage.getItem(darkOrLightTheme) !== null) {
 			switch (localStorage.getItem(darkOrLightTheme)) {
 				case 'light':
-					(svg.querySelector('#toSun') as SVGAnimateElement).beginElement();
 					document.documentElement.setAttribute('data-theme', 'light');
 					break;
 				case 'dark':
-					(svg.querySelector('#toMoon') as SVGAnimateElement).beginElement();
 					document.documentElement.setAttribute('data-theme', 'dark');
+					svg.querySelector('g')!.classList.toggle('dark');
 					break;
 			}
 		} else {
@@ -208,16 +207,15 @@ class UserInterface {
 
 		svg.onclick = function (ev: MouseEvent|TouchEvent) {
 			const currentTheme = document.documentElement.getAttribute('data-theme') as 'dark'|'light';
+			svg.querySelector('g')!.classList.toggle('dark');
 
 			switch (currentTheme) {
 				case 'light':
 					document.documentElement.setAttribute('data-theme', 'dark');
-					(svg.querySelector('#toMoon') as SVGAnimateElement).beginElement();
 					localStorage.setItem(darkOrLightTheme, 'dark')
 					break;
 				case 'dark':
 					document.documentElement.setAttribute('data-theme', 'light');
-					(svg.querySelector('#toSun') as SVGAnimateElement).beginElement();
 					localStorage.setItem(darkOrLightTheme, 'light')
 					break;
 			};

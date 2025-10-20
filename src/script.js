@@ -241,46 +241,50 @@ var UserInterface = /** @class */ (function () {
     };
     ;
     UserInterface.nightModeToggle = function () {
-        var darkOrLightTheme = 'darkOrLightTheme';
-        var svg = document.querySelector('switch svg');
-        if (localStorage.getItem(darkOrLightTheme) !== null) {
-            switch (localStorage.getItem(darkOrLightTheme)) {
-                case 'light':
-                    svg.querySelector('#toSun').beginElement();
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    break;
-                case 'dark':
-                    svg.querySelector('#toMoon').beginElement();
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    break;
-            }
-        }
-        else {
-            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                localStorage.setItem(darkOrLightTheme, 'dark');
-            }
-            else {
-                localStorage.setItem(darkOrLightTheme, 'light');
-            }
-            ;
-        }
-        ;
-        svg.onclick = function (ev) {
-            var currentTheme = document.documentElement.getAttribute('data-theme');
-            switch (currentTheme) {
-                case 'light':
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    svg.querySelector('#toMoon').beginElement();
-                    localStorage.setItem(darkOrLightTheme, 'dark');
-                    break;
-                case 'dark':
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    svg.querySelector('#toSun').beginElement();
-                    localStorage.setItem(darkOrLightTheme, 'light');
-                    break;
-            }
-            ;
-        };
+        return __awaiter(this, void 0, void 0, function () {
+            var darkOrLightTheme, svg;
+            return __generator(this, function (_a) {
+                darkOrLightTheme = 'darkOrLightTheme';
+                svg = document.querySelector('switch svg#theme-toggle');
+                if (localStorage.getItem(darkOrLightTheme) !== null) {
+                    switch (localStorage.getItem(darkOrLightTheme)) {
+                        case 'light':
+                            document.documentElement.setAttribute('data-theme', 'light');
+                            break;
+                        case 'dark':
+                            document.documentElement.setAttribute('data-theme', 'dark');
+                            svg.querySelector('g').classList.toggle('dark');
+                            break;
+                    }
+                }
+                else {
+                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        localStorage.setItem(darkOrLightTheme, 'dark');
+                    }
+                    else {
+                        localStorage.setItem(darkOrLightTheme, 'light');
+                    }
+                    ;
+                }
+                ;
+                svg.onclick = function (ev) {
+                    var currentTheme = document.documentElement.getAttribute('data-theme');
+                    svg.querySelector('g').classList.toggle('dark');
+                    switch (currentTheme) {
+                        case 'light':
+                            document.documentElement.setAttribute('data-theme', 'dark');
+                            localStorage.setItem(darkOrLightTheme, 'dark');
+                            break;
+                        case 'dark':
+                            document.documentElement.setAttribute('data-theme', 'light');
+                            localStorage.setItem(darkOrLightTheme, 'light');
+                            break;
+                    }
+                    ;
+                };
+                return [2 /*return*/];
+            });
+        });
     };
     ;
     UserInterface.resizeHeader = function () {
