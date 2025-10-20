@@ -1204,6 +1204,8 @@ body.home.has-hover {
 
 @media (orientation: portrait) {
 	body.home {
+		overflow-x: hidden;
+		
 		& .flex-container{
 			display: flex;
 
