@@ -16,26 +16,62 @@
 		<div>
 			<h1>StatisticShock's Index</h1>
 		</div>
-		<a href="/update/headers" class="svg-img update-link"></a>
 		<svg class="skeleton-container skeleton"></svg>
+		<nav class="menu">
+			<a href="/update/headers" class="svg-img update-link"></a>
+			<svg id="expand-retract-header" width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+				<path d="M 0 10 L 10 0 L 20 10 L 14 10 L 14 20 L 6 20 L 6 10 L 0 10">
+					<animateTransform id="toDownOne" dur="0.25s" attributeName="transform" type="rotate" from="0 10 10" to="210 10 10" begin="toDownTrigger.begin" fill="freeze"/>
+					<animateTransform id="toDownTwo" dur="0.05s" attributeName="transform" type="rotate" from="210 10 10" to="180 10 10" begin="toDownOne.end" fill="freeze"/>
+					<animateTransform id="toUpOne" dur="0.25s" attributeName="transform" type="rotate" from="180 10 10" to="-30 10 10" begin="toUpTrigger.begin" fill="freeze"/>
+					<animateTransform id="toUpTwo" dur="0.05s" attributeName="transform" type="rotate" from="-30 10 10" to="0 10 10" begin="toUpOne.end" fill="freeze"/>
+				</path>
+
+				<rect width="20" height="20" fill="transparent" style="cursor: pointer">
+					<animate id="toDownTrigger" attributeName="height" dur="2s" begin="click"/>
+				</rect>
+				
+				<rect width="20" height="0" fill="transparent">
+					<animate id="toUpTrigger" attributeName="height" dur="0.001s" values="20;0" begin="click" fill="freeze"/>
+					<animate attributeName="height" dur="0.001s" values="0;20" begin="toDownTrigger.begin" fill="freeze" />
+				</rect>
+			</svg>
+			<switch>
+				<svg id="theme-toggle" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="-5 -5 30 30" fill="none" style="cursor: pointer">
+					<g>
+						<path style="cursor: pointer;" d="M10,0L10,3 M0,10L3,10 M17,10L20,10 M10,17L10,20 M5,15L3,17 M5,5L3,3 M15,5L17,3 M15,15L17,17" fill="yellow" stroke="yellow"/>
+						<circle cx="10" cy="10" r="5" fill="yellow"/>
+						<circle cx="40" cy="10" r="10" fill="whitesmoke"/>
+						<circle cx="35" cy="5" r="1" fill="#797979"/>
+						<circle cx="35.25" cy="5.1" r="0.7" fill="#999999"/>
+						<circle cx="40" cy="10" r="3" fill="#797979"/>
+						<circle cx="40" cy="10" r="2.7" fill="#999999"/>
+						<circle cx="40" cy="17" r="2.5" fill="#797979"/>
+						<circle cx="40" cy="16.7" r="2.2" fill="#999999"/>
+						<circle cx="45" cy="15" r="1.7" fill="#797979"/>
+						<circle cx="44.8" cy="14.8" r="1.4" fill="#999999"/>
+						<animateMotion id="toMoon" dur="0.3s" path="M 0 0 L -30 0" fill="freeze"/>
+						<animateMotion id="toSun" dur="0.3s" path="M -30 0 L 0 0" fill="freeze"/>
+					</g>
+				</svg>
+			</switch>
+			<div id="twoB" class="sitting-figure">
+				<img src="./images/2b.webp">
+			</div>
+			<div id="ohto" class="sitting-figure">
+				<img src="./images/Ohto_Ai_Flamengo.webp">
+			</div>
+			<label id="mfc-switch" class="switch" style="display: none;"></label>
+			<div class="grid-container">
+				<a class="pop-up-open reddit-google" alt="Reddit Google Search" style="cursor: pointer;">
+					<reddit-google-img>
+				</a>
+				<a class="pop-up-open wikipedia" alt="Wikipedia Search" style="cursor: pointer;">
+					<wikipedia-img>
+				</a>
+			</div>
+		</nav>
 	</header>
-	<nav class="menu">
-		<label id="night-mode-toggle" class="switch"></label>
-		<div id="twoB"><img src="./images/2b.webp">
-		</div>
-		<div id="ohto">
-			<img src="./images/Ohto_Ai_Flamengo.webp">
-		</div>
-		<label id="mfc-switch" class="switch" style="display: none;"></label>
-		<div class="grid-container">
-			<a class="pop-up-open reddit-google" alt="Reddit Google Search" style="cursor: pointer;">
-				<reddit-google-img>
-			</a>
-			<a class="pop-up-open wikipedia" alt="Wikipedia Search" style="cursor: pointer;">
-				<wikipedia-img>
-			</a>
-		</div>
-	</nav>
 	<div class="container">
 		<div class="flex-container">
 			<aside class="hidden">

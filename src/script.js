@@ -241,49 +241,67 @@ var UserInterface = /** @class */ (function () {
     };
     ;
     UserInterface.nightModeToggle = function () {
-        var label = document.querySelector('#night-mode-toggle');
-        var input = label.querySelector('input');
-        var themeStyleName = 'darkOrLightTheme';
-        switch ("".concat(localStorage.getItem(themeStyleName))) {
-            case 'null':
-                var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-                input.checked = isDark;
-                localStorage.setItem('darkOrLightTheme', isDark ? 'dark' : 'light');
-                break;
-            case 'dark':
-                input.checked = true;
-                break;
-            case 'light':
-                document.documentElement.setAttribute('data-theme', 'light');
-                break;
+        var darkOrLightTheme = 'darkOrLightTheme';
+        var svg = document.querySelector('switch svg');
+        if (localStorage.getItem(darkOrLightTheme) !== null) {
+            switch (localStorage.getItem(darkOrLightTheme)) {
+                case 'light':
+                    svg.querySelector('#toSun').beginElement();
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    break;
+                case 'dark':
+                    svg.querySelector('#toMoon').beginElement();
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    break;
+            }
+        }
+        else {
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                localStorage.setItem(darkOrLightTheme, 'dark');
+            }
+            else {
+                localStorage.setItem(darkOrLightTheme, 'light');
+            }
+            ;
         }
         ;
-        input.addEventListener('change', function (ev) {
-            setTimeout(function () {
-                if (input.checked) {
+        svg.onclick = function (ev) {
+            var currentTheme = document.documentElement.getAttribute('data-theme');
+            switch (currentTheme) {
+                case 'light':
                     document.documentElement.setAttribute('data-theme', 'dark');
-                    localStorage.setItem(themeStyleName, 'dark');
-                }
-                else {
+                    svg.querySelector('#toMoon').beginElement();
+                    localStorage.setItem(darkOrLightTheme, 'dark');
+                    break;
+                case 'dark':
                     document.documentElement.setAttribute('data-theme', 'light');
-                    localStorage.setItem(themeStyleName, 'light');
-                }
-                ;
-            }, 100);
-        });
+                    svg.querySelector('#toSun').beginElement();
+                    localStorage.setItem(darkOrLightTheme, 'light');
+                    break;
+            }
+            ;
+        };
     };
     ;
     UserInterface.resizeHeader = function () {
-        var header = document.querySelector('header div');
-        var nav = document.querySelector('nav');
-        var height = parseFloat(getComputedStyle(header).height);
-        var windowWidth = document.documentElement.scrollWidth;
-        var scrollY = window.scrollY;
-        var ohtoHeight = parseFloat(getComputedStyle(document.querySelector('#ohto')).height);
-        header.style.aspectRatio = Math.min(windowWidth / ohtoHeight, Math.max(5, (5 * ((scrollY + height) / height)))) + '';
-        var newHeight = parseFloat(getComputedStyle(header).height);
-        nav.style.top = newHeight + 'px';
+        var header = document.querySelector('header > div');
+        var pageHeight = document.documentElement.scrollHeight - window.innerHeight;
+        var ratio = Math.min(window.scrollY / (pageHeight * 0.1), 1);
+        header.style.setProperty('--scroll-ratio', ratio.toString());
+    };
+    ;
+    UserInterface.collapseHeader = function () {
+        var _this = this;
+        var navbar = document.querySelector('nav.menu');
+        var svg = navbar.querySelector('svg#expand-retract-header');
+        var header = document.querySelector('header');
+        svg.addEventListener('click', function (ev) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                navbar.classList.toggle('animated');
+                header.classList.toggle('hidden');
+                return [2 /*return*/];
+            });
+        }); });
     };
     ;
     UserInterface.makeSwitchesSlide = function () {
@@ -1064,6 +1082,7 @@ function onLoadFunctions(ev) {
                     UserInterface.resetPopUpsOnOpen();
                     UserInterface.showPopUps();
                     UserInterface.resizeHeader();
+                    UserInterface.collapseHeader();
                     return [4 /*yield*/, CustomFunctions.sleep(300)];
                 case 1:
                     _a.sent();

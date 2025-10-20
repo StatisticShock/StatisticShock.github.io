@@ -184,51 +184,62 @@ class UserInterface {
 	};
 
 	static nightModeToggle(): void { // RESPONSIVE
-		const label = document.querySelector('#night-mode-toggle') as HTMLLabelElement;
+		const darkOrLightTheme: string = 'darkOrLightTheme';
+		const svg: HTMLInputElement = document.querySelector('switch svg')!;
 
-		let input = label.querySelector('input') as HTMLInputElement;
-
-		const themeStyleName: string = 'darkOrLightTheme';
-		switch (`${localStorage.getItem(themeStyleName)}`) {
-			case 'null':
-				const isDark: boolean = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-				document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-				input.checked = isDark;
-				localStorage.setItem('darkOrLightTheme', isDark ? 'dark' : 'light')
-				break;
-			case 'dark':
-				input.checked = true;
-				break;
-			case 'light':
-				document.documentElement.setAttribute('data-theme', 'light');
-				break;
+		if (localStorage.getItem(darkOrLightTheme) !== null) {
+			switch (localStorage.getItem(darkOrLightTheme)) {
+				case 'light':
+					(svg.querySelector('#toSun') as SVGAnimateElement).beginElement();
+					document.documentElement.setAttribute('data-theme', 'light');
+					break;
+				case 'dark':
+					(svg.querySelector('#toMoon') as SVGAnimateElement).beginElement();
+					document.documentElement.setAttribute('data-theme', 'dark');
+					break;
+			}
+		} else {
+			if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+				localStorage.setItem(darkOrLightTheme, 'dark');
+			} else {
+				localStorage.setItem(darkOrLightTheme, 'light');
+			};
 		};
 
-		input.addEventListener('change', (ev) => {
-			setTimeout(() => {
-				if (input.checked) {
+		svg.onclick = function (ev: MouseEvent|TouchEvent) {
+			const currentTheme = document.documentElement.getAttribute('data-theme') as 'dark'|'light';
+
+			switch (currentTheme) {
+				case 'light':
 					document.documentElement.setAttribute('data-theme', 'dark');
-					localStorage.setItem(themeStyleName, 'dark');
-				} else {
+					(svg.querySelector('#toMoon') as SVGAnimateElement).beginElement();
+					localStorage.setItem(darkOrLightTheme, 'dark')
+					break;
+				case 'dark':
 					document.documentElement.setAttribute('data-theme', 'light');
-					localStorage.setItem(themeStyleName, 'light');
-				};
-			}, 100);
-		});
+					(svg.querySelector('#toSun') as SVGAnimateElement).beginElement();
+					localStorage.setItem(darkOrLightTheme, 'light')
+					break;
+			};
+		};
 	};
 
 	static resizeHeader(): void { // NOT RESPONSIVE YET
-		const header: HTMLElement = document.querySelector('header div')!;
-		const nav: HTMLElement = document.querySelector('nav')!;
-		const height: number = parseFloat(getComputedStyle(header).height);
-		const windowWidth: number = document.documentElement.scrollWidth;
-		const scrollY: number = window.scrollY;
-		const ohtoHeight: number = parseFloat(getComputedStyle(document.querySelector('#ohto')!).height);
+		const header: HTMLElement = document.querySelector('header > div')!;
+		const pageHeight: number = document.documentElement.scrollHeight - window.innerHeight;
+		const ratio: number = Math.min(window.scrollY / (pageHeight * 0.1), 1)
+		header.style.setProperty('--scroll-ratio', ratio.toString());
+	};
 
-		header.style.aspectRatio = Math.min(windowWidth / ohtoHeight, Math.max(5, (5 * ((scrollY + height) / height)))) + '';
+	static collapseHeader (): void { // NO NEED OF RESPONSIVENESS
+		const navbar: HTMLElement = document.querySelector('nav.menu')!;
+		const svg: HTMLElement = navbar.querySelector('svg#expand-retract-header')!;
+		const header: HTMLElement = document.querySelector('header')!;
 
-		const newHeight: number = parseFloat(getComputedStyle(header).height);
-		nav.style.top = newHeight + 'px';
+		svg.addEventListener('click', async (ev) => {
+			navbar.classList.toggle('animated');
+			header.classList.toggle('hidden');
+		});
 	};
 
 	static makeSwitchesSlide(): void { // NO NEED OF RESPONSIVENES
@@ -982,6 +993,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 	UserInterface.resetPopUpsOnOpen();
 	UserInterface.showPopUps();
 	UserInterface.resizeHeader();
+	UserInterface.collapseHeader();
 
 	await CustomFunctions.sleep(300);
 

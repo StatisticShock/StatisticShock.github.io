@@ -260,72 +260,6 @@ body.has-hover {
 body.home {
 	min-height: 80vh;
 
-	& .pop-up.mfc {
-		aspect-ratio: 3 / 4;
-		font-size: 1.25vmax;
-		z-index: 4;
-		
-		& #pop-up-img {
-			height: 30%;
-			width: fit-content;
-			position: relative;
-			border-radius: 10px;
-			display: block;
-			left: 50%;
-			transform: translate(-50%, 0);
-			overflow: hidden;
-
-			& > img {
-				position: relative;
-				height: 100%;
-			}
-		}
-
-		& .pop-up-title {
-			text-align: center;
-			display: block;
-			margin: 30px 0;
-		}
-
-		& .data-container {
-			position: relative;
-			height: fit-content;
-			display: block;
-			margin: 0 auto;
-
-			& p {
-				width: 100%;
-				margin: 10px 0;
-
-				& span {
-					position: absolute;
-					left: 30%;
-					color: var(--contrast-color-0);
-					display: inline-block;
-					white-space: nowrap;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					width: 65%;
-
-					& a {
-						color: var(--pink-custom);
-						text-decoration: none;
-
-						& svg {
-							position: relative;
-							height: 1em;
-							aspect-ratio: 1;
-						}
-					}
-
-					& a:visited {
-						color: pink;
-					}
-				}
-			}
-		}
-	}
-
 	& .pop-up.retroachievements-awards {
 		min-height: 50vmin;
 		max-height: 85vmin;
@@ -428,11 +362,13 @@ body.home {
 		z-index: 2;
 		position: sticky;
 		top: 0;
+		transition: 0.3s ease all;
 
-		& div {
+		& > div {
+			overflow: hidden;
 			font-family: Hylia Serif;
 			width: 100%;
-			aspect-ratio: 5;
+			height: calc(min(170px, 20vmin) * 2 - (min(170px, 20vmin) * var(--scroll-ratio)));
 			cursor: pointer;
 			background-color: var(--main-color);
 			background-size: cover;
@@ -441,6 +377,7 @@ body.home {
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			transition: 0.3s ease height;
 
 			& h1 {
 				text-shadow: 2px 2px black;
@@ -453,14 +390,7 @@ body.home {
 			}
 		}
 
-		& a.update-link:not(.mfc) {
-			position: absolute;
-			top: 100%;
-			transform: translate(-150%, -150%);
-			z-index: 3;
-		}
-
-		& svg {
+		& > svg {
 			position: absolute;
 			width: 100%;
 			height: 100%;
@@ -469,119 +399,141 @@ body.home {
 			opacity: 0.5;
 			z-index: 0;
 		}
+
+		& nav {
+			top: 0;
+			padding: 1em 0;
+			background-color: var(--contrast-color-1);
+			backdrop-filter: blur(1px);
+			color: var(--contrast-color-0);
+			z-index: 3;
+			font-size: 70%;
+			display: flex;
+			height: 3em;
+			min-height: calc(1em);
+			align-items: center;
+			
+			& > * {
+				position: relative;
+				margin: 0 10px;
+				height: 3em;
+			}
+
+			& a.update-link {
+				margin: 0 10px;
+				height: 3em;
+			}
+
+			& svg#expand-retract-header {
+				width: 3em;
+				fill: var(--contrast-color-0);
+				stroke-width: 0.1em;
+			}
+
+			& #ohto {
+				position: absolute;
+				top: 0;
+				left: 11vw;
+				transform: translate(-50%, -100%);
+				height: 170px;
+				max-height: 20vw;
+				z-index: 4;
+			
+				& img {
+					height: 100%;
+					position: sticky;
+					top: 0;
+				}
+			}
+
+			& #twoB {
+				position: absolute;
+				top: 0;
+				right: 11vw;
+				transform: translate(50%, calc(100% * -493 / 920));
+				max-height: 35vw;
+				height: 300px;
+				z-index: 4;
+				pointer-events: none;
+			
+				& img {
+					height: 100%;
+					position: sticky;
+					top: 0;
+				}
+			}
+
+			& switch {
+				width: 4em;
+				height: 4em;
+				background-color: var(--contrast-color-3);
+				border-radius: 100%;
+				display: flex;
+				align-items: center;
+				overflow: hidden;
+			}
+			
+			& .grid-container {
+				display: grid;
+				padding: 0;
+				gap: 10px;
+				height: 3em;
+				grid-auto-rows: 3em;
+				grid-auto-columns: 3em;
+				grid-auto-flow: column;
+				grid-template-columns: repeat(auto-fill, 3em);
+
+				& > * {
+					height: 3em;
+				}
+
+				& .pop-up-open {
+					text-decoration: none;
+					position: relative;
+					height: 3em;
+					aspect-ratio: 1;
+					color: black;
+					transition: 0.2s ease;
+
+					& reddit-google-img, & wikipedia-img {
+						position: absolute;
+						height: 100%;
+						aspect-ratio: 1 / 1;
+						border-radius: 0.5em;
+						background-position: center;
+						background-size: contain;
+					}
+
+					& reddit-google-img {
+						background-image: url("./images/google-reddit.ico");
+					}
+
+					& wikipedia-img {
+						background-image: url("./images/wikipedia.ico");
+					}
+
+					& span {
+						position: absolute;
+						transform: translate(0%, 100%);
+						transition: .2s;
+						color: var(--contrast-color-0);
+					}
+				}
+
+				& .pop-up-open::after {
+					position: absolute;
+					left: 0px;
+					top: 40px;
+					content: "";
+					transition: .3s ease;
+				}
+			}
+		}
 	}
 
-	& nav {
-		position: sticky;
-		top: 0;
-		padding: 10px 20px;
-		background-color: var(--contrast-color-1);
-		backdrop-filter: blur(1px);
-		color: var(--contrast-color-0);
-		z-index: 3;
-		font-size: 70%;
-		display: block;
-		height: fit-content;
-		min-height: calc(1em);
-
-		#mfc-switch {
-			top: 50%;
-			right: 0;
-			translate: 0 -50%;
-			right: 0px;
-			width: 100px;
-		}
-
-		& #ohto {
-			position: absolute;
-			bottom: calc(10px * 2 + 40px);
-			left: 11vw;
-			transform: translate(-50%, 0);
-			max-height: 20vw;
-			height: 170px;
-			z-index: 4;
-		
-			& img {
-				height: 100%;
-				position: sticky;
-				top: 0;
-			}
-		}
-
-		& #twoB {
-			position: absolute;
-			bottom: calc(10px * 2 + 40px);
-			right: 11vw;
-			transform: translate(50%, calc(100% * 427 / 920));
-			max-height: 35vw;
-			height: 300px;
-			z-index: 4;
-			pointer-events: none;
-		
-			& img {
-				height: 100%;
-				position: sticky;
-				top: 0;
-			}
-		}
-
-		& .switch {
-			width: 100px;
-			z-index: 4;
-		}
-
-		& .grid-container {
-			position: relative;
-			left: 0;
-			transform: translateX(125%);
-			width: min-content;
-			display: grid;
-			gap: 30px;
-			grid-auto-rows: 40px;
-			grid-auto-columns: 40px;
-			grid-auto-flow: column;
-			grid-template-columns: repeat(auto-fill, 40px);
-
-			& .pop-up-open {
-				text-decoration: none;
-				position: relative;
-				height: min(40px);
-				aspect-ratio: 1;
-				color: black;
-				transition: 0.2s ease;
-
-				& reddit-google-img, & wikipedia-img {
-					position: absolute;
-					height: 100%;
-					aspect-ratio: 1 / 1;
-					border-radius: 0.5em;
-					background-position: center;
-					background-size: contain;
-				}
-
-				& reddit-google-img {
-					background-image: url("./images/google-reddit.ico");
-				}
-
-				& wikipedia-img {
-					background-image: url("./images/wikipedia.ico");
-				}
-
-				& span {
-					position: absolute;
-					transform: translate(0%, 100%);
-					transition: .2s;
-					color: var(--contrast-color-0);
-				}
-			}
-
-			& .pop-up-open::after {
-				position: absolute;
-				left: 0px;
-				top: 40px;
-				content: "";
-				transition: .3s ease;
-			}
+	& header.hidden {
+		& > div {
+			height: 0;
 		}
 	}
 
@@ -593,6 +545,7 @@ body.home {
 		contain: layout style;
 		position: relative;
 		overflow-anchor: none;
+		margin: 1em 0 0 0;
 
 		& #shortcuts {
 			position: relative;
@@ -943,8 +896,7 @@ body.home {
 						text-align: center;
 						border-radius: 10px;
 						padding: 0;
-						transition: 0.3s all ;
-						overflow: hidden;
+						transition: 0.3s all ease;
 						border-width: 3px;
 						border-style: solid;
 
@@ -1039,52 +991,36 @@ body.home.has-hover {
 		}
 	}
 
-	& .pop-up.mfc {
-		& .data-container {
-			& p {
-				& span {
-					& a:hover {
-						text-decoration: underline overline dotted var(--pink-custom);
+	& header {
+		& nav {
+			& .grid-container {
+				& .pop-up-open:hover {
+					transform: scale(1.5);
+					border-bottom-left-radius: 0;
+
+					& span {
+						transform: scale(1.5) translate(-50%, 100%);
 					}
 				}
-			}
-		}
-	}
 
-	& header {
-		& a.update-link:not(.mfc):hover {
-			transform: translate(-150%, -150%) scale(1.5);
-		}
-	}
-
-	& nav {
-		& .grid-container {
-			& .pop-up-open:hover {
-				transform: scale(1.5);
-				border-bottom-left-radius: 0;
-
-				& span {
-					transform: scale(1.5) translate(-50%, 100%);
+				& .pop-up-open:hover::after {
+					position: absolute;
+					left: -12px;
+					top: 50px;
+					font-size: 80%;
+					color: black;
+					content: attr(alt);
+					display: inline-block;
+					z-index: 1;
+					background-color: var(--pink-custom);
+					width: max-content;
+					text-align: center;
+					border-top-right-radius: 3ex;
+					border-bottom-left-radius: 3ex;
+					border-bottom-right-radius: 3ex;
+					padding: 0.5em 1em;
+					transform: scale(0.75) translate(0, -75%);
 				}
-			}
-
-			& .pop-up-open:hover::after {
-				position: absolute;
-				left: -12px;
-				top: 50px;
-				font-size: 80%;
-				color: black;
-				content: attr(alt);
-				display: inline-block;
-				z-index: 1;
-				background-color: var(--pink-custom);
-				width: max-content;
-				text-align: center;
-				border-top-right-radius: 3ex;
-				border-bottom-left-radius: 3ex;
-				border-bottom-right-radius: 3ex;
-				padding: 0.5em 1em;
-				transform: scale(0.75) translate(0, -75%);
 			}
 		}
 	}
@@ -1174,12 +1110,6 @@ body.home.has-hover {
 
 @media (orientation: landscape) {
 	body.home {
-		& header {
-			& a.update-link:not(.mfc) {
-				left: 98%;
-			}
-		}
-
 		& .flex-container{
 			display: grid;
 			grid-template-columns: 54vw 2vw 1fr;
@@ -1245,10 +1175,6 @@ body.home.has-hover {
 			left: 50%;
 			top: 50%;
 		}
-
-		& .pop-up.mfc {
-			height: 70vmin;
-		}
 	}
 
 	body.has-hover {
@@ -1270,12 +1196,6 @@ body.home.has-hover {
 
 @media (orientation: portrait) {
 	body.home {
-		& header {
-			& a.update-link:not(.mfc) {
-				left: 50%;
-			}
-		}
-
 		& .flex-container{
 			display: flex;
 
@@ -1345,10 +1265,6 @@ body.home.has-hover {
 		& .pop-up{
 			top: 50%;
 			left: 50%;
-		}
-
-		& .pop-up.mfc {
-			height: 90vmin;
 		}
 	}
 }
