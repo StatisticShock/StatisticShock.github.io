@@ -96,7 +96,7 @@ class PageBuilding extends PageBuildingImport {
 		function createMfcSkeletons (): void {
 			const cards: NodeListOf<HTMLElement> = document.querySelectorAll('aside .card .mfc-card');
 			const maxColumns: number = !mobile ? 4 : 2;
-			const maxRows: number = Math.ceil(cards[0].parentElement!.offsetHeight! / (parseFloat(getComputedStyle(cards[0]).width) / maxColumns + 10));
+			const maxRows: number = Math.ceil(cards[0].parentElement!.offsetHeight! / (parseFloat(getComputedStyle(cards[0]).width) / maxColumns + 20));
 			
 			cards.forEach((card) => {
 				new TemplateConstructor((document.querySelector('#mfc-item-template') as HTMLTemplateElement).content, Array(maxColumns * maxRows).fill({joker: skeleton})).insert(card);

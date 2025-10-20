@@ -150,7 +150,7 @@ var PageBuilding = /** @class */ (function (_super) {
         function createMfcSkeletons() {
             var cards = document.querySelectorAll('aside .card .mfc-card');
             var maxColumns = !mobile ? 4 : 2;
-            var maxRows = Math.ceil(cards[0].parentElement.offsetHeight / (parseFloat(getComputedStyle(cards[0]).width) / maxColumns + 10));
+            var maxRows = Math.ceil(cards[0].parentElement.offsetHeight / (parseFloat(getComputedStyle(cards[0]).width) / maxColumns + 20));
             cards.forEach(function (card) {
                 new TemplateConstructor(document.querySelector('#mfc-item-template').content, Array(maxColumns * maxRows).fill({ joker: skeleton })).insert(card);
                 card.querySelectorAll('.mfc').forEach(function (mfc) {
