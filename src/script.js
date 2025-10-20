@@ -260,9 +260,11 @@ var UserInterface = /** @class */ (function () {
                 else {
                     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
                         localStorage.setItem(darkOrLightTheme, 'dark');
+                        document.documentElement.setAttribute('data-theme', 'dark');
                     }
                     else {
                         localStorage.setItem(darkOrLightTheme, 'light');
+                        document.documentElement.setAttribute('data-theme', 'light');
                     }
                     ;
                 }
