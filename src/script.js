@@ -261,6 +261,7 @@ var UserInterface = /** @class */ (function () {
                     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
                         localStorage.setItem(darkOrLightTheme, 'dark');
                         document.documentElement.setAttribute('data-theme', 'dark');
+                        svg.querySelector('g').classList.toggle('dark');
                     }
                     else {
                         localStorage.setItem(darkOrLightTheme, 'light');
