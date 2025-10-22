@@ -193,20 +193,31 @@ export default class CustomFunctions {
 		return {data: root};
 	};
 
-	static jsonToCsv (json: object): Array<Array<number|string|boolean>> {
-		const emptyArr: Array<Array<any>> = [[]];
+	static jsonToCsv (json: Array<object>, headers: Array<string>): string {
+		const emptyStr: string = '';
 
-		if (Object.keys(json).length === 0) return emptyArr;
-		else if (Object.keys(json).every((key) => (key === null)||(key === undefined))) return emptyArr;
+		if (Object.keys(json).length === 0) return emptyStr;
+		else if (Object.keys(json).every((key) => (key === null)||(key === undefined))) return emptyStr;
 
-		const csv: Array<Array<number|string|boolean>> = [];
+		const csv: Array<Array<number|string|boolean>> = [headers];
+		const map: any = {}; 
 
-		function flatten (obj: object): Array<Array<number|string|boolean>> {
-			
+		const maxDepth: number = Number(
+			headers.reduce(function (prev: string, curr: string): string {
+				return (Number(prev) > curr.split('.').length ? prev : curr.split('.').length).toString()
+			}, '0')
+		);
 
-			return []
-		}
-		
-		return [];
+		for (let depth = 1; depth <= maxDepth; depth++) {
+			map[depth.toString()] = [];
+
+			for (const data of json) {
+				
+			};
+		};
+
+		console.log(map)
+
+		return '';
 	};
 };

@@ -7,6 +7,7 @@ app = 'statisticshock-index'
 primary_region = 'gru'
 
 [build]
+  context = "."
 
 [http_service]
   internal_port = 8080

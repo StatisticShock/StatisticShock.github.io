@@ -165,7 +165,7 @@ app.get("/contents(/:type)?", async (req: express.Request, res: express.Response
 	} catch (err) {
 		res.status(err.status).json({message: err.message});
 	};
-
+	
 	res.status(200).json(jsonToSend);
 });
 
