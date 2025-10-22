@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 import PageBuilding, { TemplateConstructor } from './shared.js';
 import CustomFunctions from '../util/functions.js';
-import { server } from './server-url.js';
+import { server } from '../util/server-url.js';
 var HistoryState = /** @class */ (function () {
     function HistoryState() {
     }

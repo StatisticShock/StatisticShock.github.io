@@ -50,7 +50,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import CustomFunctions from '../util/functions.js';
-import { server } from './server-url.js';
+import { server } from '../util/server-url.js';
 import PageBuildingImport, { TemplateConstructor } from './shared.js';
 var toggleExternalDataLoad = true;
 var ua = navigator.userAgent || navigator.vendor || window.opera;
