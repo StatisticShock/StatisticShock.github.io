@@ -1,0 +1,1 @@
+export const server = window.location.href.includes('github.io') ? 'https://statisticshock-index.fly.dev/' : 'http://localhost:3000/';

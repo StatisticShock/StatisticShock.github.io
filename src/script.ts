@@ -1,6 +1,6 @@
 import CustomFunctions from '../util/functions.js';
 import * as MyTypes from '../util/types.js';
-import { server } from './server-url.js';
+import { server } from '../util/server-url.js';
 import PageBuildingImport, { TemplateConstructor } from './shared.js';
 
 const toggleExternalDataLoad: boolean = true;

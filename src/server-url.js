@@ -1,1 +1,0 @@
-export const server = window.location.href.includes('github.io') ? 'https://statisticshock-github-io.onrender.com/' : 'http://localhost:3000/';
