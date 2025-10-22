@@ -27,6 +27,8 @@ RUN npm install
 # Copy application code
 COPY . .
 
+# Copy util/ from one level up
+COPY ../util ./util
 
 # Final stage for app image
 FROM base
