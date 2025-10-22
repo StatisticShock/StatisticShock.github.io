@@ -1,5 +1,11 @@
 /.git
 /node_modules
+/icon
+/font
+/images
+/nodeTools
+/src
+/.vscode
 .dockerignore
 .env
 Dockerfile
