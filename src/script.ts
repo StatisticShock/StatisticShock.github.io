@@ -3,7 +3,7 @@ import * as MyTypes from '../util/types.js';
 import { server } from '../util/server-url.js';
 import PageBuildingImport, { TemplateConstructor } from './shared.js';
 
-const toggleExternalDataLoad: boolean = true;
+const toggleExternalDataLoad: boolean = false;
 
 const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
 const mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
@@ -93,6 +93,20 @@ class PageBuilding extends PageBuildingImport {
 			shortcuts.querySelectorAll('img').forEach((img) => img.src = './icon/blank.svg')
 		};
 
+		function createGamecardSkeletons (): void {
+			const gamecard: HTMLElement = document.querySelector('#gamecards')!;
+			const sample: Array<object> = [{
+				label: '',
+				joker: 'skeleton',
+				children: Array(3).fill({
+					label: '',
+					joker: 'skeleton'
+				}),
+			}];
+
+			new TemplateConstructor((document.querySelector('#gamecard-template') as HTMLTemplateElement).content, sample).insert(gamecard);
+		};
+
 		function createMfcSkeletons (): void {
 			const cards: NodeListOf<HTMLElement> = document.querySelectorAll('aside .card .mfc-card');
 			const maxColumns: number = !mobile ? 4 : 2;
@@ -105,9 +119,10 @@ class PageBuilding extends PageBuildingImport {
 					mfc.firstElementChild!.remove();
 				})
 			});
-		}
+		};
 
 		createShortcutSkeletons();
+		createGamecardSkeletons();
 		createMfcSkeletons();
 	}
 

@@ -52,7 +52,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import CustomFunctions from '../util/functions.js';
 import { server } from '../util/server-url.js';
 import PageBuildingImport, { TemplateConstructor } from './shared.js';
-var toggleExternalDataLoad = true;
+var toggleExternalDataLoad = false;
 var ua = navigator.userAgent || navigator.vendor || window.opera;
 var mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 var portrait = (window.innerWidth < window.innerHeight);
@@ -147,6 +147,19 @@ var PageBuilding = /** @class */ (function (_super) {
             shortcuts.querySelectorAll('img').forEach(function (img) { return img.src = './icon/blank.svg'; });
         }
         ;
+        function createGamecardSkeletons() {
+            var gamecard = document.querySelector('#gamecards');
+            var sample = [{
+                    label: '',
+                    joker: 'skeleton',
+                    children: Array(3).fill({
+                        label: '',
+                        joker: 'skeleton'
+                    }),
+                }];
+            new TemplateConstructor(document.querySelector('#gamecard-template').content, sample).insert(gamecard);
+        }
+        ;
         function createMfcSkeletons() {
             var cards = document.querySelectorAll('aside .card .mfc-card');
             var maxColumns = !mobile ? 4 : 2;
@@ -159,7 +172,9 @@ var PageBuilding = /** @class */ (function (_super) {
                 });
             });
         }
+        ;
         createShortcutSkeletons();
+        createGamecardSkeletons();
         createMfcSkeletons();
     };
     PageBuilding.deleteSkeletons = function (prefixes) {

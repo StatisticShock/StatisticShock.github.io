@@ -670,10 +670,6 @@ body.home {
 						justify-content: center;
 					}
 
-					& .gamecard.skeleton, .gamecard > a.skeleton{
-						cursor: default;
-					}
-
 					& .gamecard {
 						background-image: var(--pink-purple);
 						white-space: nowrap;
@@ -1076,7 +1072,7 @@ body.home.has-hover {
 			& .gamecard-container {
 				& .gamecard-outercard {
 					& .gamecard:hover {
-						flex: calc(var(--gamecard-count) - 1);
+						flex: max(calc(var(--gamecard-count) - 1), 3);
 						background-size: cover;
 						background-position: center;
 						text-shadow: 0px 0px 5px black;

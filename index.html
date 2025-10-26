@@ -88,7 +88,7 @@
 			<section id="shortcuts">
 				<h2>Atalhos&nbsp;<a class="svg-img update-link" href="/update/shortcuts"></a></h2>
 				<h2>Gaming&nbsp;<a class="svg-img update-link" href="/update/gamecards"></a></h2>
-				<section id="gaming"></section>
+				<section id="gamecards"></section>
 				<h2>RetroAchievements</h2>
 				<h2>MyAnimeList</h2>
 				<section id="my-anime-list">
@@ -172,13 +172,13 @@
 	</template>
 
 	<template id="gamecard-template">
-		<div id="{{id}}" class="gamecard-container">
-			<span>
+		<div id="{{id}}" class="gamecard-container {{jokerContainer}}">
+			<span class="{{joker}}">
 				<p>{{label}}</p>
 			</span>
 			<div class="gamecard-outercard">
-				<div class="gamecard children-template" id="{{children-id}}">
-					<a href="{{children-href}}" style="background-image: url({{children-img}});" target="_blank">
+				<div class="gamecard children-template" id="{{children-id}}" style="--gamecard-count: 2;">
+					<a class="{{children-joker}}" href="{{children-href}}" style="background-image: url({{children-img}});" target="_blank">
 						<span><b>{{children-label}}</b></span>
 					</a>
 				</div>
