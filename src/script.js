@@ -52,7 +52,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import CustomFunctions from '../util/functions.js';
 import { server } from '../util/server-url.js';
 import PageBuildingImport, { TemplateConstructor } from './shared.js';
-var toggleExternalDataLoad = false;
+var toggleExternalDataLoad = true;
 var ua = navigator.userAgent || navigator.vendor || window.opera;
 var mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 var portrait = (window.innerWidth < window.innerHeight);
@@ -598,11 +598,10 @@ var CloudStorageData = /** @class */ (function () {
             }
             function loadGamecards() {
                 return __awaiter(this, void 0, void 0, function () {
-                    var shortcuts, h2, _i, _a, gamecard, gamecardAnchor, outerGamecard, _b, _c, child, _d, _e, css;
+                    var gamecards, _i, _a, gamecard, gamecardAnchor, outerGamecard, _b, _c, child, _d, _e, css;
                     return __generator(this, function (_f) {
-                        shortcuts = document.querySelector('section#shortcuts');
-                        h2 = Array.from(shortcuts.querySelectorAll('h2')).filter(function (heading) { return heading.textContent.trim() === 'Gaming'; })[0];
-                        new TemplateConstructor(document.querySelector('template#gamecard-template').content, content.gamecards).insert(shortcuts, 'after', h2);
+                        gamecards = document.querySelector('section#gamecards');
+                        new TemplateConstructor(document.querySelector('template#gamecard-template').content, content.gamecards).insert(gamecards);
                         for (_i = 0, _a = content.gamecards; _i < _a.length; _i++) {
                             gamecard = _a[_i];
                             gamecardAnchor = document.querySelector('#' + gamecard.id + ' a');

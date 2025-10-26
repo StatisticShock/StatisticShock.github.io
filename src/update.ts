@@ -86,18 +86,14 @@ class HistoryState {
 
 					document.querySelector('#update-trigger')!.removeAttribute('style');
 
-					document.querySelectorAll('div.mfc div.data-wrapper p').forEach((p) => {
-						if (p.textContent === '') p.innerHTML = '<span class="null">Vazio</span>';
-					});
-
 					document.querySelector('div.img-wrapper')!.removeAttribute('style');
 
 					(document.querySelectorAll('div.mfc div.data-wrapper a') as NodeListOf<HTMLAnchorElement>).forEach((anchor) => {
 						if (anchor.textContent!.trim() !== '') {
 							anchor.href = `https://buyee.jp/item/search/query/${encodeURI(anchor.textContent!)}/category/2084023782?sort=end&order=a&store=1&lang=en`
-							anchor.nextElementSibling!.outerHTML = `<copy></copy>`;
+							anchor.parentElement!.nextElementSibling!.outerHTML = `<copy></copy>`;
 						} else {
-							anchor.outerHTML = '<null></null>';
+							anchor.parentElement!.outerHTML = '<i><null></null></i>';
 						};
 						
 						anchor.addEventListener('click', (ev: Event) => {

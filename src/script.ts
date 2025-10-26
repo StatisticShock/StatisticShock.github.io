@@ -3,7 +3,7 @@ import * as MyTypes from '../util/types.js';
 import { server } from '../util/server-url.js';
 import PageBuildingImport, { TemplateConstructor } from './shared.js';
 
-const toggleExternalDataLoad: boolean = false;
+const toggleExternalDataLoad: boolean = true;
 
 const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
 const mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
@@ -532,10 +532,9 @@ class CloudStorageData {
 		};
 
 		async function loadGamecards (): Promise<void> {
-			const shortcuts: HTMLElement = document.querySelector('section#shortcuts')!;
-			const h2: HTMLElement = Array.from(shortcuts.querySelectorAll('h2')).filter((heading) => heading.textContent!.trim() === 'Gaming')[0];
+			const gamecards: HTMLElement = document.querySelector('section#gamecards')!;
 
-			new TemplateConstructor((document.querySelector('template#gamecard-template') as HTMLTemplateElement).content, content.gamecards).insert(shortcuts, 'after', h2);
+			new TemplateConstructor((document.querySelector('template#gamecard-template') as HTMLTemplateElement).content, content.gamecards).insert(gamecards);
 
 			for (const gamecard of content.gamecards) {
 				const gamecardAnchor: HTMLElement = document.querySelector('#' + gamecard.id + ' a')!;

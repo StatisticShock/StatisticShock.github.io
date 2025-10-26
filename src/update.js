@@ -94,18 +94,14 @@ var HistoryState = /** @class */ (function () {
                             template.insert(content);
                             document.querySelector('div.mfc').classList.add(CustomFunctions.normalize(figure.category.replace('/', '-')));
                             document.querySelector('#update-trigger').removeAttribute('style');
-                            document.querySelectorAll('div.mfc div.data-wrapper p').forEach(function (p) {
-                                if (p.textContent === '')
-                                    p.innerHTML = '<span class="null">Vazio</span>';
-                            });
                             document.querySelector('div.img-wrapper').removeAttribute('style');
                             document.querySelectorAll('div.mfc div.data-wrapper a').forEach(function (anchor) {
                                 if (anchor.textContent.trim() !== '') {
                                     anchor.href = "https://buyee.jp/item/search/query/".concat(encodeURI(anchor.textContent), "/category/2084023782?sort=end&order=a&store=1&lang=en");
-                                    anchor.nextElementSibling.outerHTML = "<copy></copy>";
+                                    anchor.parentElement.nextElementSibling.outerHTML = "<copy></copy>";
                                 }
                                 else {
-                                    anchor.outerHTML = '<null></null>';
+                                    anchor.parentElement.outerHTML = '<i><null></null></i>';
                                 }
                                 ;
                                 anchor.addEventListener('click', function (ev) {

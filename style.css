@@ -1446,8 +1446,8 @@ body.update {
 		}
 
 		& div.mfc {
-			width: calc(100vw - 4em);
-			height: calc(100vh - 11em);
+			width: calc(100% - 4em);
+			height: calc(100% - 11em);
 			display: grid;
 			gap: 10px;
 			
@@ -1456,11 +1456,13 @@ body.update {
 			}
 
 			& div.img-wrapper {
-				width: fit-content;
-				& a {
+				height: auto;
+				border-radius: 4em;
 
+				& a {
 					& img {
-						border: 3px solid var(--color);
+						outline: 3px solid var(--color);
+						margin: 0 auto;
 					}
 
 					& img.icon-image {
@@ -1489,7 +1491,8 @@ body.update {
 				& > line {
 					display: grid;
 					overflow-y: scroll;
-					gap: 2.5vw;
+					width: calc(95% - 2 * (1em + 3px));
+					gap: 2.5%;
 					margin: 0 0.5em 0.5em;
 					padding: 0 1em;
 					border-radius: 1em;					
@@ -1508,31 +1511,38 @@ body.update {
 						color: gray;
 					}
 
-					& a, & null {
+					& a-container, & i, & span {
 						height: 5em;
+						margin: 0.25em 0;
 					}
 					
-					& a {
+					& a-container {
 						border-radius: 1em;
+					}
+
+					& a {
+						width: fit-content;
 						display: block;
-						margin: 0;
 						color: var(--pink-custom);
 					}
 
-					& null {
+					& i, & null {
 						display: block;
 						margin: auto 0;
 					}
-
-					& copy {
+					
+					& span, & copy {
 						aspect-ratio: 1 / 1;
-						mask: var(--copy);
-						mask-repeat: no-repeat;
-						background-color: var(--pink-custom);
+						margin: auto;
 						display: inline-block;
 						position: relative;
+						mask: var(--copy);
+						mask-repeat: no-repeat;
+					}
+
+					& copy {
+						background-color: var(--pink-custom);
 						cursor: pointer;
-						margin: auto;
 					}
 
 					& null:before {
@@ -1678,16 +1688,16 @@ body.update {
 			}
 
 			& div.mfc {
-				grid-template-columns: auto 1fr;
+				grid-template-columns: 30% 1fr;
 
 				& div.img-wrapper {
-					max-height: calc(100vh - 11em);
+					width: 100%;
 					margin: 0;
 				}
 
 				& div.data-wrapper {
 					& > line {
-						grid-template-columns: 15vmin 1fr 5vmin;
+						grid-template-columns: 15% calc(80% - 5% - 2em) 5%;
 					}
 				}
 			}
@@ -1711,13 +1721,13 @@ body.update {
 				grid-template-rows: 30vh 1fr;
 
 				& div.img-wrapper {
-					max-width: 30vh;
+					width: 30vh;
 					margin: 0 auto;
 				}
 
 				& div.data-wrapper {
 					& line {
-						grid-template-columns: 20vmin 1fr 5vmin;
+						grid-template-columns: 30% calc(65% - 5% - 2em) 5%;
 
 						& > * {
 							font-size: 0.75em;
