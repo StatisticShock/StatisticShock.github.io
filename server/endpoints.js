@@ -81,8 +81,8 @@ export const typeOfEndpoints = [
         ],
         endpoints: [
             {
-                id: 'shortcuts',
-                route: "/shortcuts/",
+                id: 'mfc',
+                route: "/mfc/",
                 description: [
                     'This endpoint is not ready yet',
                     'Este endpoint não está pronto ainda.'
@@ -98,8 +98,8 @@ export const typeOfEndpoints = [
         ],
         endpoints: [
             {
-                id: 'shortcuts',
-                route: "/shortcuts/",
+                id: 'mfc',
+                route: "/mfc/",
                 description: [
                     'This endpoint is not ready yet',
                     'Este endpoint não está pronto ainda.'
@@ -115,8 +115,8 @@ export const typeOfEndpoints = [
         ],
         endpoints: [
             {
-                id: 'shortcuts',
-                route: "/shortcuts/",
+                id: 'mfc',
+                route: "/mfc/",
                 description: [
                     'This endpoint is not ready yet',
                     'Este endpoint não está pronto ainda.'

@@ -1,19 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES5",
     "lib": [
       "dom",
       "ES2021",
       "DOM.Iterable"
     ],
-    "module": "ES6",
-    "moduleResolution": "node10",
-    "baseUrl": "src",
+	"target": "es2024",
+    "module": "esnext",
     "noEmitOnError": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
 	"noImplicitAny": false,
     "strict": true,
-    "skipLibCheck": true,
-  },
+    "skipLibCheck": true
+  }
 }

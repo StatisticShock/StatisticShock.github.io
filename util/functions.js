@@ -194,25 +194,83 @@ export default class CustomFunctions {
     }
     ;
     static jsonToCsv(json, headers) {
-        const emptyStr = '';
         if (Object.keys(json).length === 0)
-            return emptyStr;
+            return '';
         else if (Object.keys(json).every((key) => (key === null) || (key === undefined)))
-            return emptyStr;
+            return '';
+        const headersToUse = headers.map((header) => `root.${header}`);
         const csv = [headers];
         const map = {};
         const maxDepth = Number(headers.reduce(function (prev, curr) {
             return (Number(prev) > curr.split('.').length ? prev : curr.split('.').length).toString();
         }, '0'));
-        for (let depth = 1; depth <= maxDepth; depth++) {
+        for (let depth = 1; depth <= maxDepth; depth++)
             map[depth.toString()] = [];
-            for (const data of json) {
+        function fillUndefinedValues(headers, data) {
+            for (const header of headers) {
+                if (data[header] === undefined)
+                    data[header] = null;
             }
             ;
         }
         ;
-        console.log(map);
-        return '';
+        function setDepthInMap(currentData = json, depth = 1, parent) {
+            for (const data of currentData) {
+                const dataWhichIsNotArray = {};
+                headersToUse.filter((header) => header.split('.').length === depth + 1).forEach((header) => {
+                    const thisParameter = header.split('.')[depth];
+                    dataWhichIsNotArray[thisParameter] = [data[thisParameter] ?? null, header.replace('root.', '')];
+                });
+                if (parent)
+                    dataWhichIsNotArray['parent_from_this_method'] = parent;
+                map[depth.toString()].push(dataWhichIsNotArray);
+                const nextDepthLevelHeaders = headersToUse.filter((header) => header.split('.').length > depth + 1);
+                const paths = [];
+                nextDepthLevelHeaders.forEach((header) => {
+                    const currentLevelToLookUp = header.split('.')[depth];
+                    if (!paths.includes(currentLevelToLookUp))
+                        paths.push(currentLevelToLookUp);
+                });
+                if (paths.some((pathHeader) => Array.isArray(data[pathHeader]))) {
+                    for (const pathHeader of paths) {
+                        if (data[pathHeader].length === 0)
+                            data[pathHeader].push({});
+                        for (const child of data[pathHeader]) {
+                            fillUndefinedValues(headersToUse.filter((header) => header.split('.').length === depth + 2).map((header) => header.split('.').pop()), child);
+                        }
+                        ;
+                        if (!Object.keys(data[pathHeader]).every((key) => data[pathHeader][key] === undefined)) {
+                            setDepthInMap(data[pathHeader], depth + 1, dataWhichIsNotArray);
+                        }
+                        ;
+                    }
+                    ;
+                }
+            }
+            ;
+        }
+        ;
+        setDepthInMap();
+        const allData = [];
+        for (let i = 0; i < map[maxDepth.toString()].length; i++) {
+            allData.push([]);
+            const row = map[maxDepth.toString()][i];
+            let target = row;
+            do {
+                for (const key in target) {
+                    if (key !== 'parent_from_this_method')
+                        allData[i].push([target[key][0], target[key][1]]);
+                }
+                target = target['parent_from_this_method'];
+            } while (target !== undefined);
+        }
+        ;
+        allData.forEach((row) => {
+            csv.push(row.sort(([value_1, attribute_1], [value_2, attribute_2]) => {
+                return csv[0].indexOf(attribute_1) - csv[0].indexOf(attribute_2);
+            }).map((pair) => pair[0]));
+        });
+        return csv.map((row) => row.join(';')).join('\n');
     }
     ;
 }
