@@ -201,3 +201,11 @@ switch (localStorage.getItem('darkOrLightTheme')) {
     default:
         break;
 }
+;
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+        .register('../service-worker.js')
+        .then(function (reg) { return console.log('Service Worker registered with scope:', reg.scope); })
+        .catch(function (error) { return console.error('Service Worker registration failed:', error); });
+}
+;

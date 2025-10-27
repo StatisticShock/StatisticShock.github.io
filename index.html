@@ -194,19 +194,6 @@
 
 	<script type="module" src="./src/script.js"></script>
 	<script type="module" src="./src/shared.js"></script>
-	<script>
-		if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
-			// Do nothing
-		} else {
-			if ('serviceWorker' in navigator) {
-				navigator.serviceWorker.register('/service-worker.js').then(function (registration) {
-					console.log('Service Worker registered with scope:', registration.scope);
-				}).catch(function (error) {
-					console.log('Service Worker registration failed:', error);
-				});
-			};
-		};
-	</script>
 </body>
 
 </html>

@@ -1130,7 +1130,6 @@ function onLoadFunctions(ev) {
                         ])];
                 case 3:
                     _a.sent();
-                    console.clear();
                     _a.label = 4;
                 case 4:
                     ;

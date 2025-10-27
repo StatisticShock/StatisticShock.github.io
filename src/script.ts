@@ -1034,8 +1034,6 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 				PageBuilding.deleteSkeletons(['#shortcuts ', 'header ']);
 			}),
 		]);
-
-		console.clear();
 	};
 
 	PageBehaviour.openLinksInNewTab();

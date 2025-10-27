@@ -1291,8 +1291,12 @@ body.update {
 		padding: 2em;
 		z-index: 2;
 
-		& h1 {
+		& a {
+			color: var(--contrast-color-0);
+
+			& h1 {
 			margin: 0;
+			}
 		}
 	}
 

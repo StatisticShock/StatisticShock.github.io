@@ -1,23 +1,79 @@
+import { server } from './util/server-url.js';
+
+const cacheName = 'v1';
+const cacheAssets = [
+	'index.html',
+	'404.html',
+	'update.html',
+	'/src/script.js',
+	'/src/shared.js',
+	'/util/functions.js',
+];
+const cacheMaxTime = 15 * 60 * 1000;
+const isExpired = async (cache) => {
+	const currentCache = await caches.open(cache);
+	const meta = await currentCache.match('meta');
+	
+	if (!meta) return false;
+	const { time } = await meta.json();
+	return (Date.now() - time) > cacheMaxTime;
+};
+
 self.addEventListener('install', (ev) => {
+	console.info(`Service Worker ${cacheName}: installed.`);
+
 	ev.waitUntil(
-		caches.open('index-cache').then((cache) => {
-			return cache.addAll(['/', '/index.html', '/style.css', '/src/script.js', '/util/functions.js']);
-		})
+		caches
+			.open(cacheName)
+			.then((cache) => {
+				console.info(`Service Worker ${cacheName}: caching files.`);
+				cache.addAll(cacheAssets);
+			})
+			.then(() => self.skipWaiting())
 	);
 });
 
-self.addEventListener('fetch', (ev) => {
-	const req = ev.request;
+self.addEventListener('activate', (ev) => {
+	console.info(`Service Worker ${cacheName}: activated.`);
 
-	if (req.url.endsWith('.webp')) {
-		ev.respondWith(
-			fetch(req).then(res => {
-				const clone = res.clone();
-				caches.open(index_cache).then(c => c.put(req, clone));
+	ev.waitUntil(
+		caches.keys()
+			.then((cacheNames) => {
+				return Promise.all(
+					cacheNames.map((cache) => {
+						if (cache !== cacheName) {
+							console.info(`Service Worker ${cacheName}: clearing old cache ${cache}`);
+							return caches.delete(cache);
+						};
+					})
+				);
+			})
+			.then(() => self.clients.claim())
+	);
+
+	caches.open(cacheName).then((cache) => cache.put('meta', new Response(JSON.stringify({ time: Date.now() }))));
+});
+
+self.addEventListener('fetch', (ev) => {
+	ev.respondWith(
+		(async () => {
+			const res = await caches.match(ev.request);
+			const expired = await isExpired(cacheName);
+
+			if (res && !expired && !(new RegExp(server).test(ev.request.url))) {
 				return res;
-			}).catch(() => caches.match(req))
-		);
-	} else {
-		ev.respondWith(caches.match(req).then(cached => cached || fetch(req)));
-	}
+			}
+
+			const networkRes = await fetch(ev.request);
+			if (!networkRes || networkRes.status !== 200) { //If it is broken, wont cache it
+				return networkRes;
+			}
+
+			const clone = networkRes.clone();
+			const cache = await caches.open(cacheName);
+			cache.put(ev.request, clone);
+
+			return networkRes;
+		})()
+	);
 });
