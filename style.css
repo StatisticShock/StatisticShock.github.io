@@ -1290,13 +1290,20 @@ body.update {
 		margin: 0 auto;
 		padding: 2em;
 		z-index: 2;
+		display: flex;
+		align-content: baseline;
+		justify-content: center;
+		gap: 2em;
+
+		& h1 {
+		margin: 0;
+		}
 
 		& a {
-			color: var(--contrast-color-0);
-
-			& h1 {
-			margin: 0;
-			}
+			margin: 15px 0 0 0;
+			display: block;
+			height: 30px;
+			aspect-ratio: 1 / 1;
 		}
 	}
 

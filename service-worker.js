@@ -60,7 +60,7 @@ self.addEventListener('fetch', (ev) => {
 			const res = await caches.match(ev.request);
 			const expired = await isExpired(cacheName);
 
-			if (res && !expired && !(new RegExp(server).test(ev.request.url))) {
+			if (res && (!expired || ev.request.url.endsWith('.webp'))) {
 				return res;
 			}
 
