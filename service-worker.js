@@ -1,5 +1,3 @@
-import { server } from './util/server-url.js';
-
 const cacheName = 'v1';
 const cacheAssets = [
 	'index.html',
