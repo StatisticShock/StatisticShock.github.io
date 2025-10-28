@@ -1548,13 +1548,16 @@ body.update {
 						& a {
 							width: 100%;
 							aspect-ratio: 1 / 1;
-							border-radius: 10px;
 							overflow: hidden;
 
 							& img {
 								width: 100%;
 								height: 100%;
 							}
+						}
+
+						& a.buyee {
+							border-radius: 10px;
 						}
 					}
 
