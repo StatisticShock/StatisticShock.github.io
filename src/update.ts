@@ -38,7 +38,7 @@ class HistoryState {
 	};
 
 	static updateContent({page, id}): void {
-		history.replaceState('', '', `update/${page}/${Number(id) > 0 ? id : ''}`)
+		// history.replaceState('', '', `update/${page}/${Number(id) > 0 ? id : ''}`)
 
 		const route = this.routes.filter((route) => route.type === page)[0] || { title: '404', type: 'Not Found'};
 		if (route.title === '404') {
