@@ -59,7 +59,7 @@ export const links = [
     ['Ordered', 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=0&categoryId=-1&output=2&sort=category&order=asc&_tb=user'],
     ['Wished', 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=0&categoryId=-1&output=2&sort=category&order=asc&_tb=user'],
 ];
-const server = 'http://localhost:3000/';
+const server = 'https://statisticshock-index.fly.dev/';
 async function scrapeImages() {
     let imgLinks = [];
     const mainImageFolder = 'mfc/main_images/';

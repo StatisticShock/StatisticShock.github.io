@@ -62,7 +62,7 @@ export const links: Array<['Owned'|'Ordered'|'Wished', string]> = [
 	['Wished','https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=0&categoryId=-1&output=2&sort=category&order=asc&_tb=user'],
 ];
 
-const server: string = 'http://localhost:3000/';
+const server: string = 'https://statisticshock-index.fly.dev/';
 
 async function scrapeImages(): Promise<void> {
 	let imgLinks: Array<Array<string>> = [];
