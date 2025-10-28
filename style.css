@@ -1282,6 +1282,8 @@ body.update {
 
 	& header {
 		background-image: url("https://storage.googleapis.com/statisticshock_github_io_public/headers/ps2.webp");
+		background-size: cover;
+		background-position: center;
 		background-color: var(--contrast-color-4);
 		height: fit-content;
 		text-align: center;
