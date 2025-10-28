@@ -193,12 +193,12 @@ export default class CustomFunctions {
 		return {data: root};
 	};
 
-	static jsonToCsv (json: Array<object>, headers: Array<string>): string {
-		if (Object.keys(json).length === 0) return '';
-		else if (Object.keys(json).every((key) => (key === null)||(key === undefined))) return '';
+	static jsonToCsv (json: Array<object>, headers: Array<string>): Array<Array<number|string|boolean>> {
+		if (Object.keys(json).length === 0) return [[]];
+		else if (Object.keys(json).every((key) => (key === null)||(key === undefined))) return [[]];
 
 		const headersToUse: Array<string> = headers.map((header) => `root.${header}`);
-		const csv: Array<Array<number|string|boolean>> = [headers];
+		const csv: Array<Array<number|string|boolean>> = [];
 		const map: any = {}; 
 
 		const maxDepth: number = Number(
@@ -274,11 +274,11 @@ export default class CustomFunctions {
 		allData.forEach((row) => {
 			csv.push(
 				row.sort(([value_1, attribute_1], [value_2, attribute_2]) => {
-					return csv[0].indexOf(attribute_1) - csv[0].indexOf(attribute_2);
+					return headers.indexOf(attribute_1) - headers.indexOf(attribute_2);
 				}).map((pair) => pair[0])
 			);
 		});
 
-		return csv.map((row) => row.join(';')).join('\n');
+		return csv;
 	};
 };

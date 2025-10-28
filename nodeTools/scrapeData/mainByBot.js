@@ -1,2 +1,2 @@
-import { main } from './scrapeData.js'
-// main(false, true);
+import { main } from './scrapeMFC.js';
+main(false, true);

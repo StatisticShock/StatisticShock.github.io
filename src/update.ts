@@ -38,7 +38,7 @@ class HistoryState {
 	};
 
 	static updateContent({page, id}): void {
-		// history.replaceState('', '', `update/${page}/${Number(id) > 0 ? id : ''}`)
+		history.replaceState('', '', `update/${page}/${Number(id) > 0 ? id : ''}`)
 
 		const route = this.routes.filter((route) => route.type === page)[0] || { title: '404', type: 'Not Found'};
 		if (route.title === '404') {
@@ -88,21 +88,18 @@ class HistoryState {
 
 					document.querySelector('div.img-wrapper')!.removeAttribute('style');
 
-					(document.querySelectorAll('div.mfc div.data-wrapper a') as NodeListOf<HTMLAnchorElement>).forEach((anchor) => {
-						if (anchor.textContent!.trim() !== '') {
-							anchor.href = `https://buyee.jp/item/search/query/${encodeURI(anchor.textContent!)}/category/2084023782?sort=end&order=a&store=1&lang=en`
-							anchor.parentElement!.nextElementSibling!.outerHTML = `<copy></copy>`;
+					(document.querySelectorAll('div.mfc div.data-wrapper a-container') as NodeListOf<HTMLAnchorElement>).forEach((anchorContainer) => {
+						if (anchorContainer.textContent!.trim() !== '') {
+							try {
+								(anchorContainer.querySelector('.buyee') as HTMLAnchorElement).href = `https://buyee.jp/item/search/query/${encodeURI(anchorContainer.textContent!.trim())}/category/2084023782?sort=end&order=a&store=1&lang=en`;
+								(anchorContainer.querySelector('.amiami') as HTMLAnchorElement).href = `/${encodeURI(anchorContainer.textContent!)}/`;
+								anchorContainer.nextElementSibling!.outerHTML = `<button class="copy" onclick="navigator.clipboard.writeText('${anchorContainer.textContent!.trim()}')"></button>`;
+							} catch (err) {};
 						} else {
-							anchor.parentElement!.outerHTML = '<i><null></null></i>';
+							anchorContainer.outerHTML = '<i><null></null></i>';
 						};
-						
-						anchor.addEventListener('click', (ev: Event) => {
-							if ((ev.target as HTMLElement).tagName.toLocaleLowerCase() === 'copy') {
-								ev.preventDefault();
-								
-								navigator.clipboard.writeText(anchor.textContent!);
-							};
-						})
+
+						if (anchorContainer.classList.contains('tags')) anchorContainer.textContent = anchorContainer.textContent!.split('\;').join(' • ');
 					});
 
 					(document.querySelectorAll('copy') as NodeListOf<HTMLElement>).forEach((copy) => {

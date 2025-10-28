@@ -75,6 +75,7 @@ export type MFC = {
 	sourceJap: string,
 	classification: string,
 	category: 'Prepainted'|'Action/Dolls'|'Trading',
+	tags: string,
 	type: 'Wished'|'Owned'|'Ordered',
 	title: string,
 };

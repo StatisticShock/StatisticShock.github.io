@@ -49,8 +49,8 @@ var HistoryState = /** @class */ (function () {
     };
     ;
     HistoryState.updateContent = function (_a) {
-        // history.replaceState('', '', `update/${page}/${Number(id) > 0 ? id : ''}`)
         var page = _a.page, id = _a.id;
+        history.replaceState('', '', "update/".concat(page, "/").concat(Number(id) > 0 ? id : ''));
         var route = this.routes.filter(function (route) { return route.type === page; })[0] || { title: '404', type: 'Not Found' };
         if (route.title === '404') {
             window.location.href = window.location.origin + '/404.html';
@@ -95,22 +95,22 @@ var HistoryState = /** @class */ (function () {
                             document.querySelector('div.mfc').classList.add(CustomFunctions.normalize(figure.category.replace('/', '-')));
                             document.querySelector('#update-trigger').removeAttribute('style');
                             document.querySelector('div.img-wrapper').removeAttribute('style');
-                            document.querySelectorAll('div.mfc div.data-wrapper a').forEach(function (anchor) {
-                                if (anchor.textContent.trim() !== '') {
-                                    anchor.href = "https://buyee.jp/item/search/query/".concat(encodeURI(anchor.textContent), "/category/2084023782?sort=end&order=a&store=1&lang=en");
-                                    anchor.parentElement.nextElementSibling.outerHTML = "<copy></copy>";
+                            document.querySelectorAll('div.mfc div.data-wrapper a-container').forEach(function (anchorContainer) {
+                                if (anchorContainer.textContent.trim() !== '') {
+                                    try {
+                                        anchorContainer.querySelector('.buyee').href = "https://buyee.jp/item/search/query/".concat(encodeURI(anchorContainer.textContent.trim()), "/category/2084023782?sort=end&order=a&store=1&lang=en");
+                                        anchorContainer.querySelector('.amiami').href = "/".concat(encodeURI(anchorContainer.textContent), "/");
+                                        anchorContainer.nextElementSibling.outerHTML = "<button class=\"copy\" onclick=\"navigator.clipboard.writeText('".concat(anchorContainer.textContent.trim(), "')\"></button>");
+                                    }
+                                    catch (err) { }
+                                    ;
                                 }
                                 else {
-                                    anchor.parentElement.outerHTML = '<i><null></null></i>';
+                                    anchorContainer.outerHTML = '<i><null></null></i>';
                                 }
                                 ;
-                                anchor.addEventListener('click', function (ev) {
-                                    if (ev.target.tagName.toLocaleLowerCase() === 'copy') {
-                                        ev.preventDefault();
-                                        navigator.clipboard.writeText(anchor.textContent);
-                                    }
-                                    ;
-                                });
+                                if (anchorContainer.classList.contains('tags'))
+                                    anchorContainer.textContent = anchorContainer.textContent.split('\;').join(' • ');
                             });
                             document.querySelectorAll('copy').forEach(function (copy) {
                                 copy.addEventListener('click', function (ev) {

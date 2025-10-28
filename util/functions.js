@@ -195,11 +195,11 @@ export default class CustomFunctions {
     ;
     static jsonToCsv(json, headers) {
         if (Object.keys(json).length === 0)
-            return '';
+            return [[]];
         else if (Object.keys(json).every((key) => (key === null) || (key === undefined)))
-            return '';
+            return [[]];
         const headersToUse = headers.map((header) => `root.${header}`);
-        const csv = [headers];
+        const csv = [];
         const map = {};
         const maxDepth = Number(headers.reduce(function (prev, curr) {
             return (Number(prev) > curr.split('.').length ? prev : curr.split('.').length).toString();
@@ -267,10 +267,10 @@ export default class CustomFunctions {
         ;
         allData.forEach((row) => {
             csv.push(row.sort(([value_1, attribute_1], [value_2, attribute_2]) => {
-                return csv[0].indexOf(attribute_1) - csv[0].indexOf(attribute_2);
+                return headers.indexOf(attribute_1) - headers.indexOf(attribute_2);
             }).map((pair) => pair[0]));
         });
-        return csv.map((row) => row.join(';')).join('\n');
+        return csv;
     }
     ;
 }

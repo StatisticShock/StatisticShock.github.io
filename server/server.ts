@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from 'cors';
-import { Bucket, GetFilesResponse, Storage } from "@google-cloud/storage";
+import { Storage } from "@google-cloud/storage";
 import { JWT } from "google-auth-library";
 import { GoogleSpreadsheet, GoogleSpreadsheetCell, GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from "google-spreadsheet";
 import * as MyTypes from "../util/types.js";
@@ -263,13 +263,133 @@ app.get("/retroAchievements/:language/", async (req: express.Request, res: expre
 	res.status(200).json(output);
 });
 
-app.post("/t/:type/", async (req: express.Request, res: express.Response) => {
+app.post("/:type/", async (req: express.Request, res: express.Response) => {
 	const { type } = req.params;
-	const headers: Array<string> = workbook.sheetsByTitle[type].headerValues;
 
-	console.log(headers);
+	await workbook.loadInfo();
+	try {
+		await workbook.sheetsByTitle[type].loadHeaderRow()
+	} catch (err) {
+		res.status(400).json({message: 'Failed to load ' + type})
+	}
+	
+	const sheet: GoogleSpreadsheetWorksheet = workbook.sheetsByTitle[type];
+	const headers: Array<string> = sheet.headerValues;
+	const data: Array<Array<number|string|boolean>> = CustomFunctions.jsonToCsv(req.body, headers);
+	const rowsToAdd = [];
+
+	if (data[0][0] === null) res.status(400).json({message: 'No data.'})
+
+	data.forEach((row) => {
+		const obj = {};
+
+		for (const header of headers) {
+			if (Number(row[headers.indexOf(header)])) {
+				obj[header] = Number(row[headers.indexOf(header)]);
+			} else {
+				obj[header] = row[headers.indexOf(header)] || '';
+			};
+		};
+
+		rowsToAdd.push(obj);
+	});
+
+	await sheet.addRows(rowsToAdd);
 
 	res.status(201).json({message: type + ' created.'});
+});
+
+app.delete("/:type/", async (req: express.Request, res: express.Response) => {
+	const { type } = req.params;
+
+	try {
+		await workbook.loadInfo();
+		const sheet = workbook.sheetsByTitle[type];
+		if (!sheet) return res.status(404).json({ message: `Sheet '${type}' not found.` });
+
+		await sheet.loadHeaderRow();
+		const headers: string[] = sheet.headerValues;
+		const data: Array<Array<number | string | boolean>> = CustomFunctions.jsonToCsv(req.body, headers);
+
+		if (!data.length || data[0][0] === null) {
+			return res.status(400).json({ message: 'No data provided.' });
+		}
+
+		const rows = await sheet.getRows();
+		const rowsToDelete: GoogleSpreadsheetRow[] = [];
+
+		data.forEach((dataToDelete) => {
+			const match = rows.find((row) =>
+				headers.every((header, i) => 
+					((dataToDelete[i]) ?? '') === (row.get(header) ?? '')
+				)
+			);
+
+			if (match) rowsToDelete.push(match);
+		});
+
+		for (const row of rowsToDelete) {
+			await row.delete();
+		}
+
+		res.status(200).json({ message: `${rowsToDelete.length} row(s) deleted from '${type}'.` });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: 'Internal server error.' });
+	}
+});
+
+app.put("/:type/", async (req: express.Request, res: express.Response) => {
+	const { type } = req.params;
+
+	try {
+		await workbook.loadInfo();
+		const sheet = workbook.sheetsByTitle[type];
+		if (!sheet) return res.status(404).json({ message: `Sheet '${type}' not found.` });
+
+		await sheet.loadHeaderRow();
+		const headers: string[] = sheet.headerValues;
+		
+		if (!Array.isArray(req.body) || !req.body.every(pair => Array.isArray(pair) && pair.length === 2)) {
+			return res.status(400).json({ message: 'Invalid data format.' });
+		};
+		
+		const data = req.body.map(([oldObj, newObj]) => {
+			const oldRow = CustomFunctions.jsonToCsv([oldObj], headers)[0];
+			const newRow = CustomFunctions.jsonToCsv([newObj], headers)[0];
+			return [oldRow, newRow];
+		});
+
+		if (!data.length || data[0][0] === null) {
+			return res.status(400).json({ message: 'No data provided.' });
+		};
+
+		const rows = await sheet.getRows();
+
+		data.forEach(async ([oldData, dataToUpdate]) => {
+			const match = rows.find((row) =>
+				headers.every((header, i) => 
+					((oldData[i]) ?? '') === (row.get(header) ?? '')
+				)
+			);
+
+			if (match) {
+				console.log(match);
+
+				headers.forEach((header, i) => {
+					console.log(header, dataToUpdate[i]);
+					match.set(header, dataToUpdate[i]);
+				});
+
+				await match.save();
+			};
+		});
+
+		res.status(200).json({ message: `${data.length} row(s) updated from '${type}'.` });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ message: 'Internal server error.' });
+	}
 });
 
 app.listen(PORT, () => console.log(`[${Intl.DateTimeFormat('pt-BR', {hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(new Date())}] Server running...`));
