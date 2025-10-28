@@ -1558,10 +1558,6 @@ body.update {
 						}
 					}
 
-					& a-container.tags {
-						height: 10em;
-					}
-
 					& i, & null {
 						display: block;
 						margin: auto 0;

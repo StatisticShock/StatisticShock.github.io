@@ -99,7 +99,7 @@ var HistoryState = /** @class */ (function () {
                                 if (anchorContainer.textContent.trim() !== '') {
                                     try {
                                         anchorContainer.querySelector('.buyee').href = "https://buyee.jp/item/search/query/".concat(encodeURI(anchorContainer.textContent.trim()), "/category/2084023782?sort=end&order=a&store=1&lang=en");
-                                        anchorContainer.querySelector('.amiami').href = "/".concat(encodeURI(anchorContainer.textContent), "/");
+                                        anchorContainer.querySelector('.amiami').href = "https://www.amiami.com/eng/search/list/?s_keywords=".concat(anchorContainer.textContent.replaceAll(' ', '+'), "&s_cate_tag=1&s_sortkey=preowned&s_st_condition_flg=1");
                                         anchorContainer.nextElementSibling.outerHTML = "<button class=\"copy\" onclick=\"navigator.clipboard.writeText('".concat(anchorContainer.textContent.trim(), "')\"></button>");
                                     }
                                     catch (err) { }
@@ -109,8 +109,6 @@ var HistoryState = /** @class */ (function () {
                                     anchorContainer.outerHTML = '<i><null></null></i>';
                                 }
                                 ;
-                                if (anchorContainer.classList.contains('tags'))
-                                    anchorContainer.textContent = anchorContainer.textContent.split('\;').join(' • ');
                             });
                             document.querySelectorAll('copy').forEach(function (copy) {
                                 copy.addEventListener('click', function (ev) {
