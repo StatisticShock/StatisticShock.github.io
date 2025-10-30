@@ -661,7 +661,7 @@ class CloudStorageData {
 			
 			if (timeout) clearTimeout(timeout);
 
-			timeout = setTimeout(searchFigure, 2000);
+			timeout = setTimeout(searchFigure, 900);
 		});
 	};
 };

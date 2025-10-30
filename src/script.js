@@ -747,7 +747,7 @@ var CloudStorageData = /** @class */ (function () {
                     loader.style.display = 'block';
                     if (timeout)
                         clearTimeout(timeout);
-                    timeout = setTimeout(searchFigure, 2000);
+                    timeout = setTimeout(searchFigure, 900);
                 });
                 return [2 /*return*/];
             });

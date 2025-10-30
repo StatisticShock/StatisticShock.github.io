@@ -1780,7 +1780,8 @@ body.update.has-hover {
 				grid-template-rows: 30vh 1fr;
 
 				& div.img-wrapper {
-					width: 30vh;
+					height: 30vh;
+					width: auto;
 					margin: 0 auto;
 				}
 
