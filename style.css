@@ -1567,7 +1567,7 @@ body.update {
 						}
 
 						& a.buyee {
-							border-radius: 3%;
+							border-radius: 10%;
 						}
 					}
 
