@@ -1512,15 +1512,15 @@ body.update {
 					width: calc(95% - 2 * (1em + 3px));
 					gap: 2.5%;
 					margin: 0 0.5em 0.5em;
-					padding: 0 0.5em;
+					padding: 0.25em 0.5em;
 					border-radius: 1em;					
 					background-color: var(--contrast-color-3);
 					border: 3px solid var(--color);
+					height: fit-content;
 
 					& > * {
 						align-content: center;
 						border: none;
-						height: 5em;
 						margin: auto 0;
 					}
 
@@ -1531,8 +1531,9 @@ body.update {
 						align-items: center;
 					}
 
-					& a-container, & i, & span {
-						height: 5em;
+					& a-container, & i {
+						height: fit-content;
+						min-height: 2em;
 					}
 					
 					& a-container {
@@ -1551,10 +1552,11 @@ body.update {
 
 						& > span {
 							grid-area: 1 / 1 / 3 / 2;
+							height: 100%;
 						}
 
 						& a {
-							height: 100%;
+							height: 2.25em;
 							aspect-ratio: 1 / 1;
 							overflow: hidden;
 							align-self: center;
@@ -1577,6 +1579,7 @@ body.update {
 					}
 					
 					& > span, & button.copy {
+						height: 3em;
 						aspect-ratio: 1 / 1;
 						margin: auto;
 						display: inline-block;
@@ -1590,7 +1593,6 @@ body.update {
 					& button.copy {
 						background-color: var(--pink-custom);
 						cursor: pointer;
-						height: 80%;
 						width: 100%;
 						display: inline-block;
 						position: relative;
