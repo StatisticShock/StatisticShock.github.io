@@ -399,7 +399,7 @@ body.home {
 			z-index: 0;
 		}
 
-		& nav {
+		& > nav {
 			top: 0;
 			padding: 1em 0;
 			background-color: var(--contrast-color-1);
@@ -480,60 +480,45 @@ body.home {
 				}
 			}
 			
-			& .grid-container {
-				display: grid;
-				padding: 0;
-				gap: 10px;
+			& .pop-up-open {
+				text-decoration: none;
+				position: relative;
 				height: 3em;
-				grid-auto-rows: 3em;
-				grid-auto-columns: 3em;
-				grid-auto-flow: column;
-				grid-template-columns: repeat(auto-fill, 3em);
+				aspect-ratio: 1;
+				color: black;
+				transition: 0.2s ease;
 
-				& > * {
-					height: 3em;
-				}
-
-				& .pop-up-open {
-					text-decoration: none;
-					position: relative;
-					height: 3em;
-					aspect-ratio: 1;
-					color: black;
-					transition: 0.2s ease;
-
-					& reddit-google-img, & wikipedia-img {
-						position: absolute;
-						height: 100%;
-						aspect-ratio: 1 / 1;
-						border-radius: 0.5em;
-						background-position: center;
-						background-size: contain;
-					}
-
-					& reddit-google-img {
-						background-image: url("./images/google-reddit.ico");
-					}
-
-					& wikipedia-img {
-						background-image: url("./images/wikipedia.ico");
-					}
-
-					& span {
-						position: absolute;
-						transform: translate(0%, 100%);
-						transition: .2s;
-						color: var(--contrast-color-0);
-					}
-				}
-
-				& .pop-up-open::after {
+				& reddit-google-img, & wikipedia-img {
 					position: absolute;
-					left: 0px;
-					top: 40px;
-					content: "";
-					transition: .3s ease;
+					height: 100%;
+					aspect-ratio: 1 / 1;
+					border-radius: 0.5em;
+					background-position: center;
+					background-size: contain;
 				}
+
+				& reddit-google-img {
+					background-image: url("./images/google-reddit.ico");
+				}
+
+				& wikipedia-img {
+					background-image: url("./images/wikipedia.ico");
+				}
+
+				& span {
+					position: absolute;
+					transform: translate(0%, 100%);
+					transition: .2s;
+					color: var(--contrast-color-0);
+				}
+			}
+
+			& .pop-up-open::after {
+				position: absolute;
+				left: 0px;
+				top: 40px;
+				content: "";
+				transition: .3s ease;
 			}
 		}
 	}
@@ -996,34 +981,32 @@ body.home.has-hover {
 
 	& header {
 		& nav {
-			& .grid-container {
-				& .pop-up-open:hover {
-					transform: scale(1.5);
-					border-bottom-left-radius: 0;
+			& .pop-up-open:hover {
+				transform: scale(1.5);
+				border-bottom-left-radius: 0;
 
-					& span {
-						transform: scale(1.5) translate(-50%, 100%);
-					}
+				& span {
+					transform: scale(1.5) translate(-50%, 100%);
 				}
+			}
 
-				& .pop-up-open:hover::after {
-					position: absolute;
-					left: -12px;
-					top: 50px;
-					font-size: 80%;
-					color: black;
-					content: attr(alt);
-					display: inline-block;
-					z-index: 1;
-					background-color: var(--pink-custom);
-					width: max-content;
-					text-align: center;
-					border-top-right-radius: 3ex;
-					border-bottom-left-radius: 3ex;
-					border-bottom-right-radius: 3ex;
-					padding: 0.5em 1em;
-					transform: scale(0.75) translate(0, -75%);
-				}
+			& .pop-up-open:hover::after {
+				position: absolute;
+				left: -12px;
+				top: 50px;
+				font-size: 80%;
+				color: black;
+				content: attr(alt);
+				display: inline-block;
+				z-index: 1;
+				background-color: var(--pink-custom);
+				width: max-content;
+				text-align: center;
+				border-top-right-radius: 3ex;
+				border-bottom-left-radius: 3ex;
+				border-bottom-right-radius: 3ex;
+				padding: 0.5em 1em;
+				transform: scale(0.75) translate(0, -75%);
 			}
 		}
 	}
