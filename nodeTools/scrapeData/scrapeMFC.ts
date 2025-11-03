@@ -214,11 +214,11 @@ export class ScrapeFunctions {
 				category = $$(element).find('.data-value').text() as 'Prepainted'|'Action/Dolls'|'Trading';
 			};
 			if ($$(element).find('.data-label').text().includes('Classificaç')) {
-				if ($$(element).find('.data-value a span').attr('switch') == '') {
-					classification = $$(element).find('.data-value a span').text()
+				if ($$(element).find('.data-value a span').filter((i, el) => $$(el).attr('switch') !== '').length === 0) {
+					classification = $$(element).find('.data-value a span').map((i, el) => $$(el).text()).toArray().join(', ');
 				} else {
-					classification = $$(element).find('.data-value a span').attr('switch');
-				}
+					classification = $$(element).find('.data-value a span').map((i, el) => $$(el).attr('switch')).toArray().join(', ');
+				};
 			};
 			if ($$(element).find('.data-label').text().includes('Personag') || $$(element).find('.data-label').text().includes('Título')) {
 				character = $$(element).find('.data-value').text();
@@ -231,7 +231,7 @@ export class ScrapeFunctions {
 		};
 
 		if ($$('.object-tags').find('.object-tag')) {
-			tags = $$('.object-tags').text().split('\?').join(' \• ');
+			tags = $$('.object-tags').text().split('\?').join(' \• ').slice(0, -3);
 		};
 
 		const itemData: MFC = {

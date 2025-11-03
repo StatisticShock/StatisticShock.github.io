@@ -981,21 +981,6 @@ class PageBehaviour {
 			}
 		});
 	};
-
-	static redirectToUpdatePage (): void { // NO NEED OF RESPONSIVENESS
-		const anchors: NodeListOf<HTMLAnchorElement> = document.querySelectorAll('a.update-link');
-		const url: string = window.location.href;
-
-		anchors.forEach((anchor) => {
-			anchor.addEventListener('click', (ev: Event) => {
-				ev.preventDefault();
-				const route: string = anchor.href.replace(url, '');
-				const parts: Array<string> = route.split('/');
-
-				window.location.href = `${url}update.html?page=${parts[1]}&id=${parts[2] ?? '0'}`
-			});
-		});
-	}
 };
 
 window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions(ev: Event) {
@@ -1039,7 +1024,6 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 	PageBehaviour.openLinksInNewTab();
 	PageBehaviour.redirectLinksToEdge();
 	PageBehaviour.stopImageDrag();
-	PageBehaviour.redirectToUpdatePage();
 
 	setTimeout(() => window.dispatchEvent(new Event('resize')), 250);
 };

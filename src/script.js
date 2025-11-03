@@ -1072,19 +1072,6 @@ var PageBehaviour = /** @class */ (function () {
         });
     };
     ;
-    PageBehaviour.redirectToUpdatePage = function () {
-        var anchors = document.querySelectorAll('a.update-link');
-        var url = window.location.href;
-        anchors.forEach(function (anchor) {
-            anchor.addEventListener('click', function (ev) {
-                var _a;
-                ev.preventDefault();
-                var route = anchor.href.replace(url, '');
-                var parts = route.split('/');
-                window.location.href = "".concat(url, "update.html?page=").concat(parts[1], "&id=").concat((_a = parts[2]) !== null && _a !== void 0 ? _a : '0');
-            });
-        });
-    };
     return PageBehaviour;
 }());
 ;
@@ -1136,7 +1123,6 @@ function onLoadFunctions(ev) {
                     PageBehaviour.openLinksInNewTab();
                     PageBehaviour.redirectLinksToEdge();
                     PageBehaviour.stopImageDrag();
-                    PageBehaviour.redirectToUpdatePage();
                     setTimeout(function () { return window.dispatchEvent(new Event('resize')); }, 250);
                     return [2 /*return*/];
             }
