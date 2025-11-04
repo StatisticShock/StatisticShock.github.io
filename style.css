@@ -498,17 +498,17 @@ body.home {
 				}
 
 				& reddit-google-img {
-					background-image: url("./images/google-reddit.ico");
+					background-image: url("./images/reddit-google.webp");
 				}
 
 				& wikipedia-img {
-					background-image: url("./images/wikipedia.ico");
+					background-image: url("./images/wikipedia.webp");
 				}
 
 				& span {
 					position: absolute;
 					transform: translate(0%, 100%);
-					transition: .2s;
+					transition: 0.2s;
 					color: var(--contrast-color-0);
 				}
 			}

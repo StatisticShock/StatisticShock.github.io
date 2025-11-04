@@ -967,20 +967,6 @@ class PageBehaviour {
 			}
 		});
 	};
-
-	static redirectLinksToEdge(): void { // RESPONSIVE
-		if (mobile) return;
-
-		let links = document.querySelectorAll('a');
-		links.forEach(link => {
-			var hyperlink = link.href
-
-			if (hyperlink.match(/docs\.google\.com/)) {
-				link.href = 'microsoft-edge:' + hyperlink
-				link.target = ''
-			}
-		});
-	};
 };
 
 window.addEventListener('load', onLoadFunctions, true); async function onLoadFunctions(ev: Event) {
@@ -1022,7 +1008,6 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 	};
 
 	PageBehaviour.openLinksInNewTab();
-	PageBehaviour.redirectLinksToEdge();
 	PageBehaviour.stopImageDrag();
 
 	setTimeout(() => window.dispatchEvent(new Event('resize')), 250);

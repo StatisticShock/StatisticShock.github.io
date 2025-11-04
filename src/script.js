@@ -1059,19 +1059,6 @@ var PageBehaviour = /** @class */ (function () {
         });
     };
     ;
-    PageBehaviour.redirectLinksToEdge = function () {
-        if (mobile)
-            return;
-        var links = document.querySelectorAll('a');
-        links.forEach(function (link) {
-            var hyperlink = link.href;
-            if (hyperlink.match(/docs\.google\.com/)) {
-                link.href = 'microsoft-edge:' + hyperlink;
-                link.target = '';
-            }
-        });
-    };
-    ;
     return PageBehaviour;
 }());
 ;
@@ -1121,7 +1108,6 @@ function onLoadFunctions(ev) {
                 case 4:
                     ;
                     PageBehaviour.openLinksInNewTab();
-                    PageBehaviour.redirectLinksToEdge();
                     PageBehaviour.stopImageDrag();
                     setTimeout(function () { return window.dispatchEvent(new Event('resize')); }, 250);
                     return [2 /*return*/];
