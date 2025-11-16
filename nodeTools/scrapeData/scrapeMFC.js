@@ -7,6 +7,7 @@ import util from 'util';
 import * as pathImport from 'path';
 import { fileURLToPath } from 'url';
 import { exec } from 'child_process';
+import puppeteer from 'puppeteer';
 dotenv.config({ path: pathImport.resolve(import.meta.dirname + '/.env') });
 export class GoogleClass {
     static serviceAccount = JSON.parse(process.env.GOOGLE_JSON_KEY);
@@ -59,9 +60,10 @@ export const links = [
     ['Ordered', 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=1&current=keywords&rootId=0&categoryId=-1&output=2&sort=category&order=asc&_tb=user'],
     ['Wished', 'https://pt.myfigurecollection.net/?mode=view&username=HikariKun&tab=collection&page=1&status=0&current=keywords&rootId=0&categoryId=-1&output=2&sort=category&order=asc&_tb=user'],
 ];
+const imgLinks = [];
 const server = 'https://statisticshock-index.fly.dev/';
+const browser = await puppeteer.launch({ headless: true });
 async function scrapeImages() {
-    let imgLinks = [];
     const mainImageFolder = 'mfc/main_images/';
     const iconImageFolder = 'mfc/icons/';
     async function downloadImageFromUrl(url, path) {
@@ -83,17 +85,6 @@ async function scrapeImages() {
     }
     ;
     async function downloadNewImages() {
-        for (const [type, link] of links) {
-            const response = await fetch(link);
-            const html = await response.text();
-            const $ = cheerio.load(html);
-            $('.item-icon a img').each((i, el) => {
-                const imgSrc = $(el).attr('src');
-                if (imgSrc)
-                    imgLinks.push([imgSrc, imgSrc.split('/').pop().split('-')[0] + '.jpg']);
-            });
-        }
-        ;
         const [existingImages] = await GoogleClass.publicBucket.getFiles({ prefix: 'mfc' });
         const existingIconImages = [];
         const existingMainImages = [];
@@ -170,7 +161,7 @@ async function scrapeImages() {
     await deleteOldImages();
 }
 ;
-export class ScrapeFunctions {
+class ScrapeFunctions {
     static async readMFCItem(elementId, typeOfFigure) {
         let response = await fetch(`${mfcLink}/item/${elementId}`);
         if (!response.ok) {
@@ -193,8 +184,13 @@ export class ScrapeFunctions {
         let type = typeOfFigure;
         let title = $('h1.title').text();
         let tags;
-        const figureResponse = await fetch(`${mfcLink}/item/${elementId}`);
-        const figureHtml = await figureResponse.text();
+        const page = await browser.newPage();
+        await page.setUserAgent({
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
+        });
+        await page.goto(`${mfcLink}/item/${elementId}`, { waitUntil: 'domcontentloaded' });
+        const figureHtml = await page.content();
+        await page.close();
         const $$ = cheerio.load(figureHtml);
         const dataFields = $$('.object-wrapper .data-wrapper .data-field');
         for (const element of dataFields.toArray()) {
@@ -304,17 +300,35 @@ async function fetchData(addingData) {
         ;
     }
     ;
+    let html;
     for (const [typeOfFigure, link] of links) {
         const dateFormat = Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        console.log(`\n[${dateFormat.format(new Date())}] Trying to access the url "${link}"...`);
-        const response = await fetch(link);
-        console.log(`[${dateFormat.format(new Date())}] Successfully loaded.`);
-        const html = await response.text();
+        log(`\n[${dateFormat.format(new Date())}] Trying to access the url "${link}"...`);
+        try {
+            const page = await browser.newPage();
+            await page.setUserAgent({
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
+            });
+            await page.goto(link, { waitUntil: 'domcontentloaded' });
+            html = await page.content();
+            await page.close();
+        }
+        catch (err) {
+            log('Failed with error: ' + err);
+            return;
+        }
+        finally {
+            log(`[${dateFormat.format(new Date())}] Succeded.`);
+        }
+        ;
         const $ = cheerio.load(html);
         const itemIcons = $('.item-icon');
         for (const el of itemIcons.toArray()) {
             const elementId = $(el).find('a').attr('href').replace('/item/', '');
             figuresIdsToKeep.push(elementId);
+            const imgSrc = $(el).find('img').attr('src');
+            if (imgSrc)
+                imgLinks.push([imgSrc, imgSrc.split('/').pop().split('-')[0] + '.jpg']);
             await sleep(900);
             const index = json.findIndex((obj) => obj.id === elementId);
             if (index > 0) {
