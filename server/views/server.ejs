@@ -6,6 +6,7 @@
 	<title>StatisticShock Index Server</title>
 	<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 	<header>StatisticShock.GitHub.io Server</header>
 	<div id="container">
@@ -39,16 +40,16 @@
 				<ç length++; ç>
 				<ç length += type.endpoints.length; ç>
 			<ç }); ç>
-			<nav style=<ç= '--child-count:' + (length * 1.65) + 'em;' ç>>
+			<nav <ç= style='--child-count:' + (length * 1.65) + 'em;' ç>>
 				<a href="#endpoints" style="color: var(--clr-primary-a0); text-decoration: none; margin: 3em 0;">ENDPOINTS</a>
 				<div>
 					<ç typeOfEndpoints.forEach(function (type) { ç>
 						<ç if (type.endpoints.length === 0) {} else { ç>
-							<a href=<ç= '#' + type.method.toLowerCase() ç> style="color: var(--clr-primary-a0); text-decoration: none;"><ç= type.method ç></a>
+							<a <ç= href='#' + type.method.toLowerCase() ç> style="color: var(--clr-primary-a0); text-decoration: none;"><ç= type.method ç></a>
 							<ul>
 								<ç type.endpoints.forEach(function (endpoint) { ç>
 									<ç const shortcut = '/' + endpoint.route.split('/')[1] + '/' ç>
-									<li><a href=<ç= '#' + type.method.toLowerCase() + '-' + endpoint.id ç>><ç= shortcut ç></a></li>
+									<li><a <ç= href='#' + type.method.toLowerCase() + '-' + endpoint.id ç>><ç= shortcut ç></a></li>
 								<ç }); ç>
 							</ul>
 						<ç }; ç>
@@ -58,21 +59,21 @@
 		</aside>
 		<div class="data-wrapper">
 			<h1 id="endpoints" style="margin: 0 auto; text-align: center;">ENDPOINTS</h1>
-			<p>This database is in a <span class="codeblock">Google Sheets</span> file.</p>
+			<p switch="Esta base de dados está em um arquivo &lt;span class=&quot;codeblock&quot;&gt;Google Sheets&lt;/span&gt;">This database is in a <span class="codeblock">Google Sheets</span> file.</p>
 			<ç typeOfEndpoints.forEach(function (type) { ç>
 				<ç if (type.endpoints.length === 0) {} else { ç>
-					<h2 id=<ç= type.method.toLowerCase() ç>><ç= type.method ç></h2>
-					<p><ç- type.description[0].split('\n').map((line) => '<p>' + line + '</p>').join('') ç></p>
+					<h2 <ç= id=type.method.toLowerCase() ç>><ç= type.method ç></h2>
+					<p><ç- type.description.en.split('\n').map((line) => '<p>' + line + '</p>').join('') ç></p>
 					<ul>
 						<ç type.endpoints.forEach(function (endpoint) { ç>
-							<div class="endpoint-wrapper" id=<ç= type.method.toLowerCase() + '-' + endpoint.id ç>>
+							<div class="endpoint-wrapper" <ç= id=type.method.toLowerCase() + '-' + endpoint.id ç>>
 								<h3 class="route"><ç= endpoint.route ç></h1>
-								<div class="description"><ç- endpoint.description[0].split('\n').map((text) => `<p>${text}</p>`).join('') ç></div>
+								<div class="description"><ç- endpoint.description.en.split('\n').map((text) => `<p>${text}</p>`).join('') ç></div>
 								<ç if (endpoint.parameters) { ç>
 									<div class="parameter">
 										<ç endpoint.parameters.forEach((parameter) => { ç>
 											<div class="parameter-name"><ç- parameter[0] ç></div>
-											<div class="parameter-description"><ç- parameter[1].replaceAll('\n', '<br>') ç></div>
+											<div class="parameter-description" <ç- switch='"' + parameter[1].en.replaceAll('\n', '<br/>').replaceAll('"', "&quot;") + '"' -ç>><ç- parameter[1].en.replaceAll('\n', '<br/>') -ç></div>
 										<ç }); ç>
 									</div>
 								<ç } ç>
@@ -194,4 +195,5 @@
 		})();
 	</script>
 </body>
+
 </html>

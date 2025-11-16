@@ -56,17 +56,17 @@
 				</svg>
 			</switch>
 			<div id="twoB" class="sitting-figure">
-				<img src="./images/2b.webp">
+				<object data="./images/2b.webp"><broken-img/></object>
 			</div>
 			<div id="ohto" class="sitting-figure">
-				<img src="./images/Ohto_Ai_Flamengo.webp">
+				<object data="./images/Ohto_Ai_Flamengo.webp"><broken-img/></object>
 			</div>
 			<label id="mfc-switch" class="switch" style="display: none;"></label>
 			<a class="pop-up-open reddit-google" alt="Reddit Google Search" style="cursor: pointer;">
-				<reddit-google-img>
+				<object data="./images/reddit-google.webp"><broken-img/></object>
 			</a>
 			<a class="pop-up-open wikipedia" alt="Wikipedia Search" style="cursor: pointer;">
-				<wikipedia-img>
+				<object data="./images/wikipedia.webp"><broken-img/></object>
 			</a>
 		</nav>
 	</header>
@@ -93,16 +93,16 @@
 					<h3>Anime</h3>
 					<div class="card">
 						<div class="loader"></div>
-						<button class="nav-button left" type="button"><arrow-img></arrow-img></button>
+						<button class="nav-button left" type="button"><arrow-img/></button>
 						<div class="inner-card anime" style="opacity: 0;"></div>
-						<button class="nav-button right" type="button"><arrow-img></arrow-img></button>
+						<button class="nav-button right" type="button"><arrow-img/></button>
 					</div>
 					<h3>Mangá</h3>
 					<div class="card">
 						<div class="loader"></div>
-						<button class="nav-button left" type="button"><arrow-img></arrow-img></button>
+						<button class="nav-button left" type="button"><arrow-img/></button>
 						<div class="inner-card manga" style="opacity: 0;"></div>
-						<button class="nav-button right" type="button"><arrow-img></arrow-img></button>
+						<button class="nav-button right" type="button"><arrow-img/></button>
 					</div>
 				</section>
 			</section>
@@ -110,8 +110,8 @@
 		<form class="pop-up reddit-google">
 			<div class="pop-up-header">
 				<div>
-					<img src="./images/google.webp">
-					<img src="./images/reddit-icon.webp">
+					<object data="./images/google.webp"><broken-img/></object>
+					<object data="./images/reddit-icon.webp"><broken-img/></object>
 				</div>
 				<button type="button" class="close-button">&times;</button>
 			</div>
@@ -128,7 +128,7 @@
 		<form class="pop-up wikipedia">
 			<div class="pop-up-header">
 				<div>
-					<img src="./images/wikipedia.webp">
+					<object data="./images/wikipedia.webp"><broken-img/></object>
 				</div>
 				<button type="button" class="close-button">&times;</button>
 			</div>
@@ -151,7 +151,7 @@
 			<p class="{{joker}}">{{title}}</p>
 			<div class="grid-container">
 				<a class="shortcut-item children-template" href="{{children-href}}" alt="{{children-alt}}" id="{{children-id}}" target="_blank">
-					<img src="{{children-img}}" class="{{joker}}" draggable="false">
+					<object data="{{children-img}}" class="{{joker}}" draggable="false"><broken-img/></object>
 					<span>{{children-floatingLabel}}</span>
 				</a>
 			</div>
@@ -163,7 +163,7 @@
 			<p class="{{joker}}">Prêmios</p>
 			<div class="grid-container">
 				<a class="shortcut-item retroachievements-award awards-template" href="https://retroachievements.org/game/{{awards-awardData}}" alt="{{awards-title}}" target="_blank" id="ra-award-{{awards-awardData}}">
-					<img src="{{awards-imageIcon}}" draggable="false">
+					<object data="{{awards-imageIcon}}" draggable="false"><broken-img/></object>
 				</a>
 			</div>
 		</section>
@@ -186,7 +186,7 @@
 
 	<template id="mfc-item-template">
 		<a alt="" class="mfc update-link {{joker}}" id="mfc-{{id}}" href="/update.html?page=mfc&id={{id}}">
-			<img src="{{icon}}" draggable="false">
+			<object data="{{icon}}" draggable="false"><broken-img/></object>
 		</a>
 	</template>
 
