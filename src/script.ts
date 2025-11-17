@@ -537,14 +537,12 @@ class CloudStorageData {
 			new TemplateConstructor((document.querySelector('template#gamecard-template') as HTMLTemplateElement).content, content.gamecards).insert(gamecards);
 
 			for (const gamecard of content.gamecards) {
-				const gamecardAnchor: HTMLElement = document.querySelector('#' + gamecard.id + ' a')!;
 				const outerGamecard: HTMLElement = document.querySelector('div#' + gamecard.id + ' .gamecard-outercard')!;
-
 				outerGamecard.style.setProperty('--gamecard-count', Math.max(gamecard.children.length, 2).toString());
 
 				for (const child of gamecard.children) {
 					for (const css of child.img_css) {
-						gamecardAnchor.style.setProperty(css.attribute, css.value);
+						(document.querySelector('#' + child.id + ' a') as HTMLAnchorElement).style.setProperty(css.attribute, css.value);
 					};
 				};
 			};
@@ -682,241 +680,48 @@ class ExternalData {
 		});
 	};
 
+	static MALData: [Array<MyTypes.MALEntry>, Array<MyTypes.MALEntry>];
+
 	static async scrapeMyAnimeList(): Promise<void> {
-		async function scrapeDataFromMAL(offset: number): Promise<[MyTypes.AnimeList['data'], MyTypes.MangaList['data']]> {
-			const animeData: MyTypes.AnimeList = await fetch(`${server}myanimelist/animelist?username=HikariMontgomery&offset=${offset}`)
+		async function scrapeDataFromMAL(options: {offset: number, limit: number}): Promise<[Array<MyTypes.MALEntry>, Array<MyTypes.MALEntry>]> {
+			const animeData = await fetch(`${server}myanimelist/animelist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}`)
 				.then(response => response.json());
-			const animeDataData: MyTypes.AnimeList["data"] = animeData.data.filter((entry) => entry.node.nsfw === 'white').slice(0, 10);
 
-			const mangaData: MyTypes.MangaList = await fetch(`${server}myanimelist/mangalist?username=HikariMontgomery&offset=${offset}`)
+			const mangaData = await fetch(`${server}myanimelist/mangalist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}`)
 				.then(response => response.json());
-			const mangaDataData: MyTypes.MangaList["data"] = mangaData.data.filter((entry) => entry.node.nsfw === 'white').slice(0, 10);
 
-			return [animeDataData, mangaDataData];
+			return [animeData, mangaData];
 		};
 
-		const translations: Array<Array<string>> = [
-			['api', 'en-US', 'pt-BR'],
-			['completed', 'Completed', 'Finalizado'],
-			['reading', 'Reading', 'Lendo'],
-			['watching', 'Watching', 'Assistindo'],
-			['plan_to_read', 'Plan to read', 'Planeja ler'],
-			['plan_to_watch', 'Plan to watch', 'Planeja assistir'],
-			['dropped', 'Dropped', 'Abandonado'],
-			['on_hold', 'On hold', 'Em espera']
-		]
+		const amountOfUniqueCards: number = 15;
+		const multiplier: 2|4|6|8|10 = 4;
+		const amountOfCards = multiplier * amountOfUniqueCards;
 
-		let output: Promise<[MyTypes.AnimeList['data'], MyTypes.MangaList['data']]> = scrapeDataFromMAL(0);
-		const animeCard: HTMLDivElement = document.querySelector('#my-anime-list .inner-card.anime')!;
-		const mangaCard: HTMLDivElement = document.querySelector('#my-anime-list .inner-card.manga')!;
+		scrapeDataFromMAL({offset: 0, limit: amountOfUniqueCards}).then((res) => {
+			this.MALData = res;
 
-		output.then((res) => {
-			for (let i = 0; i < 2; i++) { //Adds two of each anime/manga entry to make it look infinite
+			res.forEach((collection, i) => {
+				const card = document.querySelectorAll('#my-anime-list .inner-card')[i] as HTMLDivElement;
+				
+				const entries: TemplateConstructor = new TemplateConstructor((document.querySelector('#myanimelist-template') as HTMLTemplateElement).content, collection['myanimelist']);
+				
+				for (let i = 0; i < amountOfCards / amountOfUniqueCards; i++) {
+					entries.insert(card, 'after');
+				};
+				
+				card.removeAttribute('style');
+				card.previousElementSibling!.previousElementSibling!.remove();
+			});
 
-				createCards(res[0], animeCard);
-				createCards(res[1], mangaCard);
-
-				if (i === 1) {
-					makeCarouselSlide(res[0], animeCard);
-					makeCarouselSlide(res[1], mangaCard);
-				}
-			};
-
-			setDefaultScroll();
 			selectOnlyTheCurrentImage();
-		}).then((res) => {
-			let loaders: NodeListOf<HTMLDivElement> = document.querySelectorAll('#my-anime-list .loader')!;
-			let innerCards: NodeListOf<HTMLDivElement> = document.querySelectorAll('#my-anime-list .inner-card')!;
-
-			loaders.forEach((loader) => {
-				loader.style.display = 'none';
-			})
-			innerCards.forEach((innerCard) => {
-				innerCard.style.opacity = '1';
-			})
-		})
-
-		function createCards(entries: MyTypes.AnimeList['data'] | MyTypes.MangaList['data'], card: HTMLDivElement, insertBefore?: boolean): void {
-			const firstCard = card.firstElementChild as HTMLAnchorElement | null;
-
-			entries.forEach((entry) => {
-				const typeOfMedia: string = Object.keys(entry.list_status).includes('is_rewatching') ? 'anime' : 'manga';
-
-				const img: HTMLImageElement = new Image();
-				img.src = entry.node.main_picture.large;
-				
-				const a: HTMLAnchorElement = document.createElement('a');
-				a.appendChild(img);
-				a.target = '_blank';
-				a.href = `https://myanimelist.net/${typeOfMedia}/${entry.node.id}/`
-				
-				const div: HTMLDivElement = document.createElement('div');
-				div.classList.add('paragraph-container');
-				
-				const bold: HTMLElement = document.createElement('b');
-				bold.innerHTML = `#${entry.node.rank === undefined ? 'N/A' : entry.node.rank}`
-				
-				const span: HTMLSpanElement = document.createElement('span');
-				span.innerHTML = `<p><span>Título&nbsp;</span><span>${entry.node.title}</span></p>`;
-				
-				const p2: HTMLParagraphElement = document.createElement('p');
-				
-				if ('num_episodes_watched' in entry.list_status && 'num_episodes' in entry.node) {
-					p2.innerHTML = `<span>Assistidos&nbsp;</span><span>${entry.list_status.num_episodes_watched}/${entry.node.num_episodes === 0 ? '??' : entry.node.num_episodes}</span>`;
-				} else if ('num_chapters_read' in entry.list_status && 'num_chapters' in entry.node) {
-					p2.innerHTML = `<span>Lidos&nbsp;</span><span>${entry.list_status.num_chapters_read}/${entry.node.num_chapters === 0 ? '??' : entry.node.num_chapters}</span>`;
-				};
-				
-				const p3: HTMLParagraphElement = document.createElement('p');
-				const genres: Array<string> = [];
-				
-				for (const genre of entry.node.genres) {
-					genres.push(genre.name);
-				}
-				
-				p3.innerHTML = `<span>Gêneros&nbsp;</span><span>${genres.join(', ')}</span>`;
-
-				const p4: HTMLParagraphElement = document.createElement('p');
-				p4.innerHTML = `<span>Status</span><span>${CustomFunctions.vlookup(entry.list_status.status, translations, translations[0].indexOf('pt-BR') + 1)}</span>`;
-
-				div.style.display = mobile ? '' : 'none';
-				img.style.opacity = mobile ? '0.25' : '1'
-
-				span.appendChild(p2);
-				span.appendChild(p3);
-				span.appendChild(p4);
-
-				if (entry.list_status.score !== 0) {
-					const p4: HTMLParagraphElement = document.createElement('p');
-					p4.innerHTML = `<span>Pontuação&nbsp;</span><span>${'⭐'.repeat(entry.list_status.score)}\n(${entry.list_status.score}/10)</span>`;
-					span.appendChild(p4);
-				}
-
-				div.appendChild(bold);
-				div.appendChild(span);
-				a.appendChild(div);
-
-				if (insertBefore) {
-					card.insertBefore(a, firstCard);
-				} else {
-					card.appendChild(a);
-				}
-
-				if (!mobile) {
-					a.addEventListener('mouseenter', showEntryData, true);
-					a.addEventListener('touchstart', showEntryData, true);
-					a.addEventListener('mouseleave', hideEntryData, true);
-					a.addEventListener('touchend', hideEntryData, true);
-				};
-
-				function showEntryData(): void {
-					div.style.display = '';
-					img.style.opacity = '0.25';
-				};
-
-				function hideEntryData(): void {
-					div.style.display = 'none';
-					img.style.opacity = '1';
-				};
-			});
-		};
-
-		function setDefaultScroll(): void {
-			const itemWidth: number = animeCard.querySelector('a')!.getBoundingClientRect().width;
-			const gap = parseFloat(getComputedStyle(animeCard).gap);
-
-			animeCard.scrollTo((itemWidth + gap) * 10, 0);
-			mangaCard.scrollTo((itemWidth + gap) * 10, 0);
-		};
-
-		function makeCarouselSlide(entries: MyTypes.AnimeList['data'] | MyTypes.MangaList['data'], card: HTMLDivElement): void {
-			function getClosestAnchor(container: HTMLDivElement): HTMLAnchorElement {
-				const rect: DOMRect = container.getBoundingClientRect();
-				const center: number = rect.left + rect.width / 2;
-
-				const anchors: NodeListOf<HTMLAnchorElement> = container.querySelectorAll('a');
-				let closestAnchor: HTMLAnchorElement | null = null;
-				let closestDistance: number = Infinity;
-
-				anchors.forEach((anchor) => {
-					const anchorRect: DOMRect = anchor.getBoundingClientRect();
-					const anchorCenter: number = anchorRect.left + anchorRect.width / 2;
-					const distance: number = Math.abs(center - anchorCenter);
-
-					if (distance < closestDistance) {
-						closestDistance = distance;
-						closestAnchor = anchor;
-					}
-				});
-
-				return closestAnchor!;
-			};
-
-			const navBttns: NodeListOf<HTMLButtonElement> = card.parentElement!.querySelectorAll('.nav-button');
-			navBttns.forEach((bttn) => {
-				bttn.addEventListener('click', scrollFunction); function scrollFunction(e: MouseEvent | TouchEvent) {
-					const target = e.target as HTMLButtonElement;
-					const direction: string = target.closest('button')!.classList.contains('left') ? 'left' : 'right';
-					let anchor: HTMLAnchorElement = getClosestAnchor(card);
-					const anchors: NodeListOf<HTMLAnchorElement> = card.querySelectorAll('a');
-
-					const width: number = card.scrollWidth;
-					const anchorWidth: number = parseFloat(getComputedStyle(anchor).width);
-					const gap: number = parseFloat(getComputedStyle(card).gap);
-
-					if (direction === 'left') {
-						card.scrollBy({ left: - width / anchors.length, behavior: 'smooth' });
-
-						if (anchor === anchors[5] || anchor === anchors[4]) {
-							const frstChild = card.firstElementChild as HTMLAnchorElement;
-							const previousOffset: number = frstChild.offsetLeft;
-
-							createCards(entries, card, true);
-
-							const newOffset: number = frstChild.offsetLeft;
-
-							card.style.scrollBehavior = 'auto';
-							card.scrollLeft += (newOffset - previousOffset);
-							card.scrollBy({ left: - width / anchors.length, behavior: 'smooth' });
-							card.style.scrollBehavior = 'smooth';
-
-							const allAnchors: NodeListOf<HTMLAnchorElement> = card.querySelectorAll('a');
-							const anchorsToRemove: Array<HTMLAnchorElement> = Array.from(allAnchors).slice(allAnchors.length - 10, allAnchors.length);
-							anchorsToRemove.forEach((anchorToRemove) => {
-								anchorToRemove.remove();
-							});
-						};
-					} else if (direction === 'right') {
-						card.scrollBy({ left: width / anchors.length, behavior: 'smooth' });
-
-						if (anchor === anchors[anchors.length - 5] || anchor === anchors[anchors.length - 4]) {
-							const frstChild = card.lastElementChild as HTMLAnchorElement;
-							const previousOffset: number = frstChild.offsetLeft;
-
-							createCards(entries, card, false);
-
-							const allAnchors: NodeListOf<HTMLAnchorElement> = card.querySelectorAll('a');
-							const anchorsToRemove: Array<HTMLAnchorElement> = Array.from(allAnchors).slice(0, 10);
-							anchorsToRemove.forEach((anchorToRemove) => {
-								anchorToRemove.remove();
-							});
-
-							const newOffset: number = frstChild.offsetLeft;
-
-							card.style.scrollBehavior = 'auto';
-							card.scrollLeft += (newOffset - previousOffset);
-							card.scrollBy({ left: width / anchors.length, behavior: 'smooth' });
-							card.style.scrollBehavior = 'smooth';
-						};
-					};
-				};
-			});
-		};
+			makeCarouselsSlide();
+			setDefaultScroll();
+		});
 
 		function selectOnlyTheCurrentImage(): void {
 			if (!mobile) return;
 			else {
-				[animeCard, mangaCard].forEach((card) => {
+				document.querySelectorAll('#my-anime-list .inner-card').forEach((card) => {
 					const entries = card.querySelectorAll('a');
 					const navBttns = card.parentElement!.querySelectorAll('.nav-button') as NodeListOf<HTMLElement>;
 
@@ -936,6 +741,83 @@ class ExternalData {
 					});
 				});
 			};
+		};
+
+		function makeCarouselsSlide (): void {
+			(document.querySelectorAll('#my-anime-list .nav-button') as NodeListOf<HTMLButtonElement>).forEach((button, i) => {
+				button.addEventListener('click', (ev) => {
+					const card = button.parentElement!;
+					const innerCard = card.querySelector('.inner-card') as HTMLDivElement;
+					const innerCardTransitionTime: number = parseFloat(getComputedStyle(innerCard).transition);
+					const firstEntry = card.querySelector('a') as HTMLAnchorElement;
+					const firstEntryLeft: number = firstEntry.offsetLeft;
+					const secondEntryLeft: number = (firstEntry.nextElementSibling as HTMLAnchorElement).offsetLeft
+
+					const parent = button.parentElement as HTMLDivElement;
+					const anchors = Array.from(parent.querySelectorAll('.inner-card a')) as Array<HTMLAnchorElement>
+					const anchorsMap: Array<[HTMLAnchorElement, number]> = anchors.map((anchor) => {
+						const anchorRect = anchor.getBoundingClientRect();
+						const parentRect = parent.getBoundingClientRect();
+
+						return [anchor, Math.abs((anchorRect.left - parentRect.left) - (parentRect.right - anchorRect.right))];
+					});
+
+					const middleAnchor: HTMLAnchorElement = anchorsMap.filter(([anchor, distanceFromMiddle]) => {
+						return distanceFromMiddle === anchorsMap.reduce((prev: number, curr: [HTMLAnchorElement, number]): number => Math.min(prev, curr[1]), Infinity)
+					})[0][0];
+
+					const parentType: 'anime'|'manga' = parent.querySelector('.inner-card')!.classList.contains('anime') ? 'anime' : 'manga';
+					const scrollLimits: Array<{direction: 'left'|'right', position: number, insertDirection: 'after'|'before'}> = [
+						{direction: 'left', position: 5, insertDirection: 'before'},
+						{direction: 'right', position: amountOfCards - 5 - 1, insertDirection: 'after'},
+					];
+
+					function scrollMyAnimeListCard (isFakeScroll?: boolean) {
+						if (parseInt(innerCard.getAttribute('scroll-count')!) > 3) return;
+						
+						if (isFakeScroll) {
+							innerCard.scrollBy({
+								left: (secondEntryLeft - firstEntryLeft) * multiplier / 2 * amountOfUniqueCards * (button.classList.contains('right') ? -1 : 1),
+								behavior: 'instant',
+							});
+
+							setTimeout(() => scrollMyAnimeListCard(false), 10);
+						} else {
+							setTimeout(() => {
+								innerCard.scrollBy({
+									left: (secondEntryLeft - firstEntryLeft) * (button.classList.contains('right') ? 1 : -1),
+									behavior: 'smooth',
+								});
+
+								setTimeout(() => {
+									innerCard.setAttribute('scroll-count', (parseInt(innerCard.getAttribute('scroll-count')!) - 1).toString())
+								}, innerCardTransitionTime) ;
+							}, innerCardTransitionTime * 1000 * parseInt(innerCard.getAttribute('scroll-count')!));
+
+							innerCard.setAttribute('scroll-count', (parseInt(innerCard.getAttribute('scroll-count')!) + 1).toString());
+						}
+					};
+					if (scrollLimits.some((scrollLimit) => button.classList.contains(scrollLimit.direction) && anchors.indexOf(middleAnchor) === scrollLimit.position)) {
+						for (const scrollLimit of scrollLimits) {
+							new TemplateConstructor((document.querySelector('#myanimelist-template') as HTMLTemplateElement).content, ExternalData.MALData[parentType === 'anime' ? 0 : 1]['myanimelist']).insert(parent.querySelector('.inner-card')!, scrollLimit.insertDirection);
+							anchors.slice(scrollLimit.direction !== 'left' ? 0 : - amountOfUniqueCards, scrollLimit.direction !== 'left' ? amountOfUniqueCards : 0).forEach((anchor) => anchor.remove());
+							scrollMyAnimeListCard(true);
+							break;
+						};
+					} else {
+						scrollMyAnimeListCard(false);
+					};
+				});
+			});
+		};
+
+		function setDefaultScroll (): void {
+			document.querySelectorAll('#my-anime-list .inner-card').forEach((card) => {
+				card.scrollBy({
+					left: card.scrollWidth * ((amountOfUniqueCards) - 1) / ((amountOfUniqueCards) * 2),
+					behavior: 'instant'
+				});
+			});
 		};
 	};
 };
@@ -1009,7 +891,6 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 
 	PageBehaviour.openLinksInNewTab();
 	PageBehaviour.stopImageDrag();
-
 	setTimeout(() => window.dispatchEvent(new Event('resize')), 250);
 };
 window.addEventListener('resize', onResizeFunctions, true); function onResizeFunctions(ev: Event) {

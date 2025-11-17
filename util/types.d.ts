@@ -62,6 +62,22 @@ export type MangaList = {
 		next: string;
 	};
 };
+export type MALEntry = {
+	type: 'anime'|'manga',
+	id: number,
+	title: string,
+	main_picture_large: string,
+	main_picture_medium: string,
+	genres: string,
+	num_entries: number,
+	nsfw: 'white'|'gray'|'black',
+	rank: number,
+	score: number,
+	progress: number,
+	updated_at: string,
+	start_date?: string,
+	finish_date?: string,
+}
 
 //PAGE CONTENT
 export type MFC = {

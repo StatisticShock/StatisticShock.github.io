@@ -19,7 +19,6 @@
 	--check: url('data:image/svg+xml,<svg width="100%" height="100%" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg" aria-labelledby="okIconTitle" stroke="contextFill" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" color="contextFill"><title>check</title><polyline points="4 13 9 18 20 7"/></svg>');
 	--edit: url('data:image/svg+xml,<svg fill="context-fill" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 528.899 528.899" xml:space="preserve"><title>edit</title><g><path d="M328.883,89.125l107.59,107.589l-272.34,272.34L56.604,361.465L328.883,89.125z M518.113,63.177l-47.981-47.981 c-18.543-18.543-48.653-18.543-67.259,0l-45.961,45.961l107.59,107.59l53.611-53.611 C532.495,100.753,532.495,77.559,518.113,63.177z M0.3,512.69c-1.958,8.812,5.998,16.708,14.811,14.565l119.891-29.069 L27.473,390.597L0.3,512.69z"/></g></svg>');
 	--image: url('data:image/svg+xml,<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 9800 7360" preserveAspectRatio="xMidYMid meet"><title>broken image</title><g fill="contextFill" stroke="none"><path d="M920 7343 c-431 -76 -769 -384 -887 -808 l-28 -100 0 -2755 0 -2755 27 -98 c74 -268 239 -497 466 -645 155 -101 310 -154 506 -172 76 -8 1335 -10 3976 -8 l3865 3 90 22 c414 97 716 387 832 798 l28 100 3 2700 c2 1926 0 2723 -8 2780 -17 122 -46 220 -100 331 -139 289 -385 492 -708 586 l-77 23 -3980 1 c-2189 1 -3991 -1 -4005 -3z m7949 -420 c273 -64 425 -211 493 -478 l23 -90 0 -2675 0 -2675 -23 -90 c-68 -267 -220 -414 -493 -478 l-94 -22 -3795 -3 c-2592 -2 -3830 0 -3906 8 -333 31 -529 165 -614 418 -52 156 -50 59 -50 2842 0 2783 -2 2686 50 2842 67 198 215 333 428 388 45 12 119 25 164 29 46 5 1802 8 3903 7 l3820 -1 94 -22z"/><circle cx="1775" cy="2085" r="750"/><path d="M5405 2453 c-739 627 -1325 1115 -1331 1112 -6 -4 -234 -186 -507 -405 -273 -220 -501 -397 -508 -395 -6 2 -467 368 -1025 813 l-1013 810 2 920 2 920 3875 0 3875 0 3 -1531 2 -1532 -1015 -913 c-558 -503 -1021 -915 -1028 -916 -6 -1 -606 502 -1332 1117z"/></g></svg>');
-	--broken-image: url('data:image/svg+xml,<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 9800 7360" preserveAspectRatio="xMidYMid meet"><g fill="contextFill" stroke="none" mask="url(#eraser)"><path d="M920 7343 c-431 -76 -769 -384 -887 -808 l-28 -100 0 -2755 0 -2755 27 -98 c74 -268 239 -497 466 -645 155 -101 310 -154 506 -172 76 -8 1335 -10 3976 -8 l3865 3 90 22 c414 97 716 387 832 798 l28 100 3 2700 c2 1926 0 2723 -8 2780 -17 122 -46 220 -100 331 -139 289 -385 492 -708 586 l-77 23 -3980 1 c-2189 1 -3991 -1 -4005 -3z m7949 -420 c273 -64 425 -211 493 -478 l23 -90 0 -2675 0 -2675 -23 -90 c-68 -267 -220 -414 -493 -478 l-94 -22 -3795 -3 c-2592 -2 -3830 0 -3906 8 -333 31 -529 165 -614 418 -52 156 -50 59 -50 2842 0 2783 -2 2686 50 2842 67 198 215 333 428 388 45 12 119 25 164 29 46 5 1802 8 3903 7 l3820 -1 94 -22z"/><circle cx="1775" cy="2085" r="750"/><path d="M5405 2453 c-739 627 -1325 1115 -1331 1112 -6 -4 -234 -186 -507 -405 -273 -220 -501 -397 -508 -395 -6 2 -467 368 -1025 813 l-1013 810 2 920 2 920 3875 0 3875 0 3 -1531 2 -1532 -1015 -913 c-558 -503 -1021 -915 -1028 -916 -6 -1 -606 502 -1332 1117z"/></g><mask id="eraser"><rect width="100%" height="100%" fill="white"/><line x1="9800" y1="0" x2="0" y2="7360" stroke="black" stroke-width="700"/></mask><line x1="9800" y1="0" x2="0" y2="7360" stroke="black" stroke-width="350"/></svg>');
 	--keys: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 16 16" fill="context-fill" fill-opacity="context-fill-opacity"><title>key</title><path fill-rule="evenodd" d="M7.25 4a2.75 2.75 0 1 0 5.5 0 2.75 2.75 0 0 0-5.5 0ZM6 4a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M13.995 13.63c0 .345-.28.625-.625.625h-2.365v1.115a.625.625 0 1 1-1.25 0V7h1.25v6.005h2.365c.345 0 .625.28.625.625ZM8.152 7.264l.435-.435-.884-.884-.525.525c.277.316.606.585.974.794Zm-.908.908a5.026 5.026 0 0 1-.951-.817l-3.278 3.278-1.23 1.23a.625.625 0 0 0 .883.884l.788-.787 2.101 2.11a.625.625 0 0 0 .886-.881L4.34 11.076l2.904-2.904Z" clip-rule="evenodd"/></svg>');
 	--drag-handle: url('data:image/svg+xml,<svg width="100%" height="100%" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><title>handler</title><path d="m 4.496094 0 c -0.832032 0 -1.5 0.671875 -1.5 1.5 s 0.667968 1.5 1.5 1.5 c 0.828125 0 1.5 -0.671875 1.5 -1.5 s -0.671875 -1.5 -1.5 -1.5 z m 6 0 c -0.832032 0 -1.5 0.671875 -1.5 1.5 s 0.667968 1.5 1.5 1.5 c 0.828125 0 1.5 -0.671875 1.5 -1.5 s -0.671875 -1.5 -1.5 -1.5 z m -6 6 c -0.832032 0 -1.5 0.671875 -1.5 1.5 s 0.667968 1.5 1.5 1.5 c 0.828125 0 1.5 -0.671875 1.5 -1.5 s -0.671875 -1.5 -1.5 -1.5 z m 6 0 c -0.832032 0 -1.5 0.671875 -1.5 1.5 s 0.667968 1.5 1.5 1.5 c 0.828125 0 1.5 -0.671875 1.5 -1.5 s -0.671875 -1.5 -1.5 -1.5 z m -6 6 c -0.832032 0 -1.5 0.671875 -1.5 1.5 s 0.667968 1.5 1.5 1.5 c 0.828125 0 1.5 -0.671875 1.5 -1.5 s -0.671875 -1.5 -1.5 -1.5 z m 6 0 c -0.832032 0 -1.5 0.671875 -1.5 1.5 s 0.667968 1.5 1.5 1.5 c 0.828125 0 1.5 -0.671875 1.5 -1.5 s -0.671875 -1.5 -1.5 -1.5 z m 0 0" fill="context-fill"/></svg>');
 	--menu: url('data:image/svg+xml,<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid meet"><title>hamburger</title><g transform="translate(0.000000,600.000000) scale(0.100000,-0.100000)"	fill="context-fill" stroke="none"><path d="M458 5399 c-68 -16 -161 -70 -219 -128 -150 -151 -182 -368 -82 -565	32 -62 122 -153 189 -188 115 -62 -69 -58 2654 -58 2723 0 2539 -4 2654 58 67	35 157 126 189 188 46 91 60 158 55 261 -5 85 -9 102 -46 177 -52 104 -122 173 -229 224 l-78 37 -2525 2 c-1442 0 -2541 -3 -2562 -8z"/><path d="M466 3464 c-214 -52 -366 -242 -366 -458 0 -182 95 -342 251 -426 119 -63 -44 -60 2649 -60 2693 0 2530 -3 2649 60 285 152 339 541 106 764 -26 24 -72 58 -104 75 -123 65 62 61 -2656 60 -2098 -1 -2479 -3 -2529 -15z"/><path d="M440 1521 c-88 -28 -140 -60 -201 -120 -186 -187 -186 -485 0 -672 61 -61 123 -97 210 -123 50 -15 284 -16 2551 -16 2267 0 2501 1 2551 16 87 26 149 62 210 123 92 93 139 205 139 336 0 217 -137 396 -349 459 -50 15 -284 16 -2555 15 -2369 0 -2504 -1 -2556 -18z"/></g></svg>');
@@ -80,10 +79,6 @@ body {
 		background-position: center;
 	}
 
-	& broken-img {
-		background-image: var(--broken-image);
-	}
-
 	& .pop-up {
 		cursor: grab;
 
@@ -132,7 +127,7 @@ body {
 				position: relative;
 				height: 100%;
 
-				& object {
+				& img, & svg {
 					position: relative;
 					height: 100%;
 				}
@@ -182,7 +177,7 @@ body {
 			/* background-color: #1a1a1a; */
 		}
 
-		& object {
+		& img, & svg {
 			pointer-events: fill;
 		}
 
@@ -225,7 +220,7 @@ body {
 		background-position: center;
 		background-size: 60%;
 
-		& object {
+		& img, & svg {
 			fill: red;
 		}
 	}
@@ -277,7 +272,7 @@ body.home {
 			& a {
 				text-decoration: none;
 
-				& object {
+				& img, & svg {
 					height: 100%;
 					margin: 0 10px;
 				}
@@ -293,7 +288,7 @@ body.home {
 			margin: 2.5vh auto;
 			overflow: hidden;
 
-			& > object {
+			& > img, & svg {
 				position: relative;
 			}
 		}
@@ -443,7 +438,7 @@ body.home {
 				max-height: 20vw;
 				z-index: 4;
 			
-				& object {
+				& img, & svg {
 					height: 100%;
 					position: sticky;
 					top: 0;
@@ -460,7 +455,7 @@ body.home {
 				z-index: 4;
 				pointer-events: none;
 			
-				& object {
+				& img, & svg {
 					height: 100%;
 					position: sticky;
 					top: 0;
@@ -493,7 +488,7 @@ body.home {
 				color: black;
 				transition: 0.2s ease;
 
-				& object {
+				& img, & svg {
 					position: absolute;
 					height: 100%;
 					aspect-ratio: 1 / 1;
@@ -566,7 +561,7 @@ body.home {
 						color: black;
 						border-radius: 0.5em;
 
-						& > object, & > skeleton {
+						& > img, & > svg, & > skeleton {
 							position: relative;
 							height: 100%;
 							width: 100%;
@@ -591,13 +586,13 @@ body.home {
 					& a.shortcut-item.retroachievements-award {
 						cursor: pointer;
 
-						& object {
+						& img, & svg {
 							border-radius: 0;
 						}
 					}
 
-					& a.shortcut-item.retroachievements-award.mastered object {border: 2px solid gold;}
-					& a.shortcut-item.retroachievements-award:not(.mastered) object {border: 2px solid #e5e7eb}
+					& a.shortcut-item.retroachievements-award.mastered img, & a.shortcut-item.retroachievements-award.mastered svg {border: 2px solid gold;}
+					& a.shortcut-item.retroachievements-award:not(.mastered) img, & a.shortcut-item.retroachievements-award:not(.mastered) svg {border: 2px solid #e5e7eb}
 				}
 
 				& > p {
@@ -691,6 +686,7 @@ body.home {
 					text-decoration: none;
 					background-image: var(--pink-purple);
 					overflow: hidden;
+					padding: 0;
 
 					& .loader {
 						height: 10px;
@@ -714,50 +710,53 @@ body.home {
 						gap: 1.5vw;
 						padding: 10px calc(50% - 300px / 4 * 3 / 2);
 						touch-action: none;
+						transition: 0.3s;
 
 						& a {
 							height: 300px;
 							aspect-ratio: 3/4;
 							scroll-snap-align: center;
 							transition: 0.3s ease;
-							z-index: 0;
 							border-radius: 20px;
-							background-color: #1a1a1a;
 							text-decoration: none;
+							position: relative;
 
-							& object {
+							& img, & svg {
 								height: 100%;
 								width: 100%;
 								border-radius: 20px;
 							}
 
-							& .paragraph-container {
-								position: relative;
-								top: calc(-100% - 4px);
-								height: 100%;
-								margin: 1em;
-								font-size: 0.75em;
+							& top-text, & bottom-text {
+								position: absolute;
+								display: inline-block;
+								height: fit-content;
+								white-space: normal;
+								background-color: rgba(0, 0, 0, 0.75);
+								padding: 0 1rem;
+								color: var(--pink-custom);
+								text-align: center;
+							};
 
-								& b {
-									font-size: 1.5em;
-									color: white;
-								}
-
-								& span > p {
-									font-size: 0.8em;
-									display: grid;
-									grid-template-columns: 1fr 2fr;
-									white-space: initial;
-									width: 100%;
-									color: white;
-									pointer-events: none;
-									margin: 5px 0;
-
-									& span:nth-child(1) {
-										color: #a1a1a1;
-									}
-								}
+							& top-text {
+								border-top-left-radius: 20px;
+								border-bottom-right-radius: 20px;
+								left: 0;
+								top: 0;
+								width: 20%;
 							}
+
+							& bottom-text {
+								right: 0;
+								bottom: 0;
+								width: 70%;
+								border-bottom-right-radius: 20px;
+								border-top-left-radius: 20px;
+							}
+						}
+
+						& a:nth-of-type(5), & a:nth-of-type(55) {
+							outline: 3px solid red;
 						}
 					}
 
@@ -885,7 +884,7 @@ body.home {
 						border-width: 3px;
 						border-style: solid;
 
-						& object {
+						& img, & svg {
 							position: relative;
 							width: 100%;
 							height: 100%;
@@ -1380,7 +1379,7 @@ body.update {
 						align-items: center;
 						display: flex;
 						
-						& object {
+						& img, & svg {
 							position: relative;
 							width: 100%;
 							left: 50%;
@@ -1469,12 +1468,12 @@ body.update {
 				border-radius: 4em;
 
 				& a {
-					& object {
+					& img, & svg {
 						outline: 3px solid var(--color);
 						margin: 0 auto;
 					}
 
-					& object.icon-image {
+					& img.icon-image {
 						position: absolute;
 						z-index: 1;
 						height: 4.5em;
@@ -1482,7 +1481,7 @@ body.update {
 						border-radius: 3em;
 					}
 
-					& object.main-image {
+					& img.main-image {
 						position: relative;
 						max-height: 100%;
 						width: 100%;
@@ -1553,7 +1552,7 @@ body.update {
 							align-self: center;
 							justify-self: center;
 
-							& object {
+							& img, & svg {
 								width: 100%;
 								height: 100%;
 							}
@@ -1636,13 +1635,9 @@ body.update {
 					align-self: center;
 				}
 
-				& object {
+				& img, & svg {
 					border-radius: 10px;
 					width: 100%;
-				}
-
-				& object.broken {
-					max-height: 5em;
 				}
 
 				& span {
@@ -1840,7 +1835,7 @@ body.not-found {
 
 /* HELPERS */
 body {
-	& object {
+	& img, & svg {
 		-moz-user-select: none;
 		user-select: none;
 		-webkit-user-select: none;

@@ -75,20 +75,7 @@ export default class SharedDomFunctions {
 			});
 		});
 	};
-
-	static createBrokenImageFallback () {
-		document.querySelectorAll('object').forEach((object) => {
-			object.innerHTML = `<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 980 736" preserveAspectRatio="xMidYMid meet">
-				<title>broken image</title>
-				<g transform="translate(0,736) scale(0.100000,-0.100000)" fill="var(--contrast-color-3)" stroke="none">
-					<path d="M920 7343 c-431 -76 -769 -384 -887 -808 l-28 -100 0 -2755 0 -2755 27 -98 c74 -268 239 -497 466 -645 155 -101 310 -154 506 -172 76 -8 1335 -10 3976 -8 l3865 3 90 22 c414 97 716 387 832 798 l28 100 3 2700 c2 1926 0 2723 -8 2780 -17 122 -46 220 -100 331 -139 289 -385 492 -708 586 l-77 23 -3980 1 c-2189 1 -3991 -1 -4005 -3z m7949 -420 c273 -64 425 -211 493 -478 l23 -90 0 -2675 0 -2675 -23 -90 c-68 -267 -220 -414 -493 -478 l-94 -22 -3795 -3 c-2592 -2 -3830 0 -3906 8 -333 31 -529 165 -614 418 -52 156 -50 59 -50 2842 0 2783 -2 2686 50 2842 67 198 215 333 428 388 45 12 119 25 164 29 46 5 1802 8 3903 7 l3820 -1 94 -22z"/>
-					<path d="M1681 6319 c-242 -47 -461 -214 -570 -434 -66 -132 -86 -218 -85 -370 1 -157 22 -244 89 -373 104 -200 289 -351 511 -414 105 -30 304 -32 409 -4 302 80 529 313 600 616 19 82 19 264 1 351 -64 300 -306 547 -609 619 -88 21 -262 26 -346 9z"/>
-					<path d="M5405 4800 c-739 -627 -1325 -1115 -1331 -1112 -6 4 -234 186 -507 405 -273 220 -501 397 -508 395 -6 -2 -467 -368 -1025 -813 l-1013 -810 2 -920 2 -920 3875 0 3875 0 3 1531 2 1532 -1015 913 c-558 503 -1021 915 -1028 916 -6 1 -606 -502 -1332 -1117z"/>
-				</g>
-			</svg>`;
-		});
-	};
-}
+};
 
 export class TemplateConstructor {
 	html: string;
@@ -155,7 +142,7 @@ export class TemplateConstructor {
 		this.html = element.innerHTML;
 	};
 
-	insert (destination: HTMLElement, position?: 'after'|'before', relative?: HTMLElement): void {
+	insert (destination: HTMLElement, position?: 'after'|'before', relative?: HTMLElement) {
 		if (relative) {
 			if (relative.parentElement !== destination) {
 				throw new Error('"relative" should be a childNode of "destination".');
@@ -187,6 +174,8 @@ export class TemplateConstructor {
 				}
 			};
 		};
+
+		return this
 	};
 };
 

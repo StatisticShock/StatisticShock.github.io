@@ -598,20 +598,19 @@ var CloudStorageData = /** @class */ (function () {
             }
             function loadGamecards() {
                 return __awaiter(this, void 0, void 0, function () {
-                    var gamecards, _i, _a, gamecard, gamecardAnchor, outerGamecard, _b, _c, child, _d, _e, css;
+                    var gamecards, _i, _a, gamecard, outerGamecard, _b, _c, child, _d, _e, css;
                     return __generator(this, function (_f) {
                         gamecards = document.querySelector('section#gamecards');
                         new TemplateConstructor(document.querySelector('template#gamecard-template').content, content.gamecards).insert(gamecards);
                         for (_i = 0, _a = content.gamecards; _i < _a.length; _i++) {
                             gamecard = _a[_i];
-                            gamecardAnchor = document.querySelector('#' + gamecard.id + ' a');
                             outerGamecard = document.querySelector('div#' + gamecard.id + ' .gamecard-outercard');
                             outerGamecard.style.setProperty('--gamecard-count', Math.max(gamecard.children.length, 2).toString());
                             for (_b = 0, _c = gamecard.children; _b < _c.length; _b++) {
                                 child = _c[_b];
                                 for (_d = 0, _e = child.img_css; _d < _e.length; _d++) {
                                     css = _e[_d];
-                                    gamecardAnchor.style.setProperty(css.attribute, css.value);
+                                    document.querySelector('#' + child.id + ' a').style.setProperty(css.attribute, css.value);
                                 }
                                 ;
                             }
@@ -784,181 +783,29 @@ var ExternalData = /** @class */ (function () {
     ;
     ExternalData.scrapeMyAnimeList = function () {
         return __awaiter(this, void 0, void 0, function () {
-            function scrapeDataFromMAL(offset) {
+            function scrapeDataFromMAL(options) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var animeData, animeDataData, mangaData, mangaDataData;
+                    var animeData, mangaData;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, fetch("".concat(server, "myanimelist/animelist?username=HikariMontgomery&offset=").concat(offset))
+                            case 0: return [4 /*yield*/, fetch("".concat(server, "myanimelist/animelist?username=HikariMontgomery&offset=").concat(options.offset, "&limit=").concat(options.limit))
                                     .then(function (response) { return response.json(); })];
                             case 1:
                                 animeData = _a.sent();
-                                animeDataData = animeData.data.filter(function (entry) { return entry.node.nsfw === 'white'; }).slice(0, 10);
-                                return [4 /*yield*/, fetch("".concat(server, "myanimelist/mangalist?username=HikariMontgomery&offset=").concat(offset))
+                                return [4 /*yield*/, fetch("".concat(server, "myanimelist/mangalist?username=HikariMontgomery&offset=").concat(options.offset, "&limit=").concat(options.limit))
                                         .then(function (response) { return response.json(); })];
                             case 2:
                                 mangaData = _a.sent();
-                                mangaDataData = mangaData.data.filter(function (entry) { return entry.node.nsfw === 'white'; }).slice(0, 10);
-                                return [2 /*return*/, [animeDataData, mangaDataData]];
+                                return [2 /*return*/, [animeData, mangaData]];
                         }
                     });
-                });
-            }
-            function createCards(entries, card, insertBefore) {
-                var firstCard = card.firstElementChild;
-                entries.forEach(function (entry) {
-                    var typeOfMedia = Object.keys(entry.list_status).includes('is_rewatching') ? 'anime' : 'manga';
-                    var img = new Image();
-                    img.src = entry.node.main_picture.large;
-                    var a = document.createElement('a');
-                    a.appendChild(img);
-                    a.target = '_blank';
-                    a.href = "https://myanimelist.net/".concat(typeOfMedia, "/").concat(entry.node.id, "/");
-                    var div = document.createElement('div');
-                    div.classList.add('paragraph-container');
-                    var bold = document.createElement('b');
-                    bold.innerHTML = "#".concat(entry.node.rank === undefined ? 'N/A' : entry.node.rank);
-                    var span = document.createElement('span');
-                    span.innerHTML = "<p><span>T\u00EDtulo&nbsp;</span><span>".concat(entry.node.title, "</span></p>");
-                    var p2 = document.createElement('p');
-                    if ('num_episodes_watched' in entry.list_status && 'num_episodes' in entry.node) {
-                        p2.innerHTML = "<span>Assistidos&nbsp;</span><span>".concat(entry.list_status.num_episodes_watched, "/").concat(entry.node.num_episodes === 0 ? '??' : entry.node.num_episodes, "</span>");
-                    }
-                    else if ('num_chapters_read' in entry.list_status && 'num_chapters' in entry.node) {
-                        p2.innerHTML = "<span>Lidos&nbsp;</span><span>".concat(entry.list_status.num_chapters_read, "/").concat(entry.node.num_chapters === 0 ? '??' : entry.node.num_chapters, "</span>");
-                    }
-                    ;
-                    var p3 = document.createElement('p');
-                    var genres = [];
-                    for (var _i = 0, _a = entry.node.genres; _i < _a.length; _i++) {
-                        var genre = _a[_i];
-                        genres.push(genre.name);
-                    }
-                    p3.innerHTML = "<span>G\u00EAneros&nbsp;</span><span>".concat(genres.join(', '), "</span>");
-                    var p4 = document.createElement('p');
-                    p4.innerHTML = "<span>Status</span><span>".concat(CustomFunctions.vlookup(entry.list_status.status, translations, translations[0].indexOf('pt-BR') + 1), "</span>");
-                    div.style.display = mobile ? '' : 'none';
-                    img.style.opacity = mobile ? '0.25' : '1';
-                    span.appendChild(p2);
-                    span.appendChild(p3);
-                    span.appendChild(p4);
-                    if (entry.list_status.score !== 0) {
-                        var p4_1 = document.createElement('p');
-                        p4_1.innerHTML = "<span>Pontua\u00E7\u00E3o&nbsp;</span><span>".concat('⭐'.repeat(entry.list_status.score), "\n(").concat(entry.list_status.score, "/10)</span>");
-                        span.appendChild(p4_1);
-                    }
-                    div.appendChild(bold);
-                    div.appendChild(span);
-                    a.appendChild(div);
-                    if (insertBefore) {
-                        card.insertBefore(a, firstCard);
-                    }
-                    else {
-                        card.appendChild(a);
-                    }
-                    if (!mobile) {
-                        a.addEventListener('mouseenter', showEntryData, true);
-                        a.addEventListener('touchstart', showEntryData, true);
-                        a.addEventListener('mouseleave', hideEntryData, true);
-                        a.addEventListener('touchend', hideEntryData, true);
-                    }
-                    ;
-                    function showEntryData() {
-                        div.style.display = '';
-                        img.style.opacity = '0.25';
-                    }
-                    ;
-                    function hideEntryData() {
-                        div.style.display = 'none';
-                        img.style.opacity = '1';
-                    }
-                    ;
-                });
-            }
-            function setDefaultScroll() {
-                var itemWidth = animeCard.querySelector('a').getBoundingClientRect().width;
-                var gap = parseFloat(getComputedStyle(animeCard).gap);
-                animeCard.scrollTo((itemWidth + gap) * 10, 0);
-                mangaCard.scrollTo((itemWidth + gap) * 10, 0);
-            }
-            function makeCarouselSlide(entries, card) {
-                function getClosestAnchor(container) {
-                    var rect = container.getBoundingClientRect();
-                    var center = rect.left + rect.width / 2;
-                    var anchors = container.querySelectorAll('a');
-                    var closestAnchor = null;
-                    var closestDistance = Infinity;
-                    anchors.forEach(function (anchor) {
-                        var anchorRect = anchor.getBoundingClientRect();
-                        var anchorCenter = anchorRect.left + anchorRect.width / 2;
-                        var distance = Math.abs(center - anchorCenter);
-                        if (distance < closestDistance) {
-                            closestDistance = distance;
-                            closestAnchor = anchor;
-                        }
-                    });
-                    return closestAnchor;
-                }
-                ;
-                var navBttns = card.parentElement.querySelectorAll('.nav-button');
-                navBttns.forEach(function (bttn) {
-                    bttn.addEventListener('click', scrollFunction);
-                    function scrollFunction(e) {
-                        var target = e.target;
-                        var direction = target.closest('button').classList.contains('left') ? 'left' : 'right';
-                        var anchor = getClosestAnchor(card);
-                        var anchors = card.querySelectorAll('a');
-                        var width = card.scrollWidth;
-                        var anchorWidth = parseFloat(getComputedStyle(anchor).width);
-                        var gap = parseFloat(getComputedStyle(card).gap);
-                        if (direction === 'left') {
-                            card.scrollBy({ left: -width / anchors.length, behavior: 'smooth' });
-                            if (anchor === anchors[5] || anchor === anchors[4]) {
-                                var frstChild = card.firstElementChild;
-                                var previousOffset = frstChild.offsetLeft;
-                                createCards(entries, card, true);
-                                var newOffset = frstChild.offsetLeft;
-                                card.style.scrollBehavior = 'auto';
-                                card.scrollLeft += (newOffset - previousOffset);
-                                card.scrollBy({ left: -width / anchors.length, behavior: 'smooth' });
-                                card.style.scrollBehavior = 'smooth';
-                                var allAnchors = card.querySelectorAll('a');
-                                var anchorsToRemove = Array.from(allAnchors).slice(allAnchors.length - 10, allAnchors.length);
-                                anchorsToRemove.forEach(function (anchorToRemove) {
-                                    anchorToRemove.remove();
-                                });
-                            }
-                            ;
-                        }
-                        else if (direction === 'right') {
-                            card.scrollBy({ left: width / anchors.length, behavior: 'smooth' });
-                            if (anchor === anchors[anchors.length - 5] || anchor === anchors[anchors.length - 4]) {
-                                var frstChild = card.lastElementChild;
-                                var previousOffset = frstChild.offsetLeft;
-                                createCards(entries, card, false);
-                                var allAnchors = card.querySelectorAll('a');
-                                var anchorsToRemove = Array.from(allAnchors).slice(0, 10);
-                                anchorsToRemove.forEach(function (anchorToRemove) {
-                                    anchorToRemove.remove();
-                                });
-                                var newOffset = frstChild.offsetLeft;
-                                card.style.scrollBehavior = 'auto';
-                                card.scrollLeft += (newOffset - previousOffset);
-                                card.scrollBy({ left: width / anchors.length, behavior: 'smooth' });
-                                card.style.scrollBehavior = 'smooth';
-                            }
-                            ;
-                        }
-                        ;
-                    }
-                    ;
                 });
             }
             function selectOnlyTheCurrentImage() {
                 if (!mobile)
                     return;
                 else {
-                    [animeCard, mangaCard].forEach(function (card) {
+                    document.querySelectorAll('#my-anime-list .inner-card').forEach(function (card) {
                         var entries = card.querySelectorAll('a');
                         var navBttns = card.parentElement.querySelectorAll('.nav-button');
                         entries.forEach(function (entry) {
@@ -979,45 +826,103 @@ var ExternalData = /** @class */ (function () {
                 }
                 ;
             }
-            var translations, output, animeCard, mangaCard;
-            return __generator(this, function (_a) {
-                ;
-                translations = [
-                    ['api', 'en-US', 'pt-BR'],
-                    ['completed', 'Completed', 'Finalizado'],
-                    ['reading', 'Reading', 'Lendo'],
-                    ['watching', 'Watching', 'Assistindo'],
-                    ['plan_to_read', 'Plan to read', 'Planeja ler'],
-                    ['plan_to_watch', 'Plan to watch', 'Planeja assistir'],
-                    ['dropped', 'Dropped', 'Abandonado'],
-                    ['on_hold', 'On hold', 'Em espera']
-                ];
-                output = scrapeDataFromMAL(0);
-                animeCard = document.querySelector('#my-anime-list .inner-card.anime');
-                mangaCard = document.querySelector('#my-anime-list .inner-card.manga');
-                output.then(function (res) {
-                    for (var i = 0; i < 2; i++) { //Adds two of each anime/manga entry to make it look infinite
-                        createCards(res[0], animeCard);
-                        createCards(res[1], mangaCard);
-                        if (i === 1) {
-                            makeCarouselSlide(res[0], animeCard);
-                            makeCarouselSlide(res[1], mangaCard);
+            function makeCarouselsSlide() {
+                document.querySelectorAll('#my-anime-list .nav-button').forEach(function (button, i) {
+                    button.addEventListener('click', function (ev) {
+                        var card = button.parentElement;
+                        var innerCard = card.querySelector('.inner-card');
+                        var innerCardTransitionTime = parseFloat(getComputedStyle(innerCard).transition);
+                        var firstEntry = card.querySelector('a');
+                        var firstEntryLeft = firstEntry.offsetLeft;
+                        var secondEntryLeft = firstEntry.nextElementSibling.offsetLeft;
+                        var parent = button.parentElement;
+                        var anchors = Array.from(parent.querySelectorAll('.inner-card a'));
+                        var anchorsMap = anchors.map(function (anchor) {
+                            var anchorRect = anchor.getBoundingClientRect();
+                            var parentRect = parent.getBoundingClientRect();
+                            return [anchor, Math.abs((anchorRect.left - parentRect.left) - (parentRect.right - anchorRect.right))];
+                        });
+                        var middleAnchor = anchorsMap.filter(function (_a) {
+                            var anchor = _a[0], distanceFromMiddle = _a[1];
+                            return distanceFromMiddle === anchorsMap.reduce(function (prev, curr) { return Math.min(prev, curr[1]); }, Infinity);
+                        })[0][0];
+                        var parentType = parent.querySelector('.inner-card').classList.contains('anime') ? 'anime' : 'manga';
+                        var scrollLimits = [
+                            { direction: 'left', position: 5, insertDirection: 'before' },
+                            { direction: 'right', position: amountOfCards - 5 - 1, insertDirection: 'after' },
+                        ];
+                        function scrollMyAnimeListCard(isFakeScroll) {
+                            if (parseInt(innerCard.getAttribute('scroll-count')) > 3)
+                                return;
+                            if (isFakeScroll) {
+                                innerCard.scrollBy({
+                                    left: (secondEntryLeft - firstEntryLeft) * multiplier / 2 * amountOfUniqueCards * (button.classList.contains('right') ? -1 : 1),
+                                    behavior: 'instant',
+                                });
+                                setTimeout(function () { return scrollMyAnimeListCard(false); }, 10);
+                            }
+                            else {
+                                setTimeout(function () {
+                                    innerCard.scrollBy({
+                                        left: (secondEntryLeft - firstEntryLeft) * (button.classList.contains('right') ? 1 : -1),
+                                        behavior: 'smooth',
+                                    });
+                                    setTimeout(function () {
+                                        innerCard.setAttribute('scroll-count', (parseInt(innerCard.getAttribute('scroll-count')) - 1).toString());
+                                    }, innerCardTransitionTime);
+                                }, innerCardTransitionTime * 1000 * parseInt(innerCard.getAttribute('scroll-count')));
+                                innerCard.setAttribute('scroll-count', (parseInt(innerCard.getAttribute('scroll-count')) + 1).toString());
+                            }
                         }
-                    }
-                    ;
-                    setDefaultScroll();
-                    selectOnlyTheCurrentImage();
-                }).then(function (res) {
-                    var loaders = document.querySelectorAll('#my-anime-list .loader');
-                    var innerCards = document.querySelectorAll('#my-anime-list .inner-card');
-                    loaders.forEach(function (loader) {
-                        loader.style.display = 'none';
-                    });
-                    innerCards.forEach(function (innerCard) {
-                        innerCard.style.opacity = '1';
+                        ;
+                        if (scrollLimits.some(function (scrollLimit) { return button.classList.contains(scrollLimit.direction) && anchors.indexOf(middleAnchor) === scrollLimit.position; })) {
+                            for (var _i = 0, scrollLimits_1 = scrollLimits; _i < scrollLimits_1.length; _i++) {
+                                var scrollLimit = scrollLimits_1[_i];
+                                new TemplateConstructor(document.querySelector('#myanimelist-template').content, ExternalData.MALData[parentType === 'anime' ? 0 : 1]['myanimelist']).insert(parent.querySelector('.inner-card'), scrollLimit.insertDirection);
+                                anchors.slice(scrollLimit.direction !== 'left' ? 0 : -amountOfUniqueCards, scrollLimit.direction !== 'left' ? amountOfUniqueCards : 0).forEach(function (anchor) { return anchor.remove(); });
+                                scrollMyAnimeListCard(true);
+                                break;
+                            }
+                            ;
+                        }
+                        else {
+                            scrollMyAnimeListCard(false);
+                        }
+                        ;
                     });
                 });
+            }
+            function setDefaultScroll() {
+                document.querySelectorAll('#my-anime-list .inner-card').forEach(function (card) {
+                    card.scrollBy({
+                        left: card.scrollWidth * ((amountOfUniqueCards) - 1) / ((amountOfUniqueCards) * 2),
+                        behavior: 'instant'
+                    });
+                });
+            }
+            var amountOfUniqueCards, multiplier, amountOfCards;
+            var _this = this;
+            return __generator(this, function (_a) {
                 ;
+                amountOfUniqueCards = 15;
+                multiplier = 4;
+                amountOfCards = multiplier * amountOfUniqueCards;
+                scrapeDataFromMAL({ offset: 0, limit: amountOfUniqueCards }).then(function (res) {
+                    _this.MALData = res;
+                    res.forEach(function (collection, i) {
+                        var card = document.querySelectorAll('#my-anime-list .inner-card')[i];
+                        var entries = new TemplateConstructor(document.querySelector('#myanimelist-template').content, collection['myanimelist']);
+                        for (var i_1 = 0; i_1 < amountOfCards / amountOfUniqueCards; i_1++) {
+                            entries.insert(card, 'after');
+                        }
+                        ;
+                        card.removeAttribute('style');
+                        card.previousElementSibling.previousElementSibling.remove();
+                    });
+                    selectOnlyTheCurrentImage();
+                    makeCarouselsSlide();
+                    setDefaultScroll();
+                });
                 ;
                 ;
                 ;
