@@ -761,10 +761,6 @@ body.home {
 								border-top-left-radius: 20px;
 							}
 						}
-
-						& a:nth-of-type(5), & a:nth-of-type(55) {
-							outline: 3px solid red;
-						}
 					}
 
 					& .nav-button {
