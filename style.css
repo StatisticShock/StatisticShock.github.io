@@ -609,6 +609,7 @@ body.home {
 			}
 
 			& .gamecard-container {
+				width: 100%;
 				display: grid;
 				grid-template-columns: 40px 1fr;
 
@@ -630,14 +631,18 @@ body.home {
 				}
 
 				& .gamecard-outercard {
-					height: 300px;
+					position: relative;
+					height: fit-content;
+					flex-wrap: wrap;
+					align-items: stretch;
 					display: flex;
 					gap: 5px;
 					padding: 5px;
 
-					& .gamecard, .gamecard > a{
-						height: 100%;
-						flex: 1;
+					& .gamecard, .gamecard > a {
+						height: 300px;
+						min-width: 70px;
+						flex: 1 1 calc(min(50px, 20vw));
 						overflow-x: hidden;
 						cursor: pointer;
 						border-radius: 10px;
@@ -661,11 +666,13 @@ body.home {
 						background-size: cover;
 
 						& > span {
-							width: fit-content;
 							position: absolute;
-							top: 50%;
-							translate: 0 -50%;
-							color: var(--pink-custom);
+							color: black;
+							background-color: var(--pink-custom);
+							border-radius: 10px;
+							text-align: center;
+							width: 100%;
+							bottom: 0;
 						}
 					}
 				}
