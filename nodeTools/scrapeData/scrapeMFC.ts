@@ -265,7 +265,7 @@ async function fetchData(addingData?: boolean): Promise<void> {
 		return;
 	};
 
-	let changes: Array<string> = [];
+	const changes: Array<string> = [];
 
 	if (addingData) {
 		const maxKeys: number = json.reduce((prev: number, curr): number => {
@@ -371,7 +371,11 @@ async function fetchData(addingData?: boolean): Promise<void> {
 		await sleep(1000);
 	};
 
-	json.filter((figure) => !(figuresIdsToKeep.includes(figure.id))).forEach((figure) => figuresToDeleteJson.push(figure));
+	json.filter((figure) => !(figuresIdsToKeep.includes(figure.id.toString()))).forEach((figure) => figuresToDeleteJson.push(figure));
+	
+	if (figuresToDeleteJson.length > 0) {
+		figuresToDeleteJson.forEach((figure) => changes.push(`Deletion of figure ${figure.id}`));
+	};
 
 	if (changes.length > 0) {
 		log(`Changes:\n${changes.reduce((prev: string, curr: string): string => {return prev + '• ' + curr + '\n'}, '')}`);

@@ -259,7 +259,7 @@ async function fetchData(addingData) {
         return;
     }
     ;
-    let changes = [];
+    const changes = [];
     if (addingData) {
         const maxKeys = json.reduce((prev, curr) => {
             if (Number(prev) < Object.keys(curr).filter((key) => key !== 'tags').length)
@@ -360,7 +360,11 @@ async function fetchData(addingData) {
         await sleep(1000);
     }
     ;
-    json.filter((figure) => !(figuresIdsToKeep.includes(figure.id))).forEach((figure) => figuresToDeleteJson.push(figure));
+    json.filter((figure) => !(figuresIdsToKeep.includes(figure.id.toString()))).forEach((figure) => figuresToDeleteJson.push(figure));
+    if (figuresToDeleteJson.length > 0) {
+        figuresToDeleteJson.forEach((figure) => changes.push(`Deletion of figure ${figure.id}`));
+    }
+    ;
     if (changes.length > 0) {
         log(`Changes:\n${changes.reduce((prev, curr) => { return prev + '• ' + curr + '\n'; }, '')}`);
         const methods = [
