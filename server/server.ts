@@ -23,7 +23,7 @@ const __dirname = path.dirname(__filename);
 const unlink = util.promisify(fs.unlink);
 
 const app: express.Application = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 const { RA_API_KEY, RA_USERNAME } = process.env;
 const userObject: object = {username: RA_USERNAME};
