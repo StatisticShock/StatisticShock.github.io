@@ -73,7 +73,7 @@
 									<div class="parameter">
 										<ç endpoint.parameters.forEach((parameter) => { ç>
 											<div class="parameter-name"><ç- parameter[0] ç></div>
-											<div class="parameter-description" <ç- switch='"' + parameter[1].en.replaceAll('\n', '<br/>').replaceAll('"', "&quot;") + '"' -ç>><ç- parameter[1].en.replaceAll('\n', '<br/>') -ç></div>
+											<div class="parameter-description" switch=<ç- '"' + parameter[1].en.replaceAll('\n', '<br/>').replaceAll('"', "&quot;") + '"' ç>><ç- parameter[1].en.replaceAll('\n', '<br/>') ç></div>
 										<ç }); ç>
 									</div>
 								<ç } ç>
@@ -94,7 +94,7 @@
 	</div>
 	<footer></footer>
 	<script>
-		(function getCheckedValue(groupName) {
+		function getCheckedValue(groupName) {
 			const radios = document.getElementsByName(groupName);
 
 			for(const radio of radios) {
@@ -104,21 +104,23 @@
 			};
 
 			return null;
-		})();
+		};
 
 		(function changeLanguage () {
 			const div = document.querySelector('.language-wrapper div');
 			div.addEventListener('click', detectLanguageChange);
 
 			function detectLanguageChange () {
-				switch (getCheckedValue('language')) {
-					case 'pt-BR':
-						document.querySelector('p#language').innerHTML = 'Idioma';
-					case 'en-US':
-						document.querySelector('p#language').innerHTML = 'Language';
-					default:
-						document.querySelector('p#language').innerHTML = 'Language';
-				}
+				const language = getCheckedValue('language')
+
+				// switch (language) {
+				// 	case 'pt-BR':
+				// 		document.querySelector('p#language').innerHTML = 'Idioma';
+				// 	case 'en-US':
+				// 		document.querySelector('p#language').innerHTML = 'Language';
+				// 	default:
+				// 		document.querySelector('p#language').innerHTML = 'Language';
+				// }
 			};
 		})();
 
