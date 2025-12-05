@@ -79,8 +79,7 @@
 				<input type="text" placeholder="Pesquise uma figure" id="search-bar">
 				<div class="loader" style="display: none;"></div>
 				<div class="card">
-					<span id="owned-ordered" class="mfc-card"></span>
-					<span id="wished" class="mfc-card"></span>
+					<span id="mfc-card" class="mfc-card"></span>
 				</div>
 			</aside>
 			<section id="shortcuts">
@@ -185,7 +184,7 @@
 	</template>
 
 	<template id="mfc-item-template">
-		<a alt="" class="mfc update-link {{joker}}" id="mfc-{{id}}" href="/update.html?page=mfc&id={{id}}">
+		<a alt="" class="mfc update-link {{joker}}  {{type}}" id="mfc-{{id}}" href="/update.html?page=mfc&id={{id}}">
 			<img src="{{icon}}">
 		</a>
 	</template>

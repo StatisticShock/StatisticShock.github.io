@@ -161,15 +161,13 @@ var PageBuilding = /** @class */ (function (_super) {
         }
         ;
         function createMfcSkeletons() {
-            var cards = document.querySelectorAll('aside .card .mfc-card');
-            var maxColumns = !mobile ? 4 : 2;
-            var maxRows = Math.ceil(cards[0].parentElement.offsetHeight / (parseFloat(getComputedStyle(cards[0]).width) / maxColumns + 20));
-            cards.forEach(function (card) {
-                new TemplateConstructor(document.querySelector('#mfc-item-template').content, Array(maxColumns * maxRows).fill({ joker: skeleton })).insert(card);
-                card.querySelectorAll('.mfc').forEach(function (mfc) {
-                    mfc.removeAttribute('href');
-                    mfc.firstElementChild.remove();
-                });
+            var card = document.querySelector('aside .card #mfc-card');
+            var maxColumns = Math.floor(parseFloat(getComputedStyle(card).width) / parseFloat(getComputedStyle(card).gridTemplateColumns.split(' ')[0]));
+            var maxRows = Math.ceil(card.parentElement.offsetHeight / (parseFloat(getComputedStyle(card).width) / maxColumns));
+            new TemplateConstructor(document.querySelector('#mfc-item-template').content, Array(maxColumns * maxRows).fill({ joker: skeleton })).insert(card);
+            card.querySelectorAll('.mfc').forEach(function (mfc) {
+                mfc.removeAttribute('href');
+                mfc.firstElementChild.remove();
             });
         }
         ;
@@ -707,18 +705,13 @@ var CloudStorageData = /** @class */ (function () {
                 ;
                 loader.style.display = 'none';
             }
-            var input, wished, owned, wishedCard, ownedCard, template, figureDict, loader, timeout;
+            var input, template, figureDict, loader, timeout;
             var _this = this;
             return __generator(this, function (_a) {
                 input = document.querySelector('#search-bar');
                 input.value = '';
-                wished = CustomFunctions.shuffle(this.json.mfc.filter(function (figure) { return figure.type === 'Wished'; }));
-                owned = CustomFunctions.shuffle(this.json.mfc.filter(function (figure) { return figure.type !== 'Wished'; }));
-                wishedCard = document.querySelector('.flex-container aside .card #wished');
-                ownedCard = document.querySelector('.flex-container aside .card #owned-ordered');
                 template = document.querySelector('#mfc-item-template').content;
-                new TemplateConstructor(template, wished).insert(wishedCard);
-                new TemplateConstructor(template, owned).insert(ownedCard);
+                new TemplateConstructor(template, CustomFunctions.shuffle(this.json.mfc)).insert(document.querySelector('.flex-container aside .card #mfc-card'));
                 document.querySelectorAll('.mfc').forEach(function (item) {
                     try {
                         item.classList.add(CustomFunctions.normalize(_this.json.mfc.filter(function (figure) { return 'mfc-' + figure.id === item.id; })[0].category.replace('/', '-')));

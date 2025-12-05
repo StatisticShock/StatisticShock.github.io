@@ -108,17 +108,15 @@ class PageBuilding extends PageBuildingImport {
 		};
 
 		function createMfcSkeletons (): void {
-			const cards: NodeListOf<HTMLElement> = document.querySelectorAll('aside .card .mfc-card');
-			const maxColumns: number = !mobile ? 4 : 2;
-			const maxRows: number = Math.ceil(cards[0].parentElement!.offsetHeight! / (parseFloat(getComputedStyle(cards[0]).width) / maxColumns + 20));
+			const card: HTMLElement = document.querySelector('aside .card #mfc-card')!;
+			const maxColumns: number = Math.floor(parseFloat(getComputedStyle(card).width) / parseFloat(getComputedStyle(card).gridTemplateColumns.split(' ')[0]));
+			const maxRows: number = Math.ceil(card.parentElement!.offsetHeight! / (parseFloat(getComputedStyle(card).width) / maxColumns));
 			
-			cards.forEach((card) => {
-				new TemplateConstructor((document.querySelector('#mfc-item-template') as HTMLTemplateElement).content, Array(maxColumns * maxRows).fill({joker: skeleton})).insert(card);
-				(card.querySelectorAll('.mfc') as NodeListOf<HTMLAnchorElement>).forEach((mfc) => {
-					mfc.removeAttribute('href');
-					mfc.firstElementChild!.remove();
-				})
-			});
+			new TemplateConstructor((document.querySelector('#mfc-item-template') as HTMLTemplateElement).content, Array(maxColumns * maxRows).fill({joker: skeleton})).insert(card);
+			(card.querySelectorAll('.mfc') as NodeListOf<HTMLAnchorElement>).forEach((mfc) => {
+				mfc.removeAttribute('href');
+				mfc.firstElementChild!.remove();
+			})
 		};
 
 		createShortcutSkeletons();
@@ -592,17 +590,10 @@ class CloudStorageData {
 	static async addMfcImages(): Promise<void> {
 		const input: HTMLInputElement = document.querySelector('#search-bar')!;
 		input.value = '';
-		
-		const wished: Array<MyTypes.MFC> = CustomFunctions.shuffle(this.json.mfc.filter((figure) => figure.type === 'Wished'));
-		const owned: Array<MyTypes.MFC> = CustomFunctions.shuffle(this.json.mfc.filter((figure) => figure.type !== 'Wished'));
-
-		const wishedCard: HTMLSpanElement = document.querySelector('.flex-container aside .card #wished')!;
-		const ownedCard: HTMLSpanElement = document.querySelector('.flex-container aside .card #owned-ordered')!;
 
 		const template: DocumentFragment = (document.querySelector('#mfc-item-template') as HTMLTemplateElement).content;
 		
-		new TemplateConstructor(template, wished).insert(wishedCard);
-		new TemplateConstructor(template, owned).insert(ownedCard);
+		new TemplateConstructor(template, CustomFunctions.shuffle(this.json.mfc)).insert(document.querySelector('.flex-container aside .card #mfc-card')!);
 
 		document.querySelectorAll('.mfc').forEach((item) => {
 			try {
