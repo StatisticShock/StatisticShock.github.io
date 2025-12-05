@@ -1486,7 +1486,7 @@ body.update {
 
 				& a {
 					& img, & svg {
-						outline: 3px solid var(--color);
+						outline: 6px var(--border-style) var(--color);
 						margin: 0 auto;
 					}
 
@@ -1522,7 +1522,7 @@ body.update {
 					padding: 0.25em 0.5em;
 					border-radius: 1em;					
 					background-color: var(--contrast-color-3);
-					border: 3px solid var(--color);
+					border: 6px var(--border-style) var(--color);
 					height: fit-content;
 
 					& > * {
@@ -1626,7 +1626,10 @@ body.update {
 					opacity: 0.9;
 				}
 			}
-		} & div.mfc.prepainted {--color: green} div.mfc.action-dolls {--color: #0080ff} div.mfc.trading {--color: orange}
+		}
+		
+		& div.mfc.prepainted {--color: green} & div.mfc.action-dolls {--color: #0080ff} & div.mfc.trading {--color: orange}
+		& div.mfc.Owned {--border-style: solid} & div.mfc.Ordered {--border-style: solid} & div.mfc.Wished {--border-style: double}
 
 		& div.headers {
 			width: 95vw;
