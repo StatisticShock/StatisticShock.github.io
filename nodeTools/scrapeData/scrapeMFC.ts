@@ -65,7 +65,10 @@ export const links: Array<['Owned'|'Ordered'|'Wished', string]> = [
 const imgLinks: Array<Array<string>> = [];
 
 const server: string = 'https://statisticshock-index.fly.dev/';
-const browser = await puppeteer.launch({headless: true});
+const browser = await puppeteer.launch({
+	headless: true,
+	args: ['--no-sandbox', '--disable-setuid-sandbox']
+});
 
 async function scrapeImages(): Promise<void> {
 	const mainImageFolder: string = 'mfc/main_images/';
@@ -167,19 +170,6 @@ async function scrapeImages(): Promise<void> {
 
 class ScrapeFunctions {
 	static async readMFCItem (elementId: string, typeOfFigure: 'Owned'|'Ordered'|'Wished'): Promise<MFC> {
-		let response = await fetch(`${mfcLink}/item/${elementId}`);
-		
-		if (!response.ok) {
-			await sleep(10000);
-			response = await fetch(`${mfcLink}/item/${elementId}`);
-		}
-		
-		const html = await response.text();
-
-		const $ = cheerio.load(html);
-
-		log('Fetching ' + $('h1.title').text());
-		
 		let id: string = elementId;
 		let href: string = `${mfcLink}/item/${elementId}`;
 		let img: string = `https://storage.googleapis.com/statisticshock_github_io_public/mfc/main_images/${elementId}.webp`;
@@ -191,18 +181,29 @@ class ScrapeFunctions {
 		let classification: string;
 		let category: 'Prepainted'|'Action/Dolls'|'Trading';
 		let type: 'Owned'|'Ordered'|'Wished' = typeOfFigure;
-		let title: string = $('h1.title').text();
+		let title: string;
 		let tags: string;
 
 		const page = await browser.newPage();
 		await page.setUserAgent({
 			userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
 		});
+		await page.evaluateOnNewDocument(() => {
+			Object.defineProperty(navigator, 'webdriver', { get: () => false });
+		});
 		await page.goto(`${mfcLink}/item/${elementId}`, {waitUntil: 'domcontentloaded'});
 		const figureHtml = await page.content();
 		await page.close();
 		
 		const $$ = cheerio.load(figureHtml);
+
+		if ($$('h1.title').text() !== '') {
+			log('Fetching ' + $$('h1.title').text());
+		} else {
+			log(figureHtml);
+		}
+
+		title = $$('h1.title').text()
 
 		const dataFields = $$('.object-wrapper .data-wrapper .data-field');
 		for (const element of dataFields.toArray()) {

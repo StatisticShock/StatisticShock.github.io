@@ -62,7 +62,10 @@ export const links = [
 ];
 const imgLinks = [];
 const server = 'https://statisticshock-index.fly.dev/';
-const browser = await puppeteer.launch({ headless: true });
+const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+});
 async function scrapeImages() {
     const mainImageFolder = 'mfc/main_images/';
     const iconImageFolder = 'mfc/icons/';
@@ -163,14 +166,6 @@ async function scrapeImages() {
 ;
 class ScrapeFunctions {
     static async readMFCItem(elementId, typeOfFigure) {
-        let response = await fetch(`${mfcLink}/item/${elementId}`);
-        if (!response.ok) {
-            await sleep(10000);
-            response = await fetch(`${mfcLink}/item/${elementId}`);
-        }
-        const html = await response.text();
-        const $ = cheerio.load(html);
-        log('Fetching ' + $('h1.title').text());
         let id = elementId;
         let href = `${mfcLink}/item/${elementId}`;
         let img = `https://storage.googleapis.com/statisticshock_github_io_public/mfc/main_images/${elementId}.webp`;
@@ -182,16 +177,26 @@ class ScrapeFunctions {
         let classification;
         let category;
         let type = typeOfFigure;
-        let title = $('h1.title').text();
+        let title;
         let tags;
         const page = await browser.newPage();
         await page.setUserAgent({
             userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
         });
+        await page.evaluateOnNewDocument(() => {
+            Object.defineProperty(navigator, 'webdriver', { get: () => false });
+        });
         await page.goto(`${mfcLink}/item/${elementId}`, { waitUntil: 'domcontentloaded' });
         const figureHtml = await page.content();
         await page.close();
         const $$ = cheerio.load(figureHtml);
+        if ($$('h1.title').text() !== '') {
+            log('Fetching ' + $$('h1.title').text());
+        }
+        else {
+            log(figureHtml);
+        }
+        title = $$('h1.title').text();
         const dataFields = $$('.object-wrapper .data-wrapper .data-field');
         for (const element of dataFields.toArray()) {
             if ($$(element).find('.data-label').text().includes('Categoria')) {
