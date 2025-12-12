@@ -57,24 +57,24 @@ self.addEventListener('fetch', (ev) => {
 
 	ev.respondWith(
 		(async () => {
-			try {
-				const res = await caches.match(ev.request);
-				const expired = await isExpired(cacheName);
+			const res = await caches.match(ev.request);
+			const expired = await isExpired(cacheName);
 
-				if (res && !expired) return res;
-
-				const networkRes = await fetch(ev.request);
-				if (networkRes && networkRes.status === 200) {
-					const clone = networkRes.clone();
-					const cache = await caches.open(cacheName);
-					cache.put(ev.request, clone);
-					return networkRes;
-				}
-				
-				return await caches.match('./index.html');
-			} catch (err) {
-				return await caches.match('./index.html');
+			if (res && (!expired || ev.request.url.endsWith('.webp') || ev.request.url.endsWith('.jpg') || ev.request.url.endsWith('.jpeg') || ev.request.url.endsWith('.png'))) {
+				console.log(expired, ev.request.url);
+				return res;
 			}
+
+			const networkRes = await fetch(ev.request);
+			if (!networkRes || networkRes.status !== 200) { //If it is broken, won't cache it
+				return networkRes;
+			}
+
+			const clone = networkRes.clone();
+			const cache = await caches.open(cacheName);
+			cache.put(ev.request, clone);
+
+			return networkRes;
 		})()
 	);
 });

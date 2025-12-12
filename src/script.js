@@ -164,6 +164,8 @@ var PageBuilding = /** @class */ (function (_super) {
             var card = document.querySelector('aside .card #mfc-card');
             var maxColumns = Math.floor(parseFloat(getComputedStyle(card).width) / parseFloat(getComputedStyle(card).gridTemplateColumns.split(' ')[0]));
             var maxRows = Math.ceil(card.parentElement.offsetHeight / (parseFloat(getComputedStyle(card).width) / maxColumns));
+            if (maxColumns === 0 || maxRows === 0)
+                return;
             new TemplateConstructor(document.querySelector('#mfc-item-template').content, Array(maxColumns * maxRows).fill({ joker: skeleton })).insert(card);
             card.querySelectorAll('.mfc').forEach(function (mfc) {
                 mfc.removeAttribute('href');

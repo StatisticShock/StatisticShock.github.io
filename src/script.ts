@@ -112,6 +112,8 @@ class PageBuilding extends PageBuildingImport {
 			const maxColumns: number = Math.floor(parseFloat(getComputedStyle(card).width) / parseFloat(getComputedStyle(card).gridTemplateColumns.split(' ')[0]));
 			const maxRows: number = Math.ceil(card.parentElement!.offsetHeight! / (parseFloat(getComputedStyle(card).width) / maxColumns));
 			
+			if (maxColumns === 0 || maxRows === 0) return;
+			 
 			new TemplateConstructor((document.querySelector('#mfc-item-template') as HTMLTemplateElement).content, Array(maxColumns * maxRows).fill({joker: skeleton})).insert(card);
 			(card.querySelectorAll('.mfc') as NodeListOf<HTMLAnchorElement>).forEach((mfc) => {
 				mfc.removeAttribute('href');
