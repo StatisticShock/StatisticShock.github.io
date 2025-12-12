@@ -1,19 +1,19 @@
-const cacheName = 'v1';
+const cacheName = 'v2';
 const cacheAssets = [
-	'index.html',
-	'404.html',
-	'update.html',
-	'/src/script.js',
-	'/src/shared.js',
-	'/util/functions.js',
+	'./index.html',
+	'./404.html',
+	'./update.html',
+	'./src/script.js',
+	'./src/shared.js',
+	'./util/functions.js',
 ];
 const cacheMaxTime = 15 * 60 * 1000;
 const isExpired = async (cache) => {
 	const currentCache = await caches.open(cache);
 	const meta = await currentCache.match('meta');
-	
+
 	if (!meta) return false;
-	const { time } = await meta.json();
+	const { time } = await meta.json().catch(() => ({ time: 0 }));
 	return (Date.now() - time) > cacheMaxTime;
 };
 
@@ -54,27 +54,27 @@ self.addEventListener('activate', (ev) => {
 
 self.addEventListener('fetch', (ev) => {
 	if (ev.request.method !== 'GET') return;
-	
+
 	ev.respondWith(
 		(async () => {
-			const res = await caches.match(ev.request);
-			const expired = await isExpired(cacheName);
+			try {
+				const res = await caches.match(ev.request);
+				const expired = await isExpired(cacheName);
 
-			if (res && (!expired || ev.request.url.endsWith('.webp') || ev.request.url.endsWith('.jpg') || ev.request.url.endsWith('.jpeg') || ev.request.url.endsWith('.png'))) {
-				console.log(expired, ev.request.url);
-				return res;
+				if (res && !expired) return res;
+
+				const networkRes = await fetch(ev.request);
+				if (networkRes && networkRes.status === 200) {
+					const clone = networkRes.clone();
+					const cache = await caches.open(cacheName);
+					cache.put(ev.request, clone);
+					return networkRes;
+				}
+				
+				return await caches.match('./index.html');
+			} catch (err) {
+				return await caches.match('./index.html');
 			}
-
-			const networkRes = await fetch(ev.request);
-			if (!networkRes || networkRes.status !== 200) { //If it is broken, won't cache it
-				return networkRes;
-			}
-
-			const clone = networkRes.clone();
-			const cache = await caches.open(cacheName);
-			cache.put(ev.request, clone);
-
-			return networkRes;
 		})()
 	);
 });
