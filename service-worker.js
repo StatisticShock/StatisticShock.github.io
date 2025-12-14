@@ -7,7 +7,7 @@ const cacheAssets = [
 	'./src/shared.js',
 	'./util/functions.js',
 ];
-const cacheMaxTime = 15 * 60 * 1000;
+const cacheMaxTime = 24 * 60 * 60 * 1000; 	// one day
 const isExpired = async (cache) => {
 	const currentCache = await caches.open(cache);
 	const meta = await currentCache.match('meta');
@@ -17,15 +17,21 @@ const isExpired = async (cache) => {
 	return (Date.now() - time) > cacheMaxTime;
 };
 
+const updateMeta = async () => {
+	const cache = await caches.open(cacheName);
+	await cache.put('meta', new Response(JSON.stringify({ time: Date.now() })));
+};
+
 self.addEventListener('install', (ev) => {
 	console.info(`Service Worker ${cacheName}: installed.`);
 
 	ev.waitUntil(
 		caches
 			.open(cacheName)
-			.then((cache) => {
+			.then(async (cache) => {
 				console.info(`Service Worker ${cacheName}: caching files.`);
-				cache.addAll(cacheAssets);
+				await cache.addAll(cacheAssets);
+				await cache.put('meta', new Response(JSON.stringify({ time: Date.now() })));
 			})
 			.then(() => self.skipWaiting())
 	);
@@ -73,6 +79,7 @@ self.addEventListener('fetch', (ev) => {
 			const clone = networkRes.clone();
 			const cache = await caches.open(cacheName);
 			cache.put(ev.request, clone);
+			updateMeta();
 
 			return networkRes;
 		})()
