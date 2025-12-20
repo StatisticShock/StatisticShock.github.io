@@ -98,7 +98,7 @@ var HistoryState = /** @class */ (function () {
                             document.querySelectorAll('div.mfc div.data-wrapper a-container').forEach(function (anchorContainer) {
                                 if (anchorContainer.textContent.trim() !== '') {
                                     try {
-                                        anchorContainer.querySelector('.buyee').href = "https://buyee.jp/item/search/query/".concat(encodeURI(anchorContainer.textContent.trim()), "/category/2084023782?sort=end&order=a&store=1&lang=en");
+                                        anchorContainer.querySelector('.buyee').href = "https://buyee.jp/item/search/query/".concat(encodeURI(anchorContainer.textContent.trim()), "/category/25888?store=1&aucminprice=0&aucmaxprice=3000&item_status=1&suggest=1");
                                         anchorContainer.querySelector('.amiami').href = "https://www.amiami.com/eng/search/list/?s_keywords=".concat(anchorContainer.textContent.replaceAll(' ', '+'), "&s_cate_tag=1&s_sortkey=preowned&s_st_condition_flg=1");
                                         anchorContainer.nextElementSibling.outerHTML = "<button class=\"copy\" onclick=\"navigator.clipboard.writeText('".concat(anchorContainer.textContent.trim(), "')\"></button>");
                                     }
