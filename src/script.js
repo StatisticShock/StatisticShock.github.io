@@ -654,7 +654,7 @@ var CloudStorageData = /** @class */ (function () {
                 input = document.querySelector('#search-bar');
                 input.value = '';
                 template = document.querySelector('#mfc-item-template').content;
-                new TemplateConstructor(template, CustomFunctions.shuffle(this.json.mfc)).insert(document.querySelector('.flex-container aside .card #mfc-card'));
+                new TemplateConstructor(template, this.json.mfc.sort(function (a, b) { return Number(a.id) - Number(b.id); })).insert(document.querySelector('.flex-container aside .card #mfc-card'));
                 document.querySelectorAll('.mfc').forEach(function (item) {
                     try {
                         item.classList.add(CustomFunctions.normalize(_this.json.mfc.filter(function (figure) { return 'mfc-' + figure.id === item.id; })[0].category.replace('/', '-')));

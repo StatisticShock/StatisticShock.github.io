@@ -526,7 +526,7 @@ class CloudStorageData {
 
 		const template: DocumentFragment = (document.querySelector('#mfc-item-template') as HTMLTemplateElement).content;
 		
-		new TemplateConstructor(template, CustomFunctions.shuffle(this.json.mfc)).insert(document.querySelector('.flex-container aside .card #mfc-card')!);
+		new TemplateConstructor(template, this.json.mfc.sort((a, b) => Number(a.id) - Number(b.id))).insert(document.querySelector('.flex-container aside .card #mfc-card')!);
 
 		document.querySelectorAll('.mfc').forEach((item) => {
 			try {
