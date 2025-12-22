@@ -11,10 +11,13 @@ const portrait: boolean = (window.innerWidth < window.innerHeight);
 
 class PageBuilding extends PageBuildingImport {
 	static async putVersionOnFooter (): Promise<void> {
-		const version: MyTypes.Version = await fetch(`${server}version`).then((res) => res.json());
+		const version = await fetch('https://raw.githubusercontent.com/StatisticShock/StatisticShock.github.io/refs/heads/main/package.json')
+			.then((res) => res.json())
+			.then((data) => data.version);
+		
 		const footer: HTMLElement = document.querySelector('footer')!;
 
-		footer.innerHTML += `<p><small>ver. ${version.page}</small></p>`;
+		footer.innerHTML += `<p><small>ver. ${version}</small></p>`;
 	};
 
 	static createSkeletons (): void {

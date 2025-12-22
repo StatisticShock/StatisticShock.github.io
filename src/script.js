@@ -66,11 +66,13 @@ var PageBuilding = /** @class */ (function (_super) {
             var version, footer;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, fetch("".concat(server, "version")).then(function (res) { return res.json(); })];
+                    case 0: return [4 /*yield*/, fetch('https://raw.githubusercontent.com/StatisticShock/StatisticShock.github.io/refs/heads/main/package.json')
+                            .then(function (res) { return res.json(); })
+                            .then(function (data) { return data.version; })];
                     case 1:
                         version = _a.sent();
                         footer = document.querySelector('footer');
-                        footer.innerHTML += "<p><small>ver. ".concat(version.page, "</small></p>");
+                        footer.innerHTML += "<p><small>ver. ".concat(version, "</small></p>");
                         return [2 /*return*/];
                 }
             });
