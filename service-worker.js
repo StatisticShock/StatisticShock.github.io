@@ -7,7 +7,7 @@ const cacheAssets = [
 	'./src/shared.js',
 	'./util/functions.js',
 ];
-const cacheMaxTime = 60 * 60 * 1000; 	// one hour
+const cacheMaxTime = 15 * 60 * 1000; 	// 15 minutes
 const isExpired = async (cache) => {
 	const currentCache = await caches.open(cache);
 	const meta = await currentCache.match('meta');
