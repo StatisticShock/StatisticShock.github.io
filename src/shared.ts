@@ -78,68 +78,69 @@ export default class SharedDomFunctions {
 };
 
 export class TemplateConstructor {
-	html: string;
+	html: DocumentFragment;
 
-	constructor (template: DocumentFragment, data: Array<object>) {
-		const element: HTMLElement = document.createElement('element');
-		// x
-		function createNestedTagInThisLevel (currentData: Array<object> = data, currentElement: HTMLElement = element, fragment: DocumentFragment = template, prefix: string = ''): string {
-			const cloneElement: HTMLElement = document.importNode(currentElement);
-			
-			for (const item of currentData) {
-				const elementToBePushed: DocumentFragment = document.importNode(fragment, true);
-				cloneElement.appendChild(elementToBePushed);
-				
-				for (const key in item) {
-					const keyToLookUp: string = prefix === '' ? key : `${prefix}-${key}`;
+	constructor (template: HTMLTemplateElement, data: Array<object>) {
+		function fillTempate (templateToFill: HTMLTemplateElement, dataToFill: Array<object> = data): DocumentFragment {
+			type Binding = {
+				key: string,
+				node: Text | Attr,
+			};
 
-					if (item[keyToLookUp] instanceof Array) {
-						const templateChildElements: NodeListOf<HTMLElement> = cloneElement.querySelectorAll('.' + keyToLookUp + '-template');
+			const newFragment = document.createDocumentFragment();
 
-						item[keyToLookUp].forEach((child) => {
-							templateChildElements.forEach((el, i) => {
-								const newTemplate: HTMLTemplateElement = document.createElement('template');
-								const newFragment: DocumentFragment = newTemplate.content;
+			for (const item of dataToFill) {
+				const tpt = templateToFill.content.cloneNode(true) as HTMLElement;
+				const walker = document.createTreeWalker(tpt);
+				const bindings: Array<Binding> = [];
 
-								newFragment.appendChild(document.importNode(el, true));
+				while (walker.nextNode()) {
+					const node = walker.currentNode;
+					
+					if (node.nodeType === Node.ELEMENT_NODE) {
+						for (const attr of Array.from((node as Element).attributes)) {
+							const matches = attr.textContent?.match(/\{\{(\S+?)\}\}/g);
+							if (!matches) continue;
 
-								const newElementToBePushedString: string = createNestedTagInThisLevel([child], document.importNode(el, true) as HTMLElement, newFragment, keyToLookUp);
-								const newElementToBePushed: HTMLElement = document.createElement(el.tagName.toLowerCase());
-
-								el.parentElement!.insertBefore(newElementToBePushed, el);
-								newElementToBePushed.outerHTML = newElementToBePushedString.replaceAll(keyToLookUp + '-template', ''); // Removing this line breaks the whole page due to StackOverflow.
- 							});
-						});
-
-						templateChildElements.forEach((el) => el.remove());
-
-						cloneElement.innerHTML = cloneElement.innerHTML.replaceAll(`{{${keyToLookUp}}}`, JSON.stringify(item[key]));
-
-						for (const attr of Array.from(cloneElement.attributes)) {
-							attr.value = attr.value.replaceAll(`{{${keyToLookUp}}}`, JSON.stringify(item[key]));
+							for (const key of matches) {
+								bindings.push({
+									key: key.replace(/[\{\}]/g, ''),
+									node: attr as Text|Attr,
+								});
+							};
 						};
 					} else {
-						cloneElement.innerHTML = cloneElement.innerHTML.replaceAll(`{{${keyToLookUp}}}`, item[key]);
+						const matches = node.textContent?.match(/\{\{(\S+?)\}\}/g);
+						if (!matches) continue;
 
-						for (const attr of Array.from(cloneElement.attributes)) {
-							attr.value = attr.value.replaceAll(`{{${keyToLookUp}}}`, item[key]);
+						for (const key of matches) {
+							bindings.push({
+								key: key.replace(/[\{\}]/g, ''),
+								node: node as Text|Attr,
+							});
 						};
 					};
 				};
-				const regEx: RegExp = /\{\{[a-zA-Z\-\ \.]+\}\}/g;
+				
+				for (const binding of bindings.sort((a, b) => a.key.split('-').length - b.key.split('-').length)) {
+					if (Array.isArray(item[binding.key])) {
+						const newTemplate = tpt.querySelector('#' + binding.key) as HTMLTemplateElement;
 
-				cloneElement.innerHTML = cloneElement.innerHTML.replace(regEx, '');
-				for (const attr of Array.from(cloneElement.attributes)) {
-					attr.value = attr.value.replace(regEx, '');
-				};
+						const [el] = Array.from(tpt.querySelectorAll('element')).filter((el) => el.textContent === `{{${binding.key}}}`);
+						el.parentElement!.insertBefore(fillTempate(newTemplate, item[binding.key]).cloneNode(true), el);
+						el.remove();
+					} else {
+						binding.node.textContent = binding.node.textContent!.replace(binding.key, item[binding.key] || '').replace(/[\{\}]/g, '');
+					};
+				}
+
+				newFragment.appendChild(tpt);
 			};
 
-			return cloneElement.innerHTML;
+			return newFragment;
 		};
 
-		element.innerHTML = createNestedTagInThisLevel();
-
-		this.html = element.innerHTML;
+		this.html = fillTempate(template);
 	};
 
 	insert (destination: HTMLElement, position?: 'after'|'before', relative?: HTMLElement) {
@@ -150,10 +151,11 @@ export class TemplateConstructor {
 		};
 
 		if (!position) {
-			destination.innerHTML = this.html;
+			destination.innerHTML = '';
+			destination.appendChild(this.html.cloneNode(true));
 		} else {
 		const element: HTMLElement = document.createElement('element');
-			element.innerHTML = this.html;
+			element.appendChild(this.html.cloneNode(true));
 
 			if (position === 'before') {
 
