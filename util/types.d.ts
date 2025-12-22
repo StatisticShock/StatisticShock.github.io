@@ -110,19 +110,14 @@ export type Shortcut = {
 	}>
 };
 export type Gamecard = {
-	label: string,
 	id: string,
+	label: string,
 	position: number,
-	children: Array<{
-		id: string,
-		label: string,
-		position: number,
-		href: string,
-		img: string,
-		img_css: Array<{
-			attribute: string,
-			value: string
-		}>
+	href: string,
+	img: string,
+	img_css: Array<{
+		attribute: string,
+		value: string
 	}>
 };
 export type Headers = {

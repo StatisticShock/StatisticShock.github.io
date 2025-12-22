@@ -60,7 +60,7 @@ class HistoryState {
 				json.then((res) => {
 					const shortcutFolders: Array<MyTypes.Shortcut> = res[page];
 					
-					new TemplateConstructor((document.querySelector('#shortcuts-template') as HTMLTemplateElement).content, shortcutFolders).insert(content);
+					new TemplateConstructor(document.querySelector('#shortcuts-template') as HTMLTemplateElement, shortcutFolders).insert(content);
 
 					for (const folder of shortcutFolders) {
 						for (const shortcut of folder.children) {
@@ -71,43 +71,6 @@ class HistoryState {
 
 				break;
 			case 'gamecards':
-				const gamecards: Array<MyTypes.Gamecard> = json[page];
-
-				break;
-			case 'mfc':
-				new TemplateConstructor((document.querySelector('#mfc-template') as HTMLTemplateElement).content, [{joker: 'skeleton'}]).insert(content);
-				
-				json.then((res) => {
-					const figure = res.mfc!.filter((figure) => figure.id === id)[0];
-					const template = new TemplateConstructor((document.querySelector('#mfc-template') as HTMLTemplateElement).content, [figure]);
-					template.insert(content);
-
-					document.querySelector('div.mfc')!.classList.add(CustomFunctions.normalize(figure.category.replace('/', '-')));
-
-					document.querySelector('#update-trigger')!.removeAttribute('style');
-
-					document.querySelector('div.img-wrapper')!.removeAttribute('style');
-
-					(document.querySelectorAll('div.mfc div.data-wrapper a-container') as NodeListOf<HTMLAnchorElement>).forEach((anchorContainer) => {
-						if (anchorContainer.textContent!.trim() !== '') {
-							try {
-								(anchorContainer.querySelector('.buyee') as HTMLAnchorElement).href = `https://buyee.jp/item/search/query/${encodeURI(anchorContainer.textContent!.trim())}/category/25888?store=1&aucminprice=0&aucmaxprice=3000&item_status=1&suggest=1`;
-								(anchorContainer.querySelector('.amiami') as HTMLAnchorElement).href = `https://www.amiami.com/eng/search/list/?s_keywords=${anchorContainer.textContent!.replaceAll(' ','+')}&s_cate_tag=1&s_sortkey=preowned&s_st_condition_flg=1`;
-								anchorContainer.nextElementSibling!.outerHTML = `<button class="copy" onclick="navigator.clipboard.writeText('${anchorContainer.textContent!.trim()}')"></button>`;
-							} catch (err) {};
-						} else {
-							anchorContainer.outerHTML = '<i><null></null></i>';
-						};
-					});
-
-					(document.querySelectorAll('copy') as NodeListOf<HTMLElement>).forEach((copy) => {
-						copy.addEventListener('click', (ev: Event) => {
-							navigator.clipboard.writeText(copy.previousElementSibling!.textContent!.trim());
-						});
-					});
-				});
-
-				break;
 			case 'headers':
 				json.then((res) => {
 					const headers: Array<MyTypes.Headers> = res[page];

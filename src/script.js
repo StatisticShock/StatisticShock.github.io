@@ -61,62 +61,6 @@ var PageBuilding = /** @class */ (function (_super) {
     function PageBuilding() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    PageBuilding.resizeAside = function (counter) {
-        var _this = this;
-        var aside = document.querySelector('aside');
-        var shortcuts = document.querySelector('#shortcuts');
-        var card = aside.querySelector('.card');
-        aside.style.height = 'fit-content';
-        shortcuts.style.height = 'fit-content';
-        card.style.height = 'fit-content';
-        if (parseFloat(getComputedStyle(aside).height) < parseFloat(getComputedStyle(shortcuts).height)) {
-            aside.style.height = (shortcuts.offsetHeight + 10) + 'px';
-        }
-        else {
-            shortcuts.style.height = aside.offsetHeight + 'px';
-        }
-        ;
-        aside.style.height = aside.offsetHeight + 'px';
-        shortcuts.style.height = shortcuts.offsetHeight + 'px';
-        card.style.height = card.offsetHeight + 'px';
-        if (counter == 0) {
-            setTimeout(function () {
-                _this.resizeAside(1);
-            }, 750);
-        }
-        ;
-    };
-    ;
-    PageBuilding.adjustGamecard = function () {
-        var gameCardContainers = document.querySelectorAll('.gamecard-container');
-        gameCardContainers.forEach(function (gamecardContainer) {
-            var childCount = Math.max(gamecardContainer.children.length, 2).toString();
-            gamecardContainer.style.setProperty('--gamecard-count', childCount);
-        });
-        var gameCardText = document.querySelectorAll('.gamecard-text > span p');
-        gameCardText.forEach(function (element) {
-            element.style.marginLeft = -(element.offsetWidth / 2 - 20) + 'px';
-        });
-    };
-    ;
-    PageBuilding.adjustGamecardText = function (counter) {
-        var gameCardSpan = document.querySelectorAll('.gamecard > a > span');
-        gameCardSpan.forEach(function (element) {
-            var parentElement = element.parentElement;
-            var div = parentElement.firstChild;
-            if (div.scrollWidth > parentElement.offsetWidth) {
-                element.style.transform = 'rotate(-90deg)';
-            }
-            else {
-                element.style.transform = '';
-            }
-        });
-        if (counter == 0) {
-            setTimeout(this.adjustGamecardText, 100);
-        }
-        ;
-    };
-    ;
     PageBuilding.putVersionOnFooter = function () {
         return __awaiter(this, void 0, void 0, function () {
             var version, footer;
@@ -137,45 +81,51 @@ var PageBuilding = /** @class */ (function (_super) {
         var skeleton = 'skeleton';
         var container = 'skeleton-container';
         function createShortcutSkeletons() {
-            var shortcuts = document.querySelector('#shortcuts');
-            var maxIcons = Math.floor((parseFloat(getComputedStyle(shortcuts).width)) / (Math.min(50, document.documentElement.clientWidth * 0.2) + 30));
-            var atalhos = Array.from(shortcuts.querySelectorAll('h2')).filter(function (h2) { return h2.textContent.trim() === 'Atalhos'; })[0];
-            var ra = Array.from(shortcuts.querySelectorAll('h2')).filter(function (h2) { return h2.textContent.trim() === 'RetroAchievements'; })[0];
+            var shortcuts = document.querySelector('#shortcuts block-container');
+            var maxIcons = 24;
+            var bttn = shortcuts.querySelector('button');
             var row = Array(maxIcons).fill({ joker: skeleton, alt: '. . .' });
-            new TemplateConstructor(document.querySelector('#shortcuts-template').content, Array(2).fill({ jokerContainer: container, joker: skeleton, children: row })).insert(shortcuts, 'after', atalhos);
-            new TemplateConstructor(document.querySelector('#shortcuts-template').content, Array(1).fill({ jokerContainer: container, joker: skeleton, children: row })).insert(shortcuts, 'after', ra);
+            new TemplateConstructor(document.querySelector('#shortcuts-template'), Array(4).fill({ jokerContainer: container, joker: skeleton, children: row })).insert(shortcuts, 'before', bttn);
             shortcuts.querySelectorAll('img').forEach(function (img) { return img.src = './icon/blank.svg'; });
         }
         ;
         function createGamecardSkeletons() {
-            var gamecard = document.querySelector('#gamecards');
-            var sample = [{
-                    label: '',
-                    joker: 'skeleton',
-                    children: Array(3).fill({
-                        label: '',
-                        joker: 'skeleton'
-                    }),
-                }];
-            new TemplateConstructor(document.querySelector('#gamecard-template').content, sample).insert(gamecard);
+            var gamecard = document.querySelector('#gaming gaming-container');
+            var sample = {
+                label: '. . .',
+                joker: 'skeleton',
+                jokerContainer: 'skeleton-container',
+            };
+            new TemplateConstructor(document.querySelector('#gamecard-template'), Array(6).fill(sample)).insert(gamecard);
         }
         ;
         function createMfcSkeletons() {
-            var card = document.querySelector('aside .card #mfc-card');
-            var maxColumns = Math.floor(parseFloat(getComputedStyle(card).width) / parseFloat(getComputedStyle(card).gridTemplateColumns.split(' ')[0]));
-            var maxRows = Math.ceil(card.parentElement.offsetHeight / (parseFloat(getComputedStyle(card).width) / maxColumns));
-            if (maxColumns === 0 || maxRows === 0)
-                return;
-            new TemplateConstructor(document.querySelector('#mfc-item-template').content, Array(maxColumns * maxRows).fill({ joker: skeleton })).insert(card);
-            card.querySelectorAll('.mfc').forEach(function (mfc) {
-                mfc.removeAttribute('href');
-                mfc.firstElementChild.remove();
-            });
+            var mfc = document.querySelector('#my-figure-collection my-figure-collection');
+            var maxIcons = Math.floor(parseInt(getComputedStyle(mfc).width) / (60 + 20)) * 5;
+            var sample = {
+                joker: 'skeleton',
+                jokerContainer: 'skeleton-container',
+                icon: './icon/blank.svg'
+            };
+            new TemplateConstructor(document.querySelector('#mfc-template'), Array(maxIcons).fill(sample)).insert(mfc);
         }
         ;
+        function createMalSkeletons() {
+            var mal = document.querySelector('#my-anime-list my-anime-list');
+            var maxIcons = 20;
+            var sample = {
+                joker: 'skeleton',
+                rank: ' . . .',
+                title: '. . .',
+                jokerContainer: 'skeleton-container',
+                "main_picture_large": './icon/blank.svg'
+            };
+            new TemplateConstructor(document.querySelector('#myanimelist-template'), Array(maxIcons).fill(sample)).insert(mal);
+        }
         createShortcutSkeletons();
         createGamecardSkeletons();
         createMfcSkeletons();
+        createMalSkeletons();
     };
     PageBuilding.deleteSkeletons = function (prefixes) {
         for (var _i = 0, prefixes_1 = prefixes; _i < prefixes_1.length; _i++) {
@@ -194,67 +144,6 @@ var PageBuilding = /** @class */ (function (_super) {
 var UserInterface = /** @class */ (function () {
     function UserInterface() {
     }
-    UserInterface.expandAside = function () {
-        var asideShownName = 'asideIsShown';
-        if (localStorage.getItem(asideShownName) === null)
-            localStorage.setItem(asideShownName, 'true');
-        var aside = document.querySelector('aside');
-        var div = aside.querySelector('.button-bar');
-        var bttn = aside.querySelector('#expand-button');
-        var span = bttn.querySelector('span');
-        var shortcuts = document.querySelector('#shortcuts');
-        var flexContainer = document.querySelector('.flex-container');
-        var input = aside.querySelector('input');
-        if (localStorage.getItem(asideShownName) !== 'false')
-            aside.classList.remove('hidden');
-        bttn.onclick = function (ev) {
-            if (!portrait) {
-                if (!aside.classList.contains('hidden')) {
-                    aside.classList.add('hidden');
-                    localStorage.setItem(asideShownName, 'false');
-                }
-                else {
-                    aside.classList.remove('hidden');
-                    localStorage.setItem(asideShownName, 'true');
-                }
-                ;
-            }
-            else {
-                if (!aside.classList.contains('hidden')) {
-                    aside.classList.add('hidden');
-                    localStorage.setItem(asideShownName, 'false');
-                }
-                else {
-                    aside.classList.remove('hidden');
-                    localStorage.setItem(asideShownName, 'true');
-                }
-                ;
-            }
-            ;
-        };
-        div.onclick = function (ev) {
-            bttn.click();
-        };
-        span.onclick = function (ev) {
-            bttn.click();
-        };
-    };
-    ;
-    UserInterface.makeAsideButtonFollow = function () {
-        if (mobile)
-            return;
-        var aside = document.querySelector('aside');
-        var div = aside.querySelector('.button-bar');
-        var button = div.querySelector('#expand-button');
-        var buttonHeight = button.offsetHeight;
-        div.addEventListener('mousemove', function (ev) {
-            var target = ev.target;
-            if (CustomFunctions.isParent(target, button))
-                return;
-            button.style.top = (ev.layerY) + 'px';
-        });
-    };
-    ;
     UserInterface.nightModeToggle = function () {
         return __awaiter(this, void 0, void 0, function () {
             var darkOrLightTheme, svg;
@@ -303,13 +192,6 @@ var UserInterface = /** @class */ (function () {
                 return [2 /*return*/];
             });
         });
-    };
-    ;
-    UserInterface.resizeHeader = function () {
-        var header = document.querySelector('header > div');
-        var pageHeight = document.documentElement.scrollHeight - window.innerHeight;
-        var ratio = Math.min(window.scrollY / (pageHeight * 0.1), 1);
-        header.style.setProperty('--scroll-ratio', ratio.toString());
     };
     ;
     UserInterface.collapseHeader = function () {
@@ -429,6 +311,20 @@ var UserInterface = /** @class */ (function () {
         keywordsWikipedia.value = '';
     };
     ;
+    UserInterface.changeHomeView = function () {
+        var navBttns = document.querySelectorAll('nav a');
+        navBttns.forEach(function (bttn) {
+            bttn.onclick = function (ev) {
+                ev.preventDefault();
+                var target = ev.target || ev.touches[0].target;
+                var anchor = target.closest('a');
+                document.querySelectorAll('.flex-container > section').forEach(function (section) {
+                    section.style.display = section.id === anchor.href.split('/').pop() ? '' : 'none';
+                });
+            };
+        });
+    };
+    ;
     return UserInterface;
 }());
 ;
@@ -519,10 +415,10 @@ var CloudStorageData = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             function loadShortcuts() {
                 return __awaiter(this, void 0, void 0, function () {
-                    var shortcuts, h2, shortcutsOnMobile;
+                    var shortcuts, bttn, shortcutsOnMobile;
                     return __generator(this, function (_a) {
-                        shortcuts = document.querySelector('section#shortcuts');
-                        h2 = Array.from(shortcuts.querySelectorAll('h2')).filter(function (heading) { return heading.textContent.trim() === 'Atalhos'; })[0];
+                        shortcuts = document.querySelector('section#shortcuts block-container');
+                        bttn = document.querySelector('#shortcuts block-container button');
                         shortcutsOnMobile = content.shortcuts.map(function (folder) {
                             var folderClone = structuredClone(folder);
                             folderClone.children = folderClone.children.filter(function (child) {
@@ -532,28 +428,23 @@ var CloudStorageData = /** @class */ (function () {
                         }).filter(function (folder) {
                             return folder.children.length > 0;
                         });
-                        new TemplateConstructor(document.querySelector('template#shortcuts-template').content, mobile ? shortcutsOnMobile : content.shortcuts).insert(shortcuts, 'after', h2);
+                        new TemplateConstructor(document.querySelector('template#shortcuts-template'), mobile ? shortcutsOnMobile : content.shortcuts).insert(shortcuts, 'before', bttn);
                         return [2 /*return*/];
                     });
                 });
             }
             function loadGamecards() {
                 return __awaiter(this, void 0, void 0, function () {
-                    var gamecards, _i, _a, gamecard, outerGamecard, _b, _c, child, _d, _e, css;
-                    return __generator(this, function (_f) {
-                        gamecards = document.querySelector('section#gamecards');
-                        new TemplateConstructor(document.querySelector('template#gamecard-template').content, content.gamecards).insert(gamecards);
+                    var gamecards, _i, _a, gamecard, _b, _c, css;
+                    return __generator(this, function (_d) {
+                        gamecards = document.querySelector('#gaming gaming-container');
+                        new TemplateConstructor(document.querySelector('template#gamecard-template'), content.gamecards).insert(gamecards, 'after');
+                        // a
                         for (_i = 0, _a = content.gamecards; _i < _a.length; _i++) {
                             gamecard = _a[_i];
-                            outerGamecard = document.querySelector('div#' + gamecard.id + ' .gamecard-outercard');
-                            outerGamecard.style.setProperty('--gamecard-count', Math.max(gamecard.children.length, 2).toString());
-                            for (_b = 0, _c = gamecard.children; _b < _c.length; _b++) {
-                                child = _c[_b];
-                                for (_d = 0, _e = child.img_css; _d < _e.length; _d++) {
-                                    css = _e[_d];
-                                    document.querySelector('#' + child.id + ' a').style.setProperty(css.attribute, css.value);
-                                }
-                                ;
+                            for (_b = 0, _c = gamecard.img_css; _b < _c.length; _b++) {
+                                css = _c[_b];
+                                document.querySelector('#' + gamecard.id + ' a').style.setProperty(css.attribute, css.value);
                             }
                             ;
                         }
@@ -601,6 +492,70 @@ var CloudStorageData = /** @class */ (function () {
                     });
                 });
             }
+            function loadMfc() {
+                return __awaiter(this, void 0, void 0, function () {
+                    function makeMfcSearchWork() {
+                        var input = document.querySelector('input[name="mfc-filter"]');
+                        var figures = content.mfc;
+                        ['keyup', 'paste'].forEach(function (eventName) {
+                            input.addEventListener(eventName, function (ev) {
+                                var string = input.value;
+                                var regEx = new RegExp(string, 'ig');
+                                figures.forEach(function (figure) {
+                                    if (Object.keys(figure).some(function (key) { return regEx.test(figure[key]); })) {
+                                        document.querySelector('#mfc-' + figure.id).style.display = 'flex';
+                                    }
+                                    else {
+                                        document.querySelector('#mfc-' + figure.id).style.display = 'none';
+                                    }
+                                });
+                            });
+                        });
+                    }
+                    var destination;
+                    return __generator(this, function (_a) {
+                        destination = document.querySelector('#my-figure-collection my-figure-collection');
+                        new TemplateConstructor(document.querySelector('#mfc-template'), content.mfc).insert(destination, 'after');
+                        document.querySelectorAll('mfc > img').forEach(function (mfcImg) {
+                            mfcImg.addEventListener('click', function (ev) {
+                                mfcImg.parentElement.classList.toggle('hidden');
+                            });
+                        });
+                        Array.from(document.querySelectorAll('mfc line > label')).forEach(function (label) {
+                            label.onclick = function (ev) {
+                                if (label.textContent !== 'Tags') {
+                                    navigator.clipboard.writeText(label.nextElementSibling.textContent);
+                                }
+                                ;
+                            };
+                        });
+                        Array.from(document.querySelectorAll('mfc line > data')).forEach(function (dataField) {
+                            dataField.onclick = function (ev) {
+                                dataField.parentElement.classList.toggle('hidden');
+                            };
+                        });
+                        Array.from(document.querySelectorAll('mfc line > stores > a')).forEach(function (store) {
+                            var img = store.querySelector('img');
+                            var keyword = store.parentElement.parentElement.querySelector('data').textContent;
+                            switch (img.alt) {
+                                case 'amiami icon':
+                                    store.href = "https://www.amiami.com/eng/search/list/?s_keywords=".concat(encodeURI(keyword), "&s_cate_tag=1&s_sortkey=preowned&s_st_condition_flg=1");
+                                    break;
+                                case 'buyee icon':
+                                    store.href = "https://buyee.jp/item/search/query/".concat(encodeURI(keyword), "/category/25888?store=1&aucminprice=0&aucmaxprice=3000&item_status=1&suggest=1");
+                                    break;
+                                case 'ninoma icon':
+                                    store.href = "https://ninoma.com/search?filter.p.product_type=Figure&filter.v.availability=1&q=".concat(encodeURI(keyword));
+                                    break;
+                                default: break;
+                            }
+                        });
+                        ;
+                        makeMfcSearchWork();
+                        return [2 /*return*/];
+                    });
+                });
+            }
             var content;
             return __generator(this, function (_a) {
                 content = JSON.parse(JSON.stringify(this.json));
@@ -610,80 +565,7 @@ var CloudStorageData = /** @class */ (function () {
                 loadShortcuts();
                 loadGamecards();
                 loadHeaders();
-                return [2 /*return*/];
-            });
-        });
-    };
-    ;
-    CloudStorageData.addMfcImages = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            function searchFigure() {
-                var regEx = new RegExp(JSON.stringify(input.value).slice(1, -1), 'gi');
-                console.info("A express\u00E3o procurada \u00E9 ".concat(regEx));
-                var figuresThatMatch = [];
-                var _loop_1 = function (figure) {
-                    if (Object.keys(figure).some(function (key) { return regEx.test(figure[key]); })) {
-                        figuresThatMatch.push(figure);
-                    }
-                    ;
-                };
-                for (var _i = 0, figureDict_1 = figureDict; _i < figureDict_1.length; _i++) {
-                    var figure = figureDict_1[_i];
-                    _loop_1(figure);
-                }
-                ;
-                console.table(figuresThatMatch, ['id', 'title']);
-                var _loop_2 = function (figure) {
-                    if (figuresThatMatch.some(function (figureThatMatch) { return figure.id === figureThatMatch.id; })) {
-                        document.querySelector('#mfc-' + figure.id).style.display = 'block';
-                    }
-                    else {
-                        document.querySelector('#mfc-' + figure.id).style.display = 'none';
-                    }
-                };
-                for (var _a = 0, figureDict_2 = figureDict; _a < figureDict_2.length; _a++) {
-                    var figure = figureDict_2[_a];
-                    _loop_2(figure);
-                }
-                ;
-                loader.style.display = 'none';
-            }
-            var input, template, figureDict, loader, timeout;
-            var _this = this;
-            return __generator(this, function (_a) {
-                input = document.querySelector('#search-bar');
-                input.value = '';
-                template = document.querySelector('#mfc-item-template').content;
-                new TemplateConstructor(template, this.json.mfc.sort(function (a, b) { return Number(a.id) - Number(b.id); })).insert(document.querySelector('.flex-container aside .card #mfc-card'));
-                document.querySelectorAll('.mfc').forEach(function (item) {
-                    try {
-                        item.classList.add(CustomFunctions.normalize(_this.json.mfc.filter(function (figure) { return 'mfc-' + figure.id === item.id; })[0].category.replace('/', '-')));
-                    }
-                    catch (err) { }
-                });
-                figureDict = [];
-                this.json.mfc.forEach(function (figure) {
-                    var newObj = {};
-                    for (var _i = 0, _a = Object.keys(figure); _i < _a.length; _i++) {
-                        var key = _a[_i];
-                        if (figure[key] instanceof Array) {
-                            newObj[key] = figure[key].join(', ');
-                        }
-                        else {
-                            newObj[key] = figure[key];
-                        }
-                        ;
-                    }
-                    ;
-                    figureDict.push(newObj);
-                });
-                loader = document.querySelector('aside > .loader');
-                input.addEventListener('keyup', function (ev) {
-                    loader.style.display = 'block';
-                    if (timeout)
-                        clearTimeout(timeout);
-                    timeout = setTimeout(searchFigure, 900);
-                });
+                loadMfc();
                 return [2 /*return*/];
             });
         });
@@ -697,15 +579,14 @@ var ExternalData = /** @class */ (function () {
     }
     ExternalData.addRetroAchievementsAwards = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var data, shortcuts, h2;
+            var data, retroAchievements;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, fetch("".concat(server, "retroAchievements/pt-BR/")).then(function (res) { return res.json(); })];
                     case 1:
                         data = _a.sent();
-                        shortcuts = document.querySelector('#shortcuts');
-                        h2 = Array.from(shortcuts.querySelectorAll('h2')).filter(function (h2) { return h2.textContent.trim() === 'RetroAchievements'; })[0];
-                        new TemplateConstructor(document.querySelector('#ra-template').content, [data]).insert(shortcuts, 'after', h2);
+                        retroAchievements = document.querySelector('#gaming retroachievements');
+                        new TemplateConstructor(document.querySelector('#ra-template'), [data]).insert(retroAchievements);
                         data.awards.filter(function (award) { return award.allData.some(function (data) {
                             return data.awardType.includes('Platinado');
                         }); }).forEach(function (award) {
@@ -721,147 +602,33 @@ var ExternalData = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             function scrapeDataFromMAL(options) {
                 return __awaiter(this, void 0, void 0, function () {
-                    var animeData, mangaData;
+                    var animeData, mangaData, response;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0: return [4 /*yield*/, fetch("".concat(server, "myanimelist/animelist?username=HikariMontgomery&offset=").concat(options.offset, "&limit=").concat(options.limit))
                                     .then(function (response) { return response.json(); })];
                             case 1:
-                                animeData = _a.sent();
+                                animeData = (_a.sent())['myanimelist'];
                                 return [4 /*yield*/, fetch("".concat(server, "myanimelist/mangalist?username=HikariMontgomery&offset=").concat(options.offset, "&limit=").concat(options.limit))
                                         .then(function (response) { return response.json(); })];
                             case 2:
-                                mangaData = _a.sent();
-                                return [2 /*return*/, [animeData, mangaData]];
+                                mangaData = (_a.sent())['myanimelist'];
+                                response = [];
+                                animeData.forEach(function (anime) { return response.push(anime); });
+                                mangaData.forEach(function (manga) { return response.push(manga); });
+                                return [2 /*return*/, response];
                         }
                     });
                 });
             }
-            function selectOnlyTheCurrentImage() {
-                if (!mobile)
-                    return;
-                else {
-                    document.querySelectorAll('#my-anime-list .inner-card').forEach(function (card) {
-                        var entries = card.querySelectorAll('a');
-                        var navBttns = card.parentElement.querySelectorAll('.nav-button');
-                        entries.forEach(function (entry) {
-                            entry.addEventListener('click', function (e) {
-                                var collision = false;
-                                navBttns.forEach(function (bttn) {
-                                    if (CustomFunctions.doesItCollide(entry, bttn)) {
-                                        collision = true;
-                                    }
-                                    ;
-                                });
-                                if (collision) {
-                                    e.preventDefault();
-                                }
-                            });
-                        });
-                    });
-                }
-                ;
-            }
-            function makeCarouselsSlide() {
-                document.querySelectorAll('#my-anime-list .nav-button').forEach(function (button, i) {
-                    button.addEventListener('click', function (ev) {
-                        var card = button.parentElement;
-                        var innerCard = card.querySelector('.inner-card');
-                        var innerCardTransitionTime = parseFloat(getComputedStyle(innerCard).transition);
-                        var firstEntry = card.querySelector('a');
-                        var firstEntryLeft = firstEntry.offsetLeft;
-                        var secondEntryLeft = firstEntry.nextElementSibling.offsetLeft;
-                        var parent = button.parentElement;
-                        var anchors = Array.from(parent.querySelectorAll('.inner-card a'));
-                        var anchorsMap = anchors.map(function (anchor) {
-                            var anchorRect = anchor.getBoundingClientRect();
-                            var parentRect = parent.getBoundingClientRect();
-                            return [anchor, Math.abs((anchorRect.left - parentRect.left) - (parentRect.right - anchorRect.right))];
-                        });
-                        var middleAnchor = anchorsMap.filter(function (_a) {
-                            var anchor = _a[0], distanceFromMiddle = _a[1];
-                            return distanceFromMiddle === anchorsMap.reduce(function (prev, curr) { return Math.min(prev, curr[1]); }, Infinity);
-                        })[0][0];
-                        var parentType = parent.querySelector('.inner-card').classList.contains('anime') ? 'anime' : 'manga';
-                        var scrollLimits = [
-                            { direction: 'left', position: 5, insertDirection: 'before' },
-                            { direction: 'right', position: amountOfCards - 5 - 1, insertDirection: 'after' },
-                        ];
-                        function scrollMyAnimeListCard(isFakeScroll) {
-                            if (parseInt(innerCard.getAttribute('scroll-count')) > 3)
-                                return;
-                            if (isFakeScroll) {
-                                innerCard.scrollBy({
-                                    left: (secondEntryLeft - firstEntryLeft) * multiplier / 2 * amountOfUniqueCards * (button.classList.contains('right') ? -1 : 1),
-                                    behavior: 'instant',
-                                });
-                                setTimeout(function () { return scrollMyAnimeListCard(false); }, 10);
-                            }
-                            else {
-                                setTimeout(function () {
-                                    innerCard.scrollBy({
-                                        left: (secondEntryLeft - firstEntryLeft) * (button.classList.contains('right') ? 1 : -1),
-                                        behavior: 'smooth',
-                                    });
-                                    setTimeout(function () {
-                                        innerCard.setAttribute('scroll-count', (parseInt(innerCard.getAttribute('scroll-count')) - 1).toString());
-                                    }, innerCardTransitionTime);
-                                }, innerCardTransitionTime * 1000 * parseInt(innerCard.getAttribute('scroll-count')));
-                                innerCard.setAttribute('scroll-count', (parseInt(innerCard.getAttribute('scroll-count')) + 1).toString());
-                            }
-                        }
-                        ;
-                        if (scrollLimits.some(function (scrollLimit) { return button.classList.contains(scrollLimit.direction) && anchors.indexOf(middleAnchor) === scrollLimit.position; })) {
-                            for (var _i = 0, scrollLimits_1 = scrollLimits; _i < scrollLimits_1.length; _i++) {
-                                var scrollLimit = scrollLimits_1[_i];
-                                new TemplateConstructor(document.querySelector('#myanimelist-template').content, ExternalData.MALData[parentType === 'anime' ? 0 : 1]['myanimelist']).insert(parent.querySelector('.inner-card'), scrollLimit.insertDirection);
-                                anchors.slice(scrollLimit.direction !== 'left' ? 0 : -amountOfUniqueCards, scrollLimit.direction !== 'left' ? amountOfUniqueCards : 0).forEach(function (anchor) { return anchor.remove(); });
-                                scrollMyAnimeListCard(true);
-                                break;
-                            }
-                            ;
-                        }
-                        else {
-                            scrollMyAnimeListCard(false);
-                        }
-                        ;
-                    });
-                });
-            }
-            function setDefaultScroll() {
-                document.querySelectorAll('#my-anime-list .inner-card').forEach(function (card) {
-                    card.scrollBy({
-                        left: card.scrollWidth * ((amountOfUniqueCards) - 1) / ((amountOfUniqueCards) * 2),
-                        behavior: 'instant'
-                    });
-                });
-            }
-            var amountOfUniqueCards, multiplier, amountOfCards;
             var _this = this;
             return __generator(this, function (_a) {
                 ;
-                amountOfUniqueCards = 15;
-                multiplier = 4;
-                amountOfCards = multiplier * amountOfUniqueCards;
-                scrapeDataFromMAL({ offset: 0, limit: amountOfUniqueCards }).then(function (res) {
+                scrapeDataFromMAL({ offset: 0, limit: 20 }).then(function (res) {
                     _this.MALData = res;
-                    res.forEach(function (collection, i) {
-                        var card = document.querySelectorAll('#my-anime-list .inner-card')[i];
-                        var entries = new TemplateConstructor(document.querySelector('#myanimelist-template').content, collection['myanimelist']);
-                        for (var i_1 = 0; i_1 < amountOfCards / amountOfUniqueCards; i_1++) {
-                            entries.insert(card, 'after');
-                        }
-                        ;
-                        card.removeAttribute('style');
-                        card.previousElementSibling.previousElementSibling.remove();
-                    });
-                    selectOnlyTheCurrentImage();
-                    makeCarouselsSlide();
-                    setDefaultScroll();
+                    var malContainer = document.querySelector('#my-anime-list my-anime-list');
+                    new TemplateConstructor(document.querySelector('#myanimelist-template'), res.sort(function (a, b) { return -new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime(); })).insert(malContainer);
                 });
-                ;
-                ;
-                ;
                 return [2 /*return*/];
             });
         });
@@ -909,20 +676,17 @@ function onLoadFunctions(ev) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    UserInterface.expandAside();
-                    UserInterface.makeAsideButtonFollow();
                     UserInterface.makeSwitchesSlide();
                     UserInterface.nightModeToggle();
                     UserInterface.dragPopUps();
                     UserInterface.setPopUpDefaultValues();
                     UserInterface.resetPopUpsOnOpen();
-                    UserInterface.resizeHeader();
                     UserInterface.collapseHeader();
+                    UserInterface.changeHomeView();
                     return [4 /*yield*/, CustomFunctions.sleep(300)];
                 case 1:
                     _a.sent();
                     PageBuilding.createLoaders(12);
-                    PageBuilding.adjustGamecard();
                     PageBuilding.putVersionOnFooter();
                     PageBuilding.formatPopUps();
                     PageBuilding.createSkeletons();
@@ -935,11 +699,10 @@ function onLoadFunctions(ev) {
                     return [4 /*yield*/, Promise.all([
                             Promise.all([
                                 CloudStorageData.loadContentFromJson(),
-                                CloudStorageData.addMfcImages(),
                                 ExternalData.scrapeMyAnimeList(),
                                 ExternalData.addRetroAchievementsAwards(),
                             ]).then(function (res) {
-                                PageBuilding.deleteSkeletons(['#shortcuts ', 'header ']);
+                                PageBuilding.deleteSkeletons(['#shortcuts ', 'header ', '#my-anime-list my-anime-list', 'gaming-container ', '#my-figure-collection ']);
                             }),
                         ])];
                 case 3:
@@ -958,12 +721,11 @@ function onLoadFunctions(ev) {
 ;
 window.addEventListener('resize', onResizeFunctions, true);
 function onResizeFunctions(ev) {
-    PageBuilding.resizeAside();
-    UserInterface.resizeHeader();
+    //
 }
 ;
 window.addEventListener('scroll', onScrollFunctions, true);
 function onScrollFunctions(ev) {
-    UserInterface.resizeHeader();
+    //
 }
 ;

@@ -74,69 +74,73 @@ export default SharedDomFunctions;
 ;
 var TemplateConstructor = /** @class */ (function () {
     function TemplateConstructor(template, data) {
-        var element = document.createElement('element');
-        // x
-        function createNestedTagInThisLevel(currentData, currentElement, fragment, prefix) {
-            if (currentData === void 0) { currentData = data; }
-            if (currentElement === void 0) { currentElement = element; }
-            if (fragment === void 0) { fragment = template; }
-            if (prefix === void 0) { prefix = ''; }
-            var cloneElement = document.importNode(currentElement);
-            for (var _i = 0, currentData_1 = currentData; _i < currentData_1.length; _i++) {
-                var item = currentData_1[_i];
-                var elementToBePushed = document.importNode(fragment, true);
-                cloneElement.appendChild(elementToBePushed);
-                var _loop_1 = function (key) {
-                    var keyToLookUp = prefix === '' ? key : "".concat(prefix, "-").concat(key);
-                    if (item[keyToLookUp] instanceof Array) {
-                        var templateChildElements_1 = cloneElement.querySelectorAll('.' + keyToLookUp + '-template');
-                        item[keyToLookUp].forEach(function (child) {
-                            templateChildElements_1.forEach(function (el, i) {
-                                var newTemplate = document.createElement('template');
-                                var newFragment = newTemplate.content;
-                                newFragment.appendChild(document.importNode(el, true));
-                                var newElementToBePushedString = createNestedTagInThisLevel([child], document.importNode(el, true), newFragment, keyToLookUp);
-                                var newElementToBePushed = document.createElement(el.tagName.toLowerCase());
-                                el.parentElement.insertBefore(newElementToBePushed, el);
-                                newElementToBePushed.outerHTML = newElementToBePushedString.replaceAll(keyToLookUp + '-template', ''); // Removing this line breaks the whole page due to StackOverflow.
-                            });
-                        });
-                        templateChildElements_1.forEach(function (el) { return el.remove(); });
-                        cloneElement.innerHTML = cloneElement.innerHTML.replaceAll("{{".concat(keyToLookUp, "}}"), JSON.stringify(item[key]));
-                        for (var _c = 0, _d = Array.from(cloneElement.attributes); _c < _d.length; _c++) {
+        function fillTempate(templateToFill, dataToFill) {
+            var _a, _b;
+            if (dataToFill === void 0) { dataToFill = data; }
+            var newFragment = document.createDocumentFragment();
+            for (var _i = 0, dataToFill_1 = dataToFill; _i < dataToFill_1.length; _i++) {
+                var item = dataToFill_1[_i];
+                var tpt = templateToFill.content.cloneNode(true);
+                var walker = document.createTreeWalker(tpt);
+                var bindings = [];
+                while (walker.nextNode()) {
+                    var node = walker.currentNode;
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        for (var _c = 0, _d = Array.from(node.attributes); _c < _d.length; _c++) {
                             var attr = _d[_c];
-                            attr.value = attr.value.replaceAll("{{".concat(keyToLookUp, "}}"), JSON.stringify(item[key]));
+                            var matches = (_a = attr.textContent) === null || _a === void 0 ? void 0 : _a.match(/\{\{(\S+?)\}\}/g);
+                            if (!matches)
+                                continue;
+                            for (var _e = 0, matches_1 = matches; _e < matches_1.length; _e++) {
+                                var key = matches_1[_e];
+                                bindings.push({
+                                    key: key.replace(/[\{\}]/g, ''),
+                                    node: attr,
+                                });
+                            }
+                            ;
                         }
                         ;
                     }
                     else {
-                        cloneElement.innerHTML = cloneElement.innerHTML.replaceAll("{{".concat(keyToLookUp, "}}"), item[key]);
-                        for (var _e = 0, _f = Array.from(cloneElement.attributes); _e < _f.length; _e++) {
-                            var attr = _f[_e];
-                            attr.value = attr.value.replaceAll("{{".concat(keyToLookUp, "}}"), item[key]);
+                        var matches = (_b = node.textContent) === null || _b === void 0 ? void 0 : _b.match(/\{\{(\S+?)\}\}/g);
+                        if (!matches)
+                            continue;
+                        for (var _f = 0, matches_2 = matches; _f < matches_2.length; _f++) {
+                            var key = matches_2[_f];
+                            bindings.push({
+                                key: key.replace(/[\{\}]/g, ''),
+                                node: node,
+                            });
                         }
                         ;
                     }
                     ;
+                }
+                ;
+                var _loop_1 = function (binding) {
+                    if (Array.isArray(item[binding.key])) {
+                        var newTemplate = tpt.querySelector('#' + binding.key);
+                        var el = Array.from(tpt.querySelectorAll('element')).filter(function (el) { return el.textContent === "{{".concat(binding.key, "}}"); })[0];
+                        el.parentElement.insertBefore(fillTempate(newTemplate, item[binding.key]).cloneNode(true), el);
+                        el.remove();
+                    }
+                    else {
+                        binding.node.textContent = binding.node.textContent.replace(binding.key, item[binding.key] || '').replace(/[\{\}]/g, '');
+                    }
+                    ;
                 };
-                for (var key in item) {
-                    _loop_1(key);
+                for (var _g = 0, _h = bindings.sort(function (a, b) { return a.key.split('-').length - b.key.split('-').length; }); _g < _h.length; _g++) {
+                    var binding = _h[_g];
+                    _loop_1(binding);
                 }
-                ;
-                var regEx = /\{\{[a-zA-Z\-\ \.]+\}\}/g;
-                cloneElement.innerHTML = cloneElement.innerHTML.replace(regEx, '');
-                for (var _a = 0, _b = Array.from(cloneElement.attributes); _a < _b.length; _a++) {
-                    var attr = _b[_a];
-                    attr.value = attr.value.replace(regEx, '');
-                }
-                ;
+                newFragment.appendChild(tpt);
             }
             ;
-            return cloneElement.innerHTML;
+            return newFragment;
         }
         ;
-        element.innerHTML = createNestedTagInThisLevel();
-        this.html = element.innerHTML;
+        this.html = fillTempate(template);
     }
     ;
     TemplateConstructor.prototype.insert = function (destination, position, relative) {
@@ -148,11 +152,12 @@ var TemplateConstructor = /** @class */ (function () {
         }
         ;
         if (!position) {
-            destination.innerHTML = this.html;
+            destination.innerHTML = '';
+            destination.appendChild(this.html.cloneNode(true));
         }
         else {
             var element = document.createElement('element');
-            element.innerHTML = this.html;
+            element.appendChild(this.html.cloneNode(true));
             if (position === 'before') {
                 for (var _i = 0, _a = Array.from(element.childNodes); _i < _a.length; _i++) {
                     var child = _a[_i];

@@ -35,7 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import PageBuilding, { TemplateConstructor } from './shared.js';
-import CustomFunctions from '../util/functions.js';
 import { server } from '../util/server-url.js';
 var HistoryState = /** @class */ (function () {
     function HistoryState() {
@@ -62,7 +61,7 @@ var HistoryState = /** @class */ (function () {
     ;
     HistoryState.load = function (_a) {
         return __awaiter(this, arguments, void 0, function (_b) {
-            var content, json, upload, gamecards;
+            var content, json, upload;
             var page = _b.page, id = _b.id;
             return __generator(this, function (_c) {
                 content = document.querySelector('#content');
@@ -72,7 +71,7 @@ var HistoryState = /** @class */ (function () {
                     case 'shortcuts':
                         json.then(function (res) {
                             var shortcutFolders = res[page];
-                            new TemplateConstructor(document.querySelector('#shortcuts-template').content, shortcutFolders).insert(content);
+                            new TemplateConstructor(document.querySelector('#shortcuts-template'), shortcutFolders).insert(content);
                             for (var _i = 0, shortcutFolders_1 = shortcutFolders; _i < shortcutFolders_1.length; _i++) {
                                 var folder = shortcutFolders_1[_i];
                                 for (var _a = 0, _b = folder.children; _a < _b.length; _a++) {
@@ -84,39 +83,6 @@ var HistoryState = /** @class */ (function () {
                         });
                         break;
                     case 'gamecards':
-                        gamecards = json[page];
-                        break;
-                    case 'mfc':
-                        new TemplateConstructor(document.querySelector('#mfc-template').content, [{ joker: 'skeleton' }]).insert(content);
-                        json.then(function (res) {
-                            var figure = res.mfc.filter(function (figure) { return figure.id === id; })[0];
-                            var template = new TemplateConstructor(document.querySelector('#mfc-template').content, [figure]);
-                            template.insert(content);
-                            document.querySelector('div.mfc').classList.add(CustomFunctions.normalize(figure.category.replace('/', '-')));
-                            document.querySelector('#update-trigger').removeAttribute('style');
-                            document.querySelector('div.img-wrapper').removeAttribute('style');
-                            document.querySelectorAll('div.mfc div.data-wrapper a-container').forEach(function (anchorContainer) {
-                                if (anchorContainer.textContent.trim() !== '') {
-                                    try {
-                                        anchorContainer.querySelector('.buyee').href = "https://buyee.jp/item/search/query/".concat(encodeURI(anchorContainer.textContent.trim()), "/category/25888?store=1&aucminprice=0&aucmaxprice=3000&item_status=1&suggest=1");
-                                        anchorContainer.querySelector('.amiami').href = "https://www.amiami.com/eng/search/list/?s_keywords=".concat(anchorContainer.textContent.replaceAll(' ', '+'), "&s_cate_tag=1&s_sortkey=preowned&s_st_condition_flg=1");
-                                        anchorContainer.nextElementSibling.outerHTML = "<button class=\"copy\" onclick=\"navigator.clipboard.writeText('".concat(anchorContainer.textContent.trim(), "')\"></button>");
-                                    }
-                                    catch (err) { }
-                                    ;
-                                }
-                                else {
-                                    anchorContainer.outerHTML = '<i><null></null></i>';
-                                }
-                                ;
-                            });
-                            document.querySelectorAll('copy').forEach(function (copy) {
-                                copy.addEventListener('click', function (ev) {
-                                    navigator.clipboard.writeText(copy.previousElementSibling.textContent.trim());
-                                });
-                            });
-                        });
-                        break;
                     case 'headers':
                         json.then(function (res) {
                             var headers = res[page];

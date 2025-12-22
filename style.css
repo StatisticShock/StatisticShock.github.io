@@ -81,6 +81,8 @@ body {
 
 	& .pop-up {
 		cursor: grab;
+		top: 50%;
+		left: 50%;
 
 		& * {
 			cursor: default;
@@ -408,25 +410,61 @@ body.home {
 			z-index: 3;
 			font-size: 70%;
 			display: flex;
-			height: 3em;
-			min-height: calc(1em);
+			position: relative;
 			align-items: center;
+			height: fit-content;
 			
 			& > * {
 				position: relative;
 				margin: 0 10px;
-				height: 3em;
 			}
 
-			& a.update-link {
-				margin: 0 10px;
-				height: 3em;
+			& > a {
+				text-transform: uppercase;
+				text-decoration: none;
+				color: var(--pink-custom);
+				font-size: 1.25em;
 			}
 
-			& svg#expand-retract-header {
-				width: 3em;
-				fill: var(--contrast-color-0);
-				stroke-width: 0.1em;
+			& a::after {
+				content: "";
+				height: 2px;
+				display: block;
+				width: 0;
+				background-color: var(--pink-custom);
+				transition: width 0.3s ease;
+			}
+
+			& grid-container {
+				position: absolute;
+				right: 0;
+				gap: 15px !important;
+
+				& > * {
+					height: 40px !important;
+				}
+				
+				& svg#expand-retract-header {
+					width: 30px;
+					fill: var(--contrast-color-0);
+					stroke-width: 0.1em;
+				}
+
+				& switch {
+					background-color: var(--contrast-color-3);
+					border-radius: 100%;
+					display: flex;
+					align-items: center;
+					overflow: hidden;
+
+					& g {
+						transition: 0.3s ease-out all;
+					}
+					
+					& g.dark {
+						transform: translateX(-100%);
+					}
+				}
 			}
 
 			& #ohto {
@@ -459,24 +497,6 @@ body.home {
 					height: 100%;
 					position: sticky;
 					top: 0;
-				}
-			}
-
-			& switch {
-				width: 4em;
-				height: 4em;
-				background-color: var(--contrast-color-3);
-				border-radius: 100%;
-				display: flex;
-				align-items: center;
-				overflow: hidden;
-
-				& g {
-					transition: 0.3s ease-out all;
-				}
-				
-				& g.dark {
-					transform: translateX(-100%);
 				}
 			}
 			
@@ -523,6 +543,10 @@ body.home {
 
 	& section {
 		margin: 0px 20px;
+
+		& h2 {
+			text-transform: uppercase;
+		}
 	}
 
 	& .flex-container {
@@ -530,445 +554,369 @@ body.home {
 		position: relative;
 		overflow-anchor: none;
 		margin: 1em 0 0 0;
+		display: flex;
+		flex-direction: column;
 
 		& #shortcuts {
 			position: relative;
 			transition: grid 0.3s ease;
+			width: 100%;
+			display: flex;
+			flex-direction: column;
 
 			& h2 {
 				display: flex;
 				align-items: center;
+				text-transform: uppercase;
 			}
 
-			& > section {
-				transition: inherit;
-				margin: 0;
+			& block-container {
+				position: relative;
+				display: flex;
+				flex-wrap: wrap;
+				width: calc(100% - 1em * 2);
+				justify-content: stretch;
 
-				& > div.grid-container {
-					display: grid;
-					gap: 30px;
-					grid-auto-rows: min(50px, 20vw);
-					grid-auto-columns: min(50px, 20vw);
-					grid-template-columns: repeat(auto-fill, calc(min(50px, 20vw)));
-					max-width: 100%;
-					margin-bottom: 40px;
-
-					& a.shortcut-item, & a.shortcut-item.retroachievements-award {
-						text-decoration: none;
-						position: relative;
-						height: min(50px, 20vw);
-						aspect-ratio: 1 / 1;
-						color: black;
-						border-radius: 0.5em;
-
-						& > img, & > svg, & > skeleton {
-							position: relative;
-							height: 100%;
-							width: 100%;
-							object-fit: contain;
-							transition: 0.2s ease;
-							border-radius: 0.5em;
-						}
-
-						& span {
-							position: absolute;
-							bottom: 0;
-							right: 0;
-							height: 1em;
-							padding: 0;
-							color: var(--contrast-color-0);
-							text-shadow: 1px 1px var(--main-color);
-							transform: translate(50%, 0);
-							transition: ease 0.3s all;
-						}
-					}
-
-					& a.shortcut-item.retroachievements-award {
-						cursor: pointer;
-
-						& img, & svg {
-							border-radius: 0;
-						}
-					}
-
-					& a.shortcut-item.retroachievements-award.mastered img, & a.shortcut-item.retroachievements-award.mastered svg {border: 2px solid gold;}
-					& a.shortcut-item.retroachievements-award:not(.mastered) img, & a.shortcut-item.retroachievements-award:not(.mastered) svg {border: 2px solid #e5e7eb}
-				}
-
-				& > p {
-					height: 1em;
-					width: fit-content;
-					position: relative;
-					padding: 0.25em 0;
-					border-radius: 0.25em;
-				}
-
-				& > p.skeleton {
-					width: calc(30px * 2 + min(50px, 20vw) * 3);
-				}
-			}
-
-			& .gamecard-container {
-				width: 100%;
-				display: grid;
-				grid-template-columns: 40px 1fr;
-
-				& > span {
-					gap: 15px;
-					border-radius: 10px;
-					background-image: var(--pink-purple);
-					display: flex;
+				& > button {
+					background-image: var(--pink-purple) !important;
+					border: none;
+					outline: none !important;
+					cursor: pointer;
+					display: grid !important;
+					justify-items: center;
 					align-items: center;
-					justify-content: center;
-					margin: 5px 0px;
-				}
-
-				& > span > p {
-					width: max-content;
-					height: fit-content;
-					text-transform: uppercase;
-					transform: rotate(-90deg);
-				}
-
-				& .gamecard-outercard {
-					position: relative;
-					height: fit-content;
-					flex-wrap: wrap;
-					align-items: stretch;
-					display: flex;
-					gap: 5px;
-					padding: 5px;
-
-					& .gamecard, .gamecard > a {
-						height: 300px;
-						min-width: 70px;
-						flex: 1 1 calc(min(50px, 20vw));
-						overflow-x: hidden;
-						cursor: pointer;
-						border-radius: 10px;
-						transition: .3s ease;
-						display: flex;
-						justify-content: center;
-					}
-
-					& .gamecard {
-						background-image: var(--pink-purple);
-						white-space: nowrap;
-					}
-
-					& .gamecard > a {
+					flex: 0 0 calc(20% - 5px * 2) !important;
+					
+					& > edit {
 						position: relative;
-						background: #1a1a1a;
-						transition: ease .3s;
-						background-size: 100%;
+						mask-image: var(--edit);
+						background-color: var(--contrast-color-0);
+						display: block;
+						height: 3em;
+						aspect-ratio: 1 / 1;
+						transition: transform 0.3s ease;
+					}
+				}
+
+				& > button:active {
+					opacity: 0.9;
+				}
+			}
+
+			& block, & block-container button {
+				position: relative;
+				transition: inherit;
+				display: flex;
+				flex-direction: column;
+				flex: 0 0 calc(20% - 5px * 2 - 15px * 2);
+				margin: 5px;
+				padding: 15px;
+				text-align: center;
+
+				/* From https://css.glass */
+				background: rgba(255, 255, 255, 0.05);
+				border-radius: 16px;
+				box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+				outline: 1px solid rgba(255, 255, 255, 0.1);
+
+				& > b {
+					text-transform: uppercase;
+					margin: 0 0 15px;
+				}
+			}
+
+			& .shortcut-item, & .pop-up-open {
+				display: block;
+				text-decoration: none;
+				position: relative;
+				color: black;
+				border-radius: 0.5em;
+
+				& > img, & > svg, & > skeleton {
+					position: relative;
+					height: 100%;
+					width: 100%;
+					object-fit: contain;
+					transition: 0.2s ease;
+					border-radius: 0.5em;
+				}
+
+				& span {
+					position: absolute;
+					bottom: 0;
+					right: 0;
+					height: 1em;
+					padding: 0;
+					color: var(--contrast-color-0);
+					text-shadow: 1px 1px var(--main-color);
+					transform: translate(50%, 0);
+					transition: ease 0.3s all;
+				}
+			}
+		}
+
+		& #gaming {
+			& gaming-container {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				width: 100%;
+				scrollbar-width: 5px;
+
+				& gaming {
+					flex: 1 0 clamp(calc(100% / 3 - 10px), 20vw, calc(25% - 10px));
+					height: 30vmin;
+					background-color: #1a1a1a;
+					overflow: hidden;
+					border-radius: 1em;
+
+					& a {
+						position: relative;
+						height: 100%;
+						display: block;
 						background-repeat: no-repeat;
 						background-position: center;
 						background-size: cover;
-
-						& > span {
-							position: absolute;
-							color: black;
-							background-color: var(--pink-custom);
-							border-radius: 10px;
-							text-align: center;
-							width: 100%;
-							bottom: 0;
-						}
 					}
 				}
 			}
 
-			& #my-anime-list {
-				position: relative;
-				transition: all 0.3s;
+			& retroachievements {
+				& grid-container {
+					justify-content: start !important;
 
-				& .card {
-					position: relative;
-					left: 50%;
-					width: 100%;
-					transform: translate(-50%, 0);
-					height: 320px;
-					--height: 300px;
-					border-radius: 20px;
-					text-decoration: none;
-					background-image: var(--pink-purple);
-					overflow: hidden;
-					padding: 0;
-
-					& .loader {
-						height: 10px;
-						top: 50%;
-						left: 50%;
-						transform: translate(-50%, -50%);
+					& a.retroachievements-award {
+						display: flex;
+						height: fit-content;
+						width: fit-content;
 					}
 
-					& .inner-card {
-						height: inherit;
-						transition: all .2s;
-						display: grid;
-						grid-auto-flow: column;
-						overflow-x:  scroll;
-						overflow-y: hidden;
-						overscroll-behavior-x: contain;
-						scroll-snap-type: x mandatory;
-						scroll-behavior: smooth;
-						scrollbar-width: none;
-						white-space: nowrap;
-						gap: 1.5vw;
-						padding: 10px calc(50% - 300px / 4 * 3 / 2);
-						touch-action: none;
-						transition: 0.3s;
-
-						& a {
-							height: 300px;
-							aspect-ratio: 3/4;
-							scroll-snap-align: center;
-							transition: 0.3s ease;
-							border-radius: 20px;
-							text-decoration: none;
-							position: relative;
-
-							& img, & svg {
-								height: 100%;
-								width: 100%;
-								border-radius: 20px;
-							}
-
-							& top-text, & bottom-text {
-								position: absolute;
-								display: inline-block;
-								height: fit-content;
-								white-space: normal;
-								background-color: rgba(0, 0, 0, 0.75);
-								padding: 0 1rem;
-								color: var(--pink-custom);
-								text-align: center;
-							};
-
-							& top-text {
-								border-top-left-radius: 20px;
-								border-bottom-right-radius: 20px;
-								left: 0;
-								top: 0;
-								width: 20%;
-							}
-
-							& bottom-text {
-								right: 0;
-								bottom: 0;
-								width: 70%;
-								border-bottom-right-radius: 20px;
-								border-top-left-radius: 20px;
-							}
-						}
+					& a.mastered {
+						outline: 4px solid gold;
 					}
 
-					& .nav-button {
-						cursor: pointer;
-						position:absolute;
-						height: 110%;
-						width: 15%;
-						top: -5%;
-						z-index: 1;
-						border: transparent;
-						color: rgba(255, 255, 255, 1);
-						font-size: 3vw;
-						transition: all 0.5s;						
-
-						& arrow-img {
-							display: inline-block;
-							background-image: var(--arrow);
-							width: 100%;
-							aspect-ratio: 1;
-						}
-					}
-					
-					& .nav-button.left {
-						left: 0px;
-						background-color: rgba(49, 49, 49, 1);
-						mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)),
-									linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));
-						-webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)),
-											linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));
-						
-						& arrow-img {
-							transform: rotate(180deg);
-						}
-					}
-					
-					& .nav-button.right {
-						right: -1px;
-						background-color: rgba(49, 49, 49, 1);
-						mask-image: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0)),
-									linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
-						-webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0)),
-											linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
+					& a:not(.mastered) {
+						outline: 4px solid gainsboro;
 					}
 				}
 			}
 		}
 
-		& aside {
-			display: grid;
+		& #my-anime-list {
+			& my-anime-list {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, max(calc(20% - 10px), calc(10vh - 10px)));
+				gap: 10px;
+
+				& a {
+					position: relative;
+					aspect-ratio: 3 / 4;
+					border-radius: 1em;
+					overflow: hidden;
+
+					& top-text, & bottom-text {
+						z-index: 1;
+						position: absolute;
+						background-color: var(--pink-custom);
+						color: white;
+						padding: 0.25em;
+						width: 80%;
+						text-align: center;
+						font-size: 0.75em;
+					}
+
+					& top-text {
+						top: 0;
+						left: 0;
+						border-bottom-right-radius: 1em;
+					}
+
+					& bottom-text {
+						bottom: 0;
+						right: 0;
+						border-top-left-radius: 1em;
+						
+					}
+
+					& img {
+						position: relative;
+						width: 100%;
+						height: 100%;
+						transition: filter 0.3s ease;
+					}
+				}
+
+				& a.manga {
+					& img {
+						filter: saturate(0);
+					}
+				}
+			}
+		}
+
+		& #my-figure-collection {
+			width: calc(100vw - 20px);
 			position: relative;
-			transition: width 0.3s ease-in, transform 0.3s ease-in;
-			height: 100%;
-			border-radius: 20px;
-			text-wrap:wrap;
-			overflow-x: hidden;
-			overflow-y: auto;
-			background-color: var(--main-color);
-			grid-template-rows: 100px;
 
 			& input {
 				position: relative;
-				width: 90%;
-				height: 25px;
-				top: 10px;
-				border-radius: 20px;
-				margin: 20px 0;
+				border-radius: 10em;
 				border: none;
-				padding: 10px 0;
+				width: calc(100% - 40px);
+				height: 3em;
+				margin: 0 0 2em;
+				padding: 0 1em;
 				text-align: center;
-				background-color: white;
-				color: gray;
-				border: 1px solid gray;
-				transition: all 0.3s ease;
 			}
 
-			& input:focus {
-				outline: none;
+			& input:active, & input:focus {
+				outline: 1px solid var(--pink-custom);
 			}
 
-			& > .loader {
-				height: 6px;
-				z-index: 3;
-				--border: 1px solid white;
-			}
-
-			& input::placeholder {
-				font-size: 1.1em;
-				text-align: center;
-				color: rgba(127, 127, 127, 1)
-			}
-
-			& .card {
-				height: 100%;
-				position: relative;
-				top: 0;
-				border-radius: 10px;
-				text-decoration: none;
-				transition: all .2s;
+			& my-figure-collection {
 				display: flex;
-				scrollbar-width: none;
-				gap: 0;
-				
-				& #mfc-card {
-					position: relative;
-					width: 100%;
-					height: fit-content;
-					display: grid;
+				flex-wrap: wrap;
+				gap: 20px;
+				width: 100%;
+
+				& mfc {
 					gap: 20px;
-					margin: 0;
-					padding: 0 5px;
-					transition: ease 0.4s;
-					grid-template-columns: repeat(auto-fill, minmax(max(calc(43vw * 0.15 - 20px), 15% - 20px, 75px), 1fr));
-			
-					& > .mfc {
-						position: static;
-						display: inline-block;
-						width: 100%;
-						aspect-ratio: 1 / 1;
-						overflow: hidden;
-						font-size: .75em;
-						text-decoration: none;
-						text-align: center;
-						border-radius: 10px;
-						padding: 0;
-						transition: 0.3s all ease;
-						outline-width: 6px;
+					display: flex;
 
-						& img, & svg {
-							position: relative;
-							width: 100%;
-							height: 100%;
-							cursor: pointer;
+					& img, & line {
+						outline-width: 4px;
+						border-radius: 1em !important;
+					}
+
+					& > img {
+						height: 60px;
+						cursor: pointer;
+					}
+
+					& hidden-info {
+						flex-direction: row;
+						gap: 20px;
+
+						& figure-data {
+							flex: 1 1 10px;
+							display: grid;
+							gap: 20px;
+
+							& line {
+								display: grid;
+								grid-template-columns: 7.5rem 20rem;
+								gap: 0;
+								overflow: hidden;
+								cursor: pointer;
+
+								-webkit-touch-callout: none;
+								-webkit-user-select: none;
+								-khtml-user-select: none;
+								-moz-user-select: none;
+								-ms-user-select: none;
+								user-select: none;
+								
+								& > * {
+									background-color: var(--contrast-color-1);
+									padding: 1em;
+									align-content: center;
+								}
+
+								& label {
+									text-align: end;
+									color: var(--contrast-color-5);
+								}
+
+								& data {
+									color: var(--contrast-color-0);
+								}
+
+								& stores {
+									grid-column: 1 / 3;
+									display: flex;
+									justify-content: space-evenly;
+									height: 2rem;
+									transition: all 0.3s ease;
+
+									& a {
+										overflow: hidden;
+
+										& img {
+											outline: none !important;
+											height: 2rem;
+											border-radius: 15% !important;
+										}
+									}
+								}
+							}
+
+							& line.hidden {
+								& stores {
+									height: 0;
+									margin: -1rem 0;
+								}
+							}
 						}
-					}	
-
-					& > .mfc.Owned {outline-style: solid}
-
-					& > .mfc.Ordered {outline-style: solid}
-
-					& > .mfc.Wished {outline-style: double}
-
-					& > .mfc.action-dolls {outline-color: #0080ff}
-
-					& > .mfc.trading {outline-color: orange}
-
-					& > .mfc.prepainted {outline-color: green}
+					}
 				}
 
-				& > .loader {
-					width: 50px;
-					position: absolute;
-					top: 10%;
-					left: 50%;
-					transform: translate(-50%, 0);
-					--border: 1px solid white;
+				& mfc.hidden {
+					& hidden-info {
+						display: none !important;
+					}
 				}
-			}
 
-			& > .button-bar {
-				cursor: pointer;
-				position: relative;
-				top: 0px;
-				left: 0px;
-				height: 100%;
-				border-top-left-radius: 10px;
-				border-bottom-left-radius: 10px;
-				grid-row-end: span 2;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				z-index: 1;
-				font-size: 2em;
-				background-color: var(--pink-custom);
-				border: none;
-				transition: all 0.3s;
-				padding: 0%;
+				& mfc:not(.hidden) {
+					& hidden-info {
+						display: flex !important;
+					}
+				}
 
-				& > button {
-					cursor: pointer;
-					position: absolute;
-					height: 20px;
-					top: 50%;
-					transition: ease-out 0.25s;
-					border: none;
-					background-color: var(--pink-custom);
-					transform: scale(0.5, 1);
+				& mfc.Owned, & mfc.Ordered {
+					& img, & line {
+						outline-style: solid;
+					}
+				}
 
-					clip-path: path("m 0 0 C 6 6 20 0 20 10 c 0 10 -14 4 -20 10 Q 0 10 0 0");
+				& mfc.Wished {
+					& img, & line {
+						outline-style: double;
+					}
+				}
 
-					& span {
-						display: flex;
-						height: 100%;
-						transform: rotate(0deg) translate(0%,-10%);
-						align-items: center;
-						justify-content: center;
+				& mfc.Action\/Dolls {
+					& img, & line {
+						outline-color: #0080ff;
+					}
+				}
+
+				& mfc.Prepainted {
+					& img, & line {
+						outline-color: green;
+					}
+				}
+
+				& mfc:not(.Prepainted):not(.Action\/Dolls) {
+					& img, & line {
+						outline-color: #f84;
 					}
 				}
 			}
 		}
+	}
 
-		& aside.hidden {
-			& > .button-bar {
-				& > button {
-					& span {
-						transform: rotate(180deg) translate(0%,-10%);;
-					}
-				}
-			}
+	& grid-container {
+		position: relative;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-evenly;
+		text-align: center;
+		gap: 30px;
+		max-width: 100%;
+
+		& > * {
+			height: min(50px, 20vw);
+			aspect-ratio: 1 / 1;
 		}
 	}
 
@@ -987,41 +935,17 @@ body.home.has-hover {
 
 	& header {
 		& nav {
-			& .pop-up-open:hover {
-				transform: scale(1.5);
-				border-bottom-left-radius: 0;
-
-				& span {
-					transform: scale(1.5) translate(-50%, 100%);
-				}
-			}
-
-			& .pop-up-open:hover::after {
-				position: absolute;
-				left: -12px;
-				top: 50px;
-				font-size: 80%;
-				color: black;
-				content: attr(alt);
-				display: inline-block;
-				z-index: 1;
-				background-color: var(--pink-custom);
-				width: max-content;
-				text-align: center;
-				border-top-right-radius: 3ex;
-				border-bottom-left-radius: 3ex;
-				border-bottom-right-radius: 3ex;
-				padding: 0.5em 1em;
-				transform: scale(0.75) translate(0, -75%);
+			& a:hover::after {
+				width: 100%;
 			}
 		}
 	}
 
 	& .flex-container {
 		& #shortcuts {
-			& section {
-				& .grid-container{
-					& a.shortcut-item:hover {
+			& block {
+				& grid-container {
+					& a.shortcut-item:hover, & .pop-up-open:hover {
 						border-bottom-left-radius: 0;
 
 						& > * {
@@ -1030,7 +954,7 @@ body.home.has-hover {
 						}
 					}
 
-					& a.shortcut-item::after {
+					& a.shortcut-item::after, & .pop-up-open::after {
 						position: absolute;
 						left: 0px;
 						top: 50px;
@@ -1039,7 +963,7 @@ body.home.has-hover {
 						font-size: 1em;
 					}
 
-					& a.shortcut-item:hover::after {
+					& a.shortcut-item:hover::after, & .pop-up-open:hover::after {
 						position: absolute;
 						left: -12px;
 						top: 68px;
@@ -1057,42 +981,43 @@ body.home.has-hover {
 				}
 			}
 
-			& .gamecard-container {
-				& .gamecard-outercard {
-					& .gamecard:hover {
-						flex: max(calc(var(--gamecard-count) - 1), 3);
-						background-size: cover;
-						background-position: center;
-						text-shadow: 0px 0px 5px black;
-						box-shadow: 0px 0px 30px 1px var(--pink-custom);
+			& button:hover {
+				& edit {
+					transform: scale(2);
+				}
+			}
+		}
+
+		& #gaming {
+			& gaming-container {
+				& gaming {
+					& a::after {
+						position: absolute;
+						bottom: 0;
+						background-image: var(--pink-purple);
+						display: block;
+						content: attr(alt);
+						height: 30px;
+						width: 100%;
+						text-align: center;
+						font-size: large;
+						color: #ffffff;
+						transform: translateY(100%);
+						transition: all 0.3s ease;
 					}
 
-					& .gamecard a:hover {
-						transform: scale(98%);
-						font-size: 40px;
+					& a:hover::after {
+						transform: translateY(0);
 					}
 				}
 			}
 		}
 
-		& aside {
-			& > .button-bar:hover {
-				& button {
-					transform: translate(calc(100% - 5px), 0) scale(1.5);
-
-					& span {
-						display: flex;
-						color: #000;
-					}
-				}
-			}
-		}
-
-		& aside.hidden {
-			& > .button-bar:hover {
-				& button {
-					& span {
-						transform: rotate(180deg);
+		& #my-anime-list {
+			& my-anime-list {
+				& a:hover {
+					& img {
+						filter: none;
 					}
 				}
 			}
@@ -1100,96 +1025,34 @@ body.home.has-hover {
 	}
 }
 
-@media (orientation: landscape) {
+@media (max-width: 600px) {
 	body.home {
-		& .flex-container{
-			display: grid;
-			grid-template-columns: 54vw 2vw 1fr;
-			transition: grid-template-columns 0.3s ease;
+		overflow-x: hidden;
 
-			& #shortcuts {
-				grid-column-start: 1;
-				grid-row-start: 1;
-				width: 100%;
-			}
-
-			& aside {
-				grid-column-start: 3;
-				width: 100%;
-				display: grid;
-				grid-template-columns: 10px 43vw;
-
-				& input {
-					width: calc((46vw - 2vw - 10px) * 0.9);
-					left: calc(((44vw - 10px) * 0.1) / 2);
-				}
-
-				& .card {
-					overflow: hidden;
-
-					& #mfc-card {
-						position: relative;
-						padding: 10px;
-					}
-				}
-
-				& > .loader {
-					top: calc((10px + 20px + 20px));
-					left: calc(10px + 5% + 20px);
-				}
-
-				& .button-bar {
-					width: 10px;
-
-					& button {
-						top: 50%;
-
-						& span {
-							color: var(--pink-custom);
-						}
-					}
-				}
-			}
-		}
-
-		& .flex-container:has(aside.hidden) {
-			grid-template-columns: 76vw 2vw 1fr;
-
-			& aside {
-				& input {
-					width: calc((24vw - 2vw - 10px) * 0.9);
-					left: calc(((22vw - 10px) * 0.1) / 2);
-				}
-
-				& .card {
-					& #mfc-card {
-						width: calc(50% - 20px);
-						
-						& .mfc.Wished {
-							display: none;
-						}
-					}
-				}
-			}
-		}
-
-		& .pop-up {
-			left: 50%;
+		& .pop-up{
 			top: 50%;
+			left: 50%;
 		}
-	}
 
-	body.has-hover {
-		& .flex-container{
-			& aside {
-				& .card:hover {
-					& .mfc {
-						opacity: 0.5;
+		& .flex-container {
+			& #shortcuts {
+				& block-container {
+					flex-direction: column;
+				}
+			}
+
+			& #gaming {
+				& gaming-container {
+					flex-direction: column;
+					& gaming {
+						flex: 0 0 90px;
 					}
-					
-					& .mfc:hover {
-						opacity: 1;
-					}
+				}
+			}
+
+			& #my-anime-list {
+				& my-anime-list {
+					grid-template-columns: 1fr 1fr;
 				}
 			}
 		}
@@ -1198,74 +1061,28 @@ body.home.has-hover {
 
 @media (orientation: portrait) {
 	body.home {
-		overflow-x: hidden;
+		& .flex-container {
+			& #my-figure-collection {
+				& my-figure-collection {
+					& mfc {
+						& hidden-info {
+							flex-direction: column;
+							width: 100%;
 
-		& .flex-container{
-			display: flex;
+							& > a >img {
+								height: unset;
+								width: 17.5rem;
+							}
 
-			& #shortcuts {
-				width: calc(100vw - 20px - 20px - 20px);
-			}
-
-			& aside {
-				grid-template-columns: 20px 1fr;
-				z-index: 1;
-				transform: translateX(0);
-				position: absolute;
-				width: 100%;
-				overflow: visible;
-				right: 0;
-
-				& input {
-					left: 50%;
-					transform: translate(-50%, 0);
-				}
-
-				& .card {
-					overflow: hidden;
-					width: 99%;
-					
-					& #mfc-card {
-						position: static;
-						width: calc(99vw - 20px - ((10px + 5px) * 2));
-						margin: 10px;
-					}
-				}
-
-				& > .loader {
-					top: calc((10px + 20px + 20px));
-					left: calc(20px + 5% + 20px);
-				}
-
-				& .button-bar {
-					width: 20px;
-					position: sticky;
-					top: 0px;
-
-					& button {
-						top: 10px;
-						transform: translate(20px, 0);
-
-						& span {
-							color: black;
-							transform: rotate(180deg) translate(0, -2px);
+							& figure-data {
+								& line {
+									grid-template-columns: 7.5rem 10rem;
+								}
+							}
 						}
 					}
 				}
 			}
-
-			& aside.hidden {
-				width: 20px;
-
-				& .button-bar button {
-					transform: rotate(180deg) translate(20px, 0);
-				}
-			}
-		}
-
-		& .pop-up{
-			top: 50%;
-			left: 50%;
 		}
 	}
 }

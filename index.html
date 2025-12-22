@@ -18,91 +18,90 @@
 		</div>
 		<svg class="skeleton-container skeleton"></svg>
 		<nav class="menu">
-			<a href="/update/headers" class="svg-img update-link"></a>
-			<svg id="expand-retract-header" width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-				<path d="M 0 10 L 10 0 L 20 10 L 14 10 L 14 20 L 6 20 L 6 10 L 0 10">
-					<animateTransform id="toDownOne" dur="0.25s" attributeName="transform" type="rotate" from="0 10 10" to="210 10 10" begin="toDownTrigger.begin" fill="freeze"/>
-					<animateTransform id="toDownTwo" dur="0.05s" attributeName="transform" type="rotate" from="210 10 10" to="180 10 10" begin="toDownOne.end" fill="freeze"/>
-					<animateTransform id="toUpOne" dur="0.25s" attributeName="transform" type="rotate" from="180 10 10" to="-30 10 10" begin="toUpTrigger.begin" fill="freeze"/>
-					<animateTransform id="toUpTwo" dur="0.05s" attributeName="transform" type="rotate" from="-30 10 10" to="0 10 10" begin="toUpOne.end" fill="freeze"/>
-				</path>
+			<a href="shortcuts"><b>Atalhos</b></a>
+			<a href="gaming"><b>Gaming</b></a>
+			<a href="my-anime-list"><b>MAL</b></a>
+			<a href="my-figure-collection"><b>MFC</b></a>
+			<grid-container>
+				<svg id="expand-retract-header" width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+					<path d="M 0 10 L 10 0 L 20 10 L 14 10 L 14 20 L 6 20 L 6 10 L 0 10">
+						<animateTransform id="toDownOne" dur="0.25s" attributeName="transform" type="rotate" from="0 10 10" to="210 10 10" begin="toDownTrigger.begin" fill="freeze"/>
+						<animateTransform id="toDownTwo" dur="0.05s" attributeName="transform" type="rotate" from="210 10 10" to="180 10 10" begin="toDownOne.end" fill="freeze"/>
+						<animateTransform id="toUpOne" dur="0.25s" attributeName="transform" type="rotate" from="180 10 10" to="-30 10 10" begin="toUpTrigger.begin" fill="freeze"/>
+						<animateTransform id="toUpTwo" dur="0.05s" attributeName="transform" type="rotate" from="-30 10 10" to="0 10 10" begin="toUpOne.end" fill="freeze"/>
+					</path>
 
-				<rect width="20" height="20" fill="transparent" style="cursor: pointer">
-					<animate id="toDownTrigger" attributeName="height" dur="2s" begin="click"/>
-				</rect>
-				
-				<rect width="20" height="0" fill="transparent">
-					<animate id="toUpTrigger" attributeName="height" dur="0.001s" values="20;0" begin="click" fill="freeze"/>
-					<animate attributeName="height" dur="0.001s" values="0;20" begin="toDownTrigger.begin" fill="freeze" />
-				</rect>
-			</svg>
-			<switch>
-				<svg id="theme-toggle" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="-5 -5 30 30" fill="none" style="cursor: pointer">
-					<g>
-						<path style="cursor: pointer;" d="M10,0L10,3 M0,10L3,10 M17,10L20,10 M10,17L10,20 M5,15L3,17 M5,5L3,3 M15,5L17,3 M15,15L17,17" fill="yellow" stroke="yellow"/>
-						<circle cx="10" cy="10" r="5" fill="yellow"/>
-						<circle cx="40" cy="10" r="10" fill="whitesmoke"/>
-						<circle cx="35" cy="5" r="1" fill="#797979"/>
-						<circle cx="35.25" cy="5.1" r="0.7" fill="#999999"/>
-						<circle cx="40" cy="10" r="3" fill="#797979"/>
-						<circle cx="40" cy="10" r="2.7" fill="#999999"/>
-						<circle cx="40" cy="17" r="2.5" fill="#797979"/>
-						<circle cx="40" cy="16.7" r="2.2" fill="#999999"/>
-						<circle cx="45" cy="15" r="1.7" fill="#797979"/>
-						<circle cx="44.8" cy="14.8" r="1.4" fill="#999999"/>
-						<!-- <animateMotion id="toMoon" dur="0.3s" path="M 0 0 L -30 0" fill="freeze"/>
-						<animateMotion id="toSun" dur="0.3s" path="M -30 0 L 0 0" fill="freeze"/> -->
-					</g>
+					<rect width="20" height="20" fill="transparent" style="cursor: pointer">
+						<animate id="toDownTrigger" attributeName="height" dur="2s" begin="click"/>
+					</rect>
+					
+					<rect width="20" height="0" fill="transparent">
+						<animate id="toUpTrigger" attributeName="height" dur="0.001s" values="20;0" begin="click" fill="freeze"/>
+						<animate attributeName="height" dur="0.001s" values="0;20" begin="toDownTrigger.begin" fill="freeze" />
+					</rect>
 				</svg>
-			</switch>
+				<switch>
+					<svg id="theme-toggle" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="-5 -5 30 30" fill="none" style="cursor: pointer">
+						<g>
+							<path style="cursor: pointer;" d="M10,0L10,3 M0,10L3,10 M17,10L20,10 M10,17L10,20 M5,15L3,17 M5,5L3,3 M15,5L17,3 M15,15L17,17" fill="yellow" stroke="yellow"/>
+							<circle cx="10" cy="10" r="5" fill="yellow"/>
+							<circle cx="40" cy="10" r="10" fill="whitesmoke"/>
+							<circle cx="35" cy="5" r="1" fill="#797979"/>
+							<circle cx="35.25" cy="5.1" r="0.7" fill="#999999"/>
+							<circle cx="40" cy="10" r="3" fill="#797979"/>
+							<circle cx="40" cy="10" r="2.7" fill="#999999"/>
+							<circle cx="40" cy="17" r="2.5" fill="#797979"/>
+							<circle cx="40" cy="16.7" r="2.2" fill="#999999"/>
+							<circle cx="45" cy="15" r="1.7" fill="#797979"/>
+							<circle cx="44.8" cy="14.8" r="1.4" fill="#999999"/>
+							<!-- <animateMotion id="toMoon" dur="0.3s" path="M 0 0 L -30 0" fill="freeze"/>
+							<animateMotion id="toSun" dur="0.3s" path="M -30 0 L 0 0" fill="freeze"/> -->
+						</g>
+					</svg>
+				</switch>
+			</grid-container>
 			<div id="twoB" class="sitting-figure">
 				<img src="./images/2b.webp">
 			</div>
 			<div id="ohto" class="sitting-figure">
 				<img src="./images/Ohto_Ai_Flamengo.webp">
 			</div>
-			<label id="mfc-switch" class="switch" style="display: none;"></label>
-			<a class="pop-up-open reddit-google" alt="Reddit Google Search" style="cursor: pointer;">
-				<img src="./images/reddit-google.webp">
-			</a>
-			<a class="pop-up-open wikipedia" alt="Wikipedia Search" style="cursor: pointer;">
-				<img src="./images/wikipedia.webp">
-			</a>
 		</nav>
 	</header>
 	<div class="container">
 		<div class="flex-container">
-			<aside class="hidden">
-				<div class="button-bar">
-					<button id="expand-button" type="button"><span>&rarr;</span></button>
-				</div>
-				<input type="text" placeholder="Pesquise uma figure" id="search-bar">
-				<div class="loader" style="display: none;"></div>
-				<div class="card">
-					<span id="mfc-card" class="mfc-card"></span>
-				</div>
-			</aside>
 			<section id="shortcuts">
-				<h2>Atalhos&nbsp;<a class="svg-img update-link" href="/update.html?page=shortcuts"></a></h2>
-				<h2>Gaming&nbsp;<a class="svg-img update-link" href="/update.html?page=gamecards"></a></h2>
-				<section id="gamecards"></section>
-				<h2>RetroAchievements</h2><h2>MyAnimeList</h2>
-				<section id="my-anime-list">
-					<h3>Anime</h3>
-					<div class="card">
-						<div class="loader"></div>
-						<button class="nav-button left" type="button"><arrow-img/></button>
-						<div class="inner-card anime" style="opacity: 0;" scroll-count="0"></div>
-						<button class="nav-button right" type="button"><arrow-img/></button>
-					</div>
-					<h3>Mangá</h3>
-					<div class="card">
-						<div class="loader"></div>
-						<button class="nav-button left" type="button"><arrow-img/></button>
-						<div class="inner-card manga" style="opacity: 0;" scroll-count="0"></div>
-						<button class="nav-button right" type="button"><arrow-img/></button>
-					</div>
-				</section>
+				<h2>Atalhos</h2>
+				<block style="max-width: calc(100% - 30px * 2 - 5px * 2);">
+					<grid-container>
+						<a class="pop-up-open reddit-google" alt="Reddit Google Search" style="cursor: pointer;">
+							<img src="./images/reddit-google.webp">
+						</a>
+						<a class="pop-up-open wikipedia" alt="Wikipedia Search" style="cursor: pointer;">
+							<img src="./images/wikipedia.webp">
+						</a>
+					</grid-container>
+				</block>
+				<block-container><button type="button"><edit/></button></block-container>
+			</section>
+			<section id="gaming" style="display: none;">
+				<h2>Gaming</h2>
+				<gaming-container></gaming-container>
+				<h2>RetroAchievements</h2>
+				<retroachievements></retroachievements>
+			</section>
+			<section id="my-anime-list" style="display: none;">
+				<h2>MyAnimeList</h2>
+				<my-anime-list></my-anime-list>
+			</section>
+			<section id="my-figure-collection" style="display: none;">
+				<h2>MyFigureCollection</h2>
+				<input type="text" name="mfc-filter" placeholder="Filtre figures...">
+				<my-figure-collection></my-figure-collection>
+			</section>
+			<section id="about" style="display: none;">
+				<h2>SOBRE</h2>
+				<p>Esta é uma página em HTML desenvolvida por StatisticShock para uso próprio.</p>
 			</section>
 		</div>
 		<form class="pop-up reddit-google">
@@ -135,65 +134,122 @@
 				<input id="keywords-wikipedia"><span class='floating-label'>Palavras-chave</span></span>
 			<button type="button" class="ok-button">OK</button>
 		</form>
-		<section id="about">
-			<h2>SOBRE</h2>
-			<p>Esta é uma página em HTML desenvolvida por StatisticShock para uso próprio.</p>
-		</section>
 	</div>
 	<footer>
 		<p>&copy;&nbsp;StatisticShock. Nada a dizer.</p>
 	</footer>
 	
 	<template id="shortcuts-template">
-		<section id="{{id}}" class="{{jokerContainer}}">
-			<p class="{{joker}}">{{title}}</p>
-			<div class="grid-container">
-				<a class="shortcut-item children-template" href="{{children-href}}" alt="{{children-alt}}" id="{{children-id}}" target="_blank">
-					<img src="{{children-img}}" class="{{joker}}" draggable="false">
-					<span>{{children-floatingLabel}}</span>
-				</a>
-			</div>
-		</section>
+		<block id="{{id}}" class="{{jokerContainer}}">
+			<b class="{{joker}}">{{title}}</b>
+			<grid-container>
+
+				<element>{{children}}</element>
+				<template id="children">
+					<a class="shortcut-item" href="{{href}}" alt="{{alt}}" id="{{id}}" target="_blank">
+						<img src="{{img}}" class="{{joker}}" draggable="false">
+						<span>{{floatingLabel}}</span>
+					</a>
+				</template>
+
+			</grid-container>
+		</block>
 	</template>
 
 	<template id="ra-template">
 		<section id="retroachievements-awards">
-			<p class="{{joker}}">Prêmios</p>
-			<div class="grid-container">
-				<a class="shortcut-item retroachievements-award awards-template" href="https://retroachievements.org/game/{{awards-awardData}}" alt="{{awards-title}}" target="_blank" id="ra-award-{{awards-awardData}}">
-					<img src="{{awards-imageIcon}}">
-				</a>
-			</div>
+			<grid-container>
+
+				<element>{{awards}}</element>
+
+				<template id="awards">
+					<a class="shortcut-item retroachievements-award" href="https://retroachievements.org/game/{{awardData}}" alt="{{title}}" target="_blank" id="ra-award-{{awardData}}">
+						<img src="{{imageIcon}}">
+					</a>
+				</template>
+				
+			</grid-container>
 		</section>
 	</template>
 
 	<template id="gamecard-template">
-		<div id="{{id}}" class="gamecard-container {{jokerContainer}}">
-			<span class="{{joker}}">
-				<p>{{label}}</p>
-			</span>
-			<div class="gamecard-outercard">
-				<div class="gamecard children-template" id="{{children-id}}" style="--gamecard-count: 2;">
-					<a class="{{children-joker}}" href="{{children-href}}" style="background-image: url({{children-img}});" target="_blank">
-						<span><b>{{children-label}}</b></span>
-					</a>
-				</div>
-			</div>
-		</div>
-	</template>
-
-	<template id="mfc-item-template">
-		<a alt="" class="mfc update-link {{joker}}  {{type}}" id="mfc-{{id}}" target="_blank" href="/update.html?page=mfc&id={{id}}">
-			<img src="{{icon}}">
-		</a>
+		<gaming id="{{id}}" class="{{jokerContainer}}">
+			<a class="{{joker}}" href="{{href}}" style="background-image: url({{img}});" alt="{{label}}" target="_blank"></a>
+		</gaming>
 	</template>
 
 	<template id="myanimelist-template">
-		<a target="_blank" href="https://myanimelist.net/{{type}}/{{id}}/">
+		<a target="_blank" class="{{type}} {{joker}}" href="https://myanimelist.net/{{type}}/{{id}}/">
 			<top-text>#{{rank}}</top-text>
 			<img src="{{main_picture_large}}">
 			<bottom-text>{{title}}</bottom-text>
 		</a>
+	</template>
+
+	<template id="mfc-template">
+		<mfc id="mfc-{{id}}" class="{{type}} {{category}} {{joker}} {{jokerContainer}} hidden">
+			<img src="{{icon}}">
+			<hidden-info>
+				<a href="{{href}}" target="_blank">
+					<img src="{{img}}">
+				</a>
+				<figure-data>
+					<line class="hidden">
+						<label>Título</label>
+						<data>{{title}}</data>
+					</line>
+					<line class="hidden">
+						<label>Personagem</label>
+						<data>{{character}}</data>
+						<stores>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/amiami.webp" alt="amiami icon"></a>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/buyee.webp" alt="buyee icon"></a>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/ninoma.webp" alt="ninoma icon"></a>
+						</stores>
+					</line>
+					<line class="hidden">
+						<label>Personagem<br/>(japonês)</label>
+						<data>{{characterJap}}</data>
+						<stores>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/amiami.webp" alt="amiami icon"></a>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/buyee.webp" alt="buyee icon"></a>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/ninoma.webp" alt="ninoma icon"></a>
+						</stores>
+					</line>
+					<line class="hidden">
+						<label>Origem</label>
+						<data>{{source}}</data>
+						<stores>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/amiami.webp" alt="amiami icon"></a>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/buyee.webp" alt="buyee icon"></a>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/ninoma.webp" alt="ninoma icon"></a>
+						</stores>
+					</line>
+					<line class="hidden">
+						<label>Origem<br/>(japonês)</label>
+						<data>{{sourceJap}}</data>
+						<stores>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/amiami.webp" alt="amiami icon"></a>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/buyee.webp" alt="buyee icon"></a>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/ninoma.webp" alt="ninoma icon"></a>
+						</stores>
+					</line>
+					<line class="hidden">
+						<label>Classificação</label>
+						<data>{{classification}}</data>
+						<stores>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/amiami.webp" alt="amiami icon"></a>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/buyee.webp" alt="buyee icon"></a>
+							<a target="_blank"><img src="https://storage.googleapis.com/statisticshock_github_io_public/icons/static/ninoma.webp" alt="ninoma icon"></a>
+						</stores>
+					</line>
+					<line class="hidden">
+						<label>Tags</label>
+						<data>{{tags}}</data>
+					</line>
+				</figure-data>
+			</hidden-info>
+		</mfc>
 	</template>
 
 	<script type="module" src="./src/fixImages.js"></script>
