@@ -270,6 +270,15 @@ class UserInterface {
 			}
 		})
 	};
+
+	static async refreshData (): Promise<void> { // NO NEED OF RESPONSIVENESS
+		const button = document.querySelector('button#refresh-button') as HTMLButtonElement;
+		
+		button.onclick = async (ev) => {
+			await caches.delete('v1');
+			window.location.reload();
+		};
+	};
 };
 
 class ExternalSearch {
@@ -565,6 +574,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 	UserInterface.resetPopUpsOnOpen();
 	UserInterface.collapseHeader();
 	UserInterface.changeHomeView();
+	UserInterface.refreshData();
 
 	await CustomFunctions.sleep(300);
 

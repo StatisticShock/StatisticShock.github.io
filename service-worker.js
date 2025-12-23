@@ -1,4 +1,4 @@
-const cacheName = 'v2';
+const cacheName = 'v1';
 const cacheAssets = [
 	'./index.html',
 	'./404.html',
@@ -7,7 +7,7 @@ const cacheAssets = [
 	'./src/shared.js',
 	'./util/functions.js',
 ];
-const cacheMaxTime = 15 * 60 * 1000; 	// 15 minutes
+const cacheMaxTime = 60 * 60 * 1000;
 const isExpired = async (cache) => {
 	const currentCache = await caches.open(cache);
 	const meta = await currentCache.match('meta');

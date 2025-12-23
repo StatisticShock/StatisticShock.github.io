@@ -327,6 +327,28 @@ var UserInterface = /** @class */ (function () {
         });
     };
     ;
+    UserInterface.refreshData = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var button;
+            var _this = this;
+            return __generator(this, function (_a) {
+                button = document.querySelector('button#refresh-button');
+                button.onclick = function (ev) { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, caches.delete('v1')];
+                            case 1:
+                                _a.sent();
+                                window.location.reload();
+                                return [2 /*return*/];
+                        }
+                    });
+                }); };
+                return [2 /*return*/];
+            });
+        });
+    };
+    ;
     return UserInterface;
 }());
 ;
@@ -685,6 +707,7 @@ function onLoadFunctions(ev) {
                     UserInterface.resetPopUpsOnOpen();
                     UserInterface.collapseHeader();
                     UserInterface.changeHomeView();
+                    UserInterface.refreshData();
                     return [4 /*yield*/, CustomFunctions.sleep(300)];
                 case 1:
                     _a.sent();
