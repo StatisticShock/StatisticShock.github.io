@@ -90,6 +90,7 @@ export type MFC = {
 	source: string,
 	sourceJap: string,
 	classification: string,
+	classificationJp: string,
 	category: 'Prepainted'|'Action/Dolls'|'Trading',
 	tags: string,
 	type: 'Wished'|'Owned'|'Ordered',

@@ -179,6 +179,7 @@ class ScrapeFunctions {
 		let source: string;
 		let sourceJap: string;
 		let classification: string;
+		let classificationJp: string;
 		let category: 'Prepainted'|'Action/Dolls'|'Trading';
 		let type: 'Owned'|'Ordered'|'Wished' = typeOfFigure;
 		let title: string;
@@ -211,11 +212,8 @@ class ScrapeFunctions {
 				category = $$(element).find('.data-value').text() as 'Prepainted'|'Action/Dolls'|'Trading';
 			};
 			if ($$(element).find('.data-label').text().includes('Classificaç')) {
-				if ($$(element).find('.data-value a span').filter((i, el) => $$(el).attr('switch') !== '').length === 0) {
-					classification = $$(element).find('.data-value a span').map((i, el) => $$(el).text()).toArray().join(', ');
-				} else {
-					classification = $$(element).find('.data-value a span').map((i, el) => $$(el).attr('switch')).toArray().join(', ');
-				};
+				classification = $$(element).find('.data-value a span').map((i, el) => $$(el).text()).toArray().join(', ') || '';
+				classificationJp = $$(element).find('.data-value a span').map((i, el) => $$(el).attr('switch')).toArray().join(', ') || '';
 			};
 			if ($$(element).find('.data-label').text().includes('Personag') || $$(element).find('.data-label').text().includes('Título')) {
 				character = $$(element).find('.data-value').text();
@@ -240,7 +238,8 @@ class ScrapeFunctions {
 			characterJap: characterJap,
 			sourceJap: sourceJap,
 			source: source,
-			classification: classification, 
+			classification: classification,
+			classificationJp: classificationJp,
 			category: category,
 			tags: tags,
 			type: type,

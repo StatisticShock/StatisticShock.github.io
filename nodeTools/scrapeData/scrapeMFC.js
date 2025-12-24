@@ -175,6 +175,7 @@ class ScrapeFunctions {
         let source;
         let sourceJap;
         let classification;
+        let classificationJp;
         let category;
         let type = typeOfFigure;
         let title;
@@ -204,13 +205,8 @@ class ScrapeFunctions {
             }
             ;
             if ($$(element).find('.data-label').text().includes('Classificaç')) {
-                if ($$(element).find('.data-value a span').filter((i, el) => $$(el).attr('switch') !== '').length === 0) {
-                    classification = $$(element).find('.data-value a span').map((i, el) => $$(el).text()).toArray().join(', ');
-                }
-                else {
-                    classification = $$(element).find('.data-value a span').map((i, el) => $$(el).attr('switch')).toArray().join(', ');
-                }
-                ;
+                classification = $$(element).find('.data-value a span').map((i, el) => $$(el).text()).toArray().join(', ') || '';
+                classificationJp = $$(element).find('.data-value a span').map((i, el) => $$(el).attr('switch')).toArray().join(', ') || '';
             }
             ;
             if ($$(element).find('.data-label').text().includes('Personag') || $$(element).find('.data-label').text().includes('Título')) {
@@ -239,6 +235,7 @@ class ScrapeFunctions {
             sourceJap: sourceJap,
             source: source,
             classification: classification,
+            classificationJp: classificationJp,
             category: category,
             tags: tags,
             type: type,
