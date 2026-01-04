@@ -539,7 +539,7 @@ var CloudStorageData = /** @class */ (function () {
                     var destination;
                     return __generator(this, function (_a) {
                         destination = document.querySelector('#my-figure-collection my-figure-collection');
-                        new TemplateConstructor(document.querySelector('#mfc-template'), content.mfc).insert(destination, 'after');
+                        new TemplateConstructor(document.querySelector('#mfc-template'), content.mfc.sort(function (a, b) { return Number(a.id) - Number(b.id); })).insert(destination, 'after');
                         document.querySelectorAll('mfc > img').forEach(function (mfcImg) {
                             mfcImg.addEventListener('click', function (ev) {
                                 mfcImg.parentElement.classList.toggle('hidden');
@@ -648,10 +648,10 @@ var ExternalData = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_a) {
                 ;
-                scrapeDataFromMAL({ offset: 0, limit: 20 }).then(function (res) {
+                scrapeDataFromMAL({ offset: 0, limit: 40 }).then(function (res) {
                     _this.MALData = res;
                     var malContainer = document.querySelector('#my-anime-list my-anime-list');
-                    new TemplateConstructor(document.querySelector('#myanimelist-template'), res.sort(function (a, b) { return -new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime(); })).insert(malContainer);
+                    new TemplateConstructor(document.querySelector('#myanimelist-template'), res.sort(function (a, b) { return -new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime(); }).slice(0, 40)).insert(malContainer);
                 });
                 return [2 /*return*/];
             });

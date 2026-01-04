@@ -426,7 +426,7 @@ class CloudStorageData {
 
 		async function loadMfc (): Promise<void> {
 			const destination = document.querySelector('#my-figure-collection my-figure-collection') as HTMLElement
-			new TemplateConstructor(document.querySelector('#mfc-template') as HTMLTemplateElement, content.mfc).insert(destination, 'after');
+			new TemplateConstructor(document.querySelector('#mfc-template') as HTMLTemplateElement, content.mfc.sort((a, b) => Number(a.id) - Number(b.id))).insert(destination, 'after');
 
 			document.querySelectorAll('mfc > img').forEach((mfcImg) => {
 				mfcImg.addEventListener('click', (ev) => {
@@ -528,11 +528,11 @@ class ExternalData {
 			return response
 		};
 
-		scrapeDataFromMAL({offset: 0, limit: 20}).then((res) => {
+		scrapeDataFromMAL({offset: 0, limit: 40}).then((res) => {
 			this.MALData = res;
 
 			const malContainer = document.querySelector('#my-anime-list my-anime-list') as HTMLDivElement;
-			new TemplateConstructor(document.querySelector('#myanimelist-template') as HTMLTemplateElement, res.sort((a, b) => - new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime())).insert(malContainer);
+			new TemplateConstructor(document.querySelector('#myanimelist-template') as HTMLTemplateElement, res.sort((a, b) => - new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime()).slice(0, 40)).insert(malContainer);
 		});
 	};
 };
