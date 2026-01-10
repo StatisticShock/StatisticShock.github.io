@@ -457,7 +457,7 @@ class CloudStorageData {
 						store.href = `https://www.amiami.com/eng/search/list/?s_keywords=${encodeURI(keyword)}&s_cate_tag=1&s_sortkey=preowned&s_st_condition_flg=1`
 						break;
 					case 'buyee icon':
-						store.href = `https://buyee.jp/item/search/query/${encodeURI(keyword)}/category/25888?store=1&aucminprice=0&aucmaxprice=3000&item_status=1&suggest=1`
+						store.href = `https://buyee.jp/item/search/query/${encodeURI(keyword)}/category/25888?store=1&aucminprice=0&aucmaxprice=3000&suggest=1`
 						break;
 					case 'ninoma icon':
 						store.href = `https://ninoma.com/search?filter.p.product_type=Figure&filter.v.availability=1&q=${encodeURI(keyword)}`
