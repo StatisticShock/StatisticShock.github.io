@@ -151,19 +151,19 @@ body {
 			cursor: pointer;
 		}
 
-		& input[type="text"] {
-			border-radius: 10px;
+		& input:not([type="checkbox"]) {
+			border-radius: 100px;
 			font-family: OpenSans;
 			cursor: text;
 		}
 
-		& input[type="text"]:focus {
+		& input:not([type="checkbox"]):focus {
 			outline: none;
 			border: 2px solid var(--pink-custom);
 			position: relative;
 		}
 
-		& input[type="text"] ~ .floating-label {
+		& input:not([type="checkbox"]) ~ .floating-label {
 			position: absolute;
 			color: grey;
 			font-size: 13.3333px;
@@ -172,7 +172,7 @@ body {
 			transform: translate(5px);
 		}
 
-		& input[type="text"]:focus + .floating-label, & input[type="text"]:not(:placeholder-shown) + .floating-label {
+		& input:not([type="checkbox"]):focus + .floating-label, & input:not([type="checkbox"]):not(:placeholder-shown) + .floating-label {
 			position: absolute;
 			width: fit-content;
 			font-size: 10px;
