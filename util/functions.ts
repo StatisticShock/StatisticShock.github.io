@@ -194,7 +194,7 @@ export default class CustomFunctions {
 	};
 
 	static jsonToCsv (json: Array<object>, headers: Array<string>): Array<Array<number|string|boolean>> {
-		if (Object.keys(json).length === 0) return [[]];
+		if (json.length === 0) return [[]];
 		else if (Object.keys(json).every((key) => (key === null)||(key === undefined))) return [[]];
 
 		const headersToUse: Array<string> = headers.map((header) => `root.${header}`);
@@ -265,9 +265,10 @@ export default class CustomFunctions {
 			do {
 				for (const key in target) {
 					if (key !== 'parent_from_this_method') allData[i].push([target[key][0], target[key][1]]);
+					console.log(allData[i]);
 				}
 
-				target = target['parent_from_this_method']
+				target = target['parent_from_this_method'];
 			} while (target !== undefined);
 		};
 

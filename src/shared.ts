@@ -18,7 +18,36 @@ export default class SharedDomFunctions {
 		type popUpInterface = { button: HTMLAnchorElement | HTMLButtonElement, popUpContainer: HTMLFormElement }
 		const popUpShortcuts: Array<popUpInterface> = [];
 
+		function observer (form: HTMLFormElement): void {
+			const _observer = new MutationObserver((mutations) => {
+				mutations.forEach((mutation) => {
+					if (mutation.attributeName === 'style') {
+						setTimeout(() => {
+							const floatingLabelElement = form.querySelectorAll('.floating-label') as NodeListOf<HTMLElement>;
+							floatingLabelElement.forEach((label) => {
+								const parent = label.parentElement as HTMLElement;
+								const siblings = Array.from(parent.children) as Array<HTMLElement>;
+								const input = siblings[siblings.indexOf(label) - 1] as HTMLInputElement;
+								const rect = form.getBoundingClientRect();
+								const inputRect = input.getBoundingClientRect();
+
+								const left = inputRect.left - rect.left;
+								label.style.left = Math.max(left, 5) + 'px';
+
+								if (input.placeholder) input.placeholder = input.placeholder;
+								else input.placeholder = ' ';
+							});
+						}, 10);
+					}
+				})
+			});
+
+			_observer.observe(form, {attributeFilter: ['style']});
+		};
+
 		(document.querySelectorAll('form.pop-up') as NodeListOf<HTMLFormElement>).forEach((form) => {
+			observer(form);
+			
 			if (form.classList.length < 2) return;
 
 			const otherClass: string = Array.from(form.classList).filter((className) => className !== 'pop-up')[0];
@@ -30,7 +59,6 @@ export default class SharedDomFunctions {
 
 		popUpShortcuts.forEach((object) => {
 			let popUpClass = document.querySelectorAll('.pop-up') as NodeListOf<HTMLElement>;
-			let floatingLabelElement = object.popUpContainer.querySelectorAll('.floating-label') as NodeListOf<HTMLElement>;
 
 			object.button.onclick = () => {
 				let display: string = object.popUpContainer.style.display;
@@ -46,24 +74,6 @@ export default class SharedDomFunctions {
 						element.style.display = 'none'
 					};
 				});
-
-				setTimeout(() => {
-					floatingLabelElement.forEach((label) => {
-						const parent = label.parentElement as HTMLElement;
-						const siblings = Array.from(parent.children) as Array<HTMLElement>;
-						const input = siblings[siblings.indexOf(label) - 1] as HTMLInputElement;
-						const rect = object.popUpContainer.getBoundingClientRect();
-						const inputRect = input.getBoundingClientRect();
-
-						const left = inputRect.left - rect.left;
-						label.style.left = Math.max(left, 5) + 'px';
-
-						if (input.placeholder) input.placeholder = input.placeholder;
-						else input.placeholder = ' ';
-
-						console.log(left)
-					});
-				}, 10);
 			}
 
 			object.popUpContainer.addEventListener('keydown', function (e) {

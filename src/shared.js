@@ -16,7 +16,34 @@ var SharedDomFunctions = /** @class */ (function () {
     ;
     SharedDomFunctions.formatPopUps = function () {
         var popUpShortcuts = [];
+        function observer(form) {
+            var _observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.attributeName === 'style') {
+                        setTimeout(function () {
+                            var floatingLabelElement = form.querySelectorAll('.floating-label');
+                            floatingLabelElement.forEach(function (label) {
+                                var parent = label.parentElement;
+                                var siblings = Array.from(parent.children);
+                                var input = siblings[siblings.indexOf(label) - 1];
+                                var rect = form.getBoundingClientRect();
+                                var inputRect = input.getBoundingClientRect();
+                                var left = inputRect.left - rect.left;
+                                label.style.left = Math.max(left, 5) + 'px';
+                                if (input.placeholder)
+                                    input.placeholder = input.placeholder;
+                                else
+                                    input.placeholder = ' ';
+                            });
+                        }, 10);
+                    }
+                });
+            });
+            _observer.observe(form, { attributeFilter: ['style'] });
+        }
+        ;
         document.querySelectorAll('form.pop-up').forEach(function (form) {
+            observer(form);
             if (form.classList.length < 2)
                 return;
             var otherClass = Array.from(form.classList).filter(function (className) { return className !== 'pop-up'; })[0];
@@ -25,7 +52,6 @@ var SharedDomFunctions = /** @class */ (function () {
         });
         popUpShortcuts.forEach(function (object) {
             var popUpClass = document.querySelectorAll('.pop-up');
-            var floatingLabelElement = object.popUpContainer.querySelectorAll('.floating-label');
             object.button.onclick = function () {
                 var display = object.popUpContainer.style.display;
                 if ((display == '') || (display == 'none')) {
@@ -41,22 +67,6 @@ var SharedDomFunctions = /** @class */ (function () {
                     }
                     ;
                 });
-                setTimeout(function () {
-                    floatingLabelElement.forEach(function (label) {
-                        var parent = label.parentElement;
-                        var siblings = Array.from(parent.children);
-                        var input = siblings[siblings.indexOf(label) - 1];
-                        var rect = object.popUpContainer.getBoundingClientRect();
-                        var inputRect = input.getBoundingClientRect();
-                        var left = inputRect.left - rect.left;
-                        label.style.left = Math.max(left, 5) + 'px';
-                        if (input.placeholder)
-                            input.placeholder = input.placeholder;
-                        else
-                            input.placeholder = ' ';
-                        console.log(left);
-                    });
-                }, 10);
             };
             object.popUpContainer.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {

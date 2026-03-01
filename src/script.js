@@ -84,10 +84,9 @@ var PageBuilding = /** @class */ (function (_super) {
         var container = 'skeleton-container';
         function createShortcutSkeletons() {
             var shortcuts = document.querySelector('#shortcuts block-container');
-            var maxIcons = 24;
-            var bttn = shortcuts.querySelector('button');
+            var maxIcons = 16;
             var row = Array(maxIcons).fill({ joker: skeleton, alt: '. . .' });
-            new TemplateConstructor(document.querySelector('#shortcuts-template'), Array(4).fill({ jokerContainer: container, joker: skeleton, children: row })).insert(shortcuts, 'before', bttn);
+            new TemplateConstructor(document.querySelector('#shortcuts-template'), Array(5).fill({ jokerContainer: container, joker: skeleton, children: row })).insert(shortcuts);
             shortcuts.querySelectorAll('img').forEach(function (img) { return img.src = './icon/blank.svg'; });
         }
         ;
@@ -349,6 +348,53 @@ var UserInterface = /** @class */ (function () {
         });
     };
     ;
+    UserInterface.handleShortcutEditToggle = function () {
+        var toggleButton = document.querySelector('button#shortcuts-edit-mode');
+        var shotcuts = document.querySelector('section#shortcuts');
+        var blocks = Array.from(shotcuts.querySelectorAll('block-container block'));
+        toggleButton.onclick = function (ev) {
+            shotcuts.classList.toggle('edit-mode');
+            toggleButton.classList.toggle('trigger');
+            toggleButton.classList.toggle('check');
+        };
+        blocks.forEach(function (block) {
+            block.addEventListener('mouseenter', function (ev) {
+                if (document.body.classList.contains('has-hover')) {
+                    block.setAttribute('selected', 'true');
+                }
+                ;
+            });
+            block.addEventListener('mouseleave', function (ev) {
+                if (document.body.classList.contains('has-hover')) {
+                    block.setAttribute('selected', 'false');
+                }
+                ;
+            });
+            block.addEventListener('click', function (ev) {
+                var target = (ev.target || ev.touches[0].target);
+                if (!target.closest('a') || shotcuts.classList.contains('edit-mode')) {
+                    ev.preventDefault();
+                }
+                if (!ev.touches)
+                    return;
+                block.setAttribute('selected', (!Boolean(block.getAttribute('selected') || "false")).toString());
+                blocks.forEach(function (el) {
+                    if (el !== block) {
+                        el.setAttribute('selected', 'false');
+                    }
+                    ;
+                });
+            });
+        });
+    };
+    UserInterface.handleGamingEditToggle = function () {
+        var toggleButton = document.querySelector('button#gaming-edit-mode');
+        toggleButton.onclick = function (ev) {
+            toggleButton.classList.toggle('trigger');
+            toggleButton.classList.toggle('check');
+        };
+        /* TODO */
+    };
     return UserInterface;
 }());
 ;
@@ -439,10 +485,9 @@ var CloudStorageData = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             function loadShortcuts() {
                 return __awaiter(this, void 0, void 0, function () {
-                    var shortcuts, bttn, shortcutsOnMobile;
+                    var shortcuts, shortcutsOnMobile;
                     return __generator(this, function (_a) {
                         shortcuts = document.querySelector('section#shortcuts block-container');
-                        bttn = document.querySelector('#shortcuts block-container button');
                         shortcutsOnMobile = content.shortcuts.map(function (folder) {
                             var folderClone = structuredClone(folder);
                             folderClone.children = folderClone.children.filter(function (child) {
@@ -452,7 +497,7 @@ var CloudStorageData = /** @class */ (function () {
                         }).filter(function (folder) {
                             return folder.children.length > 0;
                         });
-                        new TemplateConstructor(document.querySelector('template#shortcuts-template'), mobile ? shortcutsOnMobile : content.shortcuts).insert(shortcuts, 'before', bttn);
+                        new TemplateConstructor(document.querySelector('template#shortcuts-template'), mobile ? shortcutsOnMobile : content.shortcuts).insert(shortcuts);
                         return [2 /*return*/];
                     });
                 });
@@ -595,6 +640,130 @@ var CloudStorageData = /** @class */ (function () {
         });
     };
     ;
+    CloudStorageData.handleEdits = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            function shortcutsEdit() {
+                var section = document.querySelector('section#shortcuts');
+                var form = document.querySelector('form#create-shortcut');
+                var inputFile = form.querySelector('input[type="file"]');
+                var parendData = null;
+                var editedShortcut = null;
+                var buttons = document.querySelectorAll('button.shortcut-item');
+                buttons.forEach(function (button) {
+                    button.onclick = function (ev) {
+                        form.style.display = 'block';
+                        var parendId = CloudStorageData.json.shortcuts.filter(function (folder) { return folder.id === button.closest('block').id; })[0];
+                        parendData = {
+                            id: parendId.id,
+                            index: parendId.index,
+                            title: parendId.title,
+                            children: parendId.children.length
+                        };
+                        form.querySelectorAll('input[type="text"]').forEach(function (input) {
+                            input.value = '';
+                        });
+                        form.querySelector('input[type="checkbox"]').checked = true;
+                        form.querySelector('input[type="file"]').value = '';
+                    };
+                });
+                var currentShortcuts = document.querySelectorAll('block a.shortcut-item');
+                currentShortcuts.forEach(function (shortcut) {
+                    shortcut.onclick = function (ev) {
+                        if (!section.classList.contains('edit-mode'))
+                            return;
+                        form.style.display = 'block';
+                        editedShortcut = CloudStorageData.json.shortcuts.filter(function (folder) { return folder.id === shortcut.closest('block').id; })[0].children.filter(function (shortcutOnJson) { return shortcutOnJson.id === shortcut.id; })[0];
+                        var parendId = CloudStorageData.json.shortcuts.filter(function (folder) { return folder.id === shortcut.closest('block').id; })[0];
+                        parendData = {
+                            id: parendId.id,
+                            index: parendId.index,
+                            title: parendId.title,
+                            children: parendId.children.length
+                        };
+                        form.querySelectorAll('input[type="text"]').forEach(function (input) {
+                            if (editedShortcut[input.name]) {
+                                input.value = editedShortcut[input.name];
+                            }
+                            else {
+                                input.value = '';
+                            }
+                            ;
+                        });
+                        form.querySelector('input[type="checkbox"]').checked = editedShortcut.showOnMobile;
+                        form.querySelector('input[type="file"]').value = '';
+                    };
+                });
+                var submitButton = form.querySelector('button.ok-button');
+                submitButton.onclick = function (ev) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var formData, response, json_1, postBody, request;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    ev.preventDefault();
+                                    if (form.querySelector("input[name=\"alt\"]").value === '')
+                                        return [2 /*return*/];
+                                    if (form.querySelector("input[name=\"href\"]").value === '')
+                                        return [2 /*return*/];
+                                    if (form.querySelector("input[name=\"image\"]").files.length === 0)
+                                        return [2 /*return*/];
+                                    formData = new FormData();
+                                    formData.append('image', inputFile.files[0]);
+                                    formData.append('path', 'icons/dynamic/');
+                                    return [4 /*yield*/, fetch("".concat(server, "image/small"), {
+                                            method: 'POST',
+                                            body: formData
+                                        })];
+                                case 1:
+                                    response = _a.sent();
+                                    if (!(response.status === 200)) return [3 /*break*/, 4];
+                                    return [4 /*yield*/, response.json()];
+                                case 2:
+                                    json_1 = _a.sent();
+                                    postBody = {
+                                        id: parendData.id,
+                                        index: parendData.index.toString(),
+                                        title: parendData.title,
+                                        children: [
+                                            {
+                                                alt: document.querySelector('input[name="alt"]').value,
+                                                id: CustomFunctions.normalize(document.querySelector('input[name="alt"]').value),
+                                                index: parendData.children.toString(),
+                                                href: document.querySelector('input[name="href"]').value,
+                                                img: "https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/".concat(json_1['newFile']),
+                                                floatingLabel: document.querySelector('input[name="floatingLabel"]').value,
+                                                showOnMobile: document.querySelector('input[name="showOnMobile"]').value.toString() === 'on' ? true : false,
+                                            }
+                                        ],
+                                    };
+                                    return [4 /*yield*/, fetch("".concat(server, "shortcuts"), {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-type': 'application/json'
+                                            },
+                                            body: JSON.stringify(postBody),
+                                        })];
+                                case 3:
+                                    request = _a.sent();
+                                    if (request.ok) {
+                                        alert('Atalho criado.');
+                                    }
+                                    ;
+                                    _a.label = 4;
+                                case 4: return [2 /*return*/];
+                            }
+                        });
+                    });
+                };
+            }
+            return __generator(this, function (_a) {
+                ;
+                shortcutsEdit();
+                return [2 /*return*/];
+            });
+        });
+    };
+    ;
     return CloudStorageData;
 }());
 ;
@@ -724,6 +893,7 @@ function onLoadFunctions(ev) {
                     return [4 /*yield*/, Promise.all([
                             Promise.all([
                                 CloudStorageData.loadContentFromJson(),
+                                CloudStorageData.handleEdits(),
                                 ExternalData.scrapeMyAnimeList(),
                                 ExternalData.addRetroAchievementsAwards(),
                             ]).then(function (res) {
@@ -735,6 +905,8 @@ function onLoadFunctions(ev) {
                     _a.label = 4;
                 case 4:
                     ;
+                    UserInterface.handleShortcutEditToggle();
+                    UserInterface.handleGamingEditToggle();
                     PageBehaviour.openLinksInNewTab();
                     PageBehaviour.stopImageDrag();
                     setTimeout(function () { return window.dispatchEvent(new Event('resize')); }, 250);

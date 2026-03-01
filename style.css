@@ -16,7 +16,7 @@
 	--pink-purple: linear-gradient(163deg, var(--pink-custom) 0%, #3700ff 100%);
 
 	--arrow: url('data:image/svg+xml,<svg fill="context-fill" height="100%" width="100%" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 330 330" xml:space="preserve"><title>arrow</title><path id="XMLID_222_" d="M250.606,154.389l-150-149.996c-5.857-5.858-15.355-5.858-21.213,0.001 c-5.857,5.858-5.857,15.355,0.001,21.213l139.393,139.39L79.393,304.394c-5.857,5.858-5.857,15.355,0.001,21.213 C82.322,328.536,86.161,330,90,330s7.678-1.464,10.607-4.394l149.999-150.004c2.814-2.813,4.394-6.628,4.394-10.606 C255,161.018,253.42,157.202,250.606,154.389z"/></svg>');
-	--check: url('data:image/svg+xml,<svg width="100%" height="100%" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg" aria-labelledby="okIconTitle" stroke="contextFill" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" color="contextFill"><title>check</title><polyline points="4 13 9 18 20 7"/></svg>');
+	--check: url('data:image/svg+xml,<svg width="100%" height="100%" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg" aria-labelledby="okIconTitle" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" color="contextFill"><title>check</title><polyline points="4 13 9 18 20 7"/></svg>');
 	--edit: url('data:image/svg+xml,<svg fill="context-fill" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 528.899 528.899" xml:space="preserve"><title>edit</title><g><path d="M328.883,89.125l107.59,107.589l-272.34,272.34L56.604,361.465L328.883,89.125z M518.113,63.177l-47.981-47.981 c-18.543-18.543-48.653-18.543-67.259,0l-45.961,45.961l107.59,107.59l53.611-53.611 C532.495,100.753,532.495,77.559,518.113,63.177z M0.3,512.69c-1.958,8.812,5.998,16.708,14.811,14.565l119.891-29.069 L27.473,390.597L0.3,512.69z"/></g></svg>');
 	--image: url('data:image/svg+xml,<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 9800 7360" preserveAspectRatio="xMidYMid meet"><title>broken image</title><g fill="contextFill" stroke="none"><path d="M920 7343 c-431 -76 -769 -384 -887 -808 l-28 -100 0 -2755 0 -2755 27 -98 c74 -268 239 -497 466 -645 155 -101 310 -154 506 -172 76 -8 1335 -10 3976 -8 l3865 3 90 22 c414 97 716 387 832 798 l28 100 3 2700 c2 1926 0 2723 -8 2780 -17 122 -46 220 -100 331 -139 289 -385 492 -708 586 l-77 23 -3980 1 c-2189 1 -3991 -1 -4005 -3z m7949 -420 c273 -64 425 -211 493 -478 l23 -90 0 -2675 0 -2675 -23 -90 c-68 -267 -220 -414 -493 -478 l-94 -22 -3795 -3 c-2592 -2 -3830 0 -3906 8 -333 31 -529 165 -614 418 -52 156 -50 59 -50 2842 0 2783 -2 2686 50 2842 67 198 215 333 428 388 45 12 119 25 164 29 46 5 1802 8 3903 7 l3820 -1 94 -22z"/><circle cx="1775" cy="2085" r="750"/><path d="M5405 2453 c-739 627 -1325 1115 -1331 1112 -6 -4 -234 -186 -507 -405 -273 -220 -501 -397 -508 -395 -6 2 -467 368 -1025 813 l-1013 810 2 920 2 920 3875 0 3875 0 3 -1531 2 -1532 -1015 -913 c-558 -503 -1021 -915 -1028 -916 -6 -1 -606 502 -1332 1117z"/></g></svg>');
 	--keys: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 16 16" fill="context-fill" fill-opacity="context-fill-opacity"><title>key</title><path fill-rule="evenodd" d="M7.25 4a2.75 2.75 0 1 0 5.5 0 2.75 2.75 0 0 0-5.5 0ZM6 4a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M13.995 13.63c0 .345-.28.625-.625.625h-2.365v1.115a.625.625 0 1 1-1.25 0V7h1.25v6.005h2.365c.345 0 .625.28.625.625ZM8.152 7.264l.435-.435-.884-.884-.525.525c.277.316.606.585.974.794Zm-.908.908a5.026 5.026 0 0 1-.951-.817l-3.278 3.278-1.23 1.23a.625.625 0 0 0 .883.884l.788-.787 2.101 2.11a.625.625 0 0 0 .886-.881L4.34 11.076l2.904-2.904Z" clip-rule="evenodd"/></svg>');
@@ -151,18 +151,19 @@ body {
 			cursor: pointer;
 		}
 
-		& input {
+		& input[type="text"] {
 			border-radius: 10px;
 			font-family: OpenSans;
+			cursor: text;
 		}
 
-		& input:focus {
+		& input[type="text"]:focus {
 			outline: none;
 			border: 2px solid var(--pink-custom);
 			position: relative;
 		}
 
-		& input ~ .floating-label {
+		& input[type="text"] ~ .floating-label {
 			position: absolute;
 			color: grey;
 			font-size: 13.3333px;
@@ -171,7 +172,7 @@ body {
 			transform: translate(5px);
 		}
 
-		& input:focus + .floating-label, & input:not(:placeholder-shown) + .floating-label {
+		& input[type="text"]:focus + .floating-label, & input[type="text"]:not(:placeholder-shown) + .floating-label {
 			position: absolute;
 			width: fit-content;
 			font-size: 10px;
@@ -191,26 +192,6 @@ body {
 			position: relative;
 			display: inline-block;
 		}
-	}
-
-	& a.update-link:not(.mfc) {
-		margin: 0 20px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		cursor: pointer;
-		background-color: var(--pink-custom);
-		border: none;
-		border-radius: 100%;
-		opacity: 0.5;
-		text-decoration: none;
-		position: relative;
-		transition: all 0.3s ease;
-		height: 40px;
-		aspect-ratio: 1;
-
-		background-image: var(--edit);
-		background-size: 65%;
 	}
 
 	& button.delete-button {
@@ -239,6 +220,35 @@ body {
 	& input[type="checkbox"]:checked {
 		background-color: var(--pink-custom);
 		border: 2px solid white;
+	}
+
+	& button.edit {
+		margin: 0 20px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		cursor: pointer;
+		background-color: var(--pink-custom);
+		border: none;
+		border-radius: 100%;
+		opacity: 0.5;
+		text-decoration: none;
+		position: relative;
+		transition: all 0.3s ease;
+		height: 40px;
+		aspect-ratio: 1;
+
+		background-size: 65%;
+		background-position: center;
+		background-repeat: no-repeat;
+	}
+
+	& button.edit.trigger {
+		background-image: var(--edit);
+	}
+
+	& button.edit.check {
+		background-image: var(--check);
 	}
 }
 
@@ -568,6 +578,14 @@ body.home {
 				display: flex;
 				align-items: center;
 				text-transform: uppercase;
+
+				& > button#shortcuts-edit-mode {
+					position: relative;
+					width: 3em;
+					aspect-ratio: 1 / 1;
+					border-radius: 100%;
+					border: none;
+				}
 			}
 
 			& block-container {
@@ -576,34 +594,9 @@ body.home {
 				flex-wrap: wrap;
 				width: calc(100% - 1em * 2);
 				justify-content: stretch;
-
-				& > button {
-					background-image: var(--pink-purple) !important;
-					border: none;
-					outline: none !important;
-					cursor: pointer;
-					display: grid !important;
-					justify-items: center;
-					align-items: center;
-					flex: 0 0 calc(20% - 5px * 2) !important;
-					
-					& > edit {
-						position: relative;
-						mask-image: var(--edit);
-						background-color: var(--contrast-color-0);
-						display: block;
-						height: 3em;
-						aspect-ratio: 1 / 1;
-						transition: transform 0.3s ease;
-					}
-				}
-
-				& > button:active {
-					opacity: 0.9;
-				}
 			}
 
-			& block, & block-container button {
+			& block {
 				position: relative;
 				transition: inherit;
 				display: flex;
@@ -612,6 +605,7 @@ body.home {
 				margin: 5px;
 				padding: 15px;
 				text-align: center;
+				transition: all 0.3s ease;
 
 				/* From https://css.glass */
 				background: rgba(255, 255, 255, 0.05);
@@ -637,7 +631,7 @@ body.home {
 					height: 100%;
 					width: 100%;
 					object-fit: contain;
-					transition: 0.2s ease;
+					transition: 0.3s ease;
 					border-radius: 0.5em;
 				}
 
@@ -653,9 +647,59 @@ body.home {
 					transition: ease 0.3s all;
 				}
 			}
+
+			& button.shortcut-item {
+				opacity: 0.5;
+				border: none;
+				border-radius: 100%;
+				background-color: #1a1a1a;
+				cursor: pointer;
+				display: flex;
+				font-size: 3rem;
+				align-items: center;
+				justify-content: center;
+			}
+		}
+
+		& #shortcuts:not(.edit-mode) {
+			& block-container {
+				& block {
+					& a.shortcut-item {
+						& button.delete-shortcut {
+							display: none;
+						}
+					}
+
+					& button.shortcut-item {
+						display: none;
+					}
+				}
+			}
+		}
+
+		& #shortcuts.edit-mode {
+			& block-container {
+				& block[selected="true"] {
+					outline: 2px solid var(--contrast-color-0);
+				}
+
+				& block:not([selected="true"]) {
+					opacity: 0.5;
+					outline: 2px dashed var(--contrast-color-0);
+
+					& button.shortcut-item {
+						display: none;
+					}
+				}
+			}
 		}
 
 		& #gaming {
+			& h2:nth-of-type(1) {
+				display: flex;
+				align-items: center;
+			}
+
 			& gaming-container {
 				display: flex;
 				flex-wrap: wrap;
@@ -972,7 +1016,7 @@ body.home.has-hover {
 	}
 
 	& .flex-container {
-		& #shortcuts {
+		& #shortcuts:not(.edit-mode) {
 			& block {
 				& grid-container {
 					& a.shortcut-item:hover, & .pop-up-open:hover {
@@ -1008,12 +1052,6 @@ body.home.has-hover {
 						border-radius: 0 3ex 3ex 3ex;
 						padding: 0.5em 1em;
 					}
-				}
-			}
-
-			& button:hover {
-				& edit {
-					transform: scale(2);
 				}
 			}
 		}

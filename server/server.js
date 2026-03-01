@@ -28,6 +28,7 @@ const raUrl = 'https://retroachievements.org';
 const { SPREADSHEET_ID, GOOGLE_STORAGE_KEY, GOOGLE_SHEETS_KEY } = process.env;
 const storageServiceAccount = JSON.parse(GOOGLE_STORAGE_KEY);
 const storage = new Storage({ credentials: storageServiceAccount });
+const bucket = storage.bucket("statisticshock_github_io_public");
 const sheetServiceAccount = JSON.parse(GOOGLE_SHEETS_KEY);
 const sheetServiceAccountAuthenticated = new JWT({
     email: sheetServiceAccount.client_email,
@@ -260,8 +261,41 @@ app.get("/retroAchievements/:language/", async (req, res) => {
     };
     res.status(200).json(output);
 });
+app.post("/image/:small?", upload.single("image"), async (req, res) => {
+    const { small } = req.params;
+    const { path } = req.body;
+    if (!req.file)
+        return res.status(400).json({ message: "No file uploaded." });
+    else if (req.file.filename.split(".").length < 2)
+        return res.status(400).json({ message: "File has no extention." });
+    else if (small !== "small" && small !== undefined)
+        return res.status(400).json({ message: "The parameter can only be \"small\"." });
+    const extension = req.file.filename.split(".").pop();
+    const destFilename = req.file.filename.replace(`.${extension}`, ".webp");
+    ffmpeg(`temp/${req.file.filename}`)
+        .outputOptions(`${small === "small" ? "-vf scale=-1:256" : ""} -y -lossless 1 -pix_fmt rgba`.trim().split(" "))
+        .save(`temp/${destFilename}`)
+        .on("end", () => {
+        bucket.upload(`temp/${destFilename}`, { destination: (path + destFilename).replace(/\/\//g, '/') })
+            .then(() => {
+            return res.status(200).json({
+                message: `"${destFilename}" created.`,
+                oldFile: req.file.filename,
+                newFile: destFilename
+            });
+        })
+            .catch((err) => {
+            return res.status(500).json({ message: "Error: " + err.message });
+        });
+    })
+        .on("error", (err) => {
+        return res.status(500).json({ message: "Error: " + err.message });
+    });
+});
 app.post("/:type/", async (req, res) => {
     const { type } = req.params;
+    if (Object.keys(req.body).length === 0)
+        return res.status(400).json({ message: 'no data.' });
     await workbook.loadInfo();
     try {
         await workbook.sheetsByTitle[type].loadHeaderRow();
@@ -271,7 +305,7 @@ app.post("/:type/", async (req, res) => {
     }
     const sheet = workbook.sheetsByTitle[type];
     const headers = sheet.headerValues;
-    const data = CustomFunctions.jsonToCsv(req.body, headers);
+    const data = Array.isArray(req.body) ? CustomFunctions.jsonToCsv(req.body, headers) : CustomFunctions.jsonToCsv([req.body], headers);
     const rowsToAdd = [];
     if (data[0][0] === null)
         res.status(400).json({ message: 'No data.' });

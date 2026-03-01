@@ -2,6 +2,7 @@ import CustomFunctions from '../util/functions.js';
 import * as MyTypes from '../util/types.js';
 import { server } from '../util/server-url.js';
 import PageBuildingImport, { TemplateConstructor } from './shared.js';
+import { json } from 'stream/consumers';
 
 const toggleExternalDataLoad: boolean = true;
 
@@ -26,12 +27,11 @@ class PageBuilding extends PageBuildingImport {
 
 		function createShortcutSkeletons (): void {
 			const shortcuts: HTMLElement = document.querySelector('#shortcuts block-container')!;
-			const maxIcons: number = 24;
-			const bttn: HTMLButtonElement = shortcuts.querySelector('button')!;
+			const maxIcons: number = 16;
 
 			const row: Array<string> = Array(maxIcons).fill({joker: skeleton, alt: '. . .'});
 
-			new TemplateConstructor(document.querySelector('#shortcuts-template') as HTMLTemplateElement, Array(4).fill({jokerContainer: container, joker: skeleton, children: row})).insert(shortcuts, 'before', bttn);
+			new TemplateConstructor(document.querySelector('#shortcuts-template') as HTMLTemplateElement, Array(5).fill({jokerContainer: container, joker: skeleton, children: row})).insert(shortcuts);
 
 			shortcuts.querySelectorAll('img').forEach((img) => img.src = './icon/blank.svg')
 		};
@@ -279,6 +279,61 @@ class UserInterface {
 			window.location.reload();
 		};
 	};
+
+	static handleShortcutEditToggle (): void { // NO NEED OF RESPONSIVENESS
+		const toggleButton = document.querySelector('button#shortcuts-edit-mode') as HTMLButtonElement;
+		const shotcuts = document.querySelector('section#shortcuts') as HTMLElement;
+		const blocks = Array.from(shotcuts.querySelectorAll('block-container block')) as Array<HTMLElement>;
+
+		toggleButton.onclick = (ev) => {
+			shotcuts.classList.toggle('edit-mode');
+
+			toggleButton.classList.toggle('trigger');
+			toggleButton.classList.toggle('check');
+		};
+
+		blocks.forEach((block) => {
+			block.addEventListener('mouseenter', (ev) => {
+				if (document.body.classList.contains('has-hover')) {
+					block.setAttribute('selected', 'true');
+				};
+			});
+
+			block.addEventListener('mouseleave', (ev) => {
+				if (document.body.classList.contains('has-hover')) {
+					block.setAttribute('selected', 'false');
+				};
+			});
+
+			block.addEventListener('click', (ev: MouseEvent|TouchEvent) => {
+				const target = ((ev as MouseEvent).target || (ev as TouchEvent).touches[0].target) as HTMLElement;
+
+				if (!target.closest('a') || shotcuts.classList.contains('edit-mode')) {
+					ev.preventDefault();
+				}
+
+				if(!(ev as TouchEvent).touches) return;
+
+				block.setAttribute('selected', (!Boolean(block.getAttribute('selected') || "false")).toString());
+				blocks.forEach((el) => {
+					if (el !== block) {
+						el.setAttribute('selected', 'false')
+					};
+				});
+			});
+		});
+	}
+
+	static handleGamingEditToggle (): void { // NO NEED OF RESPONSIVENESS
+		const toggleButton = document.querySelector('button#gaming-edit-mode') as HTMLButtonElement;
+
+		toggleButton.onclick = (ev) => {
+			toggleButton.classList.toggle('trigger');
+			toggleButton.classList.toggle('check');
+		};
+
+		/* TODO */
+	}
 };
 
 class ExternalSearch {
@@ -349,17 +404,16 @@ class ExternalSearch {
 class CloudStorageData {
 	static json: MyTypes.PageContent;
 
-	static async load (): Promise<void> {
+	static async load (): Promise<void> { // NO NEED OF RESPONSIVENESS
 		const response = await fetch(`${server}contents/`);
 		this.json = await response.json();
 	}
 
-	static async loadContentFromJson (): Promise<void> {
+	static async loadContentFromJson (): Promise<void> { // NO NEED OF RESPONSIVENESS
 		const content: MyTypes.PageContent = JSON.parse(JSON.stringify(this.json));
 
 		async function loadShortcuts (): Promise<void> {
 			const shortcuts: HTMLElement = document.querySelector('section#shortcuts block-container')!;
-			const bttn: HTMLButtonElement = document.querySelector('#shortcuts block-container button')!;
 
 			const shortcutsOnMobile = content.shortcuts.map((folder) => {
 				const folderClone = structuredClone(folder);
@@ -372,7 +426,7 @@ class CloudStorageData {
 				return folder.children.length > 0;
 			})
 
-			new TemplateConstructor(document.querySelector('template#shortcuts-template') as HTMLTemplateElement, mobile ? shortcutsOnMobile : content.shortcuts).insert(shortcuts, 'before', bttn);
+			new TemplateConstructor(document.querySelector('template#shortcuts-template') as HTMLTemplateElement, mobile ? shortcutsOnMobile : content.shortcuts).insert(shortcuts);
 		};
 
 		async function loadGamecards (): Promise<void> {
@@ -494,6 +548,123 @@ class CloudStorageData {
 		loadHeaders();
 		loadMfc();
 	};
+
+	static async handleEdits (): Promise<void> { // NO NEED OF RESPONSIVENESS
+		function shortcutsEdit (): void {
+			const section = document.querySelector('section#shortcuts') as HTMLElement;
+			const form = document.querySelector('form#create-shortcut') as HTMLFormElement;
+			const inputFile = form.querySelector('input[type="file"]') as HTMLInputElement;
+
+			let parendData: Omit<MyTypes.Shortcut, "children"> & {'children': number} | null = null;
+			let editedShortcut: MyTypes.Shortcut["children"][0] | null = null;
+
+			const buttons = document.querySelectorAll('button.shortcut-item') as NodeListOf<HTMLButtonElement>;
+
+			buttons.forEach((button) => {
+				button.onclick = function (ev) {
+					form.style.display = 'block';
+
+					const [parendId] = CloudStorageData.json.shortcuts.filter((folder) => folder.id === button.closest('block')!.id);
+
+					parendData = {
+						id: parendId.id,
+						index: parendId.index,
+						title: parendId.title,
+						children: parendId.children.length
+					};
+
+					(form.querySelectorAll('input[type="text"]') as NodeListOf<HTMLInputElement>).forEach((input) => {
+						input.value = '';
+					});
+					(form.querySelector('input[type="checkbox"]') as HTMLInputElement).checked = true;
+					(form.querySelector('input[type="file"]') as HTMLInputElement).value = '';
+				};
+			});
+
+			const currentShortcuts = document.querySelectorAll('block a.shortcut-item') as NodeListOf<HTMLAnchorElement>;
+
+			currentShortcuts.forEach((shortcut) => {
+				shortcut.onclick = function (ev) {
+					if (!section.classList.contains('edit-mode')) return;
+
+					form.style.display = 'block';
+
+					editedShortcut = CloudStorageData.json.shortcuts.filter((folder) => folder.id === shortcut.closest('block')!.id)[0].children.filter((shortcutOnJson) => shortcutOnJson.id === shortcut.id)[0];
+					const [parendId] = CloudStorageData.json.shortcuts.filter((folder) => folder.id === shortcut.closest('block')!.id);
+
+					parendData = {
+						id: parendId.id,
+						index: parendId.index,
+						title: parendId.title,
+						children: parendId.children.length
+					};
+					
+					(form.querySelectorAll('input[type="text"]') as NodeListOf<HTMLInputElement>).forEach((input) => {
+						if (editedShortcut![input.name]) {
+							input.value = editedShortcut![input.name];
+						} else {
+							input.value = '';
+						};
+					});
+					(form.querySelector('input[type="checkbox"]') as HTMLInputElement).checked = editedShortcut!.showOnMobile;
+					(form.querySelector('input[type="file"]') as HTMLInputElement).value = '';
+				};
+			});
+
+			const submitButton = form.querySelector('button.ok-button') as HTMLButtonElement;
+			submitButton.onclick = async function (ev) {
+				ev.preventDefault();
+
+				if ((form.querySelector(`input[name="alt"]`) as HTMLInputElement).value === '') return;
+				if ((form.querySelector(`input[name="href"]`) as HTMLInputElement).value === '') return;
+				if ((form.querySelector(`input[name="image"]`) as HTMLInputElement).files!.length === 0) return;
+
+				const formData = new FormData();
+				formData.append('image', inputFile.files![0]);
+				formData.append('path', 'icons/dynamic/');
+				
+				const response = await fetch(`${server}image/small`, {
+					method: 'POST',
+					body: formData
+				});
+
+				if (response.status === 200) {
+					const json = await response.json();
+					
+					const postBody = {
+						id: parendData!.id,
+						index: parendData!.index.toString(),
+						title: parendData!.title,
+						children: [
+							{
+								alt: (document.querySelector('input[name="alt"]') as HTMLInputElement).value,
+								id: CustomFunctions.normalize((document.querySelector('input[name="alt"]') as HTMLInputElement).value),
+								index: parendData!.children.toString(),
+								href: (document.querySelector('input[name="href"]') as HTMLInputElement).value,
+								img: `https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/${json['newFile']}`,
+								floatingLabel: (document.querySelector('input[name="floatingLabel"]') as HTMLInputElement).value,
+								showOnMobile: (document.querySelector('input[name="showOnMobile"]') as HTMLInputElement).value.toString() === 'on' ? true : false,
+							}
+						],
+					};
+
+					const request = await fetch(`${server}shortcuts`, {
+						method: 'POST',
+						headers: {
+							'Content-type': 'application/json'
+						},
+						body: JSON.stringify(postBody),
+					});
+
+					if (request.ok) {
+						alert('Atalho criado.');
+					};
+				}
+			};
+		};
+
+		shortcutsEdit();
+	};
 };
 
 class ExternalData {
@@ -592,6 +763,7 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 		await Promise.all([
 			Promise.all([
 				CloudStorageData.loadContentFromJson(),
+				CloudStorageData.handleEdits(),
 				ExternalData.scrapeMyAnimeList(),
 				ExternalData.addRetroAchievementsAwards(),
 			]).then((res) => {
@@ -599,6 +771,9 @@ window.addEventListener('load', onLoadFunctions, true); async function onLoadFun
 			}),
 		]);
 	};
+
+	UserInterface.handleShortcutEditToggle();
+	UserInterface.handleGamingEditToggle();
 
 	PageBehaviour.openLinksInNewTab();
 	PageBehaviour.stopImageDrag();
