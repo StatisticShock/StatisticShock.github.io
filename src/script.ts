@@ -639,7 +639,7 @@ class CloudStorageData {
 							{
 								alt: (document.querySelector('input[name="alt"]') as HTMLInputElement).value,
 								id: CustomFunctions.normalize((document.querySelector('input[name="alt"]') as HTMLInputElement).value),
-								index: parendData!.children.toString(),
+								index: parendData!.children,
 								href: (document.querySelector('input[name="href"]') as HTMLInputElement).value,
 								img: `https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/${json['newFile']}`,
 								floatingLabel: (document.querySelector('input[name="floatingLabel"]') as HTMLInputElement).value,
@@ -658,6 +658,8 @@ class CloudStorageData {
 
 					if (request.ok) {
 						alert('Atalho criado.');
+
+						CloudStorageData.json.shortcuts.filter((folder) => folder.id === parendData!.id)[0].children.push(postBody.children[0])
 					};
 				}
 			};

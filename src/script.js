@@ -728,7 +728,7 @@ var CloudStorageData = /** @class */ (function () {
                                             {
                                                 alt: document.querySelector('input[name="alt"]').value,
                                                 id: CustomFunctions.normalize(document.querySelector('input[name="alt"]').value),
-                                                index: parendData.children.toString(),
+                                                index: parendData.children,
                                                 href: document.querySelector('input[name="href"]').value,
                                                 img: "https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/".concat(json_1['newFile']),
                                                 floatingLabel: document.querySelector('input[name="floatingLabel"]').value,
@@ -747,6 +747,7 @@ var CloudStorageData = /** @class */ (function () {
                                     request = _a.sent();
                                     if (request.ok) {
                                         alert('Atalho criado.');
+                                        CloudStorageData.json.shortcuts.filter(function (folder) { return folder.id === parendData.id; })[0].children.push(postBody.children[0]);
                                     }
                                     ;
                                     _a.label = 4;
