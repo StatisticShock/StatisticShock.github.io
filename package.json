@@ -1,6 +1,6 @@
 {
   "name": "statisticshock.github.io",
-  "version": "2.1.01",
+  "version": "2.1.02",
   "main": "./src/script.js",
   "devDependencies": {
     "@types/node": "^22.13.1",

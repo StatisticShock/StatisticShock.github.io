@@ -55,7 +55,6 @@ import PageBuildingImport, { TemplateConstructor } from './shared.js';
 var toggleExternalDataLoad = true;
 var ua = navigator.userAgent || navigator.vendor || window.opera;
 var mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
-var portrait = (window.innerWidth < window.innerHeight);
 var PageBuilding = /** @class */ (function (_super) {
     __extends(PageBuilding, _super);
     function PageBuilding() {
@@ -102,7 +101,7 @@ var PageBuilding = /** @class */ (function (_super) {
         ;
         function createMfcSkeletons() {
             var mfc = document.querySelector('#my-figure-collection my-figure-collection');
-            var maxIcons = Math.floor(parseInt(getComputedStyle(mfc).width) / (60 + 20)) * 5;
+            var maxIcons = Math.floor(parseInt(getComputedStyle(mfc).width) / (60 + 20)) * 3;
             var sample = {
                 joker: 'skeleton',
                 jokerContainer: 'skeleton-container',
@@ -564,21 +563,49 @@ var CloudStorageData = /** @class */ (function () {
             function loadMfc() {
                 return __awaiter(this, void 0, void 0, function () {
                     function makeMfcSearchWork() {
+                        var searchBox = document.querySelector('search-box');
                         var input = document.querySelector('input[name="mfc-filter"]');
                         var figures = content.mfc;
-                        ['keyup', 'paste'].forEach(function (eventName) {
-                            input.addEventListener(eventName, function (ev) {
-                                var string = input.value;
-                                var regEx = new RegExp(string, 'ig');
-                                figures.forEach(function (figure) {
-                                    if (Object.keys(figure).some(function (key) { return regEx.test(figure[key]); })) {
-                                        document.querySelector('#mfc-' + figure.id).style.display = 'flex';
-                                    }
-                                    else {
-                                        document.querySelector('#mfc-' + figure.id).style.display = 'none';
-                                    }
-                                });
+                        function filterFigures(ev) {
+                            var string = input.value;
+                            var regEx = new RegExp(string, 'ig');
+                            var regExes = string.trim() !== '' ? [regEx] : [];
+                            document.querySelectorAll('search-box search-word').forEach(function (searchWord) {
+                                var newRegEx = new RegExp(searchWord.textContent.slice(0, -1), 'ig');
+                                regExes.push(newRegEx);
                             });
+                            if (regExes.length === 0)
+                                regExes.push(/:?/ig);
+                            figures.forEach(function (figure) {
+                                if (Object.keys(figure).some(function (key) { return regExes.some(function (thisRegEx) { return thisRegEx.test(figure[key]); }); })) {
+                                    document.querySelector('#mfc-' + figure.id).style.display = 'flex';
+                                }
+                                else {
+                                    document.querySelector('#mfc-' + figure.id).style.display = 'none';
+                                }
+                            });
+                        }
+                        ['keyup', 'paste'].forEach(function (eventName) {
+                            input.addEventListener(eventName, filterFigures);
+                        });
+                        input.addEventListener('keypress', function (ev) {
+                            if (ev.key === 'Enter') {
+                                if (input.value.trim().length === 0)
+                                    return;
+                                var searchWord = document.createElement('search-word');
+                                searchWord.innerHTML = "".concat(input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, ''), "<button type=\"button\" class=\"close-button\">&times;</button>");
+                                searchBox.appendChild(searchWord);
+                                input.value = '';
+                            }
+                            ;
+                        });
+                        searchBox.addEventListener('click', function (ev) {
+                            var _a;
+                            var target = ('touches' in ev ? ev.touches[0].target : ev.target);
+                            if (target.tagName === 'BUTTON') {
+                                (_a = target.closest('search-word')) === null || _a === void 0 ? void 0 : _a.remove();
+                                filterFigures();
+                            }
                         });
                     }
                     var destination;
@@ -696,7 +723,7 @@ var CloudStorageData = /** @class */ (function () {
                 var submitButton = form.querySelector('button.ok-button');
                 submitButton.onclick = function (ev) {
                     return __awaiter(this, void 0, void 0, function () {
-                        var formData, response, json_1, postBody, request;
+                        var formData, response, json, postBody, request;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
                                 case 0:
@@ -719,7 +746,7 @@ var CloudStorageData = /** @class */ (function () {
                                     if (!(response.status === 200)) return [3 /*break*/, 4];
                                     return [4 /*yield*/, response.json()];
                                 case 2:
-                                    json_1 = _a.sent();
+                                    json = _a.sent();
                                     postBody = {
                                         id: parendData.id,
                                         index: parendData.index.toString(),
@@ -730,7 +757,7 @@ var CloudStorageData = /** @class */ (function () {
                                                 id: CustomFunctions.normalize(document.querySelector('input[name="alt"]').value),
                                                 index: parendData.children,
                                                 href: document.querySelector('input[name="href"]').value,
-                                                img: "https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/".concat(json_1['newFile']),
+                                                img: "https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/".concat(json['newFile']),
                                                 floatingLabel: document.querySelector('input[name="floatingLabel"]').value,
                                                 showOnMobile: document.querySelector('input[name="showOnMobile"]').value.toString() === 'on' ? true : false,
                                             }

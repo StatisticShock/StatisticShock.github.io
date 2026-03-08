@@ -2,13 +2,11 @@ import CustomFunctions from '../util/functions.js';
 import * as MyTypes from '../util/types.js';
 import { server } from '../util/server-url.js';
 import PageBuildingImport, { TemplateConstructor } from './shared.js';
-import { json } from 'stream/consumers';
 
 const toggleExternalDataLoad: boolean = true;
 
 const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
 const mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
-const portrait: boolean = (window.innerWidth < window.innerHeight);
 
 class PageBuilding extends PageBuildingImport {
 	static async putVersionOnFooter (): Promise<void> {
@@ -49,7 +47,7 @@ class PageBuilding extends PageBuildingImport {
 
 		function createMfcSkeletons (): void {
 			const mfc: HTMLElement = document.querySelector('#my-figure-collection my-figure-collection')!;
-			const maxIcons: number = Math.floor(parseInt(getComputedStyle(mfc).width) / (60 + 20)) * 5;
+			const maxIcons: number = Math.floor(parseInt(getComputedStyle(mfc).width) / (60 + 20)) * 3;
 			const sample: object = {
 				joker: 'skeleton',
 				jokerContainer: 'skeleton-container',
@@ -521,23 +519,55 @@ class CloudStorageData {
 			});
 
 			function makeMfcSearchWork (): void { // NO NEED OF RESPONSIVENESS
+				const searchBox = document.querySelector('search-box') as HTMLElement;
 				const input = document.querySelector('input[name="mfc-filter"]') as HTMLInputElement;
 				const figures = content.mfc;
 
-				['keyup', 'paste'].forEach((eventName) => {
-					input.addEventListener(eventName, (ev) => {
-						const string = input.value;
-						const regEx = new RegExp(string, 'ig');
+				function filterFigures (ev?: Event): void {
+					const string = input.value;
+					const regEx = new RegExp(string, 'ig');
+					const regExes = string.trim() !== '' ? [regEx] : [];
 
-						figures.forEach((figure) => {
-							if (Object.keys(figure).some((key) => regEx.test(figure[key]))) {
-								(document.querySelector('#mfc-' + figure.id) as HTMLElement).style.display = 'flex';
-							} else {
-								(document.querySelector('#mfc-' + figure.id) as HTMLElement).style.display = 'none';
-							}
-						})
+					document.querySelectorAll('search-box search-word').forEach((searchWord) => {
+						const newRegEx = new RegExp(searchWord.textContent.slice(0, -1), 'ig');
+						regExes.push(newRegEx);
+					});
+
+					if (regExes.length === 0) regExes.push(/:?/ig);
+
+					figures.forEach((figure) => {
+						if (Object.keys(figure).some((key) => regExes.some((thisRegEx) => thisRegEx.test(figure[key])))) {
+							(document.querySelector('#mfc-' + figure.id) as HTMLElement).style.display = 'flex';
+						} else {
+							(document.querySelector('#mfc-' + figure.id) as HTMLElement).style.display = 'none';
+						}
 					})
+				}
+
+				['keyup', 'paste'].forEach((eventName) => {
+					input.addEventListener(eventName, filterFigures)
 				});
+
+				input.addEventListener('keypress', (ev: KeyboardEvent) => {
+					if (ev.key === 'Enter') {
+						if (input.value.trim().length === 0) return;
+
+						const searchWord = document.createElement('search-word');
+						searchWord.innerHTML = `${input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[&\/\\#,+()$~%.'":*?<>{}]/g,'')}<button type="button" class="close-button">&times;</button>`;
+						searchBox.appendChild(searchWord);
+
+						input.value = '';
+					};
+				});
+
+				searchBox.addEventListener('click', (ev: TouchEvent|MouseEvent) => {
+					const target = ('touches' in ev ? ev.touches[0].target : ev.target) as HTMLElement;
+
+					if (target.tagName === 'BUTTON') {
+						target.closest('search-word')?.remove();
+						filterFigures();
+					}
+				})
 			};
 
 			makeMfcSearchWork();
