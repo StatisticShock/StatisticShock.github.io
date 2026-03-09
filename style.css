@@ -826,6 +826,8 @@ body.home {
 
 				& search-word {
 					background-color: var(--pink-custom);
+					color: white;
+
 					height: 75%;
 					margin: 0 0.25em;
 					padding: 0.25em 0.5em;
@@ -840,8 +842,16 @@ body.home {
 						font-size: 1.25em;
 						cursor: pointer;
 						border-radius: 100%;
-						color: var(--contrast-color-0);
+						color: white;
 					}
+				}
+				
+				& search-word:not(.and) {
+					border: 3px double transparent;
+				}
+
+				& search-word.and {
+					border: 3px double var(--contrast-color-0);
 				}
 			}
 

@@ -569,15 +569,18 @@ var CloudStorageData = /** @class */ (function () {
                         function filterFigures(ev) {
                             var string = input.value;
                             var regEx = new RegExp(string, 'ig');
-                            var regExes = string.trim() !== '' ? [regEx] : [];
+                            var regExes = {
+                                or: string.trim() === '' ? [] : [regEx],
+                                and: []
+                            };
                             document.querySelectorAll('search-box search-word').forEach(function (searchWord) {
                                 var newRegEx = new RegExp(searchWord.textContent.slice(0, -1), 'ig');
-                                regExes.push(newRegEx);
+                                regExes[searchWord.classList[0]].push(newRegEx);
                             });
-                            if (regExes.length === 0)
-                                regExes.push(/:?/ig);
+                            if (regExes.or.length === 0 && regExes.and.length === 0)
+                                regExes.or.push(/:?/ig);
                             figures.forEach(function (figure) {
-                                if (Object.keys(figure).some(function (key) { return regExes.some(function (thisRegEx) { return thisRegEx.test(figure[key]); }); })) {
+                                if (Object.keys(figure).some(function (key) { return (regExes.or.some(function (thisRegEx) { return thisRegEx.test(figure[key]); }) || regExes.or.length === 0) && regExes.and.every(function (thisRegEx) { return thisRegEx.test(figure[key]); }); })) {
                                     document.querySelector('#mfc-' + figure.id).style.display = 'flex';
                                 }
                                 else {
@@ -592,9 +595,18 @@ var CloudStorageData = /** @class */ (function () {
                             if (ev.key === 'Enter') {
                                 if (input.value.trim().length === 0)
                                     return;
-                                var searchWord = document.createElement('search-word');
-                                searchWord.innerHTML = "".concat(input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, ''), "<button type=\"button\" class=\"close-button\">&times;</button>");
-                                searchBox.appendChild(searchWord);
+                                var searchWord_1 = document.createElement('search-word');
+                                searchWord_1.innerHTML = "".concat(input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, ''), "<button type=\"button\" class=\"close-button\">&times;</button>");
+                                searchWord_1.classList.add('or');
+                                searchWord_1.addEventListener('click', function (ev) {
+                                    var target = ('touches' in ev ? ev.touches[0].target : ev.target);
+                                    if (target.tagName === 'BUTTON')
+                                        return;
+                                    searchWord_1.classList.toggle('and');
+                                    searchWord_1.classList.toggle('or');
+                                    filterFigures();
+                                });
+                                searchBox.appendChild(searchWord_1);
                                 input.value = '';
                             }
                             ;

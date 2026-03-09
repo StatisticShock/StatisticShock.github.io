@@ -55,8 +55,6 @@ class PageBuilding extends PageBuildingImport {
 			};
 			
 			new TemplateConstructor(document.querySelector('#mfc-template') as HTMLTemplateElement, Array(maxIcons).fill(sample)).insert(mfc);
-
-
 		};
 
 		function createMalSkeletons (): void {
@@ -526,17 +524,20 @@ class CloudStorageData {
 				function filterFigures (ev?: Event): void {
 					const string = input.value;
 					const regEx = new RegExp(string, 'ig');
-					const regExes = string.trim() !== '' ? [regEx] : [];
+					const regExes: {or: Array<RegExp>, and: Array<RegExp>} = {
+						or: string.trim() === '' ? [] : [regEx],
+						and: []
+					};
 
 					document.querySelectorAll('search-box search-word').forEach((searchWord) => {
 						const newRegEx = new RegExp(searchWord.textContent.slice(0, -1), 'ig');
-						regExes.push(newRegEx);
+						regExes[searchWord.classList[0]].push(newRegEx);
 					});
 
-					if (regExes.length === 0) regExes.push(/:?/ig);
+					if (regExes.or.length === 0 && regExes.and.length === 0) regExes.or.push(/:?/ig);
 
 					figures.forEach((figure) => {
-						if (Object.keys(figure).some((key) => regExes.some((thisRegEx) => thisRegEx.test(figure[key])))) {
+						if (Object.keys(figure).some((key) => (regExes.or.some((thisRegEx) => thisRegEx.test(figure[key])) || regExes.or.length === 0) && regExes.and.every((thisRegEx) => thisRegEx.test(figure[key])))) {
 							(document.querySelector('#mfc-' + figure.id) as HTMLElement).style.display = 'flex';
 						} else {
 							(document.querySelector('#mfc-' + figure.id) as HTMLElement).style.display = 'none';
@@ -554,8 +555,19 @@ class CloudStorageData {
 
 						const searchWord = document.createElement('search-word');
 						searchWord.innerHTML = `${input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[&\/\\#,+()$~%.'":*?<>{}]/g,'')}<button type="button" class="close-button">&times;</button>`;
-						searchBox.appendChild(searchWord);
+						searchWord.classList.add('or');
 
+						searchWord.addEventListener('click', (ev: TouchEvent|MouseEvent) => {
+							const target = ('touches' in ev ? ev.touches[0].target : ev.target) as HTMLElement;
+							if (target.tagName === 'BUTTON') return;
+
+							searchWord.classList.toggle('and');
+							searchWord.classList.toggle('or');
+
+							filterFigures();
+						});
+
+						searchBox.appendChild(searchWord);
 						input.value = '';
 					};
 				});
