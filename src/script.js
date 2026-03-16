@@ -565,7 +565,24 @@ var CloudStorageData = /** @class */ (function () {
                     function makeMfcSearchWork() {
                         var searchBox = document.querySelector('search-box');
                         var input = document.querySelector('input[name="mfc-filter"]');
-                        var figures = content.mfc;
+                        var figureMapKeys = ['id', 'title', 'type', 'category', 'or', 'and'];
+                        var figuresRegExMap = Array.from(content.mfc);
+                        figuresRegExMap.forEach(function (figure) {
+                            figure.or = function (expressions) {
+                                if (expressions.length === 0) {
+                                    return true;
+                                }
+                                ;
+                                return expressions.some(function (expression) {
+                                    return Object.keys(figure).some(function (key) { return typeof figure[key] === 'string' && expression.test(figure[key]); });
+                                });
+                            };
+                            figure.and = function (expressions) {
+                                return expressions.every(function (expression) {
+                                    return Object.keys(figure).some(function (key) { return typeof figure[key] === 'string' && expression.test(figure[key]); });
+                                });
+                            };
+                        });
                         function filterFigures(ev) {
                             var string = input.value;
                             var regEx = new RegExp(string, 'ig');
@@ -579,15 +596,17 @@ var CloudStorageData = /** @class */ (function () {
                             });
                             if (regExes.or.length === 0 && regExes.and.length === 0)
                                 regExes.or.push(/:?/ig);
-                            figures.forEach(function (figure) {
-                                if (Object.keys(figure).some(function (key) { return (regExes.or.some(function (thisRegEx) { return thisRegEx.test(figure[key]); }) || regExes.or.length === 0) && regExes.and.every(function (thisRegEx) { return thisRegEx.test(figure[key]); }); })) {
-                                    document.querySelector('#mfc-' + figure.id).style.display = 'flex';
+                            figuresRegExMap.forEach(function (figure) {
+                                if (figure.or(regExes.or) && figure.and(regExes.and)) {
+                                    document.getElementById("mfc-".concat(figure.id)).style.display = 'flex';
                                 }
                                 else {
-                                    document.querySelector('#mfc-' + figure.id).style.display = 'none';
+                                    document.getElementById("mfc-".concat(figure.id)).style.display = 'none';
                                 }
+                                ;
                             });
                         }
+                        ;
                         ['keyup', 'paste'].forEach(function (eventName) {
                             input.addEventListener(eventName, filterFigures);
                         });
@@ -596,7 +615,7 @@ var CloudStorageData = /** @class */ (function () {
                                 if (input.value.trim().length === 0)
                                     return;
                                 var searchWord_1 = document.createElement('search-word');
-                                searchWord_1.innerHTML = "".concat(input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, ''), "<button type=\"button\" class=\"close-button\">&times;</button>");
+                                searchWord_1.innerHTML = "".concat(input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[&#,+()$~%.'":*?<>{}]/g, ''), "<button type=\"button\" class=\"close-button\">&times;</button>");
                                 searchWord_1.classList.add('or');
                                 searchWord_1.addEventListener('click', function (ev) {
                                     var target = ('touches' in ev ? ev.touches[0].target : ev.target);

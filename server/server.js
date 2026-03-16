@@ -382,9 +382,7 @@ app.put("/:type/", async (req, res) => {
         data.forEach(async ([oldData, dataToUpdate]) => {
             const match = rows.find((row) => headers.every((header, i) => ((oldData[i]) ?? '') === (row.get(header) ?? '')));
             if (match) {
-                console.log(match);
                 headers.forEach((header, i) => {
-                    console.log(header, dataToUpdate[i]);
                     match.set(header, dataToUpdate[i]);
                 });
                 await match.save();

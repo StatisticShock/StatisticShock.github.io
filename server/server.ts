@@ -433,10 +433,7 @@ app.put("/:type/", async (req: express.Request, res: express.Response) => {
 			);
 
 			if (match) {
-				console.log(match);
-
 				headers.forEach((header, i) => {
-					console.log(header, dataToUpdate[i]);
 					match.set(header, dataToUpdate[i]);
 				});
 

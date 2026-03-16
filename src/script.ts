@@ -519,7 +519,26 @@ class CloudStorageData {
 			function makeMfcSearchWork (): void { // NO NEED OF RESPONSIVENESS
 				const searchBox = document.querySelector('search-box') as HTMLElement;
 				const input = document.querySelector('input[name="mfc-filter"]') as HTMLInputElement;
-				const figures = content.mfc;
+				const figureMapKeys = ['id', 'title', 'type', 'category', 'or', 'and'];
+				const figuresRegExMap = Array.from(content.mfc) as Array<MyTypes.MFC & {or: (expressions: Array<RegExp>) => boolean, and: (expressions: Array<RegExp>) => boolean}>;
+
+				figuresRegExMap.forEach((figure) => {
+					figure.or = (expressions: Array<RegExp>) => {
+						if (expressions.length === 0) {
+							return true;
+						};
+
+						return expressions.some((expression) => {
+							return Object.keys(figure).some((key) => typeof figure[key] === 'string' && expression.test(figure[key]));
+						});
+					};
+					
+					figure.and = (expressions: Array<RegExp>) => {
+						return expressions.every((expression) => {
+							return Object.keys(figure).some((key) => typeof figure[key] === 'string' && expression.test(figure[key]));
+						});
+					};
+				});
 
 				function filterFigures (ev?: Event): void {
 					const string = input.value;
@@ -536,14 +555,14 @@ class CloudStorageData {
 
 					if (regExes.or.length === 0 && regExes.and.length === 0) regExes.or.push(/:?/ig);
 
-					figures.forEach((figure) => {
-						if (Object.keys(figure).some((key) => (regExes.or.some((thisRegEx) => thisRegEx.test(figure[key])) || regExes.or.length === 0) && regExes.and.every((thisRegEx) => thisRegEx.test(figure[key])))) {
-							(document.querySelector('#mfc-' + figure.id) as HTMLElement).style.display = 'flex';
+					figuresRegExMap.forEach((figure) => {						
+						if (figure.or(regExes.or) && figure.and(regExes.and)) {
+							document.getElementById(`mfc-${figure.id}`)!.style.display = 'flex';
 						} else {
-							(document.querySelector('#mfc-' + figure.id) as HTMLElement).style.display = 'none';
-						}
-					})
-				}
+							document.getElementById(`mfc-${figure.id}`)!.style.display = 'none';
+						};
+					});
+				};
 
 				['keyup', 'paste'].forEach((eventName) => {
 					input.addEventListener(eventName, filterFigures)
@@ -554,7 +573,7 @@ class CloudStorageData {
 						if (input.value.trim().length === 0) return;
 
 						const searchWord = document.createElement('search-word');
-						searchWord.innerHTML = `${input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[&\/\\#,+()$~%.'":*?<>{}]/g,'')}<button type="button" class="close-button">&times;</button>`;
+						searchWord.innerHTML = `${input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[&#,+()$~%.'":*?<>{}]/g,'')}<button type="button" class="close-button">&times;</button>`;
 						searchWord.classList.add('or');
 
 						searchWord.addEventListener('click', (ev: TouchEvent|MouseEvent) => {

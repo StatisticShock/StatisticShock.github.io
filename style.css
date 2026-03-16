@@ -825,6 +825,15 @@ body.home {
 				margin: 1em 0;
 
 				& search-word {
+					-webkit-touch-callout: none;
+					-webkit-user-select: none;
+					-khtml-user-select: none;
+					-moz-user-select: none;
+					-ms-user-select: none;
+					user-select: none;
+
+					cursor: pointer;
+
 					background-color: var(--pink-custom);
 					color: white;
 
