@@ -11,7 +11,7 @@
   "description": "",
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
-    "@google-cloud/storage": "^7.15.2",
+    "@google-cloud/storage": "^5.18.3",
     "@retroachievements/api": "^2.6.0",
     "@types/multer": "^2.0.0",
     "cors": "^2.8.5",
