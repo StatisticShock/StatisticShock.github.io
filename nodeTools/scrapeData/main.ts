@@ -169,7 +169,7 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 			const filenames = files.map((file) => file.name);
 
 			for (const figure of json) {
-				if (!filenames.includes(`mfc/${folder.folderName}/${figure.id}`)) {
+				if (!(filenames.includes(`mfc/${folder.folderName}/${figure.id}.webp`))) {
 					const fileToUpload = await ScrapeFunctions.scrapeImage({
 						sufix: figure.img_sufix,
 						type: folder.size

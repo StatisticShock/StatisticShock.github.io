@@ -145,7 +145,7 @@ async function fetchData(scrapeData, scrapeImages) {
             const [files] = await GoogleClass.bucket.getFiles({ prefix: `mfc/${folder.folderName}` });
             const filenames = files.map((file) => file.name);
             for (const figure of json) {
-                if (!filenames.includes(`mfc/${folder.folderName}/${figure.id}`)) {
+                if (!(filenames.includes(`mfc/${folder.folderName}/${figure.id}.webp`))) {
                     const fileToUpload = await ScrapeFunctions.scrapeImage({
                         sufix: figure.img_sufix,
                         type: folder.size
