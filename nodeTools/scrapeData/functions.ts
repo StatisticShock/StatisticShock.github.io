@@ -7,7 +7,7 @@ import { pipeline } from 'stream';
 
 export default class CustomFunctions {
 	static log (message: string | number, isRunByBot: boolean = false) {
-		const dirName = `logs${isRunByBot ? '/bot' : ''}`;
+		const dirName = 'logs'
 		const __filename = fileURLToPath(import.meta.url);
 		const __dirname = path.dirname(__filename);
 		const logDir = path.resolve(__dirname, dirName);
@@ -17,7 +17,8 @@ export default class CustomFunctions {
 		const startDate: Date = new Date(new Date().getTime() - (3 * 60 * 60 * 1000));
 		const date = startDate.toISOString().split('T')[0];
 	
-		const logFile = fs.createWriteStream(path.join(logDir, isRunByBot ? 'log.txt' : `debug_${date}.log`), { flags: 'a' });
+		const logFile = fs.createWriteStream(path.join(logDir, `debug_${date}.log`), { flags: 'a' });
+		
 		console.log(message);
 		logFile.write(`[${Intl.DateTimeFormat('pt-BR', {hour: 'numeric', minute: 'numeric', second: 'numeric'}).format(new Date())}] ${message}\n`);
 	};
