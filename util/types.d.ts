@@ -108,7 +108,7 @@ export type Shortcut = {
 		href: string,
 		img: string,
 		floatingLabel: string,
-		showOnMobile: boolean,
+		show_on_mobile: boolean,
 	}>
 };
 export type Gamecard = {

@@ -414,7 +414,7 @@ class CloudStorageData {
 			const shortcutsOnMobile = content.shortcuts.map((folder) => {
 				const folderClone = structuredClone(folder);
 				folderClone.children = folderClone.children.filter((child) => {
-					return child.showOnMobile;
+					return child.show_on_mobile;
 				});
 
 				return folderClone;
@@ -667,7 +667,7 @@ class CloudStorageData {
 							input.value = '';
 						};
 					});
-					(form.querySelector('input[type="checkbox"]') as HTMLInputElement).checked = editedShortcut!.showOnMobile;
+					(form.querySelector('input[type="checkbox"]') as HTMLInputElement).checked = editedShortcut!.show_on_mobile;
 					(form.querySelector('input[type="file"]') as HTMLInputElement).value = '';
 				};
 			});
@@ -704,7 +704,7 @@ class CloudStorageData {
 								href: (document.querySelector('input[name="href"]') as HTMLInputElement).value,
 								img: `https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/${json['newFile']}`,
 								floatingLabel: (document.querySelector('input[name="floatingLabel"]') as HTMLInputElement).value,
-								showOnMobile: (document.querySelector('input[name="showOnMobile"]') as HTMLInputElement).value.toString() === 'on' ? true : false,
+								show_on_mobile: (document.querySelector('input[name="show_on_mobile"]') as HTMLInputElement).value.toString() === 'on' ? true : false,
 							}
 						],
 					};

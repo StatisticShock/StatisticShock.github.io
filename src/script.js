@@ -490,7 +490,7 @@ var CloudStorageData = /** @class */ (function () {
                         shortcutsOnMobile = content.shortcuts.map(function (folder) {
                             var folderClone = structuredClone(folder);
                             folderClone.children = folderClone.children.filter(function (child) {
-                                return child.showOnMobile;
+                                return child.show_on_mobile;
                             });
                             return folderClone;
                         }).filter(function (folder) {
@@ -747,7 +747,7 @@ var CloudStorageData = /** @class */ (function () {
                             }
                             ;
                         });
-                        form.querySelector('input[type="checkbox"]').checked = editedShortcut.showOnMobile;
+                        form.querySelector('input[type="checkbox"]').checked = editedShortcut.show_on_mobile;
                         form.querySelector('input[type="file"]').value = '';
                     };
                 });
@@ -790,7 +790,7 @@ var CloudStorageData = /** @class */ (function () {
                                                 href: document.querySelector('input[name="href"]').value,
                                                 img: "https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/".concat(json['newFile']),
                                                 floatingLabel: document.querySelector('input[name="floatingLabel"]').value,
-                                                showOnMobile: document.querySelector('input[name="showOnMobile"]').value.toString() === 'on' ? true : false,
+                                                show_on_mobile: document.querySelector('input[name="show_on_mobile"]').value.toString() === 'on' ? true : false,
                                             }
                                         ],
                                     };
