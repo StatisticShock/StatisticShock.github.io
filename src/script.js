@@ -1,18 +1,3 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -22,76 +7,37 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 import CustomFunctions from '../util/functions.js';
 import { server } from '../util/server-url.js';
 import PageBuildingImport, { TemplateConstructor } from './shared.js';
-var toggleExternalDataLoad = true;
-var ua = navigator.userAgent || navigator.vendor || window.opera;
-var mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
-var PageBuilding = /** @class */ (function (_super) {
-    __extends(PageBuilding, _super);
-    function PageBuilding() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    PageBuilding.putVersionOnFooter = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var version, footer;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, fetch('https://raw.githubusercontent.com/StatisticShock/StatisticShock.github.io/refs/heads/main/package.json')
-                            .then(function (res) { return res.json(); })
-                            .then(function (data) { return data.version; })];
-                    case 1:
-                        version = _a.sent();
-                        footer = document.querySelector('footer');
-                        footer.innerHTML += "<p><small>ver. ".concat(version, "</small></p>");
-                        return [2 /*return*/];
-                }
-            });
+const toggleExternalDataLoad = true;
+const ua = navigator.userAgent || navigator.vendor || window.opera;
+const mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
+class PageBuilding extends PageBuildingImport {
+    static putVersionOnFooter() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const version = yield fetch('https://raw.githubusercontent.com/StatisticShock/StatisticShock.github.io/refs/heads/main/package.json')
+                .then((res) => res.json())
+                .then((data) => data.version);
+            const footer = document.querySelector('footer');
+            footer.innerHTML += `<p><small>ver. ${version}</small></p>`;
         });
-    };
+    }
     ;
-    PageBuilding.createSkeletons = function () {
-        var skeleton = 'skeleton';
-        var container = 'skeleton-container';
+    static createSkeletons() {
+        const skeleton = 'skeleton';
+        const container = 'skeleton-container';
         function createShortcutSkeletons() {
-            var shortcuts = document.querySelector('#shortcuts block-container');
-            var maxIcons = 16;
-            var row = Array(maxIcons).fill({ joker: skeleton, alt: '. . .' });
+            const shortcuts = document.querySelector('#shortcuts block-container');
+            const maxIcons = 16;
+            const row = Array(maxIcons).fill({ joker: skeleton, alt: '. . .' });
             new TemplateConstructor(document.querySelector('#shortcuts-template'), Array(5).fill({ jokerContainer: container, joker: skeleton, children: row })).insert(shortcuts);
-            shortcuts.querySelectorAll('img').forEach(function (img) { return img.src = './icon/blank.svg'; });
+            shortcuts.querySelectorAll('img').forEach((img) => img.src = './icon/blank.svg');
         }
         ;
         function createGamecardSkeletons() {
-            var gamecard = document.querySelector('#gaming gaming-container');
-            var sample = {
+            const gamecard = document.querySelector('#gaming gaming-container');
+            const sample = {
                 label: '. . .',
                 joker: 'skeleton',
                 jokerContainer: 'skeleton-container',
@@ -100,9 +46,9 @@ var PageBuilding = /** @class */ (function (_super) {
         }
         ;
         function createMfcSkeletons() {
-            var mfc = document.querySelector('#my-figure-collection my-figure-collection');
-            var maxIcons = Math.floor(parseInt(getComputedStyle(mfc).width) / (60 + 20)) * 3;
-            var sample = {
+            const mfc = document.querySelector('#my-figure-collection my-figure-collection');
+            const maxIcons = Math.floor(parseInt(getComputedStyle(mfc).width) / (60 + 20)) * 3;
+            const sample = {
                 joker: 'skeleton',
                 jokerContainer: 'skeleton-container',
                 icon: './icon/blank.svg'
@@ -111,9 +57,9 @@ var PageBuilding = /** @class */ (function (_super) {
         }
         ;
         function createMalSkeletons() {
-            var mal = document.querySelector('#my-anime-list my-anime-list');
-            var maxIcons = 20;
-            var sample = {
+            const mal = document.querySelector('#my-anime-list my-anime-list');
+            const maxIcons = 20;
+            const sample = {
                 joker: 'skeleton',
                 rank: ' . . .',
                 title: '. . .',
@@ -126,115 +72,103 @@ var PageBuilding = /** @class */ (function (_super) {
         createGamecardSkeletons();
         createMfcSkeletons();
         createMalSkeletons();
-    };
-    PageBuilding.deleteSkeletons = function (prefixes) {
-        for (var _i = 0, prefixes_1 = prefixes; _i < prefixes_1.length; _i++) {
-            var prefix = prefixes_1[_i];
-            var skeletons = document.querySelectorAll(prefix + '.skeleton-container');
-            skeletons.forEach(function (skeleton) {
+    }
+    static deleteSkeletons(prefixes) {
+        for (const prefix of prefixes) {
+            const skeletons = document.querySelectorAll(prefix + '.skeleton-container');
+            skeletons.forEach((skeleton) => {
                 skeleton.remove();
             });
         }
         ;
-    };
-    ;
-    return PageBuilding;
-}(PageBuildingImport));
-;
-var UserInterface = /** @class */ (function () {
-    function UserInterface() {
     }
-    UserInterface.nightModeToggle = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var darkOrLightTheme, svg;
-            return __generator(this, function (_a) {
-                darkOrLightTheme = 'darkOrLightTheme';
-                svg = document.querySelector('switch svg#theme-toggle');
-                if (localStorage.getItem(darkOrLightTheme) !== null) {
-                    switch (localStorage.getItem(darkOrLightTheme)) {
-                        case 'light':
-                            document.documentElement.setAttribute('data-theme', 'light');
-                            break;
-                        case 'dark':
-                            document.documentElement.setAttribute('data-theme', 'dark');
-                            svg.querySelector('g').classList.toggle('dark');
-                            break;
-                    }
-                }
-                else {
-                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                        localStorage.setItem(darkOrLightTheme, 'dark');
+    ;
+}
+;
+class UserInterface {
+    static nightModeToggle() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const darkOrLightTheme = 'darkOrLightTheme';
+            const svg = document.querySelector('switch svg#theme-toggle');
+            if (localStorage.getItem(darkOrLightTheme) !== null) {
+                switch (localStorage.getItem(darkOrLightTheme)) {
+                    case 'light':
+                        document.documentElement.setAttribute('data-theme', 'light');
+                        break;
+                    case 'dark':
                         document.documentElement.setAttribute('data-theme', 'dark');
                         svg.querySelector('g').classList.toggle('dark');
-                    }
-                    else {
-                        localStorage.setItem(darkOrLightTheme, 'light');
-                        document.documentElement.setAttribute('data-theme', 'light');
-                    }
-                    ;
+                        break;
+                }
+            }
+            else {
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    localStorage.setItem(darkOrLightTheme, 'dark');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    svg.querySelector('g').classList.toggle('dark');
+                }
+                else {
+                    localStorage.setItem(darkOrLightTheme, 'light');
+                    document.documentElement.setAttribute('data-theme', 'light');
                 }
                 ;
-                svg.onclick = function (ev) {
-                    var currentTheme = document.documentElement.getAttribute('data-theme');
-                    svg.querySelector('g').classList.toggle('dark');
-                    switch (currentTheme) {
-                        case 'light':
-                            document.documentElement.setAttribute('data-theme', 'dark');
-                            localStorage.setItem(darkOrLightTheme, 'dark');
-                            break;
-                        case 'dark':
-                            document.documentElement.setAttribute('data-theme', 'light');
-                            localStorage.setItem(darkOrLightTheme, 'light');
-                            break;
-                    }
-                    ;
-                };
-                return [2 /*return*/];
-            });
+            }
+            ;
+            svg.onclick = function (ev) {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                svg.querySelector('g').classList.toggle('dark');
+                switch (currentTheme) {
+                    case 'light':
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                        localStorage.setItem(darkOrLightTheme, 'dark');
+                        break;
+                    case 'dark':
+                        document.documentElement.setAttribute('data-theme', 'light');
+                        localStorage.setItem(darkOrLightTheme, 'light');
+                        break;
+                }
+                ;
+            };
         });
-    };
+    }
     ;
-    UserInterface.collapseHeader = function () {
-        var _this = this;
-        var navbar = document.querySelector('nav.menu');
-        var svg = navbar.querySelector('svg#expand-retract-header');
-        var header = document.querySelector('header');
-        svg.addEventListener('click', function (ev) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                navbar.classList.toggle('animated');
-                header.classList.toggle('hidden');
-                return [2 /*return*/];
-            });
-        }); });
-    };
+    static collapseHeader() {
+        const navbar = document.querySelector('nav.menu');
+        const svg = navbar.querySelector('svg#expand-retract-header');
+        const header = document.querySelector('header');
+        svg.addEventListener('click', (ev) => __awaiter(this, void 0, void 0, function* () {
+            navbar.classList.toggle('animated');
+            header.classList.toggle('hidden');
+        }));
+    }
     ;
-    UserInterface.makeSwitchesSlide = function () {
-        var switches = document.querySelectorAll('.switch');
-        switches.forEach(function (switchElement) {
-            var input = document.createElement('input');
-            var slider = document.createElement('div');
+    static makeSwitchesSlide() {
+        const switches = document.querySelectorAll('.switch');
+        switches.forEach((switchElement) => {
+            const input = document.createElement('input');
+            const slider = document.createElement('div');
             input.setAttribute('type', 'checkbox');
             slider.classList.add('slider');
             switchElement.appendChild(input);
             switchElement.appendChild(slider);
             switchElement.style.borderRadius = (parseFloat(getComputedStyle(switchElement).height) / 2) + 'px';
         });
-        var sliders = document.querySelectorAll('.switch > .slider');
-        sliders.forEach(function (slider) {
-            var parent = slider.parentElement;
-            var input = parent.querySelector('input');
-            var uncheckedPosition = getComputedStyle(slider, '::before').left;
-            var checkedPosition = parent.offsetWidth - parseFloat(uncheckedPosition) * 4 - parseFloat(getComputedStyle(slider, '::before').width) + 'px';
+        const sliders = document.querySelectorAll('.switch > .slider');
+        sliders.forEach((slider) => {
+            let parent = slider.parentElement;
+            let input = parent.querySelector('input');
+            let uncheckedPosition = getComputedStyle(slider, '::before').left;
+            let checkedPosition = parent.offsetWidth - parseFloat(uncheckedPosition) * 4 - parseFloat(getComputedStyle(slider, '::before').width) + 'px';
             slider.style.setProperty('--total-transition', checkedPosition);
             input.style.setProperty('--total-transition', checkedPosition);
         });
-    };
+    }
     ;
-    UserInterface.dragPopUps = function () {
-        var popUps = document.querySelectorAll('.pop-up');
-        var isDragging = false;
-        var offsetX, offsetY;
-        popUps.forEach(function (popUp) {
+    static dragPopUps() {
+        const popUps = document.querySelectorAll('.pop-up');
+        let isDragging = false;
+        let offsetX, offsetY;
+        popUps.forEach((popUp) => {
             popUp.addEventListener('mousedown', startDragging);
             popUp.addEventListener('touchstart', startDragging);
             popUp.addEventListener('mousemove', drag);
@@ -243,7 +177,7 @@ var UserInterface = /** @class */ (function () {
             document.addEventListener('touchend', stopDragging);
         });
         function startDragging(event) {
-            var e;
+            let e;
             if (event instanceof MouseEvent) {
                 e = event;
             }
@@ -251,7 +185,7 @@ var UserInterface = /** @class */ (function () {
                 e = event.touches[0];
             }
             ;
-            var target = e.target;
+            let target = e.target;
             if ((target === this || CustomFunctions.isParent(target, this.querySelector('.pop-up-header'))) &&
                 !(target instanceof HTMLImageElement) &&
                 !(target instanceof HTMLParagraphElement) &&
@@ -264,7 +198,7 @@ var UserInterface = /** @class */ (function () {
         }
         ;
         function drag(event) {
-            var e;
+            let e;
             if (event instanceof MouseEvent) {
                 e = event;
             }
@@ -273,8 +207,8 @@ var UserInterface = /** @class */ (function () {
             }
             ;
             if (isDragging) {
-                var x = e.clientX - offsetX;
-                var y = e.clientY - offsetY;
+                let x = e.clientX - offsetX;
+                let y = e.clientY - offsetY;
                 this.style.left = x + 'px';
                 this.style.top = y + 'px';
             }
@@ -284,100 +218,87 @@ var UserInterface = /** @class */ (function () {
         function stopDragging() {
             isDragging = false;
         }
-    };
+    }
     ;
-    UserInterface.resetPopUpsOnOpen = function () {
-        var _this = this;
-        var buttons = document.querySelectorAll('.close-button');
-        buttons.forEach(function (button) {
-            var parent = button.parentElement.parentElement;
-            button.onclick = function () {
+    static resetPopUpsOnOpen() {
+        const buttons = document.querySelectorAll('.close-button');
+        buttons.forEach((button) => {
+            const parent = button.parentElement.parentElement;
+            button.onclick = () => {
                 parent.style.display = 'none';
-                _this.setPopUpDefaultValues();
+                this.setPopUpDefaultValues();
             };
         });
-    };
+    }
     ;
-    UserInterface.setPopUpDefaultValues = function () {
-        var keywordsReddit = document.getElementById('keywords-reddit');
-        var subreddit = document.getElementById('subreddit');
-        var toDate = document.getElementById('to-date');
-        var fromDate = document.getElementById('from-date');
+    static setPopUpDefaultValues() {
+        let keywordsReddit = document.getElementById('keywords-reddit');
+        let subreddit = document.getElementById('subreddit');
+        let toDate = document.getElementById('to-date');
+        let fromDate = document.getElementById('from-date');
         keywordsReddit.value = '';
         subreddit.value = '';
         toDate.valueAsDate = new Date();
         fromDate.valueAsDate = new Date(new Date().getFullYear() - 1, new Date().getMonth(), new Date().getDate());
-        var keywordsWikipedia = document.getElementById('keywords-wikipedia');
+        let keywordsWikipedia = document.getElementById('keywords-wikipedia');
         keywordsWikipedia.value = '';
-    };
+    }
     ;
-    UserInterface.changeHomeView = function () {
-        var navBttns = document.querySelectorAll('nav a');
-        navBttns.forEach(function (bttn) {
-            bttn.onclick = function (ev) {
+    static changeHomeView() {
+        const navBttns = document.querySelectorAll('nav a');
+        navBttns.forEach((bttn) => {
+            bttn.onclick = (ev) => {
                 ev.preventDefault();
-                var target = ev.target || ev.touches[0].target;
-                var anchor = target.closest('a');
-                document.querySelectorAll('.flex-container > section').forEach(function (section) {
+                const target = ev.target || ev.touches[0].target;
+                const anchor = target.closest('a');
+                document.querySelectorAll('.flex-container > section').forEach((section) => {
                     section.style.display = section.id === anchor.href.split('/').pop() ? '' : 'none';
                 });
             };
         });
-    };
+    }
     ;
-    UserInterface.refreshData = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var button;
-            var _this = this;
-            return __generator(this, function (_a) {
-                button = document.querySelector('button#refresh-button');
-                button.onclick = function (ev) { return __awaiter(_this, void 0, void 0, function () {
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0: return [4 /*yield*/, caches.delete('v1')];
-                            case 1:
-                                _a.sent();
-                                window.location.reload();
-                                return [2 /*return*/];
-                        }
-                    });
-                }); };
-                return [2 /*return*/];
+    static refreshData() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const button = document.querySelector('button#refresh-button');
+            button.onclick = (ev) => __awaiter(this, void 0, void 0, function* () {
+                yield caches.delete('v1');
+                window.location.reload();
             });
         });
-    };
+    }
     ;
-    UserInterface.handleShortcutEditToggle = function () {
-        var toggleButton = document.querySelector('button#shortcuts-edit-mode');
-        var shotcuts = document.querySelector('section#shortcuts');
-        var blocks = Array.from(shotcuts.querySelectorAll('block-container block'));
-        toggleButton.onclick = function (ev) {
+    static handleShortcutEditToggle() {
+        const toggleButton = document.querySelector('button#shortcuts-edit-mode');
+        const shotcuts = document.querySelector('section#shortcuts');
+        const blocks = Array.from(shotcuts.querySelectorAll('block-container block'));
+        toggleButton.onclick = (ev) => {
             shotcuts.classList.toggle('edit-mode');
             toggleButton.classList.toggle('trigger');
             toggleButton.classList.toggle('check');
         };
-        blocks.forEach(function (block) {
-            block.addEventListener('mouseenter', function (ev) {
+        blocks.forEach((block) => {
+            block.addEventListener('mouseenter', (ev) => {
                 if (document.body.classList.contains('has-hover')) {
                     block.setAttribute('selected', 'true');
                 }
                 ;
             });
-            block.addEventListener('mouseleave', function (ev) {
+            block.addEventListener('mouseleave', (ev) => {
                 if (document.body.classList.contains('has-hover')) {
                     block.setAttribute('selected', 'false');
                 }
                 ;
             });
-            block.addEventListener('click', function (ev) {
-                var target = (ev.target || ev.touches[0].target);
+            block.addEventListener('click', (ev) => {
+                const target = (ev.target || ev.touches[0].target);
                 if (!target.closest('a') || shotcuts.classList.contains('edit-mode')) {
                     ev.preventDefault();
                 }
                 if (!ev.touches)
                     return;
                 block.setAttribute('selected', (!Boolean(block.getAttribute('selected') || "false")).toString());
-                blocks.forEach(function (el) {
+                blocks.forEach((el) => {
                     if (el !== block) {
                         el.setAttribute('selected', 'false');
                     }
@@ -385,41 +306,38 @@ var UserInterface = /** @class */ (function () {
                 });
             });
         });
-    };
-    UserInterface.handleGamingEditToggle = function () {
-        var toggleButton = document.querySelector('button#gaming-edit-mode');
-        toggleButton.onclick = function (ev) {
+    }
+    static handleGamingEditToggle() {
+        const toggleButton = document.querySelector('button#gaming-edit-mode');
+        toggleButton.onclick = (ev) => {
             toggleButton.classList.toggle('trigger');
             toggleButton.classList.toggle('check');
         };
         /* TODO */
-    };
-    return UserInterface;
-}());
-;
-var ExternalSearch = /** @class */ (function () {
-    function ExternalSearch() {
     }
-    ExternalSearch.redditSearchTrigger = function () {
-        var okButtonReddit = document.querySelector('.pop-up.reddit-google .ok-button');
+}
+;
+class ExternalSearch {
+    static redditSearchTrigger() {
+        let okButtonReddit = document.querySelector('.pop-up.reddit-google .ok-button');
         okButtonReddit.onclick = redditSearch;
         function redditSearch() {
             var _a;
-            var keywords = document.getElementById('keywords-reddit');
-            var subreddit = document.getElementById('subreddit');
-            var from = document.getElementById('from-date');
-            var to = document.getElementById('to-date');
-            var subredditStrings = subreddit.value.split(/ \/ /).filter(function (text) {
+            const keywords = document.getElementById('keywords-reddit');
+            const subreddit = document.getElementById('subreddit');
+            const from = document.getElementById('from-date');
+            const to = document.getElementById('to-date');
+            var subredditStrings = subreddit.value.split(/ \/ /).filter((text) => {
                 if (text != '')
                     return true;
             });
             if ((new Date(from.value) >= new Date(to.value)) && from.value && to.value)
                 return;
-            var string = 'https://www.google.com/search?q=';
+            let string = 'https://www.google.com/search?q=';
             if (keywords.value) {
                 string = string + keywords.value.replace(' ', '+');
                 if (subredditStrings[0]) {
-                    subredditStrings.forEach(function (text) {
+                    subredditStrings.forEach((text) => {
                         if (subredditStrings.indexOf(text) > 0) {
                             string = string + '+OR+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + text.replaceAll(' ', '_');
                         }
@@ -441,304 +359,268 @@ var ExternalSearch = /** @class */ (function () {
             }
             ;
         }
-    };
+    }
     ;
-    ExternalSearch.wikipediaSearchTrigger = function () {
-        var okButtonWikipedia = document.querySelector('.pop-up.wikipedia .ok-button');
+    static wikipediaSearchTrigger() {
+        let okButtonWikipedia = document.querySelector('.pop-up.wikipedia .ok-button');
         okButtonWikipedia.onclick = wikipediaSearch;
         function wikipediaSearch() {
             var _a;
-            var keywords = document.getElementById('keywords-wikipedia');
-            var string = 'https://pt.wikipedia.org/w/index.php?search=';
+            let keywords = document.getElementById('keywords-wikipedia');
+            let string = 'https://pt.wikipedia.org/w/index.php?search=';
             if (keywords.value) {
                 string = string + keywords.value.replace(' ', '+');
                 (_a = window.open(string, '_blank')) === null || _a === void 0 ? void 0 : _a.focus();
             }
         }
-    };
-    ;
-    return ExternalSearch;
-}());
-;
-var CloudStorageData = /** @class */ (function () {
-    function CloudStorageData() {
     }
-    CloudStorageData.load = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var response, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, fetch("".concat(server, "contents/"))];
-                    case 1:
-                        response = _b.sent();
-                        _a = this;
-                        return [4 /*yield*/, response.json()];
-                    case 2:
-                        _a.json = _b.sent();
-                        return [2 /*return*/];
-                }
-            });
+    ;
+}
+;
+class CloudStorageData {
+    static load() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield fetch(`${server}contents/`);
+            this.json = yield response.json();
         });
-    };
-    CloudStorageData.loadContentFromJson = function () {
-        return __awaiter(this, void 0, void 0, function () {
+    }
+    static loadContentFromJson() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const content = JSON.parse(JSON.stringify(this.json));
             function loadShortcuts() {
-                return __awaiter(this, void 0, void 0, function () {
-                    var shortcuts, shortcutsOnMobile;
-                    return __generator(this, function (_a) {
-                        shortcuts = document.querySelector('section#shortcuts block-container');
-                        shortcutsOnMobile = content.shortcuts.map(function (folder) {
-                            var folderClone = structuredClone(folder);
-                            folderClone.children = folderClone.children.filter(function (child) {
-                                return child.show_on_mobile;
-                            });
-                            return folderClone;
-                        }).filter(function (folder) {
-                            return folder.children.length > 0;
+                return __awaiter(this, void 0, void 0, function* () {
+                    const shortcuts = document.querySelector('section#shortcuts block-container');
+                    const shortcutsOnMobile = content.shortcuts.map((folder) => {
+                        const folderClone = structuredClone(folder);
+                        folderClone.children = folderClone.children.filter((child) => {
+                            return child.show_on_mobile;
                         });
-                        new TemplateConstructor(document.querySelector('template#shortcuts-template'), mobile ? shortcutsOnMobile : content.shortcuts).insert(shortcuts);
-                        return [2 /*return*/];
+                        return folderClone;
+                    }).filter((folder) => {
+                        return folder.children.length > 0;
                     });
+                    new TemplateConstructor(document.querySelector('template#shortcuts-template'), mobile ? shortcutsOnMobile : content.shortcuts).insert(shortcuts);
                 });
             }
+            ;
             function loadGamecards() {
-                return __awaiter(this, void 0, void 0, function () {
-                    var gamecards, _i, _a, gamecard, _b, _c, css;
-                    return __generator(this, function (_d) {
-                        gamecards = document.querySelector('#gaming gaming-container');
-                        new TemplateConstructor(document.querySelector('template#gamecard-template'), content.gamecards).insert(gamecards, 'after');
-                        // a
-                        for (_i = 0, _a = content.gamecards; _i < _a.length; _i++) {
-                            gamecard = _a[_i];
-                            for (_b = 0, _c = gamecard.img_css; _b < _c.length; _b++) {
-                                css = _c[_b];
-                                document.querySelector('#' + gamecard.id + ' a').style.setProperty(css.attribute, css.value);
-                            }
-                            ;
+                return __awaiter(this, void 0, void 0, function* () {
+                    const gamecards = document.querySelector('#gaming gaming-container');
+                    new TemplateConstructor(document.querySelector('template#gamecard-template'), content.gamecards).insert(gamecards, 'after');
+                    // a
+                    for (const gamecard of content.gamecards) {
+                        for (const css of gamecard.img_css) {
+                            document.querySelector('#' + gamecard.id + ' a').style.setProperty(css.attribute, css.value);
                         }
                         ;
-                        return [2 /*return*/];
-                    });
+                    }
+                    ;
                 });
             }
+            ;
             function loadHeaders() {
-                return __awaiter(this, void 0, void 0, function () {
-                    var possibleHeaders, index, src, header, h1;
-                    return __generator(this, function (_a) {
-                        possibleHeaders = content.headers.filter(function (header) { return header.active; });
-                        index = CustomFunctions.randomIntFromInterval(0, possibleHeaders.length - 1);
-                        src = possibleHeaders[index].href;
-                        possibleHeaders.forEach(function (imgSrc) {
-                            var img = new Image();
-                            img.src = imgSrc.href;
+                return __awaiter(this, void 0, void 0, function* () {
+                    const possibleHeaders = content.headers.filter((header) => header.active);
+                    let index = CustomFunctions.randomIntFromInterval(0, possibleHeaders.length - 1);
+                    let src = possibleHeaders[index].href;
+                    possibleHeaders.forEach((imgSrc) => {
+                        let img = new Image();
+                        img.src = imgSrc.href;
+                    });
+                    const header = document.querySelector('#header div');
+                    const h1 = header.querySelector('h1');
+                    header.style.backgroundImage = `url('${src}')`;
+                    header.onclick = (event) => {
+                        var _a;
+                        let target = null;
+                        if (event instanceof MouseEvent) {
+                            target = event.target;
+                        }
+                        else if (event instanceof TouchEvent) {
+                            target = event.touches[0].target;
+                        }
+                        if (typeof window.getSelection() !== undefined) {
+                            if (((_a = window.getSelection()) === null || _a === void 0 ? void 0 : _a.toString()) !== '')
+                                return;
+                        }
+                        ;
+                        let newHeadersArr = possibleHeaders.filter((headerObj) => {
+                            return headerObj.href !== src;
                         });
-                        header = document.querySelector('#header div');
-                        h1 = header.querySelector('h1');
-                        header.style.backgroundImage = "url('".concat(src, "')");
-                        header.onclick = function (event) {
-                            var _a;
-                            var target = null;
-                            if (event instanceof MouseEvent) {
-                                target = event.target;
-                            }
-                            else if (event instanceof TouchEvent) {
-                                target = event.touches[0].target;
-                            }
-                            if (typeof window.getSelection() !== undefined) {
-                                if (((_a = window.getSelection()) === null || _a === void 0 ? void 0 : _a.toString()) !== '')
-                                    return;
+                        index = CustomFunctions.randomIntFromInterval(0, newHeadersArr.length - 1);
+                        src = newHeadersArr[index].href;
+                        header.style.backgroundImage = `url('${src}')`;
+                    };
+                });
+            }
+            ;
+            function loadMfc() {
+                return __awaiter(this, void 0, void 0, function* () {
+                    const destination = document.querySelector('#my-figure-collection my-figure-collection');
+                    new TemplateConstructor(document.querySelector('#mfc-template'), content.mfc.sort((a, b) => Number(a.id) - Number(b.id))).insert(destination, 'after');
+                    document.querySelectorAll('mfc > img').forEach((mfcImg) => {
+                        mfcImg.addEventListener('click', (ev) => {
+                            mfcImg.parentElement.classList.toggle('hidden');
+                        });
+                    });
+                    Array.from(document.querySelectorAll('mfc line > label')).forEach((label) => {
+                        label.onclick = (ev) => {
+                            if (label.textContent !== 'Tags') {
+                                navigator.clipboard.writeText(label.nextElementSibling.textContent);
                             }
                             ;
-                            var newHeadersArr = possibleHeaders.filter(function (headerObj) {
-                                return headerObj.href !== src;
-                            });
-                            index = CustomFunctions.randomIntFromInterval(0, newHeadersArr.length - 1);
-                            src = newHeadersArr[index].href;
-                            header.style.backgroundImage = "url('".concat(src, "')");
                         };
-                        return [2 /*return*/];
                     });
-                });
-            }
-            function loadMfc() {
-                return __awaiter(this, void 0, void 0, function () {
+                    Array.from(document.querySelectorAll('mfc line > data')).forEach((dataField) => {
+                        dataField.onclick = (ev) => {
+                            dataField.parentElement.classList.toggle('hidden');
+                        };
+                    });
+                    Array.from(document.querySelectorAll('mfc line > stores > a')).forEach((store) => {
+                        const img = store.querySelector('img');
+                        const keyword = store.parentElement.parentElement.querySelector('data').textContent;
+                        switch (img.alt) {
+                            case 'amiami icon':
+                                store.href = `https://www.amiami.com/eng/search/list/?s_keywords=${encodeURI(keyword)}&s_cate_tag=1&s_sortkey=preowned&s_st_condition_flg=1`;
+                                break;
+                            case 'buyee icon':
+                                store.href = `https://buyee.jp/item/search/query/${encodeURI(keyword)}/category/25888?store=1&aucminprice=0&aucmaxprice=3000&suggest=1`;
+                                break;
+                            case 'ninoma icon':
+                                store.href = `https://ninoma.com/search?filter.p.product_type=Figure&filter.v.availability=1&q=${encodeURI(keyword)}`;
+                                break;
+                            default: break;
+                        }
+                    });
                     function makeMfcSearchWork() {
-                        var searchBox = document.querySelector('search-box');
-                        var input = document.querySelector('input[name="mfc-filter"]');
-                        var figureMapKeys = ['id', 'title', 'type', 'category', 'or', 'and'];
-                        var figuresRegExMap = Array.from(content.mfc);
-                        figuresRegExMap.forEach(function (figure) {
-                            figure.or = function (expressions) {
+                        const searchBox = document.querySelector('search-box');
+                        const input = document.querySelector('input[name="mfc-filter"]');
+                        const figureMapKeys = ['id', 'title', 'type', 'category', 'or', 'and'];
+                        const figuresRegExMap = Array.from(content.mfc);
+                        figuresRegExMap.forEach((figure) => {
+                            figure.or = (expressions) => {
                                 if (expressions.length === 0) {
                                     return true;
                                 }
                                 ;
-                                return expressions.some(function (expression) {
-                                    return Object.keys(figure).some(function (key) { return typeof figure[key] === 'string' && expression.test(figure[key]); });
+                                return expressions.some((expression) => {
+                                    return Object.keys(figure).some((key) => typeof figure[key] === 'string' && expression.test(figure[key]));
                                 });
                             };
-                            figure.and = function (expressions) {
-                                return expressions.every(function (expression) {
-                                    return Object.keys(figure).some(function (key) { return typeof figure[key] === 'string' && expression.test(figure[key]); });
+                            figure.and = (expressions) => {
+                                return expressions.every((expression) => {
+                                    return Object.keys(figure).some((key) => typeof figure[key] === 'string' && expression.test(figure[key]));
                                 });
                             };
                         });
                         function filterFigures(ev) {
-                            var string = input.value;
-                            var regEx = new RegExp(string, 'ig');
-                            var regExes = {
+                            const string = input.value;
+                            const regEx = new RegExp(string, 'ig');
+                            const regExes = {
                                 or: string.trim() === '' ? [] : [regEx],
                                 and: []
                             };
-                            document.querySelectorAll('search-box search-word').forEach(function (searchWord) {
-                                var newRegEx = new RegExp(searchWord.textContent.slice(0, -1), 'ig');
+                            document.querySelectorAll('search-box search-word').forEach((searchWord) => {
+                                const newRegEx = new RegExp(searchWord.textContent.slice(0, -1), 'ig');
                                 regExes[searchWord.classList[0]].push(newRegEx);
                             });
                             if (regExes.or.length === 0 && regExes.and.length === 0)
                                 regExes.or.push(/:?/ig);
-                            figuresRegExMap.forEach(function (figure) {
+                            figuresRegExMap.forEach((figure) => {
                                 if (figure.or(regExes.or) && figure.and(regExes.and)) {
-                                    document.getElementById("mfc-".concat(figure.id)).style.display = 'flex';
+                                    document.getElementById(`mfc-${figure.id}`).style.display = 'flex';
                                 }
                                 else {
-                                    document.getElementById("mfc-".concat(figure.id)).style.display = 'none';
+                                    document.getElementById(`mfc-${figure.id}`).style.display = 'none';
                                 }
                                 ;
                             });
                         }
                         ;
-                        ['keyup', 'paste'].forEach(function (eventName) {
+                        ['keyup', 'paste'].forEach((eventName) => {
                             input.addEventListener(eventName, filterFigures);
                         });
-                        input.addEventListener('keypress', function (ev) {
+                        input.addEventListener('keypress', (ev) => {
                             if (ev.key === 'Enter') {
                                 if (input.value.trim().length === 0)
                                     return;
-                                var searchWord_1 = document.createElement('search-word');
-                                searchWord_1.innerHTML = "".concat(input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[&#,+()$~%.'":*?<>{}]/g, ''), "<button type=\"button\" class=\"close-button\">&times;</button>");
-                                searchWord_1.classList.add('or');
-                                searchWord_1.addEventListener('click', function (ev) {
-                                    var target = ('touches' in ev ? ev.touches[0].target : ev.target);
+                                const searchWord = document.createElement('search-word');
+                                searchWord.innerHTML = `${input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[&#,+()$~%.'":*?<>{}]/g, '')}<button type="button" class="close-button">&times;</button>`;
+                                searchWord.classList.add('or');
+                                searchWord.addEventListener('click', (ev) => {
+                                    const target = ('touches' in ev ? ev.touches[0].target : ev.target);
                                     if (target.tagName === 'BUTTON')
                                         return;
-                                    searchWord_1.classList.toggle('and');
-                                    searchWord_1.classList.toggle('or');
+                                    searchWord.classList.toggle('and');
+                                    searchWord.classList.toggle('or');
                                     filterFigures();
                                 });
-                                searchBox.appendChild(searchWord_1);
+                                searchBox.appendChild(searchWord);
                                 input.value = '';
                             }
                             ;
                         });
-                        searchBox.addEventListener('click', function (ev) {
+                        searchBox.addEventListener('click', (ev) => {
                             var _a;
-                            var target = ('touches' in ev ? ev.touches[0].target : ev.target);
+                            const target = ('touches' in ev ? ev.touches[0].target : ev.target);
                             if (target.tagName === 'BUTTON') {
                                 (_a = target.closest('search-word')) === null || _a === void 0 ? void 0 : _a.remove();
                                 filterFigures();
                             }
                         });
                     }
-                    var destination;
-                    return __generator(this, function (_a) {
-                        destination = document.querySelector('#my-figure-collection my-figure-collection');
-                        new TemplateConstructor(document.querySelector('#mfc-template'), content.mfc.sort(function (a, b) { return Number(a.id) - Number(b.id); })).insert(destination, 'after');
-                        document.querySelectorAll('mfc > img').forEach(function (mfcImg) {
-                            mfcImg.addEventListener('click', function (ev) {
-                                mfcImg.parentElement.classList.toggle('hidden');
-                            });
-                        });
-                        Array.from(document.querySelectorAll('mfc line > label')).forEach(function (label) {
-                            label.onclick = function (ev) {
-                                if (label.textContent !== 'Tags') {
-                                    navigator.clipboard.writeText(label.nextElementSibling.textContent);
-                                }
-                                ;
-                            };
-                        });
-                        Array.from(document.querySelectorAll('mfc line > data')).forEach(function (dataField) {
-                            dataField.onclick = function (ev) {
-                                dataField.parentElement.classList.toggle('hidden');
-                            };
-                        });
-                        Array.from(document.querySelectorAll('mfc line > stores > a')).forEach(function (store) {
-                            var img = store.querySelector('img');
-                            var keyword = store.parentElement.parentElement.querySelector('data').textContent;
-                            switch (img.alt) {
-                                case 'amiami icon':
-                                    store.href = "https://www.amiami.com/eng/search/list/?s_keywords=".concat(encodeURI(keyword), "&s_cate_tag=1&s_sortkey=preowned&s_st_condition_flg=1");
-                                    break;
-                                case 'buyee icon':
-                                    store.href = "https://buyee.jp/item/search/query/".concat(encodeURI(keyword), "/category/25888?store=1&aucminprice=0&aucmaxprice=3000&suggest=1");
-                                    break;
-                                case 'ninoma icon':
-                                    store.href = "https://ninoma.com/search?filter.p.product_type=Figure&filter.v.availability=1&q=".concat(encodeURI(keyword));
-                                    break;
-                                default: break;
-                            }
-                        });
-                        ;
-                        makeMfcSearchWork();
-                        return [2 /*return*/];
-                    });
+                    ;
+                    makeMfcSearchWork();
                 });
             }
-            var content;
-            return __generator(this, function (_a) {
-                content = JSON.parse(JSON.stringify(this.json));
-                ;
-                ;
-                ;
-                loadShortcuts();
-                loadGamecards();
-                loadHeaders();
-                loadMfc();
-                return [2 /*return*/];
-            });
+            loadShortcuts();
+            loadGamecards();
+            loadHeaders();
+            loadMfc();
         });
-    };
+    }
     ;
-    CloudStorageData.handleEdits = function () {
-        return __awaiter(this, void 0, void 0, function () {
+    static handleEdits() {
+        return __awaiter(this, void 0, void 0, function* () {
             function shortcutsEdit() {
-                var section = document.querySelector('section#shortcuts');
-                var form = document.querySelector('form#create-shortcut');
-                var inputFile = form.querySelector('input[type="file"]');
-                var parendData = null;
-                var editedShortcut = null;
-                var buttons = document.querySelectorAll('button.shortcut-item');
-                buttons.forEach(function (button) {
+                const section = document.querySelector('section#shortcuts');
+                const form = document.querySelector('form#create-shortcut');
+                const inputFile = form.querySelector('input[type="file"]');
+                let parendData = null;
+                let editedShortcut = null;
+                const buttons = document.querySelectorAll('button.shortcut-item');
+                buttons.forEach((button) => {
                     button.onclick = function (ev) {
                         form.style.display = 'block';
-                        var parendId = CloudStorageData.json.shortcuts.filter(function (folder) { return folder.id === button.closest('block').id; })[0];
+                        const [parendId] = CloudStorageData.json.shortcuts.filter((folder) => folder.id === button.closest('block').id);
                         parendData = {
                             id: parendId.id,
                             index: parendId.index,
                             title: parendId.title,
                             children: parendId.children.length
                         };
-                        form.querySelectorAll('input[type="text"]').forEach(function (input) {
+                        form.querySelectorAll('input[type="text"]').forEach((input) => {
                             input.value = '';
                         });
                         form.querySelector('input[type="checkbox"]').checked = true;
                         form.querySelector('input[type="file"]').value = '';
                     };
                 });
-                var currentShortcuts = document.querySelectorAll('block a.shortcut-item');
-                currentShortcuts.forEach(function (shortcut) {
+                const currentShortcuts = document.querySelectorAll('block a.shortcut-item');
+                currentShortcuts.forEach((shortcut) => {
                     shortcut.onclick = function (ev) {
                         if (!section.classList.contains('edit-mode'))
                             return;
                         form.style.display = 'block';
-                        editedShortcut = CloudStorageData.json.shortcuts.filter(function (folder) { return folder.id === shortcut.closest('block').id; })[0].children.filter(function (shortcutOnJson) { return shortcutOnJson.id === shortcut.id; })[0];
-                        var parendId = CloudStorageData.json.shortcuts.filter(function (folder) { return folder.id === shortcut.closest('block').id; })[0];
+                        editedShortcut = CloudStorageData.json.shortcuts.filter((folder) => folder.id === shortcut.closest('block').id)[0].children.filter((shortcutOnJson) => shortcutOnJson.id === shortcut.id)[0];
+                        const [parendId] = CloudStorageData.json.shortcuts.filter((folder) => folder.id === shortcut.closest('block').id);
                         parendData = {
                             id: parendId.id,
                             index: parendId.index,
                             title: parendId.title,
                             children: parendId.children.length
                         };
-                        form.querySelectorAll('input[type="text"]').forEach(function (input) {
+                        form.querySelectorAll('input[type="text"]').forEach((input) => {
                             if (editedShortcut[input.name]) {
                                 input.value = editedShortcut[input.name];
                             }
@@ -751,158 +633,114 @@ var CloudStorageData = /** @class */ (function () {
                         form.querySelector('input[type="file"]').value = '';
                     };
                 });
-                var submitButton = form.querySelector('button.ok-button');
+                const submitButton = form.querySelector('button.ok-button');
                 submitButton.onclick = function (ev) {
-                    return __awaiter(this, void 0, void 0, function () {
-                        var formData, response, json, postBody, request;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    ev.preventDefault();
-                                    if (form.querySelector("input[name=\"alt\"]").value === '')
-                                        return [2 /*return*/];
-                                    if (form.querySelector("input[name=\"href\"]").value === '')
-                                        return [2 /*return*/];
-                                    if (form.querySelector("input[name=\"image\"]").files.length === 0)
-                                        return [2 /*return*/];
-                                    formData = new FormData();
-                                    formData.append('image', inputFile.files[0]);
-                                    formData.append('path', 'icons/dynamic/');
-                                    return [4 /*yield*/, fetch("".concat(server, "image/small"), {
-                                            method: 'POST',
-                                            body: formData
-                                        })];
-                                case 1:
-                                    response = _a.sent();
-                                    if (!(response.status === 200)) return [3 /*break*/, 4];
-                                    return [4 /*yield*/, response.json()];
-                                case 2:
-                                    json = _a.sent();
-                                    postBody = {
-                                        id: parendData.id,
-                                        index: parendData.index.toString(),
-                                        title: parendData.title,
-                                        children: [
-                                            {
-                                                alt: document.querySelector('input[name="alt"]').value,
-                                                id: CustomFunctions.normalize(document.querySelector('input[name="alt"]').value),
-                                                index: parendData.children,
-                                                href: document.querySelector('input[name="href"]').value,
-                                                img: "https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/".concat(json['newFile']),
-                                                floatingLabel: document.querySelector('input[name="floatingLabel"]').value,
-                                                show_on_mobile: document.querySelector('input[name="show_on_mobile"]').value.toString() === 'on' ? true : false,
-                                            }
-                                        ],
-                                    };
-                                    return [4 /*yield*/, fetch("".concat(server, "shortcuts"), {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-type': 'application/json'
-                                            },
-                                            body: JSON.stringify(postBody),
-                                        })];
-                                case 3:
-                                    request = _a.sent();
-                                    if (request.ok) {
-                                        alert('Atalho criado.');
-                                        CloudStorageData.json.shortcuts.filter(function (folder) { return folder.id === parendData.id; })[0].children.push(postBody.children[0]);
-                                    }
-                                    ;
-                                    _a.label = 4;
-                                case 4: return [2 /*return*/];
-                            }
+                    return __awaiter(this, void 0, void 0, function* () {
+                        ev.preventDefault();
+                        if (form.querySelector(`input[name="alt"]`).value === '')
+                            return;
+                        if (form.querySelector(`input[name="href"]`).value === '')
+                            return;
+                        if (form.querySelector(`input[name="image"]`).files.length === 0)
+                            return;
+                        const formData = new FormData();
+                        formData.append('image', inputFile.files[0]);
+                        formData.append('path', 'icons/dynamic/');
+                        const response = yield fetch(`${server}image/small`, {
+                            method: 'POST',
+                            body: formData
                         });
+                        if (response.status === 200) {
+                            const json = yield response.json();
+                            const postBody = {
+                                id: parendData.id,
+                                index: parendData.index.toString(),
+                                title: parendData.title,
+                                children: [
+                                    {
+                                        alt: document.querySelector('input[name="alt"]').value,
+                                        id: CustomFunctions.normalize(document.querySelector('input[name="alt"]').value),
+                                        index: parendData.children,
+                                        href: document.querySelector('input[name="href"]').value,
+                                        img: `https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/${json['newFile']}`,
+                                        floatingLabel: document.querySelector('input[name="floatingLabel"]').value,
+                                        show_on_mobile: document.querySelector('input[name="show_on_mobile"]').value.toString() === 'on' ? true : false,
+                                    }
+                                ],
+                            };
+                            const request = yield fetch(`${server}shortcuts`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-type': 'application/json'
+                                },
+                                body: JSON.stringify(postBody),
+                            });
+                            if (request.ok) {
+                                alert('Atalho criado.');
+                                CloudStorageData.json.shortcuts.filter((folder) => folder.id === parendData.id)[0].children.push(postBody.children[0]);
+                            }
+                            ;
+                        }
                     });
                 };
             }
-            return __generator(this, function (_a) {
-                ;
-                shortcutsEdit();
-                return [2 /*return*/];
-            });
+            ;
+            shortcutsEdit();
         });
-    };
-    ;
-    return CloudStorageData;
-}());
-;
-var ExternalData = /** @class */ (function () {
-    function ExternalData() {
     }
-    ExternalData.addRetroAchievementsAwards = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var data, retroAchievements;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, fetch("".concat(server, "retroAchievements/pt-BR/")).then(function (res) { return res.json(); })];
-                    case 1:
-                        data = _a.sent();
-                        retroAchievements = document.querySelector('#gaming retroachievements');
-                        new TemplateConstructor(document.querySelector('#ra-template'), [data]).insert(retroAchievements);
-                        data.awards.filter(function (award) { return award.allData.some(function (data) {
-                            return data.awardType.includes('Platinado');
-                        }); }).forEach(function (award) {
-                            document.querySelector('#ra-award-' + award.awardData).classList.add('mastered');
-                        });
-                        return [2 /*return*/];
-                }
+    ;
+}
+;
+class ExternalData {
+    static addRetroAchievementsAwards() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const data = yield fetch(`${server}retroAchievements/pt-BR/`).then((res) => res.json());
+            const retroAchievements = document.querySelector('#gaming retroachievements');
+            new TemplateConstructor(document.querySelector('#ra-template'), [data]).insert(retroAchievements);
+            data.awards.filter((award) => award.allData.some((data) => {
+                return data.awardType.includes('Platinado');
+            })).forEach((award) => {
+                document.querySelector('#ra-award-' + award.awardData).classList.add('mastered');
             });
         });
-    };
+    }
     ;
-    ExternalData.scrapeMyAnimeList = function () {
-        return __awaiter(this, void 0, void 0, function () {
+    static scrapeMyAnimeList() {
+        return __awaiter(this, void 0, void 0, function* () {
             function scrapeDataFromMAL(options) {
-                return __awaiter(this, void 0, void 0, function () {
-                    var animeData, mangaData, response;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0: return [4 /*yield*/, fetch("".concat(server, "myanimelist/animelist?username=HikariMontgomery&offset=").concat(options.offset, "&limit=").concat(options.limit))
-                                    .then(function (response) { return response.json(); })];
-                            case 1:
-                                animeData = (_a.sent())['myanimelist'];
-                                return [4 /*yield*/, fetch("".concat(server, "myanimelist/mangalist?username=HikariMontgomery&offset=").concat(options.offset, "&limit=").concat(options.limit))
-                                        .then(function (response) { return response.json(); })];
-                            case 2:
-                                mangaData = (_a.sent())['myanimelist'];
-                                response = [];
-                                animeData.forEach(function (anime) { return response.push(anime); });
-                                mangaData.forEach(function (manga) { return response.push(manga); });
-                                return [2 /*return*/, response];
-                        }
-                    });
+                return __awaiter(this, void 0, void 0, function* () {
+                    const animeData = (yield fetch(`${server}myanimelist/animelist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}`)
+                        .then(response => response.json()))['myanimelist'];
+                    const mangaData = (yield fetch(`${server}myanimelist/mangalist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}`)
+                        .then(response => response.json()))['myanimelist'];
+                    const response = [];
+                    animeData.forEach((anime) => response.push(anime));
+                    mangaData.forEach((manga) => response.push(manga));
+                    return response;
                 });
             }
-            var _this = this;
-            return __generator(this, function (_a) {
-                ;
-                scrapeDataFromMAL({ offset: 0, limit: 40 }).then(function (res) {
-                    _this.MALData = res;
-                    var malContainer = document.querySelector('#my-anime-list my-anime-list');
-                    new TemplateConstructor(document.querySelector('#myanimelist-template'), res.sort(function (a, b) { return -new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime(); }).slice(0, 40)).insert(malContainer);
-                });
-                return [2 /*return*/];
+            ;
+            scrapeDataFromMAL({ offset: 0, limit: 40 }).then((res) => {
+                this.MALData = res;
+                const malContainer = document.querySelector('#my-anime-list my-anime-list');
+                new TemplateConstructor(document.querySelector('#myanimelist-template'), res.sort((a, b) => -new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime()).slice(0, 40)).insert(malContainer);
             });
         });
-    };
-    ;
-    return ExternalData;
-}());
-;
-var PageBehaviour = /** @class */ (function () {
-    function PageBehaviour() {
     }
-    PageBehaviour.stopImageDrag = function () {
-        var images = document.getElementsByTagName('img');
-        Array.from(images).forEach(function (img) {
+    ;
+}
+;
+class PageBehaviour {
+    static stopImageDrag() {
+        let images = document.getElementsByTagName('img');
+        Array.from(images).forEach((img) => {
             img.setAttribute('draggable', 'false');
         });
-    };
+    }
     ;
-    PageBehaviour.openLinksInNewTab = function () {
-        var shortcuts = document.querySelectorAll('.shortcut-item');
-        for (var _i = 0, _a = Array.from(shortcuts); _i < _a.length; _i++) {
-            var element = _a[_i];
+    static openLinksInNewTab() {
+        const shortcuts = document.querySelectorAll('.shortcut-item');
+        for (const element of Array.from(shortcuts)) {
             if (!element.href)
                 continue;
             if (element.href.match(/docs\.google\.com/) == null || mobile) {
@@ -910,68 +748,54 @@ var PageBehaviour = /** @class */ (function () {
             }
         }
         ;
-        var gamecards = document.querySelectorAll('.gamecard');
-        gamecards.forEach(function (element) {
-            var child = element.firstElementChild;
+        const gamecards = document.querySelectorAll('.gamecard');
+        gamecards.forEach((element) => {
+            let child = element.firstElementChild;
             if (child.href.match(/docs\.google\.com/) == null || mobile) {
                 child.target = '_blank';
             }
         });
-    };
+    }
     ;
-    return PageBehaviour;
-}());
+}
 ;
 window.addEventListener('load', onLoadFunctions, true);
 function onLoadFunctions(ev) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    UserInterface.makeSwitchesSlide();
-                    UserInterface.nightModeToggle();
-                    UserInterface.dragPopUps();
-                    UserInterface.setPopUpDefaultValues();
-                    UserInterface.resetPopUpsOnOpen();
-                    UserInterface.collapseHeader();
-                    UserInterface.changeHomeView();
-                    UserInterface.refreshData();
-                    return [4 /*yield*/, CustomFunctions.sleep(300)];
-                case 1:
-                    _a.sent();
-                    PageBuilding.createLoaders(12);
-                    PageBuilding.putVersionOnFooter();
-                    PageBuilding.formatPopUps();
-                    PageBuilding.createSkeletons();
-                    ExternalSearch.redditSearchTrigger();
-                    ExternalSearch.wikipediaSearchTrigger();
-                    if (!((window.location.hostname === 'statisticshock.github.io') ? true : toggleExternalDataLoad)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, CloudStorageData.load()];
-                case 2:
-                    _a.sent();
-                    return [4 /*yield*/, Promise.all([
-                            Promise.all([
-                                CloudStorageData.loadContentFromJson(),
-                                CloudStorageData.handleEdits(),
-                                ExternalData.scrapeMyAnimeList(),
-                                ExternalData.addRetroAchievementsAwards(),
-                            ]).then(function (res) {
-                                PageBuilding.deleteSkeletons(['#shortcuts ', 'header ', '#my-anime-list my-anime-list', 'gaming-container ', '#my-figure-collection ']);
-                            }),
-                        ])];
-                case 3:
-                    _a.sent();
-                    _a.label = 4;
-                case 4:
-                    ;
-                    UserInterface.handleShortcutEditToggle();
-                    UserInterface.handleGamingEditToggle();
-                    PageBehaviour.openLinksInNewTab();
-                    PageBehaviour.stopImageDrag();
-                    setTimeout(function () { return window.dispatchEvent(new Event('resize')); }, 250);
-                    return [2 /*return*/];
-            }
-        });
+    return __awaiter(this, void 0, void 0, function* () {
+        UserInterface.makeSwitchesSlide();
+        UserInterface.nightModeToggle();
+        UserInterface.dragPopUps();
+        UserInterface.setPopUpDefaultValues();
+        UserInterface.resetPopUpsOnOpen();
+        UserInterface.collapseHeader();
+        UserInterface.changeHomeView();
+        UserInterface.refreshData();
+        yield CustomFunctions.sleep(300);
+        PageBuilding.createLoaders(12);
+        PageBuilding.putVersionOnFooter();
+        PageBuilding.formatPopUps();
+        PageBuilding.createSkeletons();
+        ExternalSearch.redditSearchTrigger();
+        ExternalSearch.wikipediaSearchTrigger();
+        if ((window.location.hostname === 'statisticshock.github.io') ? true : toggleExternalDataLoad) {
+            yield CloudStorageData.load();
+            yield Promise.all([
+                Promise.all([
+                    CloudStorageData.loadContentFromJson(),
+                    CloudStorageData.handleEdits(),
+                    ExternalData.scrapeMyAnimeList(),
+                    ExternalData.addRetroAchievementsAwards(),
+                ]).then((res) => {
+                    PageBuilding.deleteSkeletons(['#shortcuts ', 'header ', '#my-anime-list my-anime-list', 'gaming-container ', '#my-figure-collection ']);
+                }),
+            ]);
+        }
+        ;
+        UserInterface.handleShortcutEditToggle();
+        UserInterface.handleGamingEditToggle();
+        PageBehaviour.openLinksInNewTab();
+        PageBehaviour.stopImageDrag();
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 250);
     });
 }
 ;

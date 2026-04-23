@@ -82,6 +82,7 @@ async function fetchData(scrapeData, scrapeImages) {
         for (const [id, data] of Object.entries(figureMap)) {
             if (data.operation === 'none')
                 continue;
+            CustomFunctions.log(`Fetching figure from ID ${id}...`);
             const mfc = await ScrapeFunctions.readMFCItem({
                 elementId: id,
                 typeOfFigure: data.type,

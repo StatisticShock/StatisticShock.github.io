@@ -1,34 +1,32 @@
-var SharedDomFunctions = /** @class */ (function () {
-    function SharedDomFunctions() {
-    }
-    SharedDomFunctions.createLoaders = function (counter) {
-        var loaders = document.querySelectorAll('.loader');
-        loaders.forEach(function (loader) {
-            for (var i = 0; i < counter; i++) {
-                var div = document.createElement('div');
+export default class SharedDomFunctions {
+    static createLoaders(counter) {
+        let loaders = document.querySelectorAll('.loader');
+        loaders.forEach(loader => {
+            for (let i = 0; i < counter; i++) {
+                const div = document.createElement('div');
                 div.setAttribute('class', 'loading');
-                div.setAttribute('style', "--translation: 150; --index: ".concat(i + 1, "; --count: ").concat(counter));
+                div.setAttribute('style', `--translation: 150; --index: ${i + 1}; --count: ${counter}`);
                 loader.appendChild(div);
             }
             ;
         });
-    };
+    }
     ;
-    SharedDomFunctions.formatPopUps = function () {
-        var popUpShortcuts = [];
+    static formatPopUps() {
+        const popUpShortcuts = [];
         function observer(form) {
-            var _observer = new MutationObserver(function (mutations) {
-                mutations.forEach(function (mutation) {
+            const _observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
                     if (mutation.attributeName === 'style') {
-                        setTimeout(function () {
-                            var floatingLabelElement = form.querySelectorAll('.floating-label');
-                            floatingLabelElement.forEach(function (label) {
-                                var parent = label.parentElement;
-                                var siblings = Array.from(parent.children);
-                                var input = siblings[siblings.indexOf(label) - 1];
-                                var rect = form.getBoundingClientRect();
-                                var inputRect = input.getBoundingClientRect();
-                                var left = inputRect.left - rect.left;
+                        setTimeout(() => {
+                            const floatingLabelElement = form.querySelectorAll('.floating-label');
+                            floatingLabelElement.forEach((label) => {
+                                const parent = label.parentElement;
+                                const siblings = Array.from(parent.children);
+                                const input = siblings[siblings.indexOf(label) - 1];
+                                const rect = form.getBoundingClientRect();
+                                const inputRect = input.getBoundingClientRect();
+                                const left = inputRect.left - rect.left;
                                 label.style.left = Math.max(left, 5) + 'px';
                                 if (input.placeholder)
                                     input.placeholder = input.placeholder;
@@ -42,18 +40,18 @@ var SharedDomFunctions = /** @class */ (function () {
             _observer.observe(form, { attributeFilter: ['style'] });
         }
         ;
-        document.querySelectorAll('form.pop-up').forEach(function (form) {
+        document.querySelectorAll('form.pop-up').forEach((form) => {
             observer(form);
             if (form.classList.length < 2)
                 return;
-            var otherClass = Array.from(form.classList).filter(function (className) { return className !== 'pop-up'; })[0];
-            var openBttn = Array.from(document.querySelectorAll(".".concat(otherClass))).filter(function (element) { return element.classList.contains('pop-up-open'); })[0];
+            const otherClass = Array.from(form.classList).filter((className) => className !== 'pop-up')[0];
+            const openBttn = Array.from(document.querySelectorAll(`.${otherClass}`)).filter((element) => element.classList.contains('pop-up-open'))[0];
             popUpShortcuts.push({ button: openBttn, popUpContainer: form });
         });
-        popUpShortcuts.forEach(function (object) {
-            var popUpClass = document.querySelectorAll('.pop-up');
-            object.button.onclick = function () {
-                var display = object.popUpContainer.style.display;
+        popUpShortcuts.forEach((object) => {
+            let popUpClass = document.querySelectorAll('.pop-up');
+            object.button.onclick = () => {
+                let display = object.popUpContainer.style.display;
                 if ((display == '') || (display == 'none')) {
                     object.popUpContainer.style.display = 'block';
                 }
@@ -61,7 +59,7 @@ var SharedDomFunctions = /** @class */ (function () {
                     object.popUpContainer.style.display = 'none';
                 }
                 ;
-                popUpClass.forEach(function (element) {
+                popUpClass.forEach((element) => {
                     if (element != object.popUpContainer) {
                         element.style.display = 'none';
                     }
@@ -71,38 +69,32 @@ var SharedDomFunctions = /** @class */ (function () {
             object.popUpContainer.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    var okButton = object.popUpContainer.querySelector('.ok-button');
+                    let okButton = object.popUpContainer.querySelector('.ok-button');
                     okButton.click();
                 }
             });
         });
-    };
+    }
     ;
-    return SharedDomFunctions;
-}());
-export default SharedDomFunctions;
+}
 ;
-var TemplateConstructor = /** @class */ (function () {
-    function TemplateConstructor(template, data) {
-        function fillTempate(templateToFill, dataToFill) {
+export class TemplateConstructor {
+    constructor(template, data) {
+        function fillTempate(templateToFill, dataToFill = data) {
             var _a, _b;
-            if (dataToFill === void 0) { dataToFill = data; }
-            var newFragment = document.createDocumentFragment();
-            for (var _i = 0, dataToFill_1 = dataToFill; _i < dataToFill_1.length; _i++) {
-                var item = dataToFill_1[_i];
-                var tpt = templateToFill.content.cloneNode(true);
-                var walker = document.createTreeWalker(tpt);
-                var bindings = [];
+            const newFragment = document.createDocumentFragment();
+            for (const item of dataToFill) {
+                const tpt = templateToFill.content.cloneNode(true);
+                const walker = document.createTreeWalker(tpt);
+                const bindings = [];
                 while (walker.nextNode()) {
-                    var node = walker.currentNode;
+                    const node = walker.currentNode;
                     if (node.nodeType === Node.ELEMENT_NODE) {
-                        for (var _c = 0, _d = Array.from(node.attributes); _c < _d.length; _c++) {
-                            var attr = _d[_c];
-                            var matches = (_a = attr.textContent) === null || _a === void 0 ? void 0 : _a.match(/\{\{(\S+?)\}\}/g);
+                        for (const attr of Array.from(node.attributes)) {
+                            const matches = (_a = attr.textContent) === null || _a === void 0 ? void 0 : _a.match(/\{\{(\S+?)\}\}/g);
                             if (!matches)
                                 continue;
-                            for (var _e = 0, matches_1 = matches; _e < matches_1.length; _e++) {
-                                var key = matches_1[_e];
+                            for (const key of matches) {
                                 bindings.push({
                                     key: key.replace(/[\{\}]/g, ''),
                                     node: attr,
@@ -113,11 +105,10 @@ var TemplateConstructor = /** @class */ (function () {
                         ;
                     }
                     else {
-                        var matches = (_b = node.textContent) === null || _b === void 0 ? void 0 : _b.match(/\{\{(\S+?)\}\}/g);
+                        const matches = (_b = node.textContent) === null || _b === void 0 ? void 0 : _b.match(/\{\{(\S+?)\}\}/g);
                         if (!matches)
                             continue;
-                        for (var _f = 0, matches_2 = matches; _f < matches_2.length; _f++) {
-                            var key = matches_2[_f];
+                        for (const key of matches) {
                             bindings.push({
                                 key: key.replace(/[\{\}]/g, ''),
                                 node: node,
@@ -128,10 +119,10 @@ var TemplateConstructor = /** @class */ (function () {
                     ;
                 }
                 ;
-                var _loop_1 = function (binding) {
+                for (const binding of bindings.sort((a, b) => a.key.split('-').length - b.key.split('-').length)) {
                     if (Array.isArray(item[binding.key])) {
-                        var newTemplate = tpt.querySelector('#' + binding.key);
-                        var el = Array.from(tpt.querySelectorAll('element')).filter(function (el) { return el.textContent === "{{".concat(binding.key, "}}"); })[0];
+                        const newTemplate = tpt.querySelector('#' + binding.key);
+                        const [el] = Array.from(tpt.querySelectorAll('element')).filter((el) => el.textContent === `{{${binding.key}}}`);
                         el.parentElement.insertBefore(fillTempate(newTemplate, item[binding.key]).cloneNode(true), el);
                         el.remove();
                     }
@@ -139,10 +130,6 @@ var TemplateConstructor = /** @class */ (function () {
                         binding.node.textContent = binding.node.textContent.replace(binding.key, item[binding.key] || '').replace(/[\{\}]/g, '');
                     }
                     ;
-                };
-                for (var _g = 0, _h = bindings.sort(function (a, b) { return a.key.split('-').length - b.key.split('-').length; }); _g < _h.length; _g++) {
-                    var binding = _h[_g];
-                    _loop_1(binding);
                 }
                 newFragment.appendChild(tpt);
             }
@@ -153,7 +140,7 @@ var TemplateConstructor = /** @class */ (function () {
         this.html = fillTempate(template);
     }
     ;
-    TemplateConstructor.prototype.insert = function (destination, position, relative) {
+    insert(destination, position, relative) {
         if (relative) {
             if (relative.parentElement !== destination) {
                 throw new Error('"relative" should be a childNode of "destination".');
@@ -166,27 +153,24 @@ var TemplateConstructor = /** @class */ (function () {
             destination.appendChild(this.html.cloneNode(true));
         }
         else {
-            var element = document.createElement('element');
+            const element = document.createElement('element');
             element.appendChild(this.html.cloneNode(true));
             if (position === 'before') {
-                for (var _i = 0, _a = Array.from(element.childNodes); _i < _a.length; _i++) {
-                    var child = _a[_i];
+                for (const child of Array.from(element.childNodes)) {
                     destination.insertBefore(child, relative);
                 }
                 ;
             }
             else if (position === 'after') {
                 if (relative === null || relative === void 0 ? void 0 : relative.nextElementSibling) {
-                    var nextSibling = relative.nextSibling;
-                    for (var _b = 0, _c = Array.from(element.childNodes); _b < _c.length; _b++) {
-                        var child = _c[_b];
+                    const nextSibling = relative.nextSibling;
+                    for (const child of Array.from(element.childNodes)) {
                         destination.insertBefore(child, nextSibling);
                     }
                     ;
                 }
                 else {
-                    for (var _d = 0, _e = Array.from(element.childNodes); _d < _e.length; _d++) {
-                        var child = _e[_d];
+                    for (const child of Array.from(element.childNodes)) {
                         destination.appendChild(child);
                     }
                     ;
@@ -196,14 +180,12 @@ var TemplateConstructor = /** @class */ (function () {
         }
         ;
         return this;
-    };
+    }
     ;
-    return TemplateConstructor;
-}());
-export { TemplateConstructor };
+}
 ;
-var ua = navigator.userAgent || navigator.vendor || window.opera;
-var mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
+const ua = navigator.userAgent || navigator.vendor || window.opera;
+const mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 if (!mobile)
     document.querySelector('body').classList.add('has-hover');
 switch (localStorage.getItem('darkOrLightTheme')) {
@@ -220,7 +202,7 @@ switch (localStorage.getItem('darkOrLightTheme')) {
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker
         .register('../service-worker.js')
-        .then(function (reg) { return console.log('Service Worker registered with scope:', reg.scope); })
-        .catch(function (error) { return console.error('Service Worker registration failed:', error); });
+        .then((reg) => console.log('Service Worker registered with scope:', reg.scope))
+        .catch((error) => console.error('Service Worker registration failed:', error));
 }
 ;

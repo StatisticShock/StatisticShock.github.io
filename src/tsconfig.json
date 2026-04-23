@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES5",
+    "target": "es6",
     "lib": [
       "dom",
       "ES2021",
@@ -8,7 +8,6 @@
     ],
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "baseUrl": "src",
     "noEmitOnError": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

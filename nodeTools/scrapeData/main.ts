@@ -76,7 +76,7 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 			const $ = cheerio.load(await page.content());
 			await page.close();
 
-			const ids = $('span.item-icon a').toArray().map((el, i) => $(el).attr('href').split('/').pop());
+			const ids = $('span.item-icon a').toArray().map((el, i) => $(el).attr('href')!.split('/').pop());
 			
 			ids.forEach((id) => {
 				if (!figureMap[id]) {
@@ -102,6 +102,8 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 
 		for (const [id, data] of Object.entries(figureMap)) {
 			if (data.operation === 'none') continue;
+			
+			CustomFunctions.log(`Fetching figure from ID ${id}...`);
 			
 			const mfc = await ScrapeFunctions.readMFCItem({
 				elementId: id,
