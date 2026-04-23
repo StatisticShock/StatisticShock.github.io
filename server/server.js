@@ -27,7 +27,13 @@ const raAuthorization = ra.buildAuthorization(authorization);
 const raUrl = 'https://retroachievements.org';
 const { SPREADSHEET_ID, GOOGLE_STORAGE_KEY, GOOGLE_SHEETS_KEY } = process.env;
 const storageServiceAccount = JSON.parse(GOOGLE_STORAGE_KEY);
-const storage = new Storage({ credentials: storageServiceAccount });
+const storage = new Storage({
+    projectId: storageServiceAccount.project_id,
+    credentials: {
+        client_email: storageServiceAccount.client_email,
+        private_key: storageServiceAccount.private_key,
+    }
+});
 const bucket = storage.bucket("statisticshock_github_io_public");
 const sheetServiceAccount = JSON.parse(GOOGLE_SHEETS_KEY);
 const sheetServiceAccountAuthenticated = new JWT({
@@ -92,10 +98,9 @@ app.get("/myanimelist/:type", async (req, res) => {
         if (type === 'animelist') {
             data = await response.json();
         }
-        else if (type === 'mangalist') {
+        else {
             data = await response.json();
         }
-        ;
         const dataToReturn = data.data.map((entry) => {
             return {
                 type: type.replace('list', ''),
@@ -126,12 +131,12 @@ app.get("/myanimelist/:type", async (req, res) => {
         res.status(200).json(data);
     }
     catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ message: err['message'] });
     }
     ;
 });
 app.get("/contents(/:type)?", async (req, res) => {
-    const { type } = req.params;
+    const type = req.params.type;
     await workbook.loadInfo();
     const jsonToSend = {};
     async function loadContent(sheet) {
@@ -165,13 +170,13 @@ app.get("/contents(/:type)?", async (req, res) => {
         ;
     }
     catch (err) {
-        res.status(err.status).json({ message: err.message });
+        res.status(err['status']).json({ message: err['message'] });
     }
     ;
     res.status(200).json(jsonToSend);
 });
 app.get("/retroAchievements/:language/", async (req, res) => {
-    const { language } = req.params;
+    const language = req.params.language;
     const translations = [
         ['en-US', 'pt-BR', 'n'],
         ['Mastery', 'Platinado', 2],
@@ -293,7 +298,7 @@ app.post("/image/:small?", upload.single("image"), async (req, res) => {
     });
 });
 app.post("/:type/", async (req, res) => {
-    const { type } = req.params;
+    const type = req.params.type;
     if (Object.keys(req.body).length === 0)
         return res.status(400).json({ message: 'no data.' });
     await workbook.loadInfo();
@@ -327,7 +332,7 @@ app.post("/:type/", async (req, res) => {
     res.status(201).json({ message: type + ' created.' });
 });
 app.delete("/:type/", async (req, res) => {
-    const { type } = req.params;
+    const type = req.params.type;
     try {
         await workbook.loadInfo();
         const sheet = workbook.sheetsByTitle[type];
@@ -357,7 +362,7 @@ app.delete("/:type/", async (req, res) => {
     }
 });
 app.put("/:type/", async (req, res) => {
-    const { type } = req.params;
+    const type = req.params.type;
     try {
         await workbook.loadInfo();
         const sheet = workbook.sheetsByTitle[type];

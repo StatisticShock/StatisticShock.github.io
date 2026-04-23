@@ -33,17 +33,23 @@ const raUrl = 'https://retroachievements.org';
 
 const { SPREADSHEET_ID, GOOGLE_STORAGE_KEY, GOOGLE_SHEETS_KEY } = process.env;
 
-const storageServiceAccount: object = JSON.parse(GOOGLE_STORAGE_KEY);
-const storage = new Storage({credentials: storageServiceAccount});
+const storageServiceAccount: any = JSON.parse(GOOGLE_STORAGE_KEY!);
+const storage = new Storage({
+	projectId: storageServiceAccount.project_id,
+	credentials: {
+		client_email:storageServiceAccount.client_email,
+		private_key: storageServiceAccount.private_key,
+	}
+});
 const bucket = storage.bucket("statisticshock_github_io_public");
 
-const sheetServiceAccount: object = JSON.parse(GOOGLE_SHEETS_KEY);
+const sheetServiceAccount: object = JSON.parse(GOOGLE_SHEETS_KEY!);
 const sheetServiceAccountAuthenticated = new JWT ({
 	email: (sheetServiceAccount as any).client_email,
 	key: (sheetServiceAccount as any).private_key,
 	scopes: ['https://www.googleapis.com/auth/spreadsheets']
 });
-const workbook = new GoogleSpreadsheet(SPREADSHEET_ID, sheetServiceAccountAuthenticated);
+const workbook = new GoogleSpreadsheet(SPREADSHEET_ID!, sheetServiceAccountAuthenticated);
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
@@ -68,7 +74,7 @@ const multerStorage = multer.diskStorage({
 const upload: multer.Multer = multer({ storage: multerStorage });
 
 const MAL_API_URL: string = "https://api.myanimelist.net/v2/";
-const MAL_ACCESS_TOKEN: string = process.env.MAL_ACCESS_TOKEN;
+const MAL_ACCESS_TOKEN: string = process.env.MAL_ACCESS_TOKEN!;
 
 app.use(cors(corsHeaders), express.json());
 
@@ -83,11 +89,11 @@ app.all("/", (req: express.Request, res: express.Response) => {
 app.get("/version/", async (req: express.Request, res: express.Response) => {
 	const serverPath: string = path.join(__dirname, 'package.json');
 	const serverPckg: string = fs.readFileSync(serverPath, 'utf-8');
-	const serverVersion: string = serverPckg.match(/\"version\"\: \"[\d\.]+\"\,/)[0].match(/[\d\.]+/)[0];
+	const serverVersion: string = serverPckg.match(/\"version\"\: \"[\d\.]+\"\,/)![0].match(/[\d\.]+/)![0];
 
 	const pagePath: string = path.join(__dirname.replace(path.basename(__dirname), ''), 'package.json');
 	const pagePckg: string = fs.readFileSync(pagePath, 'utf-8');
-	const pageVersion: string = pagePckg.match(/\"version\"\: \"[\d\.]+\"\,/)[0].match(/[\d\.]+/)[0];
+	const pageVersion: string = pagePckg.match(/\"version\"\: \"[\d\.]+\"\,/)![0].match(/[\d\.]+/)![0];
 
 	res.status(200).json({page: pageVersion, server: serverVersion});
 });
@@ -113,9 +119,9 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 
 		if (type === 'animelist') {
 			data = await response.json() as MyTypes.AnimeList;
-		} else if (type === 'mangalist') {
+		} else {
 			data = await response.json() as MyTypes.MangaList;
-		};
+		}
 
 		const dataToReturn: Array<MyTypes.MALEntry> = data.data.map((entry) => {
 			return {
@@ -148,12 +154,12 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 
 		res.status(200).json(data);
 	} catch (err) {
-		res.status(500).json({ message: err.message });
+		res.status(500).json({ message: err!['message'] });
 	};
 });
 
 app.get("/contents(/:type)?", async (req: express.Request, res: express.Response) => {
-	const { type } = req.params
+	const type = req.params.type as string;
 
 	await workbook.loadInfo();
 	
@@ -185,14 +191,14 @@ app.get("/contents(/:type)?", async (req: express.Request, res: express.Response
 			};
 		};
 	} catch (err) {
-		res.status(err.status).json({message: err.message});
+		res.status(err!['status']).json({message: err!['message']});
 	};
 	
 	res.status(200).json(jsonToSend);
 });
 
 app.get("/retroAchievements/:language/", async (req: express.Request, res: express.Response) => {
-	const { language } = req.params;
+	const language = req.params.language as string;
 
 	const translations: Array<Array<string | number>> = [
 		['en-US', 'pt-BR', 'n'],
@@ -307,7 +313,7 @@ app.post("/image/:small?", upload.single("image"), async (req: express.Request, 
 				.then(() => {
 					return res.status(200).json({
 						message: `"${destFilename}" created.`,
-						oldFile: req.file.filename,
+						oldFile: req.file!.filename,
 						newFile: destFilename
 					});
 				})
@@ -321,7 +327,7 @@ app.post("/image/:small?", upload.single("image"), async (req: express.Request, 
 });
 
 app.post("/:type/", async (req: express.Request, res: express.Response) => {
-	const { type } = req.params;
+	const type = req.params.type as string;
 	
 	if (Object.keys(req.body).length === 0) return res.status(400).json({ message: 'no data.' });
 
@@ -335,7 +341,7 @@ app.post("/:type/", async (req: express.Request, res: express.Response) => {
 	const sheet: GoogleSpreadsheetWorksheet = workbook.sheetsByTitle[type];
 	const headers: Array<string> = sheet.headerValues;
 	const data: Array<Array<number|string|boolean>> = Array.isArray(req.body) ? CustomFunctions.jsonToCsv(req.body, headers) : CustomFunctions.jsonToCsv([req.body], headers);
-	const rowsToAdd = [];
+	const rowsToAdd: Array<any> = [];
 
 	if (data[0][0] === null) res.status(400).json({message: 'No data.'})
 
@@ -359,7 +365,7 @@ app.post("/:type/", async (req: express.Request, res: express.Response) => {
 });
 
 app.delete("/:type/", async (req: express.Request, res: express.Response) => {
-	const { type } = req.params;
+	const type = req.params.type as string;
 
 	try {
 		await workbook.loadInfo();
@@ -399,7 +405,7 @@ app.delete("/:type/", async (req: express.Request, res: express.Response) => {
 });
 
 app.put("/:type/", async (req: express.Request, res: express.Response) => {
-	const { type } = req.params;
+	const type = req.params.type as string;
 
 	try {
 		await workbook.loadInfo();
