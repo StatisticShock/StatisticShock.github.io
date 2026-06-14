@@ -45,7 +45,7 @@ export default class ScrapeFunctions {
 
 			title = $('h1.title').text();
 
-			img_sufix = $('a.main:has(img) img').attr('src').split('/').pop().replace('.jpg', '');
+			img_sufix = $('a.main:has(img) img').attr('src')!.split('/').pop()!.replace('.jpg', '');
 
 			const dataFields = $('.object-wrapper .data-wrapper .data-field');
 			for (const element of dataFields.toArray()) {
@@ -62,7 +62,7 @@ export default class ScrapeFunctions {
 				};
 				if ($(element).find('.data-label').text().includes('Origem')) {
 					source = $(element).find('.data-value span[switch]').text();
-					source_jap = $(element).find('.data-value span[switch]').attr('switch');
+					source_jap = $(element).find('.data-value span[switch]').attr('switch') ?? "";
 				};
 			};
 

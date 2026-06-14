@@ -58,7 +58,7 @@ export default class ScrapeFunctions {
                 ;
                 if ($(element).find('.data-label').text().includes('Origem')) {
                     source = $(element).find('.data-value span[switch]').text();
-                    source_jap = $(element).find('.data-value span[switch]').attr('switch');
+                    source_jap = $(element).find('.data-value span[switch]').attr('switch') ?? "";
                 }
                 ;
             }

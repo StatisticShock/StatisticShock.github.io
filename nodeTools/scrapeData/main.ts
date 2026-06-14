@@ -76,7 +76,7 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 			const $ = cheerio.load(await page.content());
 			await page.close();
 
-			const ids = $('span.item-icon a').toArray().map((el, i) => $(el).attr('href')!.split('/').pop());
+			const ids = $('span.item-icon a').toArray().map((el, i) => $(el).attr('href')!.split('/').pop()) as Array<string>;
 			
 			ids.forEach((id) => {
 				if (!figureMap[id]) {
@@ -226,7 +226,7 @@ export async function main(): Promise<void> {
 
 	try {
 		await fetchData(scrapeData, scrapeImages);
-	} catch (err) {
+	} catch (err: any) {
 		CustomFunctions.log('Error in script: ' + err.message);
 	} finally {
 		console.log('Closing connections...');

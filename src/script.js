@@ -10,18 +10,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import CustomFunctions from '../util/functions.js';
 import { server } from '../util/server-url.js';
 import PageBuildingImport, { TemplateConstructor } from './shared.js';
-const toggleExternalDataLoad = true;
+export const toggleExternalDataLoad = true;
 const ua = navigator.userAgent || navigator.vendor || window.opera;
 const mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 class PageBuilding extends PageBuildingImport {
-    static putVersionOnFooter() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const version = yield fetch('https://raw.githubusercontent.com/StatisticShock/StatisticShock.github.io/refs/heads/main/package.json')
-                .then((res) => res.json())
-                .then((data) => data.version);
-            const footer = document.querySelector('footer');
-            footer.innerHTML += `<p><small>ver. ${version}</small></p>`;
+    static resetPopUpsOnOpen() {
+        const buttons = document.querySelectorAll('.close-button');
+        buttons.forEach((button) => {
+            const parent = button.parentElement.parentElement;
+            button.onclick = () => {
+                parent.style.display = 'none';
+                this.setPopUpDefaultValues();
+            };
         });
+    }
+    ;
+    static setPopUpDefaultValues() {
+        let keywordsReddit = document.getElementById('keywords-reddit');
+        let subreddit = document.getElementById('subreddit');
+        let toDate = document.getElementById('to-date');
+        let fromDate = document.getElementById('from-date');
+        keywordsReddit.value = '';
+        subreddit.value = '';
+        toDate.valueAsDate = new Date();
+        fromDate.valueAsDate = new Date(new Date().getFullYear() - 1, new Date().getMonth(), new Date().getDate());
+        let keywordsWikipedia = document.getElementById('keywords-wikipedia');
+        keywordsWikipedia.value = '';
     }
     ;
     static createSkeletons() {
@@ -73,251 +87,9 @@ class PageBuilding extends PageBuildingImport {
         createMfcSkeletons();
         createMalSkeletons();
     }
-    static deleteSkeletons(prefixes) {
-        for (const prefix of prefixes) {
-            const skeletons = document.querySelectorAll(prefix + '.skeleton-container');
-            skeletons.forEach((skeleton) => {
-                skeleton.remove();
-            });
-        }
-        ;
-    }
     ;
 }
-;
-class UserInterface {
-    static nightModeToggle() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const darkOrLightTheme = 'darkOrLightTheme';
-            const svg = document.querySelector('switch svg#theme-toggle');
-            if (localStorage.getItem(darkOrLightTheme) !== null) {
-                switch (localStorage.getItem(darkOrLightTheme)) {
-                    case 'light':
-                        document.documentElement.setAttribute('data-theme', 'light');
-                        break;
-                    case 'dark':
-                        document.documentElement.setAttribute('data-theme', 'dark');
-                        svg.querySelector('g').classList.toggle('dark');
-                        break;
-                }
-            }
-            else {
-                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                    localStorage.setItem(darkOrLightTheme, 'dark');
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    svg.querySelector('g').classList.toggle('dark');
-                }
-                else {
-                    localStorage.setItem(darkOrLightTheme, 'light');
-                    document.documentElement.setAttribute('data-theme', 'light');
-                }
-                ;
-            }
-            ;
-            svg.onclick = function (ev) {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                svg.querySelector('g').classList.toggle('dark');
-                switch (currentTheme) {
-                    case 'light':
-                        document.documentElement.setAttribute('data-theme', 'dark');
-                        localStorage.setItem(darkOrLightTheme, 'dark');
-                        break;
-                    case 'dark':
-                        document.documentElement.setAttribute('data-theme', 'light');
-                        localStorage.setItem(darkOrLightTheme, 'light');
-                        break;
-                }
-                ;
-            };
-        });
-    }
-    ;
-    static collapseHeader() {
-        const navbar = document.querySelector('nav.menu');
-        const svg = navbar.querySelector('svg#expand-retract-header');
-        const header = document.querySelector('header');
-        svg.addEventListener('click', (ev) => __awaiter(this, void 0, void 0, function* () {
-            navbar.classList.toggle('animated');
-            header.classList.toggle('hidden');
-        }));
-    }
-    ;
-    static makeSwitchesSlide() {
-        const switches = document.querySelectorAll('.switch');
-        switches.forEach((switchElement) => {
-            const input = document.createElement('input');
-            const slider = document.createElement('div');
-            input.setAttribute('type', 'checkbox');
-            slider.classList.add('slider');
-            switchElement.appendChild(input);
-            switchElement.appendChild(slider);
-            switchElement.style.borderRadius = (parseFloat(getComputedStyle(switchElement).height) / 2) + 'px';
-        });
-        const sliders = document.querySelectorAll('.switch > .slider');
-        sliders.forEach((slider) => {
-            let parent = slider.parentElement;
-            let input = parent.querySelector('input');
-            let uncheckedPosition = getComputedStyle(slider, '::before').left;
-            let checkedPosition = parent.offsetWidth - parseFloat(uncheckedPosition) * 4 - parseFloat(getComputedStyle(slider, '::before').width) + 'px';
-            slider.style.setProperty('--total-transition', checkedPosition);
-            input.style.setProperty('--total-transition', checkedPosition);
-        });
-    }
-    ;
-    static dragPopUps() {
-        const popUps = document.querySelectorAll('.pop-up');
-        let isDragging = false;
-        let offsetX, offsetY;
-        popUps.forEach((popUp) => {
-            popUp.addEventListener('mousedown', startDragging);
-            popUp.addEventListener('touchstart', startDragging);
-            popUp.addEventListener('mousemove', drag);
-            popUp.addEventListener('touchmove', drag);
-            document.addEventListener('mouseup', stopDragging);
-            document.addEventListener('touchend', stopDragging);
-        });
-        function startDragging(event) {
-            let e;
-            if (event instanceof MouseEvent) {
-                e = event;
-            }
-            else {
-                e = event.touches[0];
-            }
-            ;
-            let target = e.target;
-            if ((target === this || CustomFunctions.isParent(target, this.querySelector('.pop-up-header'))) &&
-                !(target instanceof HTMLImageElement) &&
-                !(target instanceof HTMLParagraphElement) &&
-                !(target instanceof HTMLSpanElement) &&
-                !(target instanceof HTMLInputElement)) {
-                isDragging = true;
-                offsetX = e.clientX - this.offsetLeft;
-                offsetY = e.clientY - this.offsetTop;
-            }
-        }
-        ;
-        function drag(event) {
-            let e;
-            if (event instanceof MouseEvent) {
-                e = event;
-            }
-            else {
-                e = event.touches[0];
-            }
-            ;
-            if (isDragging) {
-                let x = e.clientX - offsetX;
-                let y = e.clientY - offsetY;
-                this.style.left = x + 'px';
-                this.style.top = y + 'px';
-            }
-            event.preventDefault();
-        }
-        ;
-        function stopDragging() {
-            isDragging = false;
-        }
-    }
-    ;
-    static resetPopUpsOnOpen() {
-        const buttons = document.querySelectorAll('.close-button');
-        buttons.forEach((button) => {
-            const parent = button.parentElement.parentElement;
-            button.onclick = () => {
-                parent.style.display = 'none';
-                this.setPopUpDefaultValues();
-            };
-        });
-    }
-    ;
-    static setPopUpDefaultValues() {
-        let keywordsReddit = document.getElementById('keywords-reddit');
-        let subreddit = document.getElementById('subreddit');
-        let toDate = document.getElementById('to-date');
-        let fromDate = document.getElementById('from-date');
-        keywordsReddit.value = '';
-        subreddit.value = '';
-        toDate.valueAsDate = new Date();
-        fromDate.valueAsDate = new Date(new Date().getFullYear() - 1, new Date().getMonth(), new Date().getDate());
-        let keywordsWikipedia = document.getElementById('keywords-wikipedia');
-        keywordsWikipedia.value = '';
-    }
-    ;
-    static changeHomeView() {
-        const navBttns = document.querySelectorAll('nav a');
-        navBttns.forEach((bttn) => {
-            bttn.onclick = (ev) => {
-                ev.preventDefault();
-                const target = ev.target || ev.touches[0].target;
-                const anchor = target.closest('a');
-                document.querySelectorAll('.flex-container > section').forEach((section) => {
-                    section.style.display = section.id === anchor.href.split('/').pop() ? '' : 'none';
-                });
-            };
-        });
-    }
-    ;
-    static refreshData() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const button = document.querySelector('button#refresh-button');
-            button.onclick = (ev) => __awaiter(this, void 0, void 0, function* () {
-                yield caches.delete('v1');
-                window.location.reload();
-            });
-        });
-    }
-    ;
-    static handleShortcutEditToggle() {
-        const toggleButton = document.querySelector('button#shortcuts-edit-mode');
-        const shotcuts = document.querySelector('section#shortcuts');
-        const blocks = Array.from(shotcuts.querySelectorAll('block-container block'));
-        toggleButton.onclick = (ev) => {
-            shotcuts.classList.toggle('edit-mode');
-            toggleButton.classList.toggle('trigger');
-            toggleButton.classList.toggle('check');
-        };
-        blocks.forEach((block) => {
-            block.addEventListener('mouseenter', (ev) => {
-                if (document.body.classList.contains('has-hover')) {
-                    block.setAttribute('selected', 'true');
-                }
-                ;
-            });
-            block.addEventListener('mouseleave', (ev) => {
-                if (document.body.classList.contains('has-hover')) {
-                    block.setAttribute('selected', 'false');
-                }
-                ;
-            });
-            block.addEventListener('click', (ev) => {
-                const target = (ev.target || ev.touches[0].target);
-                if (!target.closest('a') || shotcuts.classList.contains('edit-mode')) {
-                    ev.preventDefault();
-                }
-                if (!ev.touches)
-                    return;
-                block.setAttribute('selected', (!Boolean(block.getAttribute('selected') || "false")).toString());
-                blocks.forEach((el) => {
-                    if (el !== block) {
-                        el.setAttribute('selected', 'false');
-                    }
-                    ;
-                });
-            });
-        });
-    }
-    static handleGamingEditToggle() {
-        const toggleButton = document.querySelector('button#gaming-edit-mode');
-        toggleButton.onclick = (ev) => {
-            toggleButton.classList.toggle('trigger');
-            toggleButton.classList.toggle('check');
-        };
-        /* TODO */
-    }
-}
-;
-class ExternalSearch {
+export class ExternalSearch {
     static redditSearchTrigger() {
         let okButtonReddit = document.querySelector('.pop-up.reddit-google .ok-button');
         okButtonReddit.onclick = redditSearch;
@@ -377,7 +149,7 @@ class ExternalSearch {
     ;
 }
 ;
-class CloudStorageData {
+export class CloudStorageData {
     static load() {
         return __awaiter(this, void 0, void 0, function* () {
             const response = yield fetch(`${server}contents/`);
@@ -428,7 +200,6 @@ class CloudStorageData {
                         img.src = imgSrc.href;
                     });
                     const header = document.querySelector('#header div');
-                    const h1 = header.querySelector('h1');
                     header.style.backgroundImage = `url('${src}')`;
                     header.onclick = (event) => {
                         var _a;
@@ -689,6 +460,55 @@ class CloudStorageData {
         });
     }
     ;
+    static handleShortcutEditToggle() {
+        const toggleButton = document.querySelector('button#shortcuts-edit-mode');
+        const shotcuts = document.querySelector('section#shortcuts');
+        const blocks = Array.from(shotcuts.querySelectorAll('block-container block'));
+        toggleButton.onclick = (ev) => {
+            shotcuts.classList.toggle('edit-mode');
+            toggleButton.classList.toggle('trigger');
+            toggleButton.classList.toggle('check');
+        };
+        blocks.forEach((block) => {
+            block.addEventListener('mouseenter', (ev) => {
+                if (document.body.classList.contains('has-hover')) {
+                    block.setAttribute('selected', 'true');
+                }
+                ;
+            });
+            block.addEventListener('mouseleave', (ev) => {
+                if (document.body.classList.contains('has-hover')) {
+                    block.setAttribute('selected', 'false');
+                }
+                ;
+            });
+            block.addEventListener('click', (ev) => {
+                const target = (ev.target || ev.touches[0].target);
+                if (!target.closest('a') || shotcuts.classList.contains('edit-mode')) {
+                    ev.preventDefault();
+                }
+                if (!ev.touches)
+                    return;
+                block.setAttribute('selected', (!Boolean(block.getAttribute('selected') || "false")).toString());
+                blocks.forEach((el) => {
+                    if (el !== block) {
+                        el.setAttribute('selected', 'false');
+                    }
+                    ;
+                });
+            });
+        });
+    }
+    ;
+    static handleGamingEditToggle() {
+        const toggleButton = document.querySelector('button#gaming-edit-mode');
+        toggleButton.onclick = (ev) => {
+            toggleButton.classList.toggle('trigger');
+            toggleButton.classList.toggle('check');
+        };
+        /* TODO */
+    }
+    ;
 }
 ;
 class ExternalData {
@@ -730,46 +550,17 @@ class ExternalData {
     ;
 }
 ;
-class PageBehaviour {
-    static stopImageDrag() {
-        let images = document.getElementsByTagName('img');
-        Array.from(images).forEach((img) => {
-            img.setAttribute('draggable', 'false');
-        });
-    }
-    ;
-    static openLinksInNewTab() {
-        const shortcuts = document.querySelectorAll('.shortcut-item');
-        for (const element of Array.from(shortcuts)) {
-            if (!element.href)
-                continue;
-            if (element.href.match(/docs\.google\.com/) == null || mobile) {
-                element.target = '_blank';
-            }
-        }
-        ;
-        const gamecards = document.querySelectorAll('.gamecard');
-        gamecards.forEach((element) => {
-            let child = element.firstElementChild;
-            if (child.href.match(/docs\.google\.com/) == null || mobile) {
-                child.target = '_blank';
-            }
-        });
-    }
-    ;
-}
-;
 window.addEventListener('load', onLoadFunctions, true);
 function onLoadFunctions(ev) {
     return __awaiter(this, void 0, void 0, function* () {
-        UserInterface.makeSwitchesSlide();
-        UserInterface.nightModeToggle();
-        UserInterface.dragPopUps();
-        UserInterface.setPopUpDefaultValues();
-        UserInterface.resetPopUpsOnOpen();
-        UserInterface.collapseHeader();
-        UserInterface.changeHomeView();
-        UserInterface.refreshData();
+        PageBuilding.makeSwitchesSlide();
+        PageBuilding.nightModeToggle();
+        PageBuilding.dragPopUps();
+        PageBuilding.setPopUpDefaultValues();
+        PageBuilding.resetPopUpsOnOpen();
+        PageBuilding.collapseHeader();
+        PageBuilding.changeHomeView();
+        PageBuilding.refreshData();
         yield CustomFunctions.sleep(300);
         PageBuilding.createLoaders(12);
         PageBuilding.putVersionOnFooter();
@@ -791,10 +582,10 @@ function onLoadFunctions(ev) {
             ]);
         }
         ;
-        UserInterface.handleShortcutEditToggle();
-        UserInterface.handleGamingEditToggle();
-        PageBehaviour.openLinksInNewTab();
-        PageBehaviour.stopImageDrag();
+        CloudStorageData.handleShortcutEditToggle();
+        CloudStorageData.handleGamingEditToggle();
+        PageBuilding.openLinksInNewTab();
+        PageBuilding.stopImageDrag();
         setTimeout(() => window.dispatchEvent(new Event('resize')), 250);
     });
 }

@@ -1,4 +1,215 @@
-export default class SharedDomFunctions {
+import CustomFunctions from '../util/functions.js';
+
+class PageBehaviour {
+	static stopImageDrag(): void { // NO NEED OF RESPONSIVENESS
+		let images: HTMLCollectionOf<HTMLImageElement> = document.getElementsByTagName('img');
+
+		Array.from(images).forEach((img) => {
+			img.setAttribute('draggable', 'false')
+		});
+	};
+
+	static openLinksInNewTab(): void { // RESPONSIVE
+		const shortcuts: NodeListOf<HTMLAnchorElement> = document.querySelectorAll('.shortcut-item');
+		for (const element of Array.from(shortcuts)) {
+			if (!element.href) continue;
+			if (element.href.match(/docs\.google\.com/) == null || mobile) {
+				element.target = '_blank';
+			}
+		};
+
+		const gamecards: NodeListOf<HTMLDivElement> = document.querySelectorAll('.gamecard')!;
+		gamecards.forEach((element) => {
+			let child = element.firstElementChild as HTMLAnchorElement;
+
+			if (child.href.match(/docs\.google\.com/) == null || mobile) {
+				child.target = '_blank';
+			}
+		});
+	};
+
+	static async nightModeToggle(): Promise<void> { // RESPONSIVE
+		const darkOrLightTheme: string = 'darkOrLightTheme';
+		const svg: HTMLInputElement = document.querySelector('switch svg#theme-toggle')!;
+
+		if (localStorage.getItem(darkOrLightTheme) !== null) {
+			switch (localStorage.getItem(darkOrLightTheme)) {
+				case 'light':
+					document.documentElement.setAttribute('data-theme', 'light');
+					break;
+				case 'dark':
+					document.documentElement.setAttribute('data-theme', 'dark');
+					svg.querySelector('g')!.classList.toggle('dark');
+					break;
+			}
+		} else {
+			if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+				localStorage.setItem(darkOrLightTheme, 'dark');
+				document.documentElement.setAttribute('data-theme', 'dark');
+				svg.querySelector('g')!.classList.toggle('dark');
+			} else {
+				localStorage.setItem(darkOrLightTheme, 'light');
+				document.documentElement.setAttribute('data-theme', 'light');
+			};
+		};
+
+		svg.onclick = function (ev: MouseEvent|TouchEvent) {
+			const currentTheme = document.documentElement.getAttribute('data-theme') as 'dark'|'light';
+			svg.querySelector('g')!.classList.toggle('dark');
+
+			switch (currentTheme) {
+				case 'light':
+					document.documentElement.setAttribute('data-theme', 'dark');
+					localStorage.setItem(darkOrLightTheme, 'dark')
+					break;
+				case 'dark':
+					document.documentElement.setAttribute('data-theme', 'light');
+					localStorage.setItem(darkOrLightTheme, 'light')
+					break;
+			};
+		};
+	};
+
+	static collapseHeader (): void { // NO NEED OF RESPONSIVENESS
+		const navbar: HTMLElement = document.querySelector('nav.menu')!;
+		const svg: HTMLElement = navbar.querySelector('svg#expand-retract-header')!;
+		const header: HTMLElement = document.querySelector('header')!;
+
+		svg.addEventListener('click', async (ev) => {
+			navbar.classList.toggle('animated');
+			header.classList.toggle('hidden');
+		});
+	};
+
+	static makeSwitchesSlide(): void { // NO NEED OF RESPONSIVENES
+		const switches: NodeListOf<HTMLLabelElement> = document.querySelectorAll('.switch');
+		switches.forEach((switchElement) => {
+			const input: HTMLInputElement = document.createElement('input');
+			const slider: HTMLDivElement = document.createElement('div');
+			input.setAttribute('type', 'checkbox');
+			slider.classList.add('slider');
+
+			switchElement.appendChild(input);
+			switchElement.appendChild(slider);
+
+			switchElement.style.borderRadius = (parseFloat(getComputedStyle(switchElement).height) / 2) + 'px'
+		});
+
+		const sliders: NodeListOf<HTMLElement> = document.querySelectorAll('.switch > .slider');
+		sliders.forEach((slider) => {
+			let parent = slider.parentElement as HTMLElement;
+			let input = parent.querySelector('input') as HTMLInputElement;
+
+			let uncheckedPosition = getComputedStyle(slider, '::before').left;
+			let checkedPosition = parent.offsetWidth - parseFloat(uncheckedPosition) * 4 - parseFloat(getComputedStyle(slider, '::before').width) + 'px';
+
+			slider.style.setProperty('--total-transition', checkedPosition);
+			input.style.setProperty('--total-transition', checkedPosition);
+		})
+	};
+
+	static dragPopUps(): void {	// RESPONSIVE
+		const popUps: NodeListOf<HTMLElement> = document.querySelectorAll('.pop-up');
+		let isDragging: boolean = false;
+		let offsetX: number, offsetY: number;
+
+		popUps.forEach((popUp) => {
+			popUp.addEventListener('mousedown', startDragging);
+			popUp.addEventListener('touchstart', startDragging);
+			popUp.addEventListener('mousemove', drag);
+			popUp.addEventListener('touchmove', drag);
+			document.addEventListener('mouseup', stopDragging);
+			document.addEventListener('touchend', stopDragging);
+		})
+		function startDragging(this: HTMLElement, event: MouseEvent | TouchEvent): void {
+			let e: MouseEvent | Touch;
+
+			if (event instanceof MouseEvent) {
+				e = event;
+			} else {
+				e = event.touches[0];
+			};
+
+			let target = e.target as HTMLElement;
+
+			if ((target === this || CustomFunctions.isParent(target, this.querySelector('.pop-up-header')!)) &&
+				!(target instanceof HTMLImageElement) &&
+				!(target instanceof HTMLParagraphElement) &&
+				!(target instanceof HTMLSpanElement) &&
+				!(target instanceof HTMLInputElement)) {
+				isDragging = true;
+				offsetX = e.clientX - this.offsetLeft;
+				offsetY = e.clientY - this.offsetTop;
+			}
+		}; function drag(this: HTMLElement, event: MouseEvent | TouchEvent): void {
+			let e: MouseEvent | Touch;
+
+			if (event instanceof MouseEvent) {
+				e = event;
+			} else {
+				e = event.touches[0];
+			};
+
+			if (isDragging) {
+				let x: number = e.clientX - offsetX;
+				let y: number = e.clientY - offsetY;
+
+				this.style.left = x + 'px';
+				this.style.top = y + 'px';
+			}
+			event.preventDefault();
+		}; function stopDragging(): void {
+			isDragging = false;
+		}
+	};
+
+	static changeHomeView (): void { // NO NEED OF RESPONSIVENESS
+		const navBttns: NodeListOf<HTMLAnchorElement> = document.querySelectorAll('nav a');
+
+		navBttns.forEach((bttn) => {
+			bttn.onclick = (ev: MouseEvent|TouchEvent) => {
+				ev.preventDefault();
+				const target = (ev as MouseEvent).target || (ev as TouchEvent).touches[0].target;
+				const anchor = (target as HTMLElement).closest('a');
+				
+				document.querySelectorAll('.flex-container > section').forEach((section) => {
+					(section as HTMLElement).style.display = section.id === anchor!.href.split('/').pop() ? '' : 'none';
+				})
+			}
+		})
+	};
+
+	static async refreshData (): Promise<void> { // NO NEED OF RESPONSIVENESS
+		const button = document.querySelector('button#refresh-button') as HTMLButtonElement;
+		
+		button.onclick = async (ev) => {
+			await caches.delete('v1');
+			window.location.reload();
+		};
+	};
+
+	static async putVersionOnFooter (): Promise<void> {
+		const version = await fetch('https://raw.githubusercontent.com/StatisticShock/StatisticShock.github.io/refs/heads/main/package.json')
+			.then((res) => res.json())
+			.then((data) => data.version);
+		
+		const footer: HTMLElement = document.querySelector('footer')!;
+
+		footer.innerHTML += `<p><small>ver. ${version}</small></p>`;
+	};
+
+	static deleteSkeletons (prefixes: Array<string>): void {
+		for (const prefix of prefixes) {
+			const skeletons: NodeListOf<HTMLElement> = document.querySelectorAll(prefix + '.skeleton-container');
+
+			skeletons.forEach((skeleton) => {
+				skeleton.remove();
+			});
+		};
+	};
+};
+
+export default class SharedDomFunctions extends PageBehaviour {
 	static createLoaders(counter: number): void {	// NO NEED OF RESPONSIVENESS
 		let loaders: NodeListOf<HTMLDivElement> = document.querySelectorAll('.loader');
 

@@ -26,6 +26,7 @@ const authorization = { username: RA_USERNAME, webApiKey: RA_API_KEY };
 const raAuthorization = ra.buildAuthorization(authorization);
 const raUrl = 'https://retroachievements.org';
 const { SPREADSHEET_ID, GOOGLE_STORAGE_KEY, GOOGLE_SHEETS_KEY } = process.env;
+const { WORKOUT_ENDPOINT, MY_BELOVED_ENDPOINT } = process.env;
 const storageServiceAccount = JSON.parse(GOOGLE_STORAGE_KEY);
 const storage = new Storage({
     projectId: storageServiceAccount.project_id,
@@ -265,6 +266,64 @@ app.get("/retroAchievements/:language/", async (req, res) => {
         consoles: consoles[0],
     };
     res.status(200).json(output);
+});
+/* app.get("/workout", async (req: express.Request, res: express.Response) => {
+    type WorkoutParams = "start_date"|"end_date";
+    type ErrorType = "format"|"value";
+
+    const workoutStrings: Array<WorkoutParams> = ["start_date", "end_date"];
+    const dateRegEx = /^\d{4}\-?(\d{2}\-?(\d{2})?)?$/;
+    const errorMap: Array<{type: WorkoutParams, errorType: ErrorType, value: string}> = [];
+    const dates: Partial<Record<WorkoutParams, Date>> = {};
+
+    function mapDate (date: WorkoutParams): void {
+        const queryDate = req.query[date];
+
+        if (queryDate) {
+            if (typeof queryDate !== "string" || queryDate.length > 10 || !dateRegEx.test(queryDate)) {
+                errorMap.push({type: date, value: typeof queryDate === "string" ? queryDate : queryDate.toString(), errorType: "format"});
+            } else {
+                const [year, month, day] = queryDate.split("-");
+                const dateObj = new Date(year + "/" + (month ?? (Number(year) > 2026 ? "01" : "06")) + "/" + (day ?? "01"));
+
+                if (dateObj.toString() === "Invalid Date" || dateObj.getTime() < new Date("2026-06-01").getTime()) {
+                    errorMap.push({type: date, value: queryDate, errorType: "value"});
+                } else {
+                    dates[date] = dateObj;
+                };
+            };
+        };
+    };
+
+    function formatDate (v: Date): string {
+        return `${v.getFullYear()}-${String(v.getMonth() + 1).padStart(2, "0")}-${String(v.getDate()).padStart(2, "0")}`;
+    };
+
+    workoutStrings.forEach(date => mapDate(date));
+
+    if (errorMap.length > 0) {
+        const errorStr = errorMap.map((error) => {
+            return `Parameter "${error.type}" should have ` + (error.errorType === "format" ? "format YYYY, YYYY-MM or YYYY-MM-DD." : "a value equal or higher than 2026-06-01.") + ` Current value: "${error.value}"`
+        }).join("\n");
+
+        return res.status(400).json({ error: errorStr });
+    };
+
+    const fetchQuery = Object.entries(dates).map(([k, v]) => k + "=" + formatDate(v)).join("&");
+    const fetchRes = await fetch(WORKOUT_ENDPOINT! + (fetchQuery ? "?" + fetchQuery : "")).then((response) => response.json());
+
+    res.status(200).json(fetchRes);
+}); */
+app.get("/my-beloved/", async (req, res) => {
+    try {
+        const response = await fetch(MY_BELOVED_ENDPOINT);
+        const json = await response.json();
+        return res.status(200).json(json);
+    }
+    catch (err) {
+        return res.status(500).json({ error: err });
+    }
+    ;
 });
 app.post("/image/:small?", upload.single("image"), async (req, res) => {
     const { small } = req.params;
