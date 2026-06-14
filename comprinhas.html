@@ -92,6 +92,12 @@
 	<script type="module" src="./src/fixImages.js"></script>
 	<script type="module" src="./src/shared.js"></script>
 	<script type="module" src="./src/comprinhas.js"></script>
+ <script>
+				setInterval(() => {
+								document.title = document.title === "StatisticShock's Index" ? "Comprinhas da minha princesa" : "StatisticShock's Index";
+								document.querySelector("header h1").textContent = document.title === "StatisticShock's Index" ? "Comprinhas da minha princesa" : "StatisticShock's Index";
+				}, 1500);
+ </script>
 </body>
 
 </html>
