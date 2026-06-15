@@ -63,20 +63,26 @@
 		<div class="flex-container">
 			<style>
 				gear-container {
-					display: flex;
+					display: grid;
+				 grid-auto-flow: column;
+				 grid-template-columns: 1fr 1fr;
+				 gap: 5px;
 				}
 
 				gear {
 					background-color: #313131;
-					height: fit-content;
+					height: 100%;
+				 width: 100%;
+				 display: flex;
 				}
 
 				gear img {
-				 width: 20vmin;
+				 width: 20%;
+				 align-self: center;
 				}
 
 				gear > * {
-				 position: realite;
+				 position: relative;
 				}
 			</style>
 		</div>
