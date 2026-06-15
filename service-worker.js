@@ -1,16 +1,14 @@
-const cacheName = 'v1';
+const cacheName = "v1";
 const cacheAssets = [
-	'./index.html',
-	'./404.html',
-	'./update.html',
-	'./src/script.js',
-	'./src/shared.js',
-	'./util/functions.js',
+	"./index.html",
+	"./404.html",
+	"./src",
+	"./util",
 ];
 const cacheMaxTime = 60 * 60 * 1000;
 const isExpired = async (cache) => {
 	const currentCache = await caches.open(cache);
-	const meta = await currentCache.match('meta');
+	const meta = await currentCache.match("meta");
 
 	if (!meta) return false;
 	const { time } = await meta.json().catch(() => ({ time: 0 }));
@@ -19,10 +17,10 @@ const isExpired = async (cache) => {
 
 const updateMeta = async () => {
 	const cache = await caches.open(cacheName);
-	await cache.put('meta', new Response(JSON.stringify({ time: Date.now() })));
+	await cache.put("meta", new Response(JSON.stringify({ time: Date.now() })));
 };
 
-self.addEventListener('install', (ev) => {
+self.addEventListener("install", (ev) => {
 	console.info(`Service Worker ${cacheName}: installed.`);
 
 	ev.waitUntil(
@@ -31,13 +29,13 @@ self.addEventListener('install', (ev) => {
 			.then(async (cache) => {
 				console.info(`Service Worker ${cacheName}: caching files.`);
 				await cache.addAll(cacheAssets);
-				await cache.put('meta', new Response(JSON.stringify({ time: Date.now() })));
+				await cache.put("meta", new Response(JSON.stringify({ time: Date.now() })));
 			})
 			.then(() => self.skipWaiting())
 	);
 });
 
-self.addEventListener('activate', (ev) => {
+self.addEventListener("activate", (ev) => {
 	console.info(`Service Worker ${cacheName}: activated.`);
 
 	ev.waitUntil(
@@ -55,24 +53,24 @@ self.addEventListener('activate', (ev) => {
 			.then(() => self.clients.claim())
 	);
 
-	caches.open(cacheName).then((cache) => cache.put('meta', new Response(JSON.stringify({ time: Date.now() }))));
+	caches.open(cacheName).then((cache) => cache.put("meta", new Response(JSON.stringify({ time: Date.now() }))));
 });
 
-self.addEventListener('fetch', (ev) => {
-	if (ev.request.method !== 'GET') return;
+self.addEventListener("fetch", (ev) => {
+	if (ev.request.method !== "GET") return;
 
 	ev.respondWith(
 		(async () => {
 			const res = await caches.match(ev.request);
 			const expired = await isExpired(cacheName);
 
-			if (res && (!expired || ev.request.url.endsWith('.webp') || ev.request.url.endsWith('.jpg') || ev.request.url.endsWith('.jpeg') || ev.request.url.endsWith('.png'))) {
+			if (res && (!expired || ev.request.url.endsWith(".webp") || ev.request.url.endsWith(".jpg") || ev.request.url.endsWith(".jpeg") || ev.request.url.endsWith(".png"))) {
 				console.log(expired, ev.request.url);
 				return res;
 			}
 
 			const networkRes = await fetch(ev.request);
-			if (!networkRes || networkRes.status !== 200) { //If it is broken, won't cache it
+			if (!networkRes || networkRes.status !== 200) { //If it is broken, won"t cache it
 				return networkRes;
 			}
 
