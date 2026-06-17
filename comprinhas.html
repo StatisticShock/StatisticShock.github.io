@@ -6,7 +6,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="robots" content="noindex">
 	<link rel="shortcut icon" href="./icon/favicon.svg" type="image/svg+xml">
-	<link rel="stylesheet" href="./style.css">
+	<link rel="stylesheet" href="./stylesheets/style.css">
+	<link rel="stylesheet" href="./stylesheets/comprinhas.css">
 	<link rel="manifest" href="./manifest.json">
 	<title>StatisticShock's Index: Equipamentos da minha princesa</title>
 </head>
@@ -64,27 +65,27 @@
 			<style>
 				gear-container {
 					display: grid;
-				 grid-auto-flow: column;
-				 grid-template-columns: 1fr 1fr;
-				 grid-auto-rows: 35vw;
-				 grid-gap: 5px;
+					grid-auto-flow: column;
+					grid-template-columns: 1fr 1fr;
+					grid-auto-rows: 35vw;
+					grid-gap: 5px;
 				}
 
 				gear {
 					background-color: #717171;
 					height: 100%;
-				 width: 100%;
-				 display: flex;
-				 flex-direction: column;
+					width: 100%;
+					display: flex;
+					flex-direction: column;
 				}
 
 				gear img {
-				 width: 20%;
-				 align-self: center;
+					width: 20%;
+					align-self: center;
 				}
 
 				gear > * {
-				 position: relative;
+					position: relative;
 				}
 			</style>
 		</div>
@@ -95,20 +96,22 @@
 	</footer>
 
 	<template id="gear-template">
-		<gear id="{{id}}" class="{{skeleton-container}}">
-			<a href="{{link}}"><img src="{{img}}" draggable="false"><span>{{item}}<br><small>{{marca}}</small></span><span>{{valor}}</span></a>
+		<gear id="{{id}}" class="{{skeleton-container}}" style="background-image: url('{{img}}');">
+			<a href="{{link}}"><span>{{item}}<br><small>{{marca}}</small></span><span>{{valor}}</span></a>
 		</gear>
 	</template>
 
 	<script type="module" src="./src/fixImages.js"></script>
 	<script type="module" src="./src/shared.js"></script>
 	<script type="module" src="./src/comprinhas.js"></script>
- <script>
-				setInterval(() => {
-								document.title = document.title === "StatisticShock's Index" ? "Comprinhas da minha princesa" : "StatisticShock's Index";
-								document.querySelector("header h1").textContent = document.title === "StatisticShock's Index" ? "Comprinhas da minha princesa" : "StatisticShock's Index";
-				}, 1500);
- </script>
+	<script>
+		setInterval(() => {
+			const nextTitle = document.title === "StatisticShock's Index" ? "Comprinhas da minha princesa" : "StatisticShock's Index";
+
+			document.title = nextTitle;
+			document.querySelector("header h1").textContent = nextTitle;
+		}, 1500);
+	</script>
 </body>
 
 </html>
