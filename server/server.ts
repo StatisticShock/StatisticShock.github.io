@@ -1,22 +1,21 @@
 import "dotenv/config";
 import express from "express";
-import cors from 'cors';
+import cors from "cors";
 import { Storage } from "@google-cloud/storage";
 import { JWT } from "google-auth-library";
 import { GoogleSpreadsheet, GoogleSpreadsheetCell, GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet } from "google-spreadsheet";
 import * as MyTypes from "../util/types.js";
-import ffmpeg from 'fluent-ffmpeg';
-import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
-import multer from 'multer';
-import * as ra from '@retroachievements/api';
-import CustomFunctions from '../util/functions.js';
-import fs from 'fs';
-import util from 'util';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import ejs from 'ejs';
-import { typeOfEndpoints } from './endpoints.js';
-import { error } from "console";
+import ffmpeg from "fluent-ffmpeg";
+import ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
+import multer from "multer";
+import * as ra from "@retroachievements/api";
+import CustomFunctions from "../util/functions.js";
+import fs from "fs";
+import util from "util";
+import path from "path";
+import { fileURLToPath } from "url";
+import ejs from "ejs";
+import { typeOfEndpoints } from "./endpoints.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,7 +29,7 @@ const { RA_API_KEY, RA_USERNAME } = process.env;
 const userObject: object = {username: RA_USERNAME};
 const authorization: object = {username: RA_USERNAME, webApiKey: RA_API_KEY};
 const raAuthorization = (ra as any).buildAuthorization(authorization);
-const raUrl = 'https://retroachievements.org';
+const raUrl = "https://retroachievements.org";
 
 const { SPREADSHEET_ID, GOOGLE_STORAGE_KEY, GOOGLE_SHEETS_KEY } = process.env;
 
@@ -50,7 +49,7 @@ const sheetServiceAccount: object = JSON.parse(GOOGLE_SHEETS_KEY!);
 const sheetServiceAccountAuthenticated = new JWT ({
 	email: (sheetServiceAccount as any).client_email,
 	key: (sheetServiceAccount as any).private_key,
-	scopes: ['https://www.googleapis.com/auth/spreadsheets']
+	scopes: ["https://www.googleapis.com/auth/spreadsheets"]
 });
 const workbook = new GoogleSpreadsheet(SPREADSHEET_ID!, sheetServiceAccountAuthenticated);
 
@@ -58,9 +57,9 @@ ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 const corsHeaders = {
 	origin: [
-		'https://statisticshock.github.io',
-		'http://127.0.0.1:5500',
-		'http://localhost:5500',
+		"https://statisticshock.github.io",
+		"http://127.0.0.1:5500",
+		"http://localhost:5500",
 	],
 	optionsSuccessStatus: 200,
 	
@@ -81,21 +80,21 @@ const MAL_ACCESS_TOKEN: string = process.env.MAL_ACCESS_TOKEN!;
 
 app.use(cors(corsHeaders), express.json());
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'views')));
-ejs.delimiter = 'ç'
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(__dirname, "views")));
+ejs.delimiter = "ç"
 app.all("/", (req: express.Request, res: express.Response) => {
-	res.render('server', {typeOfEndpoints});
+	res.render("server", {typeOfEndpoints});
 });
 
 app.get("/version/", async (req: express.Request, res: express.Response) => {
-	const serverPath: string = path.join(__dirname, 'package.json');
-	const serverPckg: string = fs.readFileSync(serverPath, 'utf-8');
+	const serverPath: string = path.join(__dirname, "package.json");
+	const serverPckg: string = fs.readFileSync(serverPath, "utf-8");
 	const serverVersion: string = serverPckg.match(/\"version\"\: \"[\d\.]+\"\,/)![0].match(/[\d\.]+/)![0];
 
-	const pagePath: string = path.join(__dirname.replace(path.basename(__dirname), ''), 'package.json');
-	const pagePckg: string = fs.readFileSync(pagePath, 'utf-8');
+	const pagePath: string = path.join(__dirname.replace(path.basename(__dirname), ""), "package.json");
+	const pagePckg: string = fs.readFileSync(pagePath, "utf-8");
 	const pageVersion: string = pagePckg.match(/\"version\"\: \"[\d\.]+\"\,/)![0].match(/[\d\.]+/)![0];
 
 	res.status(200).json({page: pageVersion, server: serverVersion});
@@ -103,24 +102,24 @@ app.get("/version/", async (req: express.Request, res: express.Response) => {
 
 app.get("/myanimelist/:type", async (req: express.Request, res: express.Response) => {
 	const { type } = req.params;
-	let { username, offset, limit } = req.query;
+	const { username, offset, limit, nsfw } = req.query;
 
 	if (username === undefined) res.status(400).json({ message: `Error: There should be an username.` });
 
 	async function fetchMyAnimeList (type: string, username: string, offset: number | string, res: express.Response): Promise<{myanimelist: Array<MyTypes.MALEntry>}> {
-		if (type !== 'animelist' && type !== 'mangalist') res.status(400).json({ message: `Couldn't fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".` });
+		if (type !== "animelist" && type !== "mangalist") res.status(400).json({ message: `Couldn"t fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".` });
 		
-		const response: Response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit}&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=true`, {
+		const response: Response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit}&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=${nsfw}`, {
 			headers: {
 				"X-MAL-CLIENT-ID": MAL_ACCESS_TOKEN,
 			},
 		});
 
-		if (!response.ok) res.status(200).json({ message: `Couldn't fetch ${MAL_API_URL}.` })
+		if (!response.ok) res.status(200).json({ message: `Couldn"t fetch ${MAL_API_URL}.` })
 
 		let data: MyTypes.AnimeList | MyTypes.MangaList;
 
-		if (type === 'animelist') {
+		if (type === "animelist") {
 			data = await response.json() as MyTypes.AnimeList;
 		} else {
 			data = await response.json() as MyTypes.MangaList;
@@ -128,15 +127,15 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 
 		const dataToReturn: Array<MyTypes.MALEntry> = data.data.map((entry) => {
 			return {
-				type: type.replace('list', '') as 'anime'|'manga',
+				type: type.replace("list", "") as "anime"|"manga",
 				id: entry.node.id,
 				title: entry.node.title,
 				main_picture_large: entry.node.main_picture.large,
 				main_picture_medium: entry.node.main_picture.medium,
-				genres: entry.node.genres.map((genre) => genre.name).join(', '),
+				genres: entry.node.genres.map((genre) => genre.name).join(", "),
 				num_entries: entry.node.num_chapters || entry.node.num_episodes,
 				nsfw: entry.node.nsfw,
-				rank: entry.node.rank ?? 'N/A',
+				rank: entry.node.rank ?? "N/A",
 				score: entry.list_status.score,
 				progress: entry.list_status.num_chapters_read || entry.list_status.num_episodes_watched,
 				updated_at: entry.list_status.updated_at,
@@ -151,13 +150,11 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 	};
 
 	try {
-		if (!offset) offset = '0';
-
-		const data = await fetchMyAnimeList(type as string, username as string, offset as string, res);
+		const data = await fetchMyAnimeList(type as string, username as string, offset as string ?? "0", res);
 
 		res.status(200).json(data);
 	} catch (err) {
-		res.status(500).json({ message: err!['message'] });
+		res.status(500).json({ message: err!["message"] });
 	};
 });
 
@@ -180,7 +177,7 @@ app.get("/contents(/:type)?", async (req: express.Request, res: express.Response
 			};
 		};
 
-		jsonToSend[sheet.title] = CustomFunctions.csvToJson(data)['data'];
+		jsonToSend[sheet.title] = CustomFunctions.csvToJson(data)["data"];
 	};
 
 	try {
@@ -194,7 +191,7 @@ app.get("/contents(/:type)?", async (req: express.Request, res: express.Response
 			};
 		};
 	} catch (err) {
-		res.status(err!['status']).json({message: err!['message']});
+		res.status(err!["status"]).json({message: err!["message"]});
 	};
 	
 	res.status(200).json(jsonToSend);
@@ -204,15 +201,15 @@ app.get("/retroAchievements/:language/", async (req: express.Request, res: expre
 	const language = req.params.language as string;
 
 	const translations: Array<Array<string | number>> = [
-		['en-US', 'pt-BR', 'n'],
-		['Mastery', 'Platinado', 2],
-		['Completion', 'Completo', 3],
-		['Game Beaten', 'Zerado', 4],
-		['Certified Legend', 'Lenda Certificada', 1],
-		['Event', 'Evento', 1],
+		["en-US", "pt-BR", "n"],
+		["Mastery", "Platinado", 2],
+		["Completion", "Completo", 3],
+		["Game Beaten", "Zerado", 4],
+		["Certified Legend", "Lenda Certificada", 1],
+		["Event", "Evento", 1],
 	];
 	
-	if (translations[0].indexOf(language) === -1) res.status(400).json({ message: 'There is no such language as ' + language + ' available.' });
+	if (translations[0].indexOf(language) === -1) res.status(400).json({ message: "There is no such language as " + language + " available." });
 
 	const formattedAwards: Array<MyTypes.RetroAchievementsFormattedAward> = [];
 	const consoles: any = [];
@@ -221,11 +218,11 @@ app.get("/retroAchievements/:language/", async (req: express.Request, res: expre
 		let json: MyTypes.RetroAchievementsUserAwards = await (ra as any).getUserAwards(raAuthorization, userObject);
 
 		for (const award of json.visibleUserAwards) {
-			if (award.awardType === 'Mastery/Completion') {
+			if (award.awardType === "Mastery/Completion") {
 				if (award.awardDataExtra === 1) {
-					award.awardType = 'Mastery';
+					award.awardType = "Mastery";
 				} else if (award.awardDataExtra === 0) {
-					award.awardType = 'Completion';
+					award.awardType = "Completion";
 				};
 			};
 
@@ -371,7 +368,7 @@ app.post("/image/:small?", upload.single("image"), async (req: express.Request, 
 		.save(`temp/${destFilename}`)
 		.on("end", () => {
 			
-			bucket.upload(`temp/${destFilename}`, {destination: (path + destFilename).replace(/\/\//g, '/')})
+			bucket.upload(`temp/${destFilename}`, {destination: (path + destFilename).replace(/\/\//g, "/")})
 				.then(() => {
 					return res.status(200).json({
 						message: `"${destFilename}" created.`,
@@ -391,13 +388,13 @@ app.post("/image/:small?", upload.single("image"), async (req: express.Request, 
 app.post("/:type/", async (req: express.Request, res: express.Response) => {
 	const type = req.params.type as string;
 	
-	if (Object.keys(req.body).length === 0) return res.status(400).json({ message: 'no data.' });
+	if (Object.keys(req.body).length === 0) return res.status(400).json({ message: "no data." });
 
 	await workbook.loadInfo();
 	try {
 		await workbook.sheetsByTitle[type].loadHeaderRow()
 	} catch (err) {
-		res.status(400).json({message: 'Failed to load ' + type})
+		res.status(400).json({message: "Failed to load " + type})
 	}
 	
 	const sheet: GoogleSpreadsheetWorksheet = workbook.sheetsByTitle[type];
@@ -405,7 +402,7 @@ app.post("/:type/", async (req: express.Request, res: express.Response) => {
 	const data: Array<Array<number|string|boolean>> = Array.isArray(req.body) ? CustomFunctions.jsonToCsv(req.body, headers) : CustomFunctions.jsonToCsv([req.body], headers);
 	const rowsToAdd: Array<any> = [];
 
-	if (data[0][0] === null) res.status(400).json({message: 'No data.'})
+	if (data[0][0] === null) res.status(400).json({message: "No data."})
 
 	data.forEach((row) => {
 		const obj = {};
@@ -414,7 +411,7 @@ app.post("/:type/", async (req: express.Request, res: express.Response) => {
 			if (Number(row[headers.indexOf(header)])) {
 				obj[header] = Number(row[headers.indexOf(header)]);
 			} else {
-				obj[header] = row[headers.indexOf(header)] || '';
+				obj[header] = row[headers.indexOf(header)] || "";
 			};
 		};
 
@@ -423,7 +420,7 @@ app.post("/:type/", async (req: express.Request, res: express.Response) => {
 
 	await sheet.addRows(rowsToAdd);
 
-	res.status(201).json({message: type + ' created.'});
+	res.status(201).json({message: type + " created."});
 });
 
 app.delete("/:type/", async (req: express.Request, res: express.Response) => {
@@ -432,14 +429,14 @@ app.delete("/:type/", async (req: express.Request, res: express.Response) => {
 	try {
 		await workbook.loadInfo();
 		const sheet = workbook.sheetsByTitle[type];
-		if (!sheet) return res.status(404).json({ message: `Sheet '${type}' not found.` });
+		if (!sheet) return res.status(404).json({ message: `Sheet "${type}" not found.` });
 
 		await sheet.loadHeaderRow();
 		const headers: string[] = sheet.headerValues;
 		const data: Array<Array<number | string | boolean>> = CustomFunctions.jsonToCsv(req.body, headers);
 
 		if (!data.length || data[0][0] === null) {
-			return res.status(400).json({ message: 'No data provided.' });
+			return res.status(400).json({ message: "No data provided." });
 		}
 
 		const rows = await sheet.getRows();
@@ -448,7 +445,7 @@ app.delete("/:type/", async (req: express.Request, res: express.Response) => {
 		data.forEach((dataToDelete) => {
 			const match = rows.find((row) =>
 				headers.every((header, i) => 
-					((dataToDelete[i]) ?? '') === (row.get(header) ?? '')
+					((dataToDelete[i]) ?? "") === (row.get(header) ?? "")
 				)
 			);
 
@@ -459,10 +456,10 @@ app.delete("/:type/", async (req: express.Request, res: express.Response) => {
 			await row.delete();
 		}
 
-		res.status(200).json({ message: `${rowsToDelete.length} row(s) deleted from '${type}'.` });
+		res.status(200).json({ message: `${rowsToDelete.length} row(s) deleted from "${type}".` });
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({ message: 'Internal server error.' });
+		res.status(500).json({ message: "Internal server error." });
 	}
 });
 
@@ -472,13 +469,13 @@ app.put("/:type/", async (req: express.Request, res: express.Response) => {
 	try {
 		await workbook.loadInfo();
 		const sheet = workbook.sheetsByTitle[type];
-		if (!sheet) return res.status(404).json({ message: `Sheet '${type}' not found.` });
+		if (!sheet) return res.status(404).json({ message: `Sheet "${type}" not found.` });
 
 		await sheet.loadHeaderRow();
 		const headers: string[] = sheet.headerValues;
 		
 		if (!Array.isArray(req.body) || !req.body.every(pair => Array.isArray(pair) && pair.length === 2)) {
-			return res.status(400).json({ message: 'Invalid data format.' });
+			return res.status(400).json({ message: "Invalid data format." });
 		};
 		
 		const data = req.body.map(([oldObj, newObj]) => {
@@ -488,7 +485,7 @@ app.put("/:type/", async (req: express.Request, res: express.Response) => {
 		});
 
 		if (!data.length || data[0][0] === null) {
-			return res.status(400).json({ message: 'No data provided.' });
+			return res.status(400).json({ message: "No data provided." });
 		};
 
 		const rows = await sheet.getRows();
@@ -496,7 +493,7 @@ app.put("/:type/", async (req: express.Request, res: express.Response) => {
 		data.forEach(async ([oldData, dataToUpdate]) => {
 			const match = rows.find((row) =>
 				headers.every((header, i) => 
-					((oldData[i]) ?? '') === (row.get(header) ?? '')
+					((oldData[i]) ?? "") === (row.get(header) ?? "")
 				)
 			);
 
@@ -509,11 +506,11 @@ app.put("/:type/", async (req: express.Request, res: express.Response) => {
 			};
 		});
 
-		res.status(200).json({ message: `${data.length} row(s) updated from '${type}'.` });
+		res.status(200).json({ message: `${data.length} row(s) updated from "${type}".` });
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({ message: 'Internal server error.' });
+		res.status(500).json({ message: "Internal server error." });
 	}
 });
 
-app.listen(PORT, () => console.log(`[${Intl.DateTimeFormat('pt-BR', {hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(new Date())}] Server running...`));
+app.listen(PORT, () => console.log(`[${Intl.DateTimeFormat("pt-BR", {hour: "2-digit", minute: "2-digit", second: "2-digit"}).format(new Date())}] Server running...`));
