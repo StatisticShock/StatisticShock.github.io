@@ -1,0 +1,53 @@
+@media (max-width: 544.99px) {
+	:root {
+		--grid-column-width: calc(100vw - 40px);
+		--grid-row-height: 15vh;
+		--gear-boder-radius: 5vmin;
+	}
+}
+
+@media (min-width: 545px) {
+	:root {
+		--grid-column-width: clamp(250px, 50vw, 400px);
+		--grid-row-height: 15vw;
+		--gear-boder-radius: 4vmin;
+	}
+}
+
+gear-container {
+	--gear-padding: 0.6em;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, var(--grid-column-width));
+	grid-auto-rows: var(--grid-row-height);
+	column-gap: var(--gear-padding);
+	row-gap: var(--gear-padding);
+	
+	& gear {
+		position: relative;
+		background-color: var(--contrast-color-3);
+		background-size: contain;
+		background-repeat: no-repeat;
+		height: 100%;
+		width: 100%;
+		border-radius: var(--gear-boder-radius);
+		overflow: hidden;
+		
+		& > a {
+			color: var(--contrast-color-6) !important;
+			text-decoration: none;
+			padding: var(--gear-padding);
+			height: calc(100% - 2 * var(--gear-padding));
+			position: relative;
+			display: grid;
+			column-gap: 5px;
+			grid-auto-flow: column;
+			grid-template-columns: 6fr 1fr;
+
+			& > * {
+				position: relative;
+				align-self: center;
+				width: 100%;
+			}
+		}
+	}
+}

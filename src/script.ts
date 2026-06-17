@@ -566,10 +566,10 @@ class ExternalData {
 
 	static async scrapeMyAnimeList(): Promise<void> {
 		async function scrapeDataFromMAL(options: {offset: number, limit: number}): Promise<Array<MyTypes.MALEntry>> {
-			const animeData: Array<MyTypes.MALEntry> = (await fetch(`${server}myanimelist/animelist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}`)
+			const animeData: Array<MyTypes.MALEntry> = (await fetch(`${server}myanimelist/animelist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}&nsfw=false`)
 				.then(response => response.json()))['myanimelist'];
 
-			const mangaData: Array<MyTypes.MALEntry> = (await fetch(`${server}myanimelist/mangalist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}`)
+			const mangaData: Array<MyTypes.MALEntry> = (await fetch(`${server}myanimelist/mangalist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}&nsfw=false`)
 				.then(response => response.json()))['myanimelist'];
 			
 			const response: Array<MyTypes.MALEntry> = [];

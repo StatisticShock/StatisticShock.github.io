@@ -529,9 +529,9 @@ class ExternalData {
         return __awaiter(this, void 0, void 0, function* () {
             function scrapeDataFromMAL(options) {
                 return __awaiter(this, void 0, void 0, function* () {
-                    const animeData = (yield fetch(`${server}myanimelist/animelist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}`)
+                    const animeData = (yield fetch(`${server}myanimelist/animelist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}&nsfw=false`)
                         .then(response => response.json()))['myanimelist'];
-                    const mangaData = (yield fetch(`${server}myanimelist/mangalist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}`)
+                    const mangaData = (yield fetch(`${server}myanimelist/mangalist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}&nsfw=false`)
                         .then(response => response.json()))['myanimelist'];
                     const response = [];
                     animeData.forEach((anime) => response.push(anime));
