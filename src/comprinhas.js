@@ -30,10 +30,6 @@ class PageBuilding extends PageBuildingImport {
         createGearSkeletons();
     }
     ;
-    static reaplyCSS() {
-        console.log(getComputedStyle(document.documentElement).getPropertyValue("--grid-column-width"));
-    }
-    ;
 }
 ;
 class CloudStorageData {
@@ -94,7 +90,6 @@ class CloudStorageData {
                         ;
                     }
                     ;
-                    console.log(typesOfGears);
                     let strOne = "";
                     let strTwo = "";
                     for (const gear of typesOfGears) {
@@ -112,6 +107,12 @@ class CloudStorageData {
                         new TemplateConstructor(document.querySelector("#gear-template"), data).insert(section, "after");
                     }
                     ;
+                    document.querySelectorAll("gear-container gear").forEach((gearElement) => {
+                        const expand = gearElement.querySelector("animate.expand");
+                        const collapse = gearElement.querySelector("animate.collapse");
+                        gearElement.addEventListener("mouseenter", () => { expand.beginElement(); });
+                        gearElement.addEventListener("mouseleave", () => { collapse.beginElement(); });
+                    });
                 });
             }
             ;
@@ -156,7 +157,7 @@ function onLoadFunctions(ev) {
 window.addEventListener("resize", onResizeFunctions, true);
 function onResizeFunctions(ev) {
     return __awaiter(this, void 0, void 0, function* () {
-        PageBuilding.reaplyCSS();
+        //
     });
 }
 ;

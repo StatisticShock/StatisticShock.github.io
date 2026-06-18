@@ -25,10 +25,6 @@ class PageBuilding extends PageBuildingImport {
 
 		createGearSkeletons();
 	};
-
-	static reaplyCSS (): void {
-		console.log(getComputedStyle(document.documentElement).getPropertyValue("--grid-column-width"));
-	};
 };
 
 class CloudStorageData {
@@ -89,8 +85,6 @@ class CloudStorageData {
 				};
 			};
 
-			console.log(typesOfGears);
-
 			let strOne = "";
 			let strTwo = "";
 			for (const gear of typesOfGears) {
@@ -107,8 +101,15 @@ class CloudStorageData {
 				const data = CloudStorageData.json["my-beloved-gear"].filter((item) => item["tipo"] === gear);
 				const section = document.querySelector(`section#${CustomFunctions.normalize(gear)} gear-container`) as HTMLElement;
 				new TemplateConstructor((document.querySelector("#gear-template") as HTMLTemplateElement), data).insert(section, "after");
-				
 			};
+
+			document.querySelectorAll("gear-container gear").forEach((gearElement) => {
+				const expand = gearElement.querySelector("animate.expand") as SVGAnimationElement;
+				const collapse = gearElement.querySelector("animate.collapse") as SVGAnimationElement;
+	
+				gearElement.addEventListener("mouseenter", () => {expand.beginElement()});
+				gearElement.addEventListener("mouseleave", () => {collapse.beginElement()});
+			});
 		};
 
 		loadHeaders();
@@ -148,5 +149,5 @@ window.addEventListener("load", onLoadFunctions, true); async function onLoadFun
 	setTimeout(() => window.dispatchEvent(new Event('resize')), 250);
 };
 window.addEventListener("resize", onResizeFunctions, true); async function onResizeFunctions (ev: Event) {
-	PageBuilding.reaplyCSS();
+	//
 };

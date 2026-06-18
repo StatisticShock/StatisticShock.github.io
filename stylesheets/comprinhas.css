@@ -28,63 +28,64 @@
 	}
 }
 
-gear-container {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	column-gap: var(--gear-padding);
-	row-gap: var(--gear-padding);
-	
-	& gear {
-		flex: 0 0 var(--gear-basis);
-		position: relative;
-		background-color: var(--contrast-color-3);
-		height: var(--flex-row-height);
-		width: 100%;
-		border-radius: var(--gear-boder-radius);
-		outline: 2px solid var(--pink-custom);
-		overflow: hidden;
+body {
+	gear-container {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		column-gap: var(--gear-padding);
+		row-gap: var(--gear-padding);
 		
-		& > a {
-			color: var(--contrast-color-6) !important;
-			text-decoration: none;
-			padding: var(--gear-padding);
-			height: calc(100% - 2 * var(--gear-padding));
+		& gear {
+			flex: 0 0 var(--gear-basis);
 			position: relative;
-			display: flex;
-			flex-direction: row;
-
-			& > * {
-				position: relative;
-				align-self: center;
-				width: 100%;
-			}
+			height: var(--flex-row-height);
+			width: 100%;
+			border-radius: var(--gear-boder-radius);
+			outline: 2px solid var(--pink-custom);
+			overflow: hidden;
 			
-			& > dummy {
-				height: 100%;
-			}
-
-			& > grid {
+			& > a {
+				color: var(--contrast-color-6) !important;
+				text-decoration: none;
+				padding: var(--gear-padding);
+				height: calc(100% - 2 * var(--gear-padding));
+				position: relative;
 				display: flex;
+				flex-direction: row;
 
-				& > span {
-					float: right;
-					text-shadow: 1px 2px var(--main-color);
-					font-size: var(--font-size-by-window-size);
+				& > * {
+					position: relative;
 					align-self: center;
+					width: 100%;
 				}
 				
-				& > span:nth-of-type(1) {
-					text-align: left;
-					flex: 3 0 auto;
+				& > dummy {
+					height: 100%;
 				}
-	
-				& > span:nth-of-type(2) {
-					text-align: center;
-					flex: 1 0 auto;
-				}
-			}
 
+				& > grid {
+					display: flex;
+
+					& > span {
+						float: right;
+						text-shadow: 1px 2px var(--main-color);
+						font-size: var(--font-size-by-window-size);
+						align-self: center;
+					}
+					
+					& > span:nth-of-type(1) {
+						text-align: left;
+						flex: 3 0 auto;
+					}
+		
+					& > span:nth-of-type(2) {
+						text-align: center;
+						flex: 1 0 auto;
+					}
+				}
+
+			}
 		}
 	}
 }

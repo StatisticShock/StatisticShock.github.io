@@ -19,7 +19,7 @@
 		</div>
 		<svg class="skeleton-container skeleton"></svg>
 		<nav class="menu">
-			<a href="..."><b>...</b></a>
+			<a><b>...</b></a>
 			<grid-container>
 				<svg id="expand-retract-header" width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
 					<path d="M 0 10 L 10 0 L 20 10 L 14 10 L 14 20 L 6 20 L 6 10 L 0 10">
@@ -33,7 +33,7 @@
 						<animate id="toDownTrigger" attributeName="height" dur="2s" begin="click"/>
 					</rect>
 					
-					<rect width="20" height="0" fill="transparent">
+					<rect width="20" height="0" fill="transparent" style="cursor: pointer">
 						<animate id="toUpTrigger" attributeName="height" dur="0.001s" values="20;0" begin="click" fill="freeze"/>
 						<animate attributeName="height" dur="0.001s" values="0;20" begin="toDownTrigger.begin" fill="freeze" />
 					</rect>
@@ -72,16 +72,25 @@
 	<template id="gear-template">
 		<gear id="{{id}}" class="{{skeleton-container}}">
 			<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 250 100" preserveAspectRatio="xMinYMid slice" style="position: absolute;">
-				<mask id="{{id}}-mask">
-					<g id="include-mask">
-						<path d="M0,0 V100 H125 L75,0 Z" fill="white"/>
-					</g>
-					<g id="exclude-mask">
-						<path d="M75,0 H250 V100 H125 Z" fill="black"/>
-					</g>
-				</mask>
-				<path d="M0,0 H 77.5 L 127.5,100 H 0 Z" fill="var(--pink-custom)"/>
-				<image height="100" x="0" y="0" href="{{img}}" mask="url(#{{id}}-mask)"/>
+				<defs>
+					<clipPath id="{{id}}_clip">
+						<path d="M0,0 V100 H100 L50,0 Z">
+							<animate attributeName="d" from="M0,0 V100 H100 L50,0 Z" to="M0,0 V100 H135 L90,0 Z" begin="{{id}}_event_expand.begin" dur="0.1s" fill="freeze" restart="always"/>
+							<animate attributeName="d" to="M0,0 V100 H100 L50,0 Z" from="M0,0 V100 H135 L90,0 Z" begin="{{id}}_event_collapse.begin" dur="0.1s" fill="freeze" restart="always"/>
+						</path>
+					</clipPath>
+				</defs>
+
+				<rect width="250" height="100" fill="var(--contrast-color-3)"/>
+				<path d="M0,0 V100 H102 L52,0 Z" fill="var(--pink-custom)">
+					<animate attributeName="d" from="M0,0 V100 H102 L52,0 Z" to="M0,0 V100 H137 L92,0 Z" begin="{{id}}_event_expand.begin" dur="0.1s" fill="freeze" restart="always"/>
+					<animate attributeName="d" to="M0,0 V100 H102 L52,0 Z" from="M0,0 V100 H137 L92,0 Z" begin="{{id}}_event_collapse.begin" dur="0.1s" fill="freeze" restart="always"/>
+				</path>
+				<image height="100" x="0" y="0" href="{{img}}" clip-path="url(#{{id}}_clip)"/>
+				<rect width="250" height="100" fill="transparent">
+					<animate id="{{id}}_event_expand" class="expand" attributeName="height" values="100;0" dur="0.01s" begin="indefinite"/>
+					<animate id="{{id}}_event_collapse" class="collapse" attributeName="height" values="0;100" dur="0.01s" begin="indefinite"/>
+				</rect>
 			</svg>
 			<a href="{{link}}" target="_blank">
 				<dummy></dummy>
