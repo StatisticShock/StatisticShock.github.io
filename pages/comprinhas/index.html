@@ -5,11 +5,11 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="robots" content="noindex">
-	<link rel="shortcut icon" href="./icon/favicon.svg" type="image/svg+xml">
-	<link rel="stylesheet" href="./stylesheets/style.css">
-	<link rel="stylesheet" href="./stylesheets/comprinhas.css">
-	<link rel="manifest" href="./manifest.json">
-	<title>StatisticShock's Index: Equipamentos da minha princesa</title>
+	<link rel="shortcut icon" href="./../../icon/favicon.svg" type="image/svg+xml">
+	<link rel="stylesheet" href="./../../stylesheets/style.css">
+	<link rel="stylesheet" href="./../../stylesheets/comprinhas.css">
+	<link rel="manifest" href="./../../manifest.json">
+	<title>StatisticShock's Index</title>
 </head>
 
 <body class="home">
@@ -62,32 +62,6 @@
 	</header>
 	<div class="container">
 		<div class="flex-container">
-			<style>
-				gear-container {
-					display: grid;
-					grid-auto-flow: column;
-					grid-template-columns: 1fr 1fr;
-					grid-auto-rows: 35vw;
-					grid-gap: 5px;
-				}
-
-				gear {
-					background-color: #717171;
-					height: 100%;
-					width: 100%;
-					display: flex;
-					flex-direction: column;
-				}
-
-				gear img {
-					width: 20%;
-					align-self: center;
-				}
-
-				gear > * {
-					position: relative;
-				}
-			</style>
 		</div>
 		<button id="refresh-button" type="button"></button>
 	</div>
@@ -96,14 +70,38 @@
 	</footer>
 
 	<template id="gear-template">
-		<gear id="{{id}}" class="{{skeleton-container}}" style="background-image: url('{{img}}');">
-			<a href="{{link}}"><span>{{item}}<br><small>{{marca}}</small></span><span>{{valor}}</span></a>
+		<gear id="{{id}}" class="{{skeleton-container}}">
+			<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 250 100" preserveAspectRatio="xMinYMid slice" style="position: absolute;">
+				<mask id="{{id}}-mask">
+					<g id="include-mask">
+						<path d="M0,0 V100 H125 L75,0 Z" fill="white"/>
+					</g>
+					<g id="exclude-mask">
+						<path d="M75,0 H250 V100 H125 Z" fill="black"/>
+					</g>
+				</mask>
+				<path d="M0,0 H 77.5 L 127.5,100 H 0 Z" fill="var(--pink-custom)"/>
+				<image height="100" x="0" y="0" href="{{img}}" mask="url(#{{id}}-mask)"/>
+			</svg>
+			<a href="{{link}}" target="_blank">
+				<dummy></dummy>
+				<grid>
+					<span>
+						<b>{{item}}</b>
+						<br>
+						<small>{{marca}}</small>
+						<br><br>
+						<small>{{host}}</small>
+					</span>
+					<span>R$ {{valor}}</span>
+				</grid>
+			</a>
 		</gear>
 	</template>
 
-	<script type="module" src="./src/fixImages.js"></script>
-	<script type="module" src="./src/shared.js"></script>
-	<script type="module" src="./src/comprinhas.js"></script>
+	<script type="module" src="./../../src/fixImages.js"></script>
+	<script type="module" src="./../../src/shared.js"></script>
+	<script type="module" src="./../../src/comprinhas.js"></script>
 	<script>
 		setInterval(() => {
 			const nextTitle = document.title === "StatisticShock's Index" ? "Comprinhas da minha princesa" : "StatisticShock's Index";

@@ -1,35 +1,45 @@
-@media (max-width: 544.99px) {
+:root {
+	--gear-padding: 10px;
+	--gear-boder-radius: var(--gear-padding);
+	--gear-minimum-width: 250px;
+}
+
+@media (max-width: 549px) {
 	:root {
-		--grid-column-width: calc(100vw - 40px);
-		--grid-row-height: 15vh;
-		--gear-boder-radius: 5vmin;
+		--flex-row-height: 110px;
+		--gear-basis: 100%;
 	}
 }
 
-@media (min-width: 545px) {
+@media (min-width: 550px) and (max-width: 809px) {
 	:root {
-		--grid-column-width: clamp(250px, 50vw, 400px);
-		--grid-row-height: 15vw;
-		--gear-boder-radius: 4vmin;
+		--flex-row-height: 180px;
+		--gear-basis: clamp(var(--gear-minimum-width), 100vw, calc((100vw - 40px)/ 2 - var(--gear-padding)));
+	}
+}
+
+@media (min-width: 810px) {
+	:root {
+		--flex-row-height: 180px;
+		--gear-basis: clamp(var(--gear-minimum-width), 100vw, calc((100vw - 40px)/ 3 - var(--gear-padding)));
 	}
 }
 
 gear-container {
-	--gear-padding: 0.6em;
-	display: grid;
-	grid-template-columns: repeat(auto-fill, var(--grid-column-width));
-	grid-auto-rows: var(--grid-row-height);
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
 	column-gap: var(--gear-padding);
 	row-gap: var(--gear-padding);
 	
 	& gear {
+		flex: 0 0 var(--gear-basis);
 		position: relative;
-		background-color: var(--contrast-color-3);
-		background-size: contain;
-		background-repeat: no-repeat;
-		height: 100%;
+		background-color: var(--contrast-color-2);
+		height: var(--flex-row-height);
 		width: 100%;
 		border-radius: var(--gear-boder-radius);
+		outline: 2px solid var(--pink-custom);
 		overflow: hidden;
 		
 		& > a {
@@ -38,16 +48,39 @@ gear-container {
 			padding: var(--gear-padding);
 			height: calc(100% - 2 * var(--gear-padding));
 			position: relative;
-			display: grid;
-			column-gap: 5px;
-			grid-auto-flow: column;
-			grid-template-columns: 6fr 1fr;
+			display: flex;
+			flex-direction: row;
 
 			& > * {
 				position: relative;
 				align-self: center;
 				width: 100%;
 			}
+			
+			& > dummy {
+				height: 100%;
+			}
+
+			& > grid {
+				display: flex;
+
+				& > span {
+					float: right;
+					text-shadow: 1px 2px black;
+					align-self: center;
+				}
+				
+				& > span:nth-of-type(1) {
+					text-align: left;
+					flex: 3 0 auto;
+				}
+	
+				& > span:nth-of-type(2) {
+					text-align: end;
+					flex: 1 0 auto;
+				}
+			}
+
 		}
 	}
 }

@@ -30,6 +30,10 @@ class PageBuilding extends PageBuildingImport {
         createGearSkeletons();
     }
     ;
+    static reaplyCSS() {
+        console.log(getComputedStyle(document.documentElement).getPropertyValue("--grid-column-width"));
+    }
+    ;
 }
 ;
 class CloudStorageData {
@@ -118,7 +122,7 @@ class CloudStorageData {
     ;
 }
 ;
-window.addEventListener('load', onLoadFunctions, true);
+window.addEventListener("load", onLoadFunctions, true);
 function onLoadFunctions(ev) {
     return __awaiter(this, void 0, void 0, function* () {
         PageBuilding.makeSwitchesSlide();
@@ -146,6 +150,13 @@ function onLoadFunctions(ev) {
         PageBuilding.openLinksInNewTab();
         PageBuilding.stopImageDrag();
         setTimeout(() => window.dispatchEvent(new Event('resize')), 250);
+    });
+}
+;
+window.addEventListener("resize", onResizeFunctions, true);
+function onResizeFunctions(ev) {
+    return __awaiter(this, void 0, void 0, function* () {
+        PageBuilding.reaplyCSS();
     });
 }
 ;

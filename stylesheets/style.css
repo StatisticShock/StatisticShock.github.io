@@ -1,12 +1,12 @@
 /* FONTS */
 @font-face {
 	font-family: OpenSans;
-	src: url(font/OpenSans.ttf);
+	src: url(./../font/OpenSans.ttf);
 }
 
 @font-face {
 	font-family: Hylia Serif;
-	src: url(font/HyliaSerifBeta-Regular.otf);
+	src: url(./../font/HyliaSerifBeta-Regular.otf);
 }
 
 /* THE ACTUAL THING */
