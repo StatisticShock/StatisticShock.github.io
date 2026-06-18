@@ -8,6 +8,7 @@
 	:root {
 		--flex-row-height: 110px;
 		--gear-basis: 100%;
+		--font-size-by-window-size: 0.8em;
 	}
 }
 
@@ -15,6 +16,7 @@
 	:root {
 		--flex-row-height: 180px;
 		--gear-basis: clamp(var(--gear-minimum-width), 100vw, calc((100vw - 40px)/ 2 - var(--gear-padding)));
+		--font-size-by-window-size: 0.9em;
 	}
 }
 
@@ -22,6 +24,7 @@
 	:root {
 		--flex-row-height: 180px;
 		--gear-basis: clamp(var(--gear-minimum-width), 100vw, calc((100vw - 40px)/ 3 - var(--gear-padding)));
+		--font-size-by-window-size: 1.0em;
 	}
 }
 
@@ -35,7 +38,7 @@ gear-container {
 	& gear {
 		flex: 0 0 var(--gear-basis);
 		position: relative;
-		background-color: var(--contrast-color-2);
+		background-color: var(--contrast-color-3);
 		height: var(--flex-row-height);
 		width: 100%;
 		border-radius: var(--gear-boder-radius);
@@ -66,7 +69,8 @@ gear-container {
 
 				& > span {
 					float: right;
-					text-shadow: 1px 2px black;
+					text-shadow: 1px 2px var(--main-color);
+					font-size: var(--font-size-by-window-size);
 					align-self: center;
 				}
 				
@@ -76,7 +80,7 @@ gear-container {
 				}
 	
 				& > span:nth-of-type(2) {
-					text-align: end;
+					text-align: center;
 					flex: 1 0 auto;
 				}
 			}
