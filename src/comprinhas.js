@@ -107,12 +107,15 @@ class CloudStorageData {
                         new TemplateConstructor(document.querySelector("#gear-template"), data).insert(section, "after");
                     }
                     ;
-                    document.querySelectorAll("gear-container gear").forEach((gearElement) => {
-                        const expand = gearElement.querySelector("animate.expand");
-                        const collapse = gearElement.querySelector("animate.collapse");
-                        gearElement.addEventListener("mouseenter", () => { expand.beginElement(); });
-                        gearElement.addEventListener("mouseleave", () => { collapse.beginElement(); });
-                    });
+                    if (document.querySelector("body.has-hover")) {
+                        document.querySelectorAll("gear-container gear").forEach((gearElement) => {
+                            const expand = gearElement.querySelector("animate.expand");
+                            const collapse = gearElement.querySelector("animate.collapse");
+                            gearElement.addEventListener("mouseenter", () => { expand.beginElement(); });
+                            gearElement.addEventListener("mouseleave", () => { collapse.beginElement(); });
+                        });
+                    }
+                    ;
                 });
             }
             ;

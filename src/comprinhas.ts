@@ -103,13 +103,15 @@ class CloudStorageData {
 				new TemplateConstructor((document.querySelector("#gear-template") as HTMLTemplateElement), data).insert(section, "after");
 			};
 
-			document.querySelectorAll("gear-container gear").forEach((gearElement) => {
-				const expand = gearElement.querySelector("animate.expand") as SVGAnimationElement;
-				const collapse = gearElement.querySelector("animate.collapse") as SVGAnimationElement;
-	
-				gearElement.addEventListener("mouseenter", () => {expand.beginElement()});
-				gearElement.addEventListener("mouseleave", () => {collapse.beginElement()});
-			});
+			if (document.querySelector("body.has-hover")) {
+				document.querySelectorAll("gear-container gear").forEach((gearElement) => {
+					const expand = gearElement.querySelector("animate.expand") as SVGAnimationElement;
+					const collapse = gearElement.querySelector("animate.collapse") as SVGAnimationElement;
+		
+					gearElement.addEventListener("mouseenter", () => {expand.beginElement()});
+					gearElement.addEventListener("mouseleave", () => {collapse.beginElement()});
+				});
+			};
 		};
 
 		loadHeaders();
