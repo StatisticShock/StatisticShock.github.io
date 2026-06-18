@@ -29,6 +29,13 @@
 }
 
 body {
+	header {
+		& div {
+			& h1 {
+				color: lightpink;
+			}
+		}
+	}
 	gear-container {
 		display: flex;
 		flex-direction: row;
