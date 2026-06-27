@@ -201,6 +201,10 @@ body {
 					white-space: nowrap;
 					text-overflow: ellipsis;
 
+					& a {
+						cursor: pointer;
+					}
+
 					& ul {
 						margin: 0;
 						transition: 0.3s ease height;

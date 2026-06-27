@@ -45,11 +45,11 @@
 				<div>
 					<ç typeOfEndpoints.forEach(function (type) { ç>
 						<ç if (type.endpoints.length === 0) {} else { ç>
-							<a <ç= href='#' + type.method.toLowerCase() ç> style="color: var(--clr-primary-a0); text-decoration: none;"><ç= type.method ç></a>
+							<a href="<ç= "#" + type.method.toLowerCase() ç>" style="color: var(--clr-primary-a0); text-decoration: none;"><ç= type.method ç></a>
 							<ul>
 								<ç type.endpoints.forEach(function (endpoint) { ç>
 									<ç const shortcut = '/' + endpoint.route.split('/')[1] + '/' ç>
-									<li><a <ç= href='#' + type.method.toLowerCase() + '-' + endpoint.id ç>><ç= shortcut ç></a></li>
+									<li><a href="<ç= "#" + type.method.toLowerCase() + '-' + endpoint.id ç>"><ç= shortcut ç></a></li>
 								<ç }); ç>
 							</ul>
 						<ç }; ç>
@@ -62,11 +62,11 @@
 			<p switch="Esta base de dados está em um arquivo &lt;span class=&quot;codeblock&quot;&gt;Google Sheets&lt;/span&gt;">This database is in a <span class="codeblock">Google Sheets</span> file.</p>
 			<ç typeOfEndpoints.forEach(function (type) { ç>
 				<ç if (type.endpoints.length === 0) {} else { ç>
-					<h2 <ç= id=type.method.toLowerCase() ç>><ç= type.method ç></h2>
+					<h2 id="<ç= type.method.toLowerCase() ç>"><ç= type.method ç></h2>
 					<p><ç- type.description.en.split('\n').map((line) => '<p>' + line + '</p>').join('') ç></p>
 					<ul>
 						<ç type.endpoints.forEach(function (endpoint) { ç>
-							<div class="endpoint-wrapper" <ç= id=type.method.toLowerCase() + '-' + endpoint.id ç>>
+							<div class="endpoint-wrapper" id="<ç= type.method.toLowerCase() + '-' + endpoint.id ç>">
 								<h3 class="route"><ç= endpoint.route ç></h1>
 								<div class="description"><ç- endpoint.description.en.split('\n').map((text) => `<p>${text}</p>`).join('') ç></div>
 								<ç if (endpoint.parameters) { ç>
