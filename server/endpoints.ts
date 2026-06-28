@@ -20,6 +20,9 @@ type Methods = {
 const cb = function (string: string): string {return `<span class=\"codeblock\">${string}</span>`};
 const tb = function (tag: string, string: string = ""): string {return `&lt;${tag}&gt;${string}&lt;/${tag}&gt;`};
 
+const contentFolders = ["shortcuts", "gamecards", "headers", "mfc", "my_beloved_headers", "my_beloved_shop"];
+const contentString = function (preposition: string): string {return contentFolders.slice(0, -1).map((folder) => cb(folder)).join(", ") + " " + preposition.trim() + " " + cb(contentFolders[contentFolders.length - 1])};
+
 export const typeOfEndpoints: Array<Methods> = [
 	{ // GET
 		method: "GET",
@@ -94,8 +97,8 @@ export const typeOfEndpoints: Array<Methods> = [
 					[
 						"type",
 						{
-							en: "Optional. Accepts " + [cb("shortcuts"), cb("gamecards"), cb("headers"), cb("mfc"), cb("my_beloved_headers")].join(", ") + " and " + cb("my_beloved_shop") + ".\nSelects which type of data will be colected.",
-							pt: "Opcional. Aceita " + [cb("shortcuts"), cb("gamecards"), cb("headers"), cb("mfc"), cb("my_beloved_headers")].join(", ") + " e " + cb("my_beloved_shop") + ".\nSeleciona qual tipo de dados serão coletados."
+							en: "Optional. Accepts " + contentString("and") + ".\nSelects which type of data will be colected.",
+							pt: "Opcional. Aceita " + contentString("e") + ".\nSeleciona qual tipo de dados serão coletados."
 						}
 					]
 				],
@@ -167,8 +170,8 @@ export const typeOfEndpoints: Array<Methods> = [
 					[
 						"type",
 						{
-							en: "Accepts " + [cb("shortcuts"), cb("gamecards"), cb("headers")].join(", ") + " and " + cb("mfc") + ".",
-							pt: "Aceita " + [cb("shortcuts"), cb("gamecards"), cb("headers")].join(", ") + " e " + cb("mfc") + "."
+							en: "Accepts " + contentString("and") + ".",
+							pt: "Aceita " + contentString("e") + "."
 						}
 					]
 				]
@@ -193,8 +196,8 @@ export const typeOfEndpoints: Array<Methods> = [
 					[
 						"type",
 						{
-							en: "Accepts " + [cb("shortcuts"), cb("gamecards"), cb("headers")].join(", ") + " and " + cb("mfc") + ".",
-							pt: "Aceita " + [cb("shortcuts"), cb("gamecards"), cb("headers")].join(", ") + " e " + cb("mfc") + "."
+							en: "Accepts " + contentString("and") + ".",
+							pt: "Aceita " + contentString("e") + "."
 						}
 					]
 				]
@@ -219,8 +222,8 @@ export const typeOfEndpoints: Array<Methods> = [
 					[
 						"type",
 						{
-							en: "Accepts " + [cb("shortcuts"), cb("gamecards"), cb("headers")].join(", ") + " and " + cb("mfc") + ".",
-							pt: "Aceita " + [cb("shortcuts"), cb("gamecards"), cb("headers")].join(", ") + " e " + cb("mfc") + "."
+							en: "Accepts " + contentString("and") + ".",
+							pt: "Aceita " + contentString("e") + "."
 						}
 					]
 				]
