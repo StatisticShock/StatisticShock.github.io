@@ -82,20 +82,21 @@ app.get("/version/", async (req, res) => {
 app.get("/myanimelist/:type/:username/", async (req, res) => {
     const { username, type } = req.params;
     const { offset, limit, status, nsfw } = req.query;
+    const testRegEx = /^[a-zA-Z0-9_\-]*$/;
     const tests = {
         username: (parameter) => {
             switch (typeof parameter) {
                 case "string":
-                    return "";
+                    return testRegEx.test(parameter) ? "" : "Invalid username.";
                 default:
-                    return "Parameter \"type\" should be a string.";
+                    return "Parameter \"username\" should be a string.";
             }
             ;
         },
         type: (parameter) => {
             switch (typeof parameter) {
                 case "string":
-                    switch (parameter.toLowerCase().trim()) {
+                    switch (parameter.trim()) {
                         case "animelist":
                         case "mangalist":
                             return "";
@@ -143,14 +144,15 @@ app.get("/myanimelist/:type/:username/", async (req, res) => {
         },
     };
     const problems = Object.keys(tests).reduce((prev, curr) => {
-        return prev + (req.query[curr] ? tests[curr](req.query[curr]) : "");
+        return prev + (req.query[curr] || req.params[curr] ? tests[curr](req.query[curr] || req.params[curr]) : "");
     }, "").trim();
     if (problems !== "") {
         res.status(400).json({ message: problems });
+        return;
     }
     ;
     try {
-        const response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit}&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=${nsfw}${typeof status === "string" ? "&status=" + status : ""}`, {
+        const response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit ?? 100}&sort=list_updated_at&offset=${offset ?? 0}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=${nsfw ?? false}${status ? "&status=" + status : ""}`, {
             headers: {
                 "X-MAL-CLIENT-ID": MAL_ACCESS_TOKEN,
             },
