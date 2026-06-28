@@ -13,9 +13,9 @@ export type AnimeList = {
 				name: string;
 			}>;
 			num_episodes: number;
-			nsfw: string;
+			nsfw: "white"|"gray"|"black";
 			rank: number;
-		},
+		};
 		list_status: {
 			status: string;
 			score: number;
@@ -44,7 +44,7 @@ export type MangaList = {
 				name: string;
 			}>;
 			num_chapters: number;
-			nsfw: string;
+			nsfw: "white"|"gray"|"black";
 			rank: number;
 		};
 		list_status: {
@@ -63,82 +63,85 @@ export type MangaList = {
 	};
 };
 export type MALEntry = {
-	type: 'anime'|'manga',
-	id: number,
-	title: string,
-	main_picture_large: string,
-	main_picture_medium: string,
-	genres: string,
-	num_entries: number,
-	nsfw: 'white'|'gray'|'black',
-	rank: number,
-	score: number,
-	progress: number,
-	updated_at: string,
-	start_date?: string,
-	finish_date?: string,
+	type: "anime"|"manga";
+	id: number;
+	title: string;
+	main_picture_large: string;
+	main_picture_medium: string;
+	genres: string;
+	num_entries: number;
+	nsfw: "white"|"gray"|"black";
+	status: string;
+	rank: number;
+	score: number;
+	progress: number;
+	updated_at: string;
+	start_date?: string;
+	finish_date?: string;
+	is_rereading?: boolean;
+	is_rewatching?: boolean;
 }
 
 //PAGE CONTENT
 export type MFC = {
-	id: string,
-	href: string,
-	img: string,
-	img_sufix: string,
-	icon: string,
-	character: string,
-	character_jap: string,
-	source: string,
-	source_jap: string,
-	classification: string,
-	classification_jap: string,
-	category: 'Prepainted'|'Action/Dolls'|'Trading',
-	tags: string,
-	type: 'Wished'|'Owned'|'Ordered',
-	title: string,
+	id: string;
+	href: string;
+	img: string;
+	img_sufix: string;
+	icon: string;
+	character: string;
+	character_jap: string;
+	source: string;
+	source_jap: string;
+	classification: string;
+	classification_jap: string;
+	category: "Prepainted"|"Action/Dolls"|"Trading";
+	tags: string;
+	type: "Wished"|"Owned"|"Ordered";
+	title: string;
 };
 export type Shortcut = {
-	id: string,
-	index: number,
-	title: string,
+	id: string;
+	index: number;
+	title: string;
 	children: Array<{
-		id: string,
-		alt: string,
-		index: number,
-		href: string,
-		img: string,
-		floatingLabel: string,
-		show_on_mobile: boolean,
+		id: string;
+		alt: string;
+		index: number;
+		href: string;
+		img: string;
+		floatingLabel: string;
+		show_on_mobile: boolean;
 	}>
 };
 export type Gamecard = {
-	id: string,
-	label: string,
-	position: number,
-	href: string,
-	img: string,
+	id: string;
+	label: string;
+	position: number;
+	href: string;
+	img: string;
 	img_css: Array<{
-		attribute: string,
+		attribute: string;
 		value: string
 	}>
 };
 export type Headers = {
-	href: string,
-	name: string,
+	href: string;
+	name: string;
 	active: boolean
 };
 export type PageContent = {
-	shortcuts: Array<Shortcut>,
-	gamecards: Array<Gamecard>,
-	headers: Array<Headers>,
+	shortcuts: Array<Shortcut>;
+	gamecards: Array<Gamecard>;
+	headers: Array<Headers>;
 	mfc: Array<MFC>
 };
 export type UploadShortcutResponse = {
-	newImgPath: string,
+	newImgPath: string;
 };
 export type NewShortcutData = {
-	folder: string,
-	title: string,
+	folder: string;
+	title: string;
 	url: string
 };
 export type ShortcutsUpdateData = {
@@ -147,52 +150,52 @@ export type ShortcutsUpdateData = {
 
 //RETROACHIEVEMENTS
 type RetroAchievementsAward = {
-	"awardedAt": string,
-	"awardType": 'Game Beaten'|'Mastery/Completion'|'Mastery'|'Completion',
-	"awardData": number,
-	"awardDataExtra": number,
-	"displayOrder": number,
-	"title": string,
-	"consoleId": number,
-	"consoleName": string,
-	"flags": any,
+	"awardedAt": string;
+	"awardType": "Game Beaten"|"Mastery/Completion"|"Mastery"|"Completion";
+	"awardData": number;
+	"awardDataExtra": number;
+	"displayOrder": number;
+	"title": string;
+	"consoleId": number;
+	"consoleName": string;
+	"flags": any;
 	"imageIcon": string
 };
 type RetroAchievementsUserAwards = {
-	"totalAwardsCount": number,
-	"hiddenAwardsCount": number,
-	"masteryAwardsCount": number,
-	"completionAwardsCount": number,
-	"beatenHardcoreAwardsCount": number,
-	"beatenSoftcoreAwardsCount": number,
-	"eventAwardsCount": number,
-	"siteAwardsCount": number,
+	"totalAwardsCount": number;
+	"hiddenAwardsCount": number;
+	"masteryAwardsCount": number;
+	"completionAwardsCount": number;
+	"beatenHardcoreAwardsCount": number;
+	"beatenSoftcoreAwardsCount": number;
+	"eventAwardsCount": number;
+	"siteAwardsCount": number;
 	"visibleUserAwards": Array<RetroAchievementsAward>
 };
 type RetroAchievementsFormattedAward = {
-	"awardData": number,
-	"awardDataExtra": number,
-	"title": string,
-	"consoleId": number,
-	"consoleName": string,
-	"flags": any,
-	"imageIcon": string,
+	"awardData": number;
+	"awardDataExtra": number;
+	"title": string;
+	"consoleId": number;
+	"consoleName": string;
+	"flags": any;
+	"imageIcon": string;
 	"allData": Array<{
-		"awardType": string,
-		"awardedAt": string,
-		"displayOrder": number,
+		"awardType": string;
+		"awardedAt": string;
+		"displayOrder": number;
 	}>
 };
 type RetroAchievementsConsole = {
-	"active": boolean,
-	"iconUrl": string,
-	"id": number,
-	"isGameSystem": boolean,
-	"name": string,
+	"active": boolean;
+	"iconUrl": string;
+	"id": number;
+	"isGameSystem": boolean;
+	"name": string;
 };
 export type RetroAchievementsOutput = {
-	"awards": Array<RetroAchievementsFormattedAward>,
-	"consoles": Array<RetroAchievementsConsole>,
+	"awards": Array<RetroAchievementsFormattedAward>;
+	"consoles": Array<RetroAchievementsConsole>;
 };
 
 //SERVER INTERACTION
@@ -200,6 +203,6 @@ export type ErrorJson = {
 	message: string
 };
 export type Version = {
-	page: string,
-	server: string,
+	page: string;
+	server: string;
 };

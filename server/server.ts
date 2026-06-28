@@ -102,7 +102,7 @@ app.get("/version/", async (req: express.Request, res: express.Response) => {
 
 app.get("/myanimelist/:type", async (req: express.Request, res: express.Response) => {
 	const { type } = req.params;
-	const { username, offset, limit, nsfw } = req.query;
+	const { username, offset, limit, status, nsfw } = req.query;
 
 	if (username === undefined) res.status(400).json({ message: `Error: There should be an username.` });
 
@@ -125,6 +125,12 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 
 			return "Parameter \"limit\" must be an integer equal or less than 100.\n";
 		},
+		status: (parameter: string) => {
+			const statuses = parameter.split(",").map((statusToTest) => statusToTest.toLowerCase());
+			const allowedValues = ["watching", "completed", "on_hold", "dropped", "plan_to_watch"];
+
+			return statuses.some((statusToTest) => allowedValues.indexOf(statusToTest.toLowerCase()) !== -1) ? "" : "Parameter \"status\" must be in this set of values: \"" + allowedValues.join("\", \"") + "\'.";
+		},
 		nsfw: (parameter: string) => {
 			switch (parameter.toLowerCase().trim()) {
 				case "true":
@@ -136,7 +142,7 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 		},
 	};
 
-	const problems = ["offset", "limit", "nsfw"].reduce((prev, curr) => {
+	const problems = ["offset", "limit", "status", "nsfw"].reduce((prev, curr) => {
 		return prev + (req.query[curr] ? tests[curr](req.query[curr]) : "");
 	}, "").trim();
 
@@ -146,8 +152,10 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 
 	async function fetchMyAnimeList (type: string, username: string, offset: number | string, res: express.Response): Promise<{myanimelist: Array<MyTypes.MALEntry>}> {
 		if (type !== "animelist" && type !== "mangalist") res.status(400).json({ message: `Couldn"t fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".` });
+
+		console.log(`${typeof status === "string" ? "&status=" + status : ""}`);
 		
-		const response: Response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit ?? 10}&sort=list_updated_at&offset=${offset ?? 0}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=${nsfw ?? false}`, {
+		const response: Response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit ?? 10}&sort=list_updated_at&offset=${offset ?? 0}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=${nsfw ?? false}${typeof status === "string" ? "&status=" + status : ""}`, {
 			headers: {
 				"X-MAL-CLIENT-ID": MAL_ACCESS_TOKEN,
 			},
@@ -161,9 +169,9 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 			data = await response.json() as MyTypes.AnimeList;
 		} else {
 			data = await response.json() as MyTypes.MangaList;
-		}
+		};
 
-		const dataToReturn: Array<MyTypes.MALEntry> = data.data.map((entry) => {
+		const dataToReturn: Array<MyTypes.MALEntry> = data.data.map((entry: MyTypes.AnimeList["data"][0] | MyTypes.MangaList["data"][0]) => {
 			return {
 				type: type.replace("list", "") as "anime"|"manga",
 				id: entry.node.id,
@@ -171,15 +179,16 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 				main_picture_large: entry.node.main_picture.large,
 				main_picture_medium: entry.node.main_picture.medium,
 				genres: entry.node.genres.map((genre) => genre.name).join(", "),
-				num_entries: entry.node.num_chapters || entry.node.num_episodes,
+				num_entries: "num_chapters" in entry.node ? entry.node.num_chapters : entry.node.num_episodes,
 				nsfw: entry.node.nsfw,
 				rank: entry.node.rank ?? "N/A",
 				score: entry.list_status.score,
-				progress: entry.list_status.num_chapters_read || entry.list_status.num_episodes_watched,
+				progress: "num_chapters_read" in entry.list_status ? entry.list_status.num_chapters_read : entry.list_status.num_episodes_watched,
 				updated_at: entry.list_status.updated_at,
 				start_date: entry.list_status.start_date,
 				finish_date: entry.list_status.finish_date,
-			}
+				status: entry.list_status.status
+			};
 		});
 
 		return {
