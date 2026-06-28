@@ -12,8 +12,8 @@ export const typeOfEndpoints = [
                 id: "myanimelist",
                 route: "/myanimelist/<type>/?username&offset",
                 description: {
-                    en: "Returns a list of 100 last updated anime/manga.",
-                    pt: "Retorna uma lista dos 100 últimos animes/mangá atualizados."
+                    en: "Returns a list of up to 100 last updated anime/manga.",
+                    pt: "Retorna uma lista de até 100 últimos animes/mangá atualizados."
                 },
                 parameters: [
                     [
@@ -33,8 +33,22 @@ export const typeOfEndpoints = [
                     [
                         "offset",
                         {
-                            en: "Optional. Must be an integer.\nShifts the data by the number.",
-                            pt: "Opcional. Deve ser um número inteiro.\nDesloca os dados pelo número."
+                            en: "Optional.\nMust be an integer.\nShifts the data by the number.",
+                            pt: "Opcional.\nDeve ser um número inteiro.\nDesloca os dados pelo número."
+                        }
+                    ],
+                    [
+                        "limit",
+                        {
+                            en: "Optional.\nMust be an integer equal or less than 100.\nSets the output size.",
+                            pt: "Opcional.\nDeve ser um inteiro igual ou inferior a 100.\nDefine o tamanho do output."
+                        }
+                    ],
+                    [
+                        "nsfw",
+                        {
+                            en: "Optional.\nMust be true or false.\n\"true\" returns every entry, \"false\" filters \"gray\" and \"black\" entries.",
+                            pt: "Opcional.\nDeve ser verdadeiro ou falso.\n\"true\" retorna todas as entradas, \"false\" filtra as entradas \"gray\" e \"black\"."
                         }
                     ]
                 ],
