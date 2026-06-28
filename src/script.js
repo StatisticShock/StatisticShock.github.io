@@ -527,23 +527,25 @@ class ExternalData {
     ;
     static scrapeMyAnimeList() {
         return __awaiter(this, void 0, void 0, function* () {
-            function scrapeDataFromMAL(options) {
-                return __awaiter(this, void 0, void 0, function* () {
-                    const animeData = (yield fetch(`${server}myanimelist/animelist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}&nsfw=false`)
-                        .then(response => response.json()))['myanimelist'];
-                    const mangaData = (yield fetch(`${server}myanimelist/mangalist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}&nsfw=false`)
-                        .then(response => response.json()))['myanimelist'];
+            function scrapeDataFromMAL() {
+                return __awaiter(this, arguments, void 0, function* ({ offset = 0, limit = 100, nsfw = false, status = undefined } = {}) {
+                    const animeData = (yield fetch(`${server}myanimelist/animelist/HikariMontgomery?offset=${offset}&limit=${limit}&nsfw=${nsfw}${status ? `&status=${status}` : ""}`)
+                        .then(response => response.json()));
+                    const mangaData = (yield fetch(`${server}myanimelist/mangalist/HikariMontgomery?offset=${offset}&limit=${limit}&nsfw=${nsfw}${status ? `&status=${status}` : ""}`)
+                        .then(response => response.json()));
                     const response = [];
-                    animeData.forEach((anime) => response.push(anime));
-                    mangaData.forEach((manga) => response.push(manga));
+                    animeData.concat(mangaData).forEach((entry) => response.push(entry));
                     return response;
                 });
             }
             ;
-            scrapeDataFromMAL({ offset: 0, limit: 40 }).then((res) => {
-                this.MALData = res;
+            scrapeDataFromMAL().then((res) => {
+                const MALData = res.filter((entry) => {
+                    return /watching|reading|completed|on\_hold/.test(entry.status);
+                });
+                this.MALData = MALData;
                 const malContainer = document.querySelector('#my-anime-list my-anime-list');
-                new TemplateConstructor(document.querySelector('#myanimelist-template'), res.sort((a, b) => -new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime()).slice(0, 40)).insert(malContainer);
+                new TemplateConstructor(document.querySelector('#myanimelist-template'), MALData.sort((a, b) => -new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime()).slice(0, 40)).insert(malContainer);
             });
         });
     }

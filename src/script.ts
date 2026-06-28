@@ -565,25 +565,29 @@ class ExternalData {
 	static MALData: Array<MyTypes.MALEntry>;
 
 	static async scrapeMyAnimeList(): Promise<void> {
-		async function scrapeDataFromMAL(options: {offset: number, limit: number}): Promise<Array<MyTypes.MALEntry>> {
-			const animeData: Array<MyTypes.MALEntry> = (await fetch(`${server}myanimelist/animelist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}&nsfw=false`)
-				.then(response => response.json()))['myanimelist'];
+		async function scrapeDataFromMAL({offset = 0, limit = 100, nsfw = false, status = undefined}: {offset?: number, limit?: number, nsfw?: boolean, status?: string|undefined} = {}): Promise<Array<MyTypes.MALEntry>> {
+			const animeData: Array<MyTypes.MALEntry> = (await fetch(`${server}myanimelist/animelist/HikariMontgomery?offset=${offset}&limit=${limit}&nsfw=${nsfw}${status ? `&status=${status}` : ""}`)
+				.then(response => response.json()));
 
-			const mangaData: Array<MyTypes.MALEntry> = (await fetch(`${server}myanimelist/mangalist?username=HikariMontgomery&offset=${options.offset}&limit=${options.limit}&nsfw=false`)
-				.then(response => response.json()))['myanimelist'];
+			const mangaData: Array<MyTypes.MALEntry> = (await fetch(`${server}myanimelist/mangalist/HikariMontgomery?offset=${offset}&limit=${limit}&nsfw=${nsfw}${status ? `&status=${status}` : ""}`)
+				.then(response => response.json()));
 			
 			const response: Array<MyTypes.MALEntry> = [];
-			animeData.forEach((anime) => response.push(anime));
-			mangaData.forEach((manga) => response.push(manga));
+
+			animeData.concat(mangaData).forEach((entry) => response.push(entry));
 
 			return response
 		};
 
-		scrapeDataFromMAL({offset: 0, limit: 40}).then((res) => {
-			this.MALData = res;
+		scrapeDataFromMAL().then((res) => {
+			const MALData = res.filter((entry) => {
+				return /watching|reading|completed|on\_hold/.test(entry.status);
+			});
+
+			this.MALData = MALData;
 
 			const malContainer = document.querySelector('#my-anime-list my-anime-list') as HTMLDivElement;
-			new TemplateConstructor(document.querySelector('#myanimelist-template') as HTMLTemplateElement, res.sort((a, b) => - new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime()).slice(0, 40)).insert(malContainer);
+			new TemplateConstructor(document.querySelector('#myanimelist-template') as HTMLTemplateElement, MALData.sort((a, b) => - new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime()).slice(0, 40)).insert(malContainer);
 		});
 	};
 };
