@@ -79,32 +79,59 @@ app.get("/version/", async (req, res) => {
     const pageVersion = pagePckg.match(/\"version\"\: \"[\d\.]+\"\,/)[0].match(/[\d\.]+/)[0];
     res.status(200).json({ page: pageVersion, server: serverVersion });
 });
-app.get("/myanimelist/:type", async (req, res) => {
-    const { type } = req.params;
-    const { username, offset, limit, status, nsfw } = req.query;
-    if (username === undefined)
-        res.status(400).json({ message: `Error: There should be an username.` });
+app.get("/myanimelist/:type/:username/", async (req, res) => {
+    const { username, type } = req.params;
+    const { offset, limit, status, nsfw } = req.query;
     const tests = {
-        offset: (parameter) => {
-            const param = Number(parameter);
-            if (!isNaN(param) && Math.floor(param) === param) {
-                return "";
+        username: (parameter) => {
+            switch (typeof parameter) {
+                case "string":
+                    return "";
+                default:
+                    return "Parameter \"type\" should be a string.";
             }
+            ;
+        },
+        type: (parameter) => {
+            switch (typeof parameter) {
+                case "string":
+                    switch (parameter.toLowerCase().trim()) {
+                        case "animelist":
+                        case "mangalist":
+                            return "";
+                        default:
+                            return `Couldn"t fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".`;
+                    }
+                    ;
+                default:
+                    return "Parameter \"type\" should be a string.";
+            }
+        },
+        offset: (parameter) => {
+            if (typeof parameter !== "string")
+                return "Parameter \"offset\" must be an integer.\n";
+            const param = Number(parameter);
+            if (!isNaN(param) && Math.floor(param) === param)
+                return "";
             return "Parameter \"offset\" must be an integer.\n";
         },
         limit: (parameter) => {
+            if (typeof parameter !== "string")
+                return "Parameter \"limit\" must be an integer equal or less than 100.\n";
             const param = Number(parameter);
-            if (!isNaN(param) && Math.floor(param) === param) {
+            if (!isNaN(param) && Math.floor(param) === param)
                 return "";
-            }
             return "Parameter \"limit\" must be an integer equal or less than 100.\n";
         },
         status: (parameter) => {
-            const statuses = parameter.split(",").map((statusToTest) => statusToTest.toLowerCase());
-            const allowedValues = ["watching", "completed", "on_hold", "dropped", "plan_to_watch"];
-            return statuses.some((statusToTest) => allowedValues.indexOf(statusToTest.toLowerCase()) !== -1) ? "" : "Parameter \"status\" must be in this set of values: \"" + allowedValues.join("\", \"") + "\'.";
+            const allowedValues = ["consuming", "completed", "on_hold", "dropped", "planning"];
+            if (typeof parameter !== "string")
+                return "Parameter \"status\" must be in this set of values: \"" + allowedValues.join("\", \"") + "\'.";
+            return allowedValues.indexOf(status.toString().toLowerCase()) !== -1 ? "" : "Parameter \"status\" must be in this set of values: \"" + allowedValues.join("\", \"") + "\'.";
         },
         nsfw: (parameter) => {
+            if (typeof parameter !== "string")
+                return "Parameter \"nsfw\" must be boolean.\n";
             switch (parameter.toLowerCase().trim()) {
                 case "true":
                 case "false":
@@ -115,35 +142,25 @@ app.get("/myanimelist/:type", async (req, res) => {
             ;
         },
     };
-    const problems = ["offset", "limit", "status", "nsfw"].reduce((prev, curr) => {
+    const problems = Object.keys(tests).reduce((prev, curr) => {
         return prev + (req.query[curr] ? tests[curr](req.query[curr]) : "");
     }, "").trim();
     if (problems !== "") {
-        res.status(400).json({ error: problems });
+        res.status(400).json({ message: problems });
     }
     ;
-    async function fetchMyAnimeList(type, username, offset, res) {
-        if (type !== "animelist" && type !== "mangalist")
-            res.status(400).json({ message: `Couldn"t fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".` });
-        console.log(`${typeof status === "string" ? "&status=" + status : ""}`);
-        const response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit ?? 10}&sort=list_updated_at&offset=${offset ?? 0}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=${nsfw ?? false}${typeof status === "string" ? "&status=" + status : ""}`, {
+    try {
+        const response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit}&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=${nsfw}${typeof status === "string" ? "&status=" + status : ""}`, {
             headers: {
                 "X-MAL-CLIENT-ID": MAL_ACCESS_TOKEN,
             },
         });
         if (!response.ok)
-            res.status(200).json({ message: `Couldn"t fetch ${MAL_API_URL}.` });
-        let data;
-        if (type === "animelist") {
-            data = await response.json();
-        }
-        else {
-            data = await response.json();
-        }
-        ;
+            res.status(500).json({ message: `Couldn"t fetch ${MAL_API_URL}.` });
+        const data = await response.json();
         const dataToReturn = data.data.map((entry) => {
             return {
-                type: type.replace("list", ""),
+                type: type.toString().replace("list", ""),
                 id: entry.node.id,
                 title: entry.node.title,
                 main_picture_large: entry.node.main_picture.large,
@@ -160,14 +177,7 @@ app.get("/myanimelist/:type", async (req, res) => {
                 status: entry.list_status.status
             };
         });
-        return {
-            myanimelist: dataToReturn,
-        };
-    }
-    ;
-    try {
-        const data = await fetchMyAnimeList(type, username, offset ?? "0", res);
-        res.status(200).json(data);
+        res.status(200).json(dataToReturn);
     }
     catch (err) {
         res.status(500).json({ message: err["message"] });

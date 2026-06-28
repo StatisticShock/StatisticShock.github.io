@@ -16,8 +16,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 import ejs from "ejs";
 import { typeOfEndpoints } from "./endpoints.js";
-import { off } from "cluster";
-import { error } from "console";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -100,38 +98,61 @@ app.get("/version/", async (req: express.Request, res: express.Response) => {
 	res.status(200).json({page: pageVersion, server: serverVersion});
 });
 
-app.get("/myanimelist/:type", async (req: express.Request, res: express.Response) => {
-	const { type } = req.params;
-	const { username, offset, limit, status, nsfw } = req.query;
-
-	if (username === undefined) res.status(400).json({ message: `Error: There should be an username.` });
+app.get("/myanimelist/:type/:username/", async (req: express.Request, res: express.Response) => {
+	const { username, type } = req.params;
+	const { offset, limit, status, nsfw } = req.query;
 
 	const tests = {
-		offset: (parameter: string) => {
+		username: (parameter: string | Array<string>) => {
+			switch (typeof parameter) {
+				case "string":
+					return "";
+				default:
+					return "Parameter \"type\" should be a string.";
+			};
+		},
+		type: (parameter: string | Array<string>) => {
+			switch (typeof parameter) {
+				case "string":
+					switch(parameter.toLowerCase().trim()) {
+						case "animelist":
+						case "mangalist":
+							return "";
+						default:
+							return `Couldn"t fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".`;
+					};
+				default:
+					return "Parameter \"type\" should be a string."
+			}
+		},
+		offset: (parameter: string | object) => {
+			if (typeof parameter !== "string") return "Parameter \"offset\" must be an integer.\n";
+
 			const param = Number(parameter);
 
-			if (!isNaN(param) && Math.floor(param) === param) {
-				return "";
-			}
+			if (!isNaN(param) && Math.floor(param) === param) return "";
 
 			return "Parameter \"offset\" must be an integer.\n";
 		},
-		limit: (parameter: string) => {
+		limit: (parameter: string | object) => {
+			if (typeof parameter !== "string") return "Parameter \"limit\" must be an integer equal or less than 100.\n";
+
 			const param = Number(parameter);
 
-			if (!isNaN(param) && Math.floor(param) === param) {
-				return "";
-			}
+			if (!isNaN(param) && Math.floor(param) === param) return "";
 
 			return "Parameter \"limit\" must be an integer equal or less than 100.\n";
 		},
-		status: (parameter: string) => {
-			const statuses = parameter.split(",").map((statusToTest) => statusToTest.toLowerCase());
-			const allowedValues = ["watching", "completed", "on_hold", "dropped", "plan_to_watch"];
+		status: (parameter: string | object) => {
+			const allowedValues = ["consuming", "completed", "on_hold", "dropped", "planning"];
 
-			return statuses.some((statusToTest) => allowedValues.indexOf(statusToTest.toLowerCase()) !== -1) ? "" : "Parameter \"status\" must be in this set of values: \"" + allowedValues.join("\", \"") + "\'.";
+			if (typeof parameter !== "string") return "Parameter \"status\" must be in this set of values: \"" + allowedValues.join("\", \"") + "\'.";
+
+			return allowedValues.indexOf(status!.toString().toLowerCase()) !== -1 ? "" : "Parameter \"status\" must be in this set of values: \"" + allowedValues.join("\", \"") + "\'.";
 		},
-		nsfw: (parameter: string) => {
+		nsfw: (parameter: string | object) => {
+			if (typeof parameter !== "string") return "Parameter \"nsfw\" must be boolean.\n";
+
 			switch (parameter.toLowerCase().trim()) {
 				case "true":
 				case "false": 
@@ -142,38 +163,28 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 		},
 	};
 
-	const problems = ["offset", "limit", "status", "nsfw"].reduce((prev, curr) => {
+	const problems = Object.keys(tests).reduce((prev, curr) => {
 		return prev + (req.query[curr] ? tests[curr](req.query[curr]) : "");
 	}, "").trim();
 
 	if (problems !== "") {
-		res.status(400).json({ error: problems });
+		res.status(400).json({ message: problems });
 	};
 
-	async function fetchMyAnimeList (type: string, username: string, offset: number | string, res: express.Response): Promise<{myanimelist: Array<MyTypes.MALEntry>}> {
-		if (type !== "animelist" && type !== "mangalist") res.status(400).json({ message: `Couldn"t fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".` });
-
-		console.log(`${typeof status === "string" ? "&status=" + status : ""}`);
-		
-		const response: Response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit ?? 10}&sort=list_updated_at&offset=${offset ?? 0}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=${nsfw ?? false}${typeof status === "string" ? "&status=" + status : ""}`, {
+	try {
+		const response: Response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit}&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=${nsfw}${typeof status === "string" ? "&status=" + status : ""}`, {
 			headers: {
 				"X-MAL-CLIENT-ID": MAL_ACCESS_TOKEN,
 			},
 		});
 
-		if (!response.ok) res.status(200).json({ message: `Couldn"t fetch ${MAL_API_URL}.` })
+		if (!response.ok) res.status(500).json({ message: `Couldn"t fetch ${MAL_API_URL}.` })
 
-		let data: MyTypes.AnimeList | MyTypes.MangaList;
-
-		if (type === "animelist") {
-			data = await response.json() as MyTypes.AnimeList;
-		} else {
-			data = await response.json() as MyTypes.MangaList;
-		};
+		const data = await response.json() as MyTypes.AnimeList | MyTypes.MangaList;
 
 		const dataToReturn: Array<MyTypes.MALEntry> = data.data.map((entry: MyTypes.AnimeList["data"][0] | MyTypes.MangaList["data"][0]) => {
 			return {
-				type: type.replace("list", "") as "anime"|"manga",
+				type: type.toString().replace("list", "") as "anime"|"manga",
 				id: entry.node.id,
 				title: entry.node.title,
 				main_picture_large: entry.node.main_picture.large,
@@ -191,15 +202,7 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 			};
 		});
 
-		return {
-			myanimelist: dataToReturn,
-		};
-	};
-
-	try {
-		const data = await fetchMyAnimeList(type as string, username as string, offset as string ?? "0", res);
-
-		res.status(200).json(data);
+		res.status(200).json(dataToReturn);
 	} catch (err) {
 		res.status(500).json({ message: err!["message"] });
 	};
