@@ -33,7 +33,7 @@ export const typeOfEndpoints: Array<Methods> = [
 		endpoints: [
 			{ // myanimelist
 				id: "myanimelist",
-				route: "/myanimelist/<type>/?username&offset",
+				route: "/myanimelist/<type>/?username&offset&limit&nsfw",
 				description: {
 					en: "Returns a list of up to 100 last updated anime/manga.",
 					pt: "Retorna uma lista de até 100 últimos animes/mangá atualizados."
@@ -113,9 +113,9 @@ export const typeOfEndpoints: Array<Methods> = [
 					]
 				]
 			},
-			{ // retroAchievements
+			{ // retroachievements
 				id: "retro-achievements",
-				route: "/retroAchievements/<language>/",
+				route: "/retroachievements/<language>/",
 				description: {
 					en: "",
 					pt: ""
@@ -131,7 +131,7 @@ export const typeOfEndpoints: Array<Methods> = [
 				],
 				examples: [
 					[
-						"/retroAchievements/pt-BR/",
+						"/retroachievements/pt-BR/",
 						JSON.stringify({"awards":[{"awardData":5371,"awardDataExtra":1,"title":"The Legend of Zelda: Link's Awakening DX","consoleId":6,"consoleName":"Game Boy Color","flags":0,"imageIcon":"https://retroachievements.org/Images/046977.png","allData":[{"awardType":"Platinado • Zerado","awardedAt":"2024-03-11T02:43:46+00:00","displayOrder":2}]}]}, null, "\t")
 					]
 				]
@@ -230,4 +230,4 @@ export const typeOfEndpoints: Array<Methods> = [
 			}
 		]
 	}
-]
+];
