@@ -281,6 +281,13 @@ body {
 							border: 2px solid var(--clr-primary-a0);
 							text-align: left;
 							padding: 5px;
+							display: flex;
+							flex-direction: column;
+							gap: 7.5px;
+
+							& > p {
+								margin: 0;
+							}
 						}
 					}
 

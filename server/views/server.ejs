@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>StatisticShock Index Server</title>
 	<link rel="stylesheet" href="style.css">
-	<link rel="shortcut icon" href="../../icon/favicon.svg" type="image/svg+xml">
+	<link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">
 </head>
 
 <body>
@@ -74,7 +74,7 @@
 									<div class="parameter">
 										<ç endpoint.parameters.forEach((parameter) => { ç>
 											<div class="parameter-name"><ç- parameter[0] ç></div>
-											<div class="parameter-description" switch="<ç- parameter[1].en.replace(/\n/g, "<br>").replace(/\"/g, "&quot;") ç>"><ç- parameter[1].en.replace(/\n/g, "<br>") ç></div>
+											<div class="parameter-description" switch="<ç- parameter[1].pt.replace(/\n/g, "<br><br>").replace(/\"/g, "'") ç>"><ç- parameter[1].en.split(/\n/g).map((line) => "<p>" + line + "</p>").join("") ç></div>
 										<ç }); ç>
 									</div>
 								<ç } ç>
