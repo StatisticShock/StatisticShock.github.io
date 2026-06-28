@@ -206,7 +206,7 @@ app.get("/contents(/:type)?", async (req, res) => {
     ;
     res.status(200).json(jsonToSend);
 });
-app.get("/retroAchievements/:language/", async (req, res) => {
+app.get("/retroachievements/:language/", async (req, res) => {
     const language = req.params.language;
     const translations = [
         ["en-US", "pt-BR", "n"],
