@@ -84,10 +84,43 @@ app.get("/myanimelist/:type", async (req, res) => {
     const { username, offset, limit, nsfw } = req.query;
     if (username === undefined)
         res.status(400).json({ message: `Error: There should be an username.` });
+    const tests = {
+        offset: (parameter) => {
+            const param = Number(parameter);
+            if (!isNaN(param) && Math.floor(param) === param) {
+                return "";
+            }
+            return "Parameter \"offset\" must be an integer.\n";
+        },
+        limit: (parameter) => {
+            const param = Number(parameter);
+            if (!isNaN(param) && Math.floor(param) === param) {
+                return "";
+            }
+            return "Parameter \"limit\" must be an integer equal or less than 100.\n";
+        },
+        nsfw: (parameter) => {
+            switch (parameter.toLowerCase().trim()) {
+                case "true":
+                case "false":
+                    return "";
+                default:
+                    return "Parameter \"nsfw\" must be boolean.\n";
+            }
+            ;
+        },
+    };
+    const problems = ["offset", "limit", "nsfw"].reduce((prev, curr) => {
+        return prev + (req.query[curr] ? tests[curr](req.query[curr]) : "");
+    }, "").trim();
+    if (problems !== "") {
+        res.status(400).json({ error: problems });
+    }
+    ;
     async function fetchMyAnimeList(type, username, offset, res) {
         if (type !== "animelist" && type !== "mangalist")
             res.status(400).json({ message: `Couldn"t fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".` });
-        const response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit}&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=${nsfw}`, {
+        const response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit ?? 10}&sort=list_updated_at&offset=${offset ?? 0}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=${nsfw ?? false}`, {
             headers: {
                 "X-MAL-CLIENT-ID": MAL_ACCESS_TOKEN,
             },

@@ -16,6 +16,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import ejs from "ejs";
 import { typeOfEndpoints } from "./endpoints.js";
+import { off } from "cluster";
+import { error } from "console";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -104,10 +106,48 @@ app.get("/myanimelist/:type", async (req: express.Request, res: express.Response
 
 	if (username === undefined) res.status(400).json({ message: `Error: There should be an username.` });
 
+	const tests = {
+		offset: (parameter: string) => {
+			const param = Number(parameter);
+
+			if (!isNaN(param) && Math.floor(param) === param) {
+				return "";
+			}
+
+			return "Parameter \"offset\" must be an integer.\n";
+		},
+		limit: (parameter: string) => {
+			const param = Number(parameter);
+
+			if (!isNaN(param) && Math.floor(param) === param) {
+				return "";
+			}
+
+			return "Parameter \"limit\" must be an integer equal or less than 100.\n";
+		},
+		nsfw: (parameter: string) => {
+			switch (parameter.toLowerCase().trim()) {
+				case "true":
+				case "false": 
+					return "";
+				default:
+					return "Parameter \"nsfw\" must be boolean.\n"
+			};
+		},
+	};
+
+	const problems = ["offset", "limit", "nsfw"].reduce((prev, curr) => {
+		return prev + (req.query[curr] ? tests[curr](req.query[curr]) : "");
+	}, "").trim();
+
+	if (problems !== "") {
+		res.status(400).json({ error: problems });
+	};
+
 	async function fetchMyAnimeList (type: string, username: string, offset: number | string, res: express.Response): Promise<{myanimelist: Array<MyTypes.MALEntry>}> {
 		if (type !== "animelist" && type !== "mangalist") res.status(400).json({ message: `Couldn"t fetch data from type "${type}".\n Possible types are "animelist" and "mangalist".` });
 		
-		const response: Response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit}&sort=list_updated_at&offset=${offset}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=${nsfw}`, {
+		const response: Response = await fetch(`${MAL_API_URL}users/${username}/${type}?limit=${limit ?? 10}&sort=list_updated_at&offset=${offset ?? 0}&fields=list_status,genres,num_episodes,num_chapters,nsfw,rank&nsfw=${nsfw ?? false}`, {
 			headers: {
 				"X-MAL-CLIENT-ID": MAL_ACCESS_TOKEN,
 			},
