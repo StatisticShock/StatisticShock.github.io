@@ -31,18 +31,18 @@ class CloudStorageData {
 	static json: any;
 
 	static async load (): Promise<void> { // NO NEED OF RESPONSIVENESS
-		const response = await fetch(`${server}contents/my-beloved-headers`);
-		const myBelovedData = await fetch(`${server}my-beloved`);
+		const response = await fetch(`${server}contents/my_beloved_headers`);
+		const myBelovedData = await fetch(`${server}contents/my_beloved_shop`);
 
 		this.json = await response.json();
-		this.json["my-beloved-gear"] = (await myBelovedData.json())["data"];
+		this.json["my-beloved-gear"] = (await myBelovedData.json())["my_beloved_shop"];
 	};
 
 	static async loadContentFromJson (): Promise<void> { // NO NEED OF RESPONSIVENESS
 		const content: MyTypes.PageContent = JSON.parse(JSON.stringify(this.json));
 
 		async function loadHeaders (): Promise<void> {
-			const possibleHeaders: Array<MyTypes.Headers> = content["my-beloved-headers"].filter((header) => header.active);
+			const possibleHeaders: Array<MyTypes.Headers> = content["my_beloved_headers"].filter((header) => header.active);
 			let index: number = CustomFunctions.randomIntFromInterval(0, possibleHeaders.length - 1);
 			let src: string = possibleHeaders[index].href;
 

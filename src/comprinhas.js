@@ -35,10 +35,10 @@ class PageBuilding extends PageBuildingImport {
 class CloudStorageData {
     static load() {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield fetch(`${server}contents/my-beloved-headers`);
-            const myBelovedData = yield fetch(`${server}my-beloved`);
+            const response = yield fetch(`${server}contents/my_beloved_headers`);
+            const myBelovedData = yield fetch(`${server}contents/my_beloved_shop`);
             this.json = yield response.json();
-            this.json["my-beloved-gear"] = (yield myBelovedData.json())["data"];
+            this.json["my-beloved-gear"] = (yield myBelovedData.json())["my_beloved_shop"];
         });
     }
     ;
@@ -47,7 +47,7 @@ class CloudStorageData {
             const content = JSON.parse(JSON.stringify(this.json));
             function loadHeaders() {
                 return __awaiter(this, void 0, void 0, function* () {
-                    const possibleHeaders = content["my-beloved-headers"].filter((header) => header.active);
+                    const possibleHeaders = content["my_beloved_headers"].filter((header) => header.active);
                     let index = CustomFunctions.randomIntFromInterval(0, possibleHeaders.length - 1);
                     let src = possibleHeaders[index].href;
                     possibleHeaders.forEach((imgSrc) => {
