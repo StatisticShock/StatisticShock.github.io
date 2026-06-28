@@ -549,7 +549,7 @@ export class CloudStorageData {
 
 class ExternalData {
 	static async addRetroAchievementsAwards (): Promise<void> {
-		const data: MyTypes.RetroAchievementsOutput = await fetch(`${server}retroAchievements/pt-BR/`).then((res) => res.json());
+		const data: MyTypes.RetroAchievementsOutput = await fetch(`${server}retroachievements/pt-BR/`).then((res) => res.json());
 		
 		const retroAchievements: HTMLElement = document.querySelector('#gaming retroachievements')!;
 

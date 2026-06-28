@@ -514,7 +514,7 @@ export class CloudStorageData {
 class ExternalData {
     static addRetroAchievementsAwards() {
         return __awaiter(this, void 0, void 0, function* () {
-            const data = yield fetch(`${server}retroAchievements/pt-BR/`).then((res) => res.json());
+            const data = yield fetch(`${server}retroachievements/pt-BR/`).then((res) => res.json());
             const retroAchievements = document.querySelector('#gaming retroachievements');
             new TemplateConstructor(document.querySelector('#ra-template'), [data]).insert(retroAchievements);
             data.awards.filter((award) => award.allData.some((data) => {
