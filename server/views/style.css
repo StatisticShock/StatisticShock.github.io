@@ -190,7 +190,7 @@ body {
 				top: 0;
 				text-overflow: ellipsis;
 				white-space: nowrap;
-				height: var(--child-count);
+				height: calc(var(--child-count) * 1.65em + 10px);
 				overflow-y: hidden;
 				transition: 0.3s ease all;
 
@@ -349,6 +349,7 @@ body {
 		& aside {
 			display: block;
 			width: 100%;
+			
 			& div.language-wrapper {
 				height: 0;
 			}

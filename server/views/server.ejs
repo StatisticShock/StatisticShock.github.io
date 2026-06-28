@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>StatisticShock Index Server</title>
 	<link rel="stylesheet" href="style.css">
+	<link rel="shortcut icon" href="../../icon/favicon.svg" type="image/svg+xml">
 </head>
 
 <body>
@@ -35,12 +36,7 @@
 					<label for="languageChoice2">Português (Brasil)</label>
 				</div>
 			</div>
-			<ç let length = 1 ç>
-			<ç typeOfEndpoints.forEach((type) => { ç>
-				<ç length++; ç>
-				<ç length += type.endpoints.length; ç>
-			<ç }); ç>
-			<nav <ç= style='--child-count:' + (length * 1.65) + 'em;' ç>>
+			<nav>
 				<a href="#endpoints" style="color: var(--clr-primary-a0); text-decoration: none; margin: 3em 0;">ENDPOINTS</a>
 				<div>
 					<ç typeOfEndpoints.forEach(function (type) { ç>
@@ -48,14 +44,19 @@
 							<a href="<ç= "#" + type.method.toLowerCase() ç>" style="color: var(--clr-primary-a0); text-decoration: none;"><ç= type.method ç></a>
 							<ul>
 								<ç type.endpoints.forEach(function (endpoint) { ç>
-									<ç const shortcut = '/' + endpoint.route.split('/')[1] + '/' ç>
-									<li><a href="<ç= "#" + type.method.toLowerCase() + '-' + endpoint.id ç>"><ç= shortcut ç></a></li>
+									<ç const [shortcut] = endpoint.route.match(/[^\?\<\>]*/g) ç>
+									<li><a href="<ç= "#" + type.method.toLowerCase() + "-" + endpoint.id ç>"><ç= shortcut ç></a></li>
 								<ç }); ç>
 							</ul>
 						<ç }; ç>
 					<ç }); ç>
 				</div>
 			</nav>
+			<style>
+				nav {
+					--child-count: <ç- (typeOfEndpoints.map((endpoint) => endpoint.endpoints.length + 1)).reduce((prev, curr) => {return prev + curr}, 0) ç>;
+				}
+			</style>
 		</aside>
 		<div class="data-wrapper">
 			<h1 id="endpoints" style="margin: 0 auto; text-align: center;">ENDPOINTS</h1>
@@ -63,17 +64,17 @@
 			<ç typeOfEndpoints.forEach(function (type) { ç>
 				<ç if (type.endpoints.length === 0) {} else { ç>
 					<h2 id="<ç= type.method.toLowerCase() ç>"><ç= type.method ç></h2>
-					<p><ç- type.description.en.split('\n').map((line) => '<p>' + line + '</p>').join('') ç></p>
+					<p><ç- type.description.en.split("\n").map((line) => "<p>" + line + "</p>").join("") ç></p>
 					<ul>
 						<ç type.endpoints.forEach(function (endpoint) { ç>
-							<div class="endpoint-wrapper" id="<ç= type.method.toLowerCase() + '-' + endpoint.id ç>">
+							<div class="endpoint-wrapper" id="<ç= type.method.toLowerCase() + "-" + endpoint.id ç>">
 								<h3 class="route"><ç= endpoint.route ç></h1>
-								<div class="description"><ç- endpoint.description.en.split('\n').map((text) => `<p>${text}</p>`).join('') ç></div>
+								<div class="description"><ç- endpoint.description.en.split("\n").map((text) => `<p>${text}</p>`).join("") ç></div>
 								<ç if (endpoint.parameters) { ç>
 									<div class="parameter">
 										<ç endpoint.parameters.forEach((parameter) => { ç>
 											<div class="parameter-name"><ç- parameter[0] ç></div>
-											<div class="parameter-description" switch=<ç- '"' + parameter[1].en.replaceAll('\n', '<br/>').replaceAll('"', "&quot;") + '"' ç>><ç- parameter[1].en.replaceAll('\n', '<br/>') ç></div>
+											<div class="parameter-description" switch="<ç- parameter[1].en.replace(/\n/g, "<br>").replace(/\"/g, "&quot;") ç>"><ç- parameter[1].en.replace(/\n/g, "<br>") ç></div>
 										<ç }); ç>
 									</div>
 								<ç } ç>
@@ -81,7 +82,7 @@
 									<div class="examples">
 										<ç endpoint.examples.forEach((example) => { ç>
 											<div class="example"><p><span pos="right">&gt;</span>&nbsp;<ç- example[0] ç></p></div>
-											<div class="example-output"><ç- example[1].split('\n').map((line) => '<p>' + line.replaceAll('  ', '&nbsp;&nbsp;') + '</p>').join('') ç></div>
+											<div class="example-output"><ç- example[1].split("\n").map((line) => "<p>" + line.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;") + "</p>").join("") ç></div>
 										<ç }); ç>
 									</div>
 								<ç }; ç>
@@ -107,32 +108,32 @@
 		};
 
 		(function changeLanguage () {
-			const div = document.querySelector('.language-wrapper div');
-			div.addEventListener('click', detectLanguageChange);
+			const div = document.querySelector(".language-wrapper div");
+			div.addEventListener("click", detectLanguageChange);
 
 			function detectLanguageChange () {
-				const language = getCheckedValue('language')
+				const language = getCheckedValue("language")
 
 				// switch (language) {
-				// 	case 'pt-BR':
-				// 		document.querySelector('p#language').innerHTML = 'Idioma';
-				// 	case 'en-US':
-				// 		document.querySelector('p#language').innerHTML = 'Language';
+				// 	case "pt-BR":
+				// 		document.querySelector("p#language").innerHTML = "Idioma";
+				// 	case "en-US":
+				// 		document.querySelector("p#language").innerHTML = "Language";
 				// 	default:
-				// 		document.querySelector('p#language').innerHTML = 'Language';
+				// 		document.querySelector("p#language").innerHTML = "Language";
 				// }
 			};
 		})();
 
 		(function toggleExamples () {
-			const exampleHeaders = document.querySelectorAll('div.example');
+			const exampleHeaders = document.querySelectorAll("div.example");
 
 			exampleHeaders.forEach((example) => {
-				example.addEventListener('click', (ev) => {
-					if (example.querySelector(':scope > p > span').getAttribute('pos') === 'right') {
-						example.querySelector(':scope > p > span').setAttribute('pos', 'down');
+				example.addEventListener("click", (ev) => {
+					if (example.querySelector(":scope > p > span").getAttribute("pos") === "right") {
+						example.querySelector(":scope > p > span").setAttribute("pos", "down");
 					} else {
-						example.querySelector(':scope > p > span').setAttribute('pos', 'right');
+						example.querySelector(":scope > p > span").setAttribute("pos", "right");
 					};
 				});
 			});
@@ -140,57 +141,55 @@
 
 		(async function putVersionOnFooter () {
 			const version = await fetch(`/version`).then((res) => res.json());
-			const footer = document.querySelector('footer');
+			const footer = document.querySelector("footer");
 
 			footer.innerHTML += `<p><small>ver. ${version.server}</small></p>`;
 		})();
 
 		(function collapseAside () {
-			const aside = document.querySelector('aside');
-			const hb = aside.querySelector('#hb');
+			const aside = document.querySelector("aside");
+			const hb = aside.querySelector("#hb");
 
-			window.addEventListener('click' , (ev) => {
+			window.addEventListener("click" , (ev) => {
 				console.log(ev);
 
 				const target = ev.touches ? ev.touches[0].target : ev.target;
 				
 				if (hb.contains(target) || target === hb) {
-					hb.classList.toggle('hidden');
-				} else if (!(aside.contains(target)) && !(hb.classList.contains('hidden')) || target.tagName === 'A') {
-					hb.querySelector('#reverse').beginElement();
-					hb.classList.toggle('hidden');
+					hb.classList.toggle("hidden");
+				} else if (!(aside.contains(target)) && !(hb.classList.contains("hidden")) || target.tagName === "A") {
+					hb.querySelector("#reverse").beginElement();
+					hb.classList.toggle("hidden");
 				};
 			});
 		})();
 
 		(function setAsideMinWidth () {
-			const aside = document.querySelector('aside');
-			const container = document.querySelector('div#container');
-			const lis = container.querySelectorAll('ul li');
+			const aside = document.querySelector("aside");
+			const container = document.querySelector("div#container");
+			const lis = container.querySelectorAll("ul li");
+			const minWidth = Array.from(lis).reduce((prev, curr) => {return Math.max(prev, curr.textContent.length)}, "");
 
-			let minWidth = 0;
-			lis.forEach((li) => {
-				minWidth = Math.max(minWidth, li.textContent.length);
-			});
+			console.log(minWidth);
 
-			aside.style.setProperty('--min-width', (minWidth / 1.25) + 'em');
+			aside.style.setProperty("--min-width", (minWidth / 1.25) + "em");
 		})();
 
 		(function setExampleHeight () {
-			const examples = document.querySelectorAll('.example-output');
+			const examples = document.querySelectorAll(".example-output");
 
 			examples.forEach((example) => {
-				const lines = Array.from(example.querySelectorAll('p')).length;
+				const lines = Array.from(example.querySelectorAll("p")).length;
 
-				example.style.setProperty('--example-height', 'calc(' + (lines * 1.125) + 'em + 3px)')
+				example.style.setProperty("--example-height", "calc(" + (lines * 1.125) + "em + 3px)")
 			})
 		})();
 
 		(function toggleLanguage () {
-			const languageInputs = document.querySelectorAll('input[name="language"]');
+			const languageInputs = document.querySelectorAll("input[name=\"language\"]");
 			
 			languageInputs.forEach((input) => {
-				input.addEventListener('click', (ev) => {
+				input.addEventListener("click", (ev) => {
 
 				});
 			});
