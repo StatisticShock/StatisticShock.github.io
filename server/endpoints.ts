@@ -30,7 +30,7 @@ export const typeOfEndpoints: Array<Methods> = [
 		endpoints: [
 			{ // myanimelist
 				id: "myanimelist",
-				route: "/contents/myanimelist/<type>/?username&offset",
+				route: "/myanimelist/<type>/?username&offset",
 				description: {
 					en: "Returns a list of 100 last updated anime/manga.",
 					pt: "Retorna uma lista dos 100 últimos animes/mangá atualizados."
@@ -71,7 +71,7 @@ export const typeOfEndpoints: Array<Methods> = [
 			},
 			{ // contents
 				id: "contents",
-				route: "/contents/contents/<type>?",
+				route: "/contents/<type>?",
 				description: {
 					en: "This endpoint returns a JSON that contains <b>shortcut</b> data, <b>headers</b> links, <b>MyFigureCollection</b> figure data and <b>gamecards</b> data.",
 					pt: "Este endpoint retorna um JSON que contém dados de <b>shortcut</b>, links de <b>headers</b>, dados de figura de <b>MyFigureCollection</b> e dados de <b>gamecards</b>."
@@ -80,8 +80,8 @@ export const typeOfEndpoints: Array<Methods> = [
 					[
 						"type",
 						{
-							en: "Optional. Accepts "+ [cb("shortcuts"), cb("gamecards"), cb("headers")].join(", ") + " and " + cb("mfc") + ".\nSelects which type of data will be colected.",
-							pt: "Opcional. Aceita "+ [cb("shortcuts"), cb("gamecards"), cb("headers")].join(", ") + " e " + cb("mfc") + ".\nSeleciona qual tipo de dados serão coletados."
+							en: "Optional. Accepts " + [cb("shortcuts"), cb("gamecards"), cb("headers"), cb("mfc"), cb("my_beloved_headers")].join(", ") + " and " + cb("my_beloved_shop") + ".\nSelects which type of data will be colected.",
+							pt: "Opcional. Aceita " + [cb("shortcuts"), cb("gamecards"), cb("headers"), cb("mfc"), cb("my_beloved_headers")].join(", ") + " e " + cb("my_beloved_shop") + ".\nSeleciona qual tipo de dados serão coletados."
 						}
 					]
 				],
@@ -98,7 +98,7 @@ export const typeOfEndpoints: Array<Methods> = [
 			},
 			{ // retroAchievements
 				id: "retro-achievements",
-				route: "/contents/retroAchievements/<language>/",
+				route: "/retroAchievements/<language>/",
 				description: {
 					en: "",
 					pt: ""
@@ -121,7 +121,7 @@ export const typeOfEndpoints: Array<Methods> = [
 			},
 			{ // version
 				id: "version",
-				route: "/contents/version/",
+				route: "/version/",
 				description: {
 					en: "Gets up-to-date version of the <a href=\"https://statisticshock.github.io/\" target=\"_blank\">webpage</a> and this API.",
 					pt: "Obtém a versão atualizada da <a href=\"https://statisticshock.github.io/\" target=\"_blank\">página da web</a> e desta API."
