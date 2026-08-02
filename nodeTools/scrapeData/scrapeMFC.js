@@ -6,7 +6,6 @@ export default class ScrapeFunctions {
     static async readMFCItem({ elementId, typeOfFigure, browser }) {
         try {
             let id = elementId;
-            let href = `${constants.mfcLink}/item/${elementId}`;
             let img = `https://storage.googleapis.com/statisticshock_github_io_public/mfc/main_images/${elementId}.webp`;
             let img_sufix;
             let icon = `https://storage.googleapis.com/statisticshock_github_io_public/mfc/icons/${elementId}.webp`;
@@ -69,7 +68,6 @@ export default class ScrapeFunctions {
             ;
             const itemData = {
                 id: id,
-                href: href,
                 icon: icon,
                 img: img,
                 img_sufix: img_sufix,

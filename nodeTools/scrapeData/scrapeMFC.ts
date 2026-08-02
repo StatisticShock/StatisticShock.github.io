@@ -9,7 +9,6 @@ export default class ScrapeFunctions {
 	static async readMFCItem ({ elementId, typeOfFigure, browser }: { elementId: string, typeOfFigure: "Owned"|"Ordered"|"Wished", browser: puppeteer.Browser }): Promise<MFC|null> {
 		try {
 			let id: string = elementId;
-			let href: string = `${constants.mfcLink}/item/${elementId}`;
 			let img: string = `https://storage.googleapis.com/statisticshock_github_io_public/mfc/main_images/${elementId}.webp`;
 			let img_sufix: string;
 			let icon: string = `https://storage.googleapis.com/statisticshock_github_io_public/mfc/icons/${elementId}.webp`;
@@ -72,7 +71,6 @@ export default class ScrapeFunctions {
 
 			const itemData: MFC = {
 				id: id,
-				href: href,
 				icon: icon,
 				img: img,
 				img_sufix: img_sufix,

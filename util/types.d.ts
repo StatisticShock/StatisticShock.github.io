@@ -85,7 +85,6 @@ export type MALEntry = {
 //PAGE CONTENT
 export type MFC = {
 	id: string;
-	href: string;
 	img: string;
 	img_sufix: string;
 	icon: string;
