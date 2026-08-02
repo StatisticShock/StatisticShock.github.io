@@ -1,24 +1,24 @@
-import { MFC } from '../../util/types.js';
+import { MFC } from "../../util/types.js";
 import CustomFunctions from "./functions.js";
 import { constants } from "./constants.js";
-import puppeteer from 'puppeteer';
-import * as cheerio from 'cheerio';
-import ScrapeFunctions from './scrapeMFC.js';
-import GoogleClass from './googleClass.js';
+import puppeteer from "puppeteer";
+import * as cheerio from "cheerio";
+import ScrapeFunctions from "./scrapeMFC.js";
+import GoogleClass from "./googleClass.js";
 
 const browser = await puppeteer.launch({
 	headless: true,
-	args: ['--no-sandbox', '--disable-setuid-sandbox']
+	args: ["--no-sandbox", "--disable-setuid-sandbox"]
 });
 
 async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<void> {
-	console.log('Starting to fetch items...');
+	console.log("Starting to fetch items...");
 
-	const figureMap: {[k: string]: Pick<MFC, 'type'> & {operation: 'none'|'add'|'delete'|'update'}} = {};
+	const figureMap: {[k: string]: Pick<MFC, "type"> & {operation: "none"|"add"|"delete"|"update"}} = {};
 	const figuresChanges: {
-		toAdd: Array<MFC>,
-		toUpdate: Array<[MFC, MFC]>,
-		toDelete: Array<MFC>
+		toAdd: MFC[],
+		toUpdate: [MFC, MFC][],
+		toDelete: MFC[],
 	} = {
 		toAdd: [],
 		toUpdate: [],
@@ -30,9 +30,9 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 		toUpdate: string,
 		toDelete: string
 	} = {
-		toAdd: 'POST',
-		toUpdate: 'PUT',
-		toDelete: 'DELETE'
+		toAdd: "POST",
+		toUpdate: "PUT",
+		toDelete: "DELETE"
 	};
 
 	const changes: {
@@ -45,17 +45,17 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 		updates: []
 	};
 
-	const changelogs: Array<{type: 'aditions'|'deletions'|'updates', message: string}> = [
-		{type: 'aditions', message: 'Added figures:'},
-		{type: 'updates', message: 'Updated figures:'},
-		{type: 'deletions', message: 'Deleted figures:'}
+	const changelogs: Array<{type: "aditions"|"deletions"|"updates", message: string}> = [
+		{type: "aditions", message: "Added figures:"},
+		{type: "updates", message: "Updated figures:"},
+		{type: "deletions", message: "Deleted figures:"}
 	];
 
 	if (scrapeData) {
-		const json: Array<MFC> = (await fetch(`${constants.server}contents/mfc/`).then((res) => res.json()))['mfc'];
+		const json: Array<MFC> = (await fetch(`${constants.server}contents/mfc/`).then((res) => res.json()))["mfc"];
 
 		if (Array.isArray(json)) {
-			CustomFunctions.log('JSON file sucessfully loaded');
+			CustomFunctions.log("JSON file sucessfully loaded");
 		} else {
 			CustomFunctions.log("Couldn't fetch JSON file.");
 			return;
@@ -64,35 +64,35 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 		for (const figure of json) {
 			figureMap[figure.id] = {
 				type: figure.type,
-				operation: 'delete'
+				operation: "delete"
 			};
 		}
 
 		for (const link of constants.links) {
 			const page = await browser.newPage();
-			await page.setUserAgent({ userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36' });
-			await page.evaluateOnNewDocument(() => { Object.defineProperty(navigator, 'webdriver', { get: () => false }); });
+			await page.setUserAgent({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36" });
+			await page.evaluateOnNewDocument(() => { Object.defineProperty(navigator, "webdriver", { get: () => false }); });
 			await page.goto(link[1]);
 			const $ = cheerio.load(await page.content());
 			await page.close();
 
-			const ids = $('span.item-icon a').toArray().map((el, i) => $(el).attr('href')!.split('/').pop()) as Array<string>;
+			const ids = $("span.item-icon a").toArray().map((el, i) => $(el).attr("href")!.split("/").pop()) as Array<string>;
 			
 			ids.forEach((id) => {
 				if (!figureMap[id]) {
 					figureMap[id] = {
 						type: link[0],
-						operation: 'add'
+						operation: "add"
 					};
 				} else if (figureMap[id].type !== link[0]) {
 					figureMap[id] = {
 						type: link[0],
-						operation: 'update'
+						operation: "update"
 					};
 				} else if (figureMap[id].type === link[0]) {
 					figureMap[id] = {
 						type: link[0],
-						operation: 'none'
+						operation: "none"
 					};
 				};
 			});
@@ -101,11 +101,13 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 		};
 
 		for (const [id, data] of Object.entries(figureMap)) {
-			if (data.operation === 'none') continue;
+			if (data.operation === "none") continue;
 			
-			CustomFunctions.log(`Fetching figure from ID ${id}...`);
+			if (data.operation !== "delete") {
+				CustomFunctions.log(`Fetching figure from ID ${id}...`);
+			};
 			
-			const mfc = await ScrapeFunctions.readMFCItem({
+			const mfc = data.operation === "delete" ? json.filter((figure) => figure.id === id)[0] : await ScrapeFunctions.readMFCItem({
 				elementId: id,
 				typeOfFigure: data.type,
 				browser: browser
@@ -114,21 +116,21 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 			if (mfc === null) continue;
 
 			switch (data.operation) {
-				case 'add':
+				case "add":
 					figuresChanges.toAdd.push(mfc);
 					changes.aditions.push(id);
 					break;
-				case 'update':
+				case "update":
 					figuresChanges.toUpdate.push([json.filter((figure) => figure.id === id)[0], mfc]);
 					changes.updates.push(id);
 					break;
-				case 'delete':
+				case "delete":
 					figuresChanges.toDelete.push(mfc);
 					changes.deletions.push(id);
 					break;
 				default:
 					break;
-			}
+			};
 		};
 
 		const maxUploadsPerRequest: number = 15;
@@ -137,13 +139,23 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 				let point = 0;
 
 				do {
-					await fetch(`${constants.server}mfc`, {
+					const requestInit = {
 						method: value,
 						body: JSON.stringify(figuresChanges[key].slice(point, point + maxUploadsPerRequest)),
 						headers: {
 							"Content-Type": "application/json"
 						}
-					});
+					};
+
+					const uploadReponse = await fetch(`${constants.server}contents/mfc`, requestInit);
+
+					if (!uploadReponse.ok) {
+						CustomFunctions.log(
+							`Tried to ${value.toLowerCase()} figures from following IDs:\n` +
+							`• ${figuresChanges[key].slice(point, point + maxUploadsPerRequest).map((i) => i.id || i[0].id).join("\n• ")}\n\n` + 
+							`And got status ${uploadReponse.status} as response. Error message:\n"${(await uploadReponse.json()).message}"`
+						);
+					};
 
 					point += maxUploadsPerRequest;
 				} while (point <= figuresChanges[key].length);
@@ -152,18 +164,18 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 	};
 
 	if (scrapeImages) {
-		const json: Array<MFC> = (await fetch(`${constants.server}contents/mfc/`).then((res) => res.json()))['mfc'];
+		const json: Array<MFC> = (await fetch(`${constants.server}contents/mfc/`).then((res) => res.json()))["mfc"];
 
 		if (Array.isArray(json)) {
-			CustomFunctions.log('JSON file sucessfully loaded');
+			CustomFunctions.log("JSON file sucessfully loaded");
 		} else {
 			CustomFunctions.log("Couldn't fetch JSON file.");
 			return;
 		};
 
-		const folderMap: Array<{folderName: string, size: 'icon'|'main'}> = [
-			{folderName: 'icons', size: 'icon'},
-			{folderName: 'main_images', size: 'main'}
+		const folderMap: Array<{folderName: string, size: "icon"|"main"}> = [
+			{folderName: "icons", size: "icon"},
+			{folderName: "main_images", size: "main"}
 		];
 
 		for (const folder of folderMap) {
@@ -178,7 +190,7 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 					});
 
 					if (fileToUpload) {
-						const destFilename = fileToUpload.split('/').pop();
+						const destFilename = fileToUpload.split("/").pop();
 						const destination = `mfc/${folder.folderName}/${destFilename}`;
 						await GoogleClass.bucket.upload(fileToUpload, {destination: destination});
 						CustomFunctions.log(`File uploaded to ${destination}`);
@@ -194,7 +206,7 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 
 	for (const changelog of changelogs) {
 		if (changes[changelog.type].length > 0) {
-			CustomFunctions.log(changelog.message + changes[changelog.type].reduce((prev, curr) => {return prev + '\n• figure from ID ' + curr}, '') + '\n');
+			CustomFunctions.log(changelog.message + changes[changelog.type].reduce((prev, curr) => {return prev + "\n• figure from ID " + curr}, "") + "\n");
 			await CustomFunctions.sleep(150);
 		};
 	};
@@ -204,32 +216,32 @@ export async function main(): Promise<void> {
 	const args = process.argv.slice(2);
 
 	if (args.length === 0) {
-		console.log('Closing conections...');
+		console.log("\nClosing conections...");
 		setTimeout(() => process.exit(0), 2000);
 		return;
 	};
 
-	const badArgs = args.filter((arg) => arg !== 'data' && arg !== 'images' && arg !== 'bot');
+	const badArgs = args.filter((arg) => arg !== "data" && arg !== "images" && arg !== "bot");
 	
 	if (badArgs.length > 0) {
-		CustomFunctions.log('Invalid arguments:\n' + badArgs.reduce((prev, curr) => {return prev + '\n• ' + curr}, ''));
-		console.log('Closing conections...');
+		CustomFunctions.log("Invalid arguments:\n" + badArgs.reduce((prev, curr) => {return prev + "\n• " + curr}, ""));
+		console.log("\nClosing conections...");
 		setTimeout(() => process.exit(0), 2000);
 		return;
 	};
 
-	const scrapeData = args.includes('data');
-	const scrapeImages = args.includes('images');
-	const isRunByBot = args.includes('bot');
+	const scrapeData = args.includes("data");
+	const scrapeImages = args.includes("images");
+	const isRunByBot = args.includes("bot");
 
-	if (isRunByBot) CustomFunctions.log('ESTA EXECUÇÃO FOI ATIVADA POR CLEYTON PELO TELEGRAM.\n\n');
+	if (isRunByBot) CustomFunctions.log("ESTA EXECUÇÃO FOI ATIVADA POR CLEYTON PELO TELEGRAM.\n\n");
 
 	try {
 		await fetchData(scrapeData, scrapeImages);
 	} catch (err: any) {
-		CustomFunctions.log('Error in script: ' + err.message);
+		CustomFunctions.log("Error in script: " + err.message);
 	} finally {
-		console.log('Closing connections...');
+		console.log("\nClosing conections...");
 		setTimeout(() => process.exit(0), 2000);
 	};
 };
