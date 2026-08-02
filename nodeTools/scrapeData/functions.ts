@@ -6,7 +6,7 @@ import util from 'util';
 import { pipeline } from 'stream';
 
 export default class CustomFunctions {
-	static log (message: string | number, isRunByBot: boolean = false) {
+	static log (...message) {
 		const dirName = 'logs'
 		const __filename = fileURLToPath(import.meta.url);
 		const __dirname = path.dirname(__filename);
@@ -19,7 +19,7 @@ export default class CustomFunctions {
 	
 		const logFile = fs.createWriteStream(path.join(logDir, `debug_${date}.log`), { flags: 'a' });
 		
-		console.log(message);
+		console.log(...message);
 		logFile.write(`[${Intl.DateTimeFormat('pt-BR', {hour: 'numeric', minute: 'numeric', second: 'numeric'}).format(new Date())}] ${message}\n`);
 	};
 

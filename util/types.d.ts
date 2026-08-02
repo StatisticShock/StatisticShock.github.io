@@ -95,7 +95,7 @@ export type MFC = {
 	source_jap: string;
 	classification: string;
 	classification_jap: string;
-	category: "Prepainted"|"Action/Dolls"|"Trading";
+	category: "Prepainted"|"Action/Dolls"|"Trading"|"";
 	tags: string;
 	type: "Wished"|"Owned"|"Ordered";
 	title: string;

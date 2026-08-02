@@ -8,6 +8,7 @@
       "node",
     ],
 	"noImplicitAny": false,
+	"noEmitOnError": true
   },
   "include": [
 	".",

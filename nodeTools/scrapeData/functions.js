@@ -5,7 +5,7 @@ import { exec } from 'child_process';
 import util from 'util';
 import { pipeline } from 'stream';
 export default class CustomFunctions {
-    static log(message, isRunByBot = false) {
+    static log(...message) {
         const dirName = 'logs';
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
@@ -17,7 +17,7 @@ export default class CustomFunctions {
         const startDate = new Date(new Date().getTime() - (3 * 60 * 60 * 1000));
         const date = startDate.toISOString().split('T')[0];
         const logFile = fs.createWriteStream(path.join(logDir, `debug_${date}.log`), { flags: 'a' });
-        console.log(message);
+        console.log(...message);
         logFile.write(`[${Intl.DateTimeFormat('pt-BR', { hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(new Date())}] ${message}\n`);
     }
     ;
