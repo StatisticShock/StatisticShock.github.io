@@ -333,14 +333,18 @@ app.get("/retroachievements/:language/", async (req: express.Request, res: expre
 		consoles.push(json);
 	}
 
-	await Promise.all([getAndFormatConsoles(), getAndFormatAwards()]);
+	try {
+		await Promise.all([getAndFormatConsoles(), getAndFormatAwards()]);
+		
+		const output: MyTypes.RetroAchievementsOutput = {
+			awards: formattedAwards,
+			consoles: consoles[0],
+		};
 
-	const output: MyTypes.RetroAchievementsOutput = {
-		awards: formattedAwards,
-		consoles: consoles[0],
-	}
-
-	res.status(200).json(output);
+		res.status(200).json(output);
+	} catch (err: any) {
+		return res.status(500).json({ message: "Error: " + err.message });
+	};
 });
 
 app.post("/image/:small?", upload.single("image"), async (req: express.Request, res: express.Response) => {

@@ -310,12 +310,18 @@ app.get("/retroachievements/:language/", async (req, res) => {
         let json = await ra.getConsoleIds(raAuthorization);
         consoles.push(json);
     }
-    await Promise.all([getAndFormatConsoles(), getAndFormatAwards()]);
-    const output = {
-        awards: formattedAwards,
-        consoles: consoles[0],
-    };
-    res.status(200).json(output);
+    try {
+        await Promise.all([getAndFormatConsoles(), getAndFormatAwards()]);
+        const output = {
+            awards: formattedAwards,
+            consoles: consoles[0],
+        };
+        res.status(200).json(output);
+    }
+    catch (err) {
+        return res.status(500).json({ message: "Error: " + err.message });
+    }
+    ;
 });
 app.post("/image/:small?", upload.single("image"), async (req, res) => {
     const { small } = req.params;
