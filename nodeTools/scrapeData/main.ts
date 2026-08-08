@@ -213,7 +213,7 @@ async function fetchData(scrapeData: boolean, scrapeImages: boolean): Promise<vo
 };
 
 export async function main(): Promise<void> {
-	const args = process.argv.slice(2);
+	const args = process.argv.filter ((arg) => /^\w+$/.test(arg)).slice(2);
 
 	if (args.length === 0) {
 		console.log("\nClosing conections...");
