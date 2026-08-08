@@ -1,10 +1,10 @@
-import { MFC } from "../../util/types.js";
-import CustomFunctions from "./functions.js";
-import { constants } from "./constants.js";
 import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
-import ScrapeFunctions from "./scrapeMFC.js";
-import GoogleClass from "./googleClass.js";
+import type { MFC } from "../../util/types.d.ts";
+import { constants } from "./constants.ts";
+import CustomFunctions from "./functions.ts";
+import ScrapeFunctions from "./scrapeMFC.ts";
+import GoogleClass from "./googleClass.ts";
 
 const browser = await puppeteer.launch({
 	headless: true,

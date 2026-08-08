@@ -1,9 +1,9 @@
 import * as cheerio from "cheerio";
 import * as fs from "fs";
-import { MFC } from "../../util/types.js";
 import puppeteer from "puppeteer";
-import CustomFunctions from "./functions.js";
-import { constants } from "./constants.js";
+import type { MFC } from "../../util/types.d.ts";
+import { constants } from "./constants.ts";
+import CustomFunctions from "./functions.ts";
 
 export default class ScrapeFunctions {
 	static async readMFCItem ({ elementId, typeOfFigure, browser }: { elementId: string, typeOfFigure: "Owned"|"Ordered"|"Wished", browser: puppeteer.Browser }): Promise<MFC|null> {
