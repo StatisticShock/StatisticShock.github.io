@@ -1,85 +1,79 @@
-const cacheName = "v1";
-const cacheAssets = [
+const CACHE_NAME = "v3";
+
+const CACHE_ASSETS = [
+	"./",
 	"./index.html",
 	"./404.html",
-	"./src",
-	"./util",
+	"./pages/comprinhas/index.html",
+	"./stylesheets/style.css",
+	"./stylesheets/comprinhas.css",
+	"./src/fixImages.js",
+	"./src/script.js",
+	"./src/shared.js",
+	"./util/functions.js",
+	"./util/server-url.js",
 ];
-const cacheMaxTime = 60 * 60 * 1000;
-const isExpired = async (cache) => {
-	const currentCache = await caches.open(cache);
-	const meta = await currentCache.match("meta");
 
-	if (!meta) return false;
-	const { time } = await meta.json().catch(() => ({ time: 0 }));
-	return (Date.now() - time) > cacheMaxTime;
-};
-
-const updateMeta = async () => {
-	const cache = await caches.open(cacheName);
-	await cache.put("meta", new Response(JSON.stringify({ time: Date.now() })));
-};
-
-self.addEventListener("install", (ev) => {
-	console.info(`Service Worker ${cacheName}: installed.`);
-
-	ev.waitUntil(
-		caches
-			.open(cacheName)
-			.then(async (cache) => {
-				console.info(`Service Worker ${cacheName}: caching files.`);
-				await cache.addAll(cacheAssets);
-				await cache.put("meta", new Response(JSON.stringify({ time: Date.now() })));
-			})
-			.then(() => self.skipWaiting())
-	);
-});
-
-self.addEventListener("activate", (ev) => {
-	console.info(`Service Worker ${cacheName}: activated.`);
-
-	ev.waitUntil(
-		caches.keys()
-			.then((cacheNames) => {
-				return Promise.all(
-					cacheNames.map((cache) => {
-						if (cache !== cacheName) {
-							console.info(`Service Worker ${cacheName}: clearing old cache ${cache}`);
-							return caches.delete(cache);
-						};
-					})
-				);
-			})
-			.then(() => self.clients.claim())
+self.addEventListener("install", event => {
+	event.waitUntil(
+		caches.open(CACHE_NAME).then(cache => {
+			return cache.addAll(CACHE_ASSETS);
+		})
 	);
 
-	caches.open(cacheName).then((cache) => cache.put("meta", new Response(JSON.stringify({ time: Date.now() }))));
+	self.skipWaiting();
 });
 
-self.addEventListener("fetch", (ev) => {
-	if (ev.request.method !== "GET") return;
-
-	ev.respondWith(
+self.addEventListener("activate", event => {
+	event.waitUntil(
 		(async () => {
-			const res = await caches.match(ev.request);
-			const expired = await isExpired(cacheName);
+			const keys = await caches.keys();
 
-			if (res && (!expired || ev.request.url.endsWith(".webp") || ev.request.url.endsWith(".jpg") || ev.request.url.endsWith(".jpeg") || ev.request.url.endsWith(".png"))) {
-				console.log(expired, ev.request.url);
-				return res;
-			}
+			await Promise.all(
+				keys
+					.filter(key => key !== CACHE_NAME)
+					.map(key => caches.delete(key))
+			);
 
-			const networkRes = await fetch(ev.request);
-			if (!networkRes || networkRes.status !== 200) { //If it is broken, won"t cache it
-				return networkRes;
-			}
-
-			const clone = networkRes.clone();
-			const cache = await caches.open(cacheName);
-			cache.put(ev.request, clone);
-			updateMeta();
-
-			return networkRes;
+			await self.clients.claim();
 		})()
 	);
 });
+
+self.addEventListener("fetch", event => {
+	const request = event.request;
+
+	if (request.method !== "GET") return;
+
+	event.respondWith(
+		(async () => {
+			const cached = await caches.match(request);
+
+			if (cached) {
+				event.waitUntil(updateCache(request));
+				return cached;
+			}
+
+			return updateCache(request);
+		})()
+	);
+});
+
+async function updateCache(request) {
+	try {
+		const response = await fetch(request);
+
+		if (response.ok) {
+			const cache = await caches.open(CACHE_NAME);
+			await cache.put(request, response.clone());
+		}
+
+		return response;
+	} catch (error) {
+		const cached = await caches.match(request);
+
+		if (cached) return cached;
+
+		throw error;
+	}
+};
