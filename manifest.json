@@ -13,12 +13,12 @@
 			"type": "image/svg+xml"
 		},
 		{
-			"src": "/favicon/icon-maskable-512.png",
+			"src": "/favicon/icon-maskable-x512.png",
 			"sizes": "512x512",
 			"type": "image/png",
 			"purpose": "maskable"
 		},{
-			"src": "/favicon/icon-monochrome-512.png",
+			"src": "/favicon/icon-monochrome-x512.png",
 			"sizes": "512x512",
 			"type": "image/png",
 			"purpose": "monochrome"
