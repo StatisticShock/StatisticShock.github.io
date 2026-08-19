@@ -1,30 +1,29 @@
 {
-  "name": "StatisticShock Index",
-  "short_name": "SS Index",
-  "description": "A custom index webpage",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#f02475",
-  "icons": [
-    {
-      "src": "/favicon/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
-    },
-	{
-		"src": "/favicon/favicon-adapatative.png",
-		"sizes": "any",
-		"type": "image/png",
-		"purpose": "maskable"
-	},{
-		"src": "/favicon/favicon-monochrome.png",
-		"sizes": "any",
-		"type": "image/png",
-		"purpose": "monchrome"
-	}
-  ],
-  "scope": "/",
-  "orientation": "portrait"
+	"name": "StatisticShock Index",
+	"short_name": "SS Index",
+	"description": "A custom index webpage",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#000000",
+	"theme_color": "#f02475",
+	"icons": [
+		{
+			"src": "/favicon/favicon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml"
+		},
+		{
+			"src": "/favicon/icon-maskable-512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "maskable"
+		},{
+			"src": "/favicon/icon-monochrome-512.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "monochrome"
+		}
+	],
+	"scope": "/",
+	"orientation": "portrait"
 }
-
