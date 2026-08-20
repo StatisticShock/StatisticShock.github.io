@@ -1,4 +1,4 @@
-const CACHE_NAME = "v3";
+const CACHE_NAME = "v4";
 
 const CACHE_ASSETS = [
 	"./",
@@ -12,6 +12,15 @@ const CACHE_ASSETS = [
 	"./src/shared.js",
 	"./util/functions.js",
 	"./util/server-url.js",
+	"./images/2b.webp",
+	"./images/amiami.webp",
+	"./images/buyee.webp",
+	"./images/google.webp",
+	"./images/Ohto_Ai_Flamengo.webp",
+	"./images/reddit-google.webp",
+	"./images/reddit-icon.webp",
+	"./images/refresh.svg",
+	"./images/wikipedia.webp",
 ];
 
 self.addEventListener("install", event => {
@@ -63,10 +72,10 @@ async function updateCache(request) {
 	try {
 		const response = await fetch(request);
 
-		if (response.ok) {
+		if (response.ok || response.type === "opaque") {
 			const cache = await caches.open(CACHE_NAME);
 			await cache.put(request, response.clone());
-		}
+		};
 
 		return response;
 	} catch (error) {
@@ -75,5 +84,5 @@ async function updateCache(request) {
 		if (cached) return cached;
 
 		throw error;
-	}
+	};
 };
