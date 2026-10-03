@@ -187,7 +187,7 @@ class PageBehaviour {
         return __awaiter(this, void 0, void 0, function* () {
             const button = document.querySelector('button#refresh-button');
             button.onclick = (ev) => __awaiter(this, void 0, void 0, function* () {
-                yield caches.delete('v1');
+                yield caches.delete('v4');
                 window.location.reload();
             });
         });

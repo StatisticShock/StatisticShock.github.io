@@ -183,7 +183,7 @@ class PageBehaviour {
 		const button = document.querySelector('button#refresh-button') as HTMLButtonElement;
 		
 		button.onclick = async (ev) => {
-			await caches.delete('v1');
+			await caches.delete('v4');
 			window.location.reload();
 		};
 	};
