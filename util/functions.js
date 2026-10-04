@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 export default class CustomFunctions {
     static shuffle(arr) {
         let j, x, index;
@@ -47,8 +56,10 @@ export default class CustomFunctions {
             return false;
     }
     ;
-    static async sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    static sleep(ms) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        });
     }
     ;
     static normalize(string) {
@@ -56,7 +67,7 @@ export default class CustomFunctions {
     }
     ;
     static vlookup(key, array, end, start) {
-        const startKey = start ?? 1;
+        const startKey = start !== null && start !== void 0 ? start : 1;
         const endKey = end;
         const row = array.filter((row) => row[startKey - 1] === key);
         return row.length > 0 ? row[0][endKey - 1] : `There is no such key "${key}" (${typeof key}) at position #${startKey}.`;
@@ -218,8 +229,9 @@ export default class CustomFunctions {
             for (const data of currentData) {
                 const dataWhichIsNotArray = {};
                 headersToUse.filter((header) => header.split('.').length === depth + 1).forEach((header) => {
+                    var _a;
                     const thisParameter = header.split('.')[depth];
-                    dataWhichIsNotArray[thisParameter] = [data[thisParameter] ?? null, header.replace('root.', '')];
+                    dataWhichIsNotArray[thisParameter] = [(_a = data[thisParameter]) !== null && _a !== void 0 ? _a : null, header.replace('root.', '')];
                 });
                 if (parent)
                     dataWhichIsNotArray['parent_from_this_method'] = parent;

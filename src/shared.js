@@ -135,7 +135,7 @@ class PageBehaviour {
             }
             ;
             let target = e.target;
-            if ((target === this || CustomFunctions.isParent(target, this.querySelector('.pop-up-header'))) &&
+            if ((target === this || CustomFunctions.isParent(target, this.querySelector('pop-up-header'))) &&
                 !(target instanceof HTMLImageElement) &&
                 !(target instanceof HTMLParagraphElement) &&
                 !(target instanceof HTMLSpanElement) &&

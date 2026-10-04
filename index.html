@@ -75,10 +75,10 @@
 				<h2>Atalhos&nbsp;<button id="shortcuts-edit-mode" class="edit trigger" shown="false"></button></h2>
 				<block style="max-width: calc(100% - 30px * 2 - 5px * 2);">
 					<grid-container>
-						<a class="pop-up-open reddit-google" alt="Reddit Google Search" style="cursor: pointer;">
-							<img src="./images/reddit-google.webp">
+						<a class="pop-up-open reddit-search" alt="Buscar no Reddit" style="cursor: pointer;">
+							<img src="./images/reddit_snoo.webp">
 						</a>
-						<a class="pop-up-open wikipedia" alt="Wikipedia Search" style="cursor: pointer;">
+						<a class="pop-up-open wikipedia" alt="Buscar no Wikipedia" style="cursor: pointer;">
 							<img src="./images/wikipedia.webp">
 						</a>
 					</grid-container>
@@ -107,19 +107,19 @@
 				<a href="/pages/comprinhas/" style="color: var(--pink-custom);">SHOP</a>
 			</section>
 		</div>
-		<form class="pop-up reddit-google">
-			<div class="pop-up-header">
+		<form class="pop-up reddit-search">
+			<pop-up-header>
 				<div>
-					<img src="./images/google.webp">
-					<img src="./images/reddit-icon.webp">
+					<img src="./images/google.webp" class="google">
+					<img src="./images/duckduckgo.webp" class="duckduckgo" active-search>
 				</div>
 				<button type="button" class="close-button">&times;</button>
-			</div>
+			</pop-up-header>
 			<span>
 				<keys></keys>
 				<input id="keywords-reddit" type="text"><span class='floating-label'>Palavras-chave</span></span>
 			<span>
-				<div id="subreddit-container" class="svg-img"></div>
+				<subreddit></subreddit>
 				<input id="subreddit" type="text"><span class='floating-label'>Subreddit</span>
 			</span>
 			<span>
@@ -128,12 +128,12 @@
 			<button type="button" class="ok-button">OK</button>
 		</form>
 		<form class="pop-up wikipedia">
-			<div class="pop-up-header">
+			<pop-up-header>
 				<div>
 					<img src="./images/wikipedia.webp">
 				</div>
 				<button type="button" class="close-button">&times;</button>
-			</div>
+			</pop-up-header>
 			<span>
 				<keys></keys>
 				<input id="keywords-wikipedia" type="text"><span class="floating-label">Palavras-chave</span>
@@ -141,10 +141,10 @@
 			<button type="button" class="ok-button">OK</button>
 		</form>
 		<form id="create-shortcut" class="pop-up">
-			<div class="pop-up-header">
+			<pop-up-header>
 				Criar Atalho
 				<button type="button" class="close-button">&times;</button>
-			</div>
+			</pop-up-header>
 			<span><input type="text" name="alt"><span class='floating-label'>Nome</span></span>
 			<span><input type="text" name="href"><span class='floating-label'>Link</span></span>
 			<span><input type="text" name="floatingLabel"><span class='floating-label'>Texto</span></span>

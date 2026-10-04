@@ -7,80 +7,80 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import CustomFunctions from '../util/functions.js';
-import { server } from '../util/server-url.js';
-import PageBuildingImport, { TemplateConstructor } from './shared.js';
+import CustomFunctions from "../util/functions.js";
+import { server } from "../util/server-url.js";
+import PageBuildingImport, { TemplateConstructor } from "./shared.js";
 export const toggleExternalDataLoad = true;
 const ua = navigator.userAgent || navigator.vendor || window.opera;
 const mobile = /android|iphone|ipad|ipod|iemobile|blackberry|bada/i.test(ua.toLowerCase());
 class PageBuilding extends PageBuildingImport {
     static resetPopUpsOnOpen() {
-        const buttons = document.querySelectorAll('.close-button');
+        const buttons = document.querySelectorAll(".close-button");
         buttons.forEach((button) => {
             const parent = button.parentElement.parentElement;
             button.onclick = () => {
-                parent.style.display = 'none';
+                parent.style.display = "none";
                 this.setPopUpDefaultValues();
             };
         });
     }
     ;
     static setPopUpDefaultValues() {
-        let keywordsReddit = document.getElementById('keywords-reddit');
-        let subreddit = document.getElementById('subreddit');
-        let toDate = document.getElementById('to-date');
-        let fromDate = document.getElementById('from-date');
-        keywordsReddit.value = '';
-        subreddit.value = '';
+        let keywordsReddit = document.getElementById("keywords-reddit");
+        let subreddit = document.getElementById("subreddit");
+        let toDate = document.getElementById("to-date");
+        let fromDate = document.getElementById("from-date");
+        keywordsReddit.value = "";
+        subreddit.value = "";
         toDate.valueAsDate = new Date();
         fromDate.valueAsDate = new Date(new Date().getFullYear() - 1, new Date().getMonth(), new Date().getDate());
-        let keywordsWikipedia = document.getElementById('keywords-wikipedia');
-        keywordsWikipedia.value = '';
+        let keywordsWikipedia = document.getElementById("keywords-wikipedia");
+        keywordsWikipedia.value = "";
     }
     ;
     static createSkeletons() {
-        const skeleton = 'skeleton';
-        const container = 'skeleton-container';
+        const skeleton = "skeleton";
+        const container = "skeleton-container";
         function createShortcutSkeletons() {
-            const shortcuts = document.querySelector('#shortcuts block-container');
+            const shortcuts = document.querySelector("#shortcuts block-container");
             const maxIcons = 16;
-            const row = Array(maxIcons).fill({ joker: skeleton, alt: '. . .' });
-            new TemplateConstructor(document.querySelector('#shortcuts-template'), Array(5).fill({ jokerContainer: container, joker: skeleton, children: row })).insert(shortcuts);
-            shortcuts.querySelectorAll('img').forEach((img) => img.src = './icon/blank.svg');
+            const row = Array(maxIcons).fill({ joker: skeleton, alt: ". . ." });
+            new TemplateConstructor(document.querySelector("#shortcuts-template"), Array(5).fill({ jokerContainer: container, joker: skeleton, children: row })).insert(shortcuts);
+            shortcuts.querySelectorAll("img").forEach((img) => img.src = "./icon/blank.svg");
         }
         ;
         function createGamecardSkeletons() {
-            const gamecard = document.querySelector('#gaming gaming-container');
+            const gamecard = document.querySelector("#gaming gaming-container");
             const sample = {
-                label: '. . .',
-                joker: 'skeleton',
-                jokerContainer: 'skeleton-container',
+                label: ". . .",
+                joker: "skeleton",
+                jokerContainer: "skeleton-container",
             };
-            new TemplateConstructor(document.querySelector('#gamecard-template'), Array(6).fill(sample)).insert(gamecard);
+            new TemplateConstructor(document.querySelector("#gamecard-template"), Array(6).fill(sample)).insert(gamecard);
         }
         ;
         function createMfcSkeletons() {
-            const mfc = document.querySelector('#my-figure-collection my-figure-collection');
+            const mfc = document.querySelector("#my-figure-collection my-figure-collection");
             const maxIcons = Math.floor(parseInt(getComputedStyle(mfc).width) / (60 + 20)) * 3;
             const sample = {
-                joker: 'skeleton',
-                jokerContainer: 'skeleton-container',
-                icon: './icon/blank.svg'
+                joker: "skeleton",
+                jokerContainer: "skeleton-container",
+                icon: "./icon/blank.svg"
             };
-            new TemplateConstructor(document.querySelector('#mfc-template'), Array(maxIcons).fill(sample)).insert(mfc);
+            new TemplateConstructor(document.querySelector("#mfc-template"), Array(maxIcons).fill(sample)).insert(mfc);
         }
         ;
         function createMalSkeletons() {
-            const mal = document.querySelector('#my-anime-list my-anime-list');
+            const mal = document.querySelector("#my-anime-list my-anime-list");
             const maxIcons = 20;
             const sample = {
-                joker: 'skeleton',
-                rank: ' . . .',
-                title: '. . .',
-                jokerContainer: 'skeleton-container',
-                "main_picture_large": './icon/blank.svg'
+                joker: "skeleton",
+                rank: " . . .",
+                title: ". . .",
+                jokerContainer: "skeleton-container",
+                main_picture_large: "./icon/blank.svg"
             };
-            new TemplateConstructor(document.querySelector('#myanimelist-template'), Array(maxIcons).fill(sample)).insert(mal);
+            new TemplateConstructor(document.querySelector("#myanimelist-template"), Array(maxIcons).fill(sample)).insert(mal);
         }
         createShortcutSkeletons();
         createGamecardSkeletons();
@@ -91,58 +91,64 @@ class PageBuilding extends PageBuildingImport {
 }
 export class ExternalSearch {
     static redditSearchTrigger() {
-        let okButtonReddit = document.querySelector('.pop-up.reddit-google .ok-button');
-        okButtonReddit.onclick = redditSearch;
+        const searchAttribute = "active-search";
+        const popUp = document.querySelector(".pop-up.reddit-search");
+        const searchEngineIcons = popUp.querySelectorAll("pop-up-header > div > img");
+        searchEngineIcons.forEach((icon) => {
+            icon.addEventListener("click", (ev) => {
+                searchEngineIcons.forEach(icon_ => icon_.removeAttribute(searchAttribute));
+                icon.setAttribute(searchAttribute, "");
+            });
+        });
+        popUp.querySelector(".ok-button").onclick = redditSearch;
         function redditSearch() {
             var _a;
-            const keywords = document.getElementById('keywords-reddit');
-            const subreddit = document.getElementById('subreddit');
-            const from = document.getElementById('from-date');
-            const to = document.getElementById('to-date');
-            var subredditStrings = subreddit.value.split(/ \/ /).filter((text) => {
-                if (text != '')
-                    return true;
-            });
+            const keywords = popUp.querySelector("#keywords-reddit");
+            const subreddit = popUp.querySelector("#subreddit");
+            const from = popUp.querySelector("#from-date");
+            const to = popUp.querySelector("#to-date");
+            const splitters = /\s+[,/|]\s*/g;
             if ((new Date(from.value) >= new Date(to.value)) && from.value && to.value)
                 return;
-            let string = 'https://www.google.com/search?q=';
+            const searchEngineUrls = {
+                google: "https://www.google.com/search",
+                duckduckgo: "https://duckduckgo.com"
+            };
+            const targetSearchEngine = Array.from(popUp.querySelector(`pop-up-header > div > img[${searchAttribute}]`).classList).find((imgClass) => imgClass in searchEngineUrls);
+            if (!targetSearchEngine) {
+                return;
+            }
+            ;
+            let string = `${searchEngineUrls[targetSearchEngine]}?q=`;
             if (keywords.value) {
-                string = string + keywords.value.replace(' ', '+');
-                if (subredditStrings[0]) {
-                    subredditStrings.forEach((text) => {
-                        if (subredditStrings.indexOf(text) > 0) {
-                            string = string + '+OR+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + text.replaceAll(' ', '_');
-                        }
-                        else {
-                            string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2Fr%2F' + text.replaceAll(' ', '_');
-                        }
-                    });
-                }
-                else {
-                    string = string + '+site%3Ahttps%3A%2F%2Freddit.com%2F';
-                }
+                const redditEncodedUrl = "site%3Areddit.com";
+                const subredditString = subreddit.value === "" ? null : `+(${redditEncodedUrl}%2Fr%2F${subreddit.value.split(splitters).map((text) => text.trim()).join("+OR+" + redditEncodedUrl + "%2Fr%2F")})`.replaceAll(" ", "_");
+                string += keywords.value.replaceAll(" ", "+") + (subredditString !== null && subredditString !== void 0 ? subredditString : "");
                 if (from.value) {
-                    string = string + '+after%3A' + from.value;
+                    string += "+after%3A" + from.value;
                 }
+                ;
                 if (to.value) {
-                    string = string + '+before%3A' + to.value;
+                    string += "+before%3A" + to.value;
                 }
-                (_a = window.open(string, '_blank')) === null || _a === void 0 ? void 0 : _a.focus();
+                ;
+                (_a = window.open(string, "_blank")) === null || _a === void 0 ? void 0 : _a.focus();
             }
             ;
         }
+        ;
     }
     ;
     static wikipediaSearchTrigger() {
-        let okButtonWikipedia = document.querySelector('.pop-up.wikipedia .ok-button');
+        let okButtonWikipedia = document.querySelector(".pop-up.wikipedia .ok-button");
         okButtonWikipedia.onclick = wikipediaSearch;
         function wikipediaSearch() {
             var _a;
-            let keywords = document.getElementById('keywords-wikipedia');
-            let string = 'https://pt.wikipedia.org/w/index.php?search=';
+            let keywords = document.getElementById("keywords-wikipedia");
+            let string = "https://pt.wikipedia.org/w/index.php?search=";
             if (keywords.value) {
-                string = string + keywords.value.replace(' ', '+');
-                (_a = window.open(string, '_blank')) === null || _a === void 0 ? void 0 : _a.focus();
+                string = string + keywords.value.replace(" ", "+");
+                (_a = window.open(string, "_blank")) === null || _a === void 0 ? void 0 : _a.focus();
             }
         }
     }
@@ -161,7 +167,7 @@ export class CloudStorageData {
             const content = JSON.parse(JSON.stringify(this.json));
             function loadShortcuts() {
                 return __awaiter(this, void 0, void 0, function* () {
-                    const shortcuts = document.querySelector('section#shortcuts block-container');
+                    const shortcuts = document.querySelector("section#shortcuts block-container");
                     const shortcutsOnMobile = content.shortcuts.map((folder) => {
                         const folderClone = structuredClone(folder);
                         folderClone.children = folderClone.children.filter((child) => {
@@ -171,18 +177,18 @@ export class CloudStorageData {
                     }).filter((folder) => {
                         return folder.children.length > 0;
                     });
-                    new TemplateConstructor(document.querySelector('template#shortcuts-template'), mobile ? shortcutsOnMobile : content.shortcuts).insert(shortcuts);
+                    new TemplateConstructor(document.querySelector("template#shortcuts-template"), mobile ? shortcutsOnMobile : content.shortcuts).insert(shortcuts);
                 });
             }
             ;
             function loadGamecards() {
                 return __awaiter(this, void 0, void 0, function* () {
-                    const gamecards = document.querySelector('#gaming gaming-container');
-                    new TemplateConstructor(document.querySelector('template#gamecard-template'), content.gamecards).insert(gamecards, 'after');
+                    const gamecards = document.querySelector("#gaming gaming-container");
+                    new TemplateConstructor(document.querySelector("template#gamecard-template"), content.gamecards).insert(gamecards, "after");
                     // a
                     for (const gamecard of content.gamecards) {
                         for (const css of gamecard.img_css) {
-                            document.querySelector('#' + gamecard.id + ' a').style.setProperty(css.attribute, css.value);
+                            document.querySelector("#" + gamecard.id + " a").style.setProperty(css.attribute, css.value);
                         }
                         ;
                     }
@@ -199,8 +205,8 @@ export class CloudStorageData {
                         let img = new Image();
                         img.src = imgSrc.href;
                     });
-                    const header = document.querySelector('#header div');
-                    header.style.backgroundImage = `url('${src}')`;
+                    const header = document.querySelector("#header div");
+                    header.style.backgroundImage = `url("${src}")`;
                     header.onclick = (event) => {
                         var _a;
                         let target = null;
@@ -211,7 +217,7 @@ export class CloudStorageData {
                             target = event.touches[0].target;
                         }
                         if (typeof window.getSelection() !== undefined) {
-                            if (((_a = window.getSelection()) === null || _a === void 0 ? void 0 : _a.toString()) !== '')
+                            if (((_a = window.getSelection()) === null || _a === void 0 ? void 0 : _a.toString()) !== "")
                                 return;
                         }
                         ;
@@ -220,53 +226,53 @@ export class CloudStorageData {
                         });
                         index = CustomFunctions.randomIntFromInterval(0, newHeadersArr.length - 1);
                         src = newHeadersArr[index].href;
-                        header.style.backgroundImage = `url('${src}')`;
+                        header.style.backgroundImage = `url("${src}")`;
                     };
                 });
             }
             ;
             function loadMfc() {
                 return __awaiter(this, void 0, void 0, function* () {
-                    const destination = document.querySelector('#my-figure-collection my-figure-collection');
-                    new TemplateConstructor(document.querySelector('#mfc-template'), content.mfc.sort((a, b) => Number(a.id) - Number(b.id))).insert(destination, 'after');
-                    document.querySelectorAll('mfc > img').forEach((mfcImg) => {
-                        mfcImg.addEventListener('click', (ev) => {
-                            mfcImg.parentElement.classList.toggle('hidden');
+                    const destination = document.querySelector("#my-figure-collection my-figure-collection");
+                    new TemplateConstructor(document.querySelector("#mfc-template"), content.mfc.sort((a, b) => Number(a.id) - Number(b.id))).insert(destination, "after");
+                    document.querySelectorAll("mfc > img").forEach((mfcImg) => {
+                        mfcImg.addEventListener("click", (ev) => {
+                            mfcImg.parentElement.classList.toggle("hidden");
                         });
                     });
-                    Array.from(document.querySelectorAll('mfc line > label')).forEach((label) => {
+                    Array.from(document.querySelectorAll("mfc line > label")).forEach((label) => {
                         label.onclick = (ev) => {
-                            if (label.textContent !== 'Tags') {
+                            if (label.textContent !== "Tags") {
                                 navigator.clipboard.writeText(label.nextElementSibling.textContent);
                             }
                             ;
                         };
                     });
-                    Array.from(document.querySelectorAll('mfc line > data')).forEach((dataField) => {
+                    Array.from(document.querySelectorAll("mfc line > data")).forEach((dataField) => {
                         dataField.onclick = (ev) => {
-                            dataField.parentElement.classList.toggle('hidden');
+                            dataField.parentElement.classList.toggle("hidden");
                         };
                     });
-                    Array.from(document.querySelectorAll('mfc line > stores > a')).forEach((store) => {
-                        const img = store.querySelector('img');
-                        const keyword = store.parentElement.parentElement.querySelector('data').textContent;
+                    Array.from(document.querySelectorAll("mfc line > stores > a")).forEach((store) => {
+                        const img = store.querySelector("img");
+                        const keyword = store.parentElement.parentElement.querySelector("data").textContent;
                         switch (img.alt) {
-                            case 'amiami icon':
+                            case "amiami icon":
                                 store.href = `https://www.amiami.com/eng/search/list/?s_keywords=${encodeURI(keyword)}&s_cate_tag=1&s_sortkey=preowned&s_st_condition_flg=1`;
                                 break;
-                            case 'buyee icon':
+                            case "buyee icon":
                                 store.href = `https://buyee.jp/item/search/query/${encodeURI(keyword)}/category/25888?store=1&aucminprice=0&aucmaxprice=3000&suggest=1`;
                                 break;
-                            case 'ninoma icon':
+                            case "ninoma icon":
                                 store.href = `https://ninoma.com/search?filter.p.product_type=Figure&filter.v.availability=1&q=${encodeURI(keyword)}`;
                                 break;
                             default: break;
                         }
                     });
                     function makeMfcSearchWork() {
-                        const searchBox = document.querySelector('search-box');
-                        const input = document.querySelector('input[name="mfc-filter"]');
-                        const figureMapKeys = ['id', 'title', 'type', 'category', 'or', 'and'];
+                        const searchBox = document.querySelector("search-box");
+                        const input = document.querySelector("input[name=\"mfc-filter\"]");
+                        const figureMapKeys = ["id", "title", "type", "category", "or", "and"];
                         const figuresRegExMap = Array.from(content.mfc);
                         figuresRegExMap.forEach((figure) => {
                             figure.or = (expressions) => {
@@ -275,67 +281,67 @@ export class CloudStorageData {
                                 }
                                 ;
                                 return expressions.some((expression) => {
-                                    return Object.keys(figure).some((key) => typeof figure[key] === 'string' && expression.test(figure[key]));
+                                    return Object.keys(figure).some((key) => typeof figure[key] === "string" && expression.test(figure[key]));
                                 });
                             };
                             figure.and = (expressions) => {
                                 return expressions.every((expression) => {
-                                    return Object.keys(figure).some((key) => typeof figure[key] === 'string' && expression.test(figure[key]));
+                                    return Object.keys(figure).some((key) => typeof figure[key] === "string" && expression.test(figure[key]));
                                 });
                             };
                         });
                         function filterFigures(ev) {
                             const string = input.value;
-                            const regEx = new RegExp(string, 'ig');
+                            const regEx = new RegExp(string, "ig");
                             const regExes = {
-                                or: string.trim() === '' ? [] : [regEx],
+                                or: string.trim() === "" ? [] : [regEx],
                                 and: []
                             };
-                            document.querySelectorAll('search-box search-word').forEach((searchWord) => {
-                                const newRegEx = new RegExp(searchWord.textContent.slice(0, -1), 'ig');
+                            document.querySelectorAll("search-box search-word").forEach((searchWord) => {
+                                const newRegEx = new RegExp(searchWord.textContent.slice(0, -1), "ig");
                                 regExes[searchWord.classList[0]].push(newRegEx);
                             });
                             if (regExes.or.length === 0 && regExes.and.length === 0)
                                 regExes.or.push(/:?/ig);
                             figuresRegExMap.forEach((figure) => {
                                 if (figure.or(regExes.or) && figure.and(regExes.and)) {
-                                    document.getElementById(`mfc-${figure.id}`).style.display = 'flex';
+                                    document.getElementById(`mfc-${figure.id}`).style.display = "flex";
                                 }
                                 else {
-                                    document.getElementById(`mfc-${figure.id}`).style.display = 'none';
+                                    document.getElementById(`mfc-${figure.id}`).style.display = "none";
                                 }
                                 ;
                             });
                         }
                         ;
-                        ['keyup', 'paste'].forEach((eventName) => {
+                        ["keyup", "paste"].forEach((eventName) => {
                             input.addEventListener(eventName, filterFigures);
                         });
-                        input.addEventListener('keypress', (ev) => {
-                            if (ev.key === 'Enter') {
+                        input.addEventListener("keypress", (ev) => {
+                            if (ev.key === "Enter") {
                                 if (input.value.trim().length === 0)
                                     return;
-                                const searchWord = document.createElement('search-word');
-                                searchWord.innerHTML = `${input.value.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[&#,+()$~%.'":*?<>{}]/g, '')}<button type="button" class="close-button">&times;</button>`;
-                                searchWord.classList.add('or');
-                                searchWord.addEventListener('click', (ev) => {
-                                    const target = ('touches' in ev ? ev.touches[0].target : ev.target);
-                                    if (target.tagName === 'BUTTON')
+                                const searchWord = document.createElement("search-word");
+                                searchWord.innerHTML = `${input.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[&#,+()$~%.'":*?<>{}]/g, "")}<button type="button" class="close-button">&times;</button>`;
+                                searchWord.classList.add("or");
+                                searchWord.addEventListener("click", (ev) => {
+                                    const target = ("touches" in ev ? ev.touches[0].target : ev.target);
+                                    if (target.tagName === "BUTTON")
                                         return;
-                                    searchWord.classList.toggle('and');
-                                    searchWord.classList.toggle('or');
+                                    searchWord.classList.toggle("and");
+                                    searchWord.classList.toggle("or");
                                     filterFigures();
                                 });
                                 searchBox.appendChild(searchWord);
-                                input.value = '';
+                                input.value = "";
                             }
                             ;
                         });
-                        searchBox.addEventListener('click', (ev) => {
+                        searchBox.addEventListener("click", (ev) => {
                             var _a;
-                            const target = ('touches' in ev ? ev.touches[0].target : ev.target);
-                            if (target.tagName === 'BUTTON') {
-                                (_a = target.closest('search-word')) === null || _a === void 0 ? void 0 : _a.remove();
+                            const target = ("touches" in ev ? ev.touches[0].target : ev.target);
+                            if (target.tagName === "BUTTON") {
+                                (_a = target.closest("search-word")) === null || _a === void 0 ? void 0 : _a.remove();
                                 filterFigures();
                             }
                         });
@@ -354,71 +360,71 @@ export class CloudStorageData {
     static handleEdits() {
         return __awaiter(this, void 0, void 0, function* () {
             function shortcutsEdit() {
-                const section = document.querySelector('section#shortcuts');
-                const form = document.querySelector('form#create-shortcut');
-                const inputFile = form.querySelector('input[type="file"]');
+                const section = document.querySelector("section#shortcuts");
+                const form = document.querySelector("form#create-shortcut");
+                const inputFile = form.querySelector("input[type=\"file\"]");
                 let parendData = null;
                 let editedShortcut = null;
-                const buttons = document.querySelectorAll('button.shortcut-item');
+                const buttons = document.querySelectorAll("button.shortcut-item");
                 buttons.forEach((button) => {
                     button.onclick = function (ev) {
-                        form.style.display = 'block';
-                        const [parendId] = CloudStorageData.json.shortcuts.filter((folder) => folder.id === button.closest('block').id);
+                        form.style.display = "block";
+                        const [parendId] = CloudStorageData.json.shortcuts.filter((folder) => folder.id === button.closest("block").id);
                         parendData = {
                             id: parendId.id,
                             index: parendId.index,
                             title: parendId.title,
                             children: parendId.children.length
                         };
-                        form.querySelectorAll('input[type="text"]').forEach((input) => {
-                            input.value = '';
+                        form.querySelectorAll("input[type=\"text\"]").forEach((input) => {
+                            input.value = "";
                         });
-                        form.querySelector('input[type="checkbox"]').checked = true;
-                        form.querySelector('input[type="file"]').value = '';
+                        form.querySelector("input[type=\"checkbox\"]").checked = true;
+                        form.querySelector("input[type=\"file\"]").value = "";
                     };
                 });
-                const currentShortcuts = document.querySelectorAll('block a.shortcut-item');
+                const currentShortcuts = document.querySelectorAll("block a.shortcut-item");
                 currentShortcuts.forEach((shortcut) => {
                     shortcut.onclick = function (ev) {
-                        if (!section.classList.contains('edit-mode'))
+                        if (!section.classList.contains("edit-mode"))
                             return;
-                        form.style.display = 'block';
-                        editedShortcut = CloudStorageData.json.shortcuts.filter((folder) => folder.id === shortcut.closest('block').id)[0].children.filter((shortcutOnJson) => shortcutOnJson.id === shortcut.id)[0];
-                        const [parendId] = CloudStorageData.json.shortcuts.filter((folder) => folder.id === shortcut.closest('block').id);
+                        form.style.display = "block";
+                        editedShortcut = CloudStorageData.json.shortcuts.filter((folder) => folder.id === shortcut.closest("block").id)[0].children.filter((shortcutOnJson) => shortcutOnJson.id === shortcut.id)[0];
+                        const [parendId] = CloudStorageData.json.shortcuts.filter((folder) => folder.id === shortcut.closest("block").id);
                         parendData = {
                             id: parendId.id,
                             index: parendId.index,
                             title: parendId.title,
                             children: parendId.children.length
                         };
-                        form.querySelectorAll('input[type="text"]').forEach((input) => {
+                        form.querySelectorAll("input[type=\"text\"]").forEach((input) => {
                             if (editedShortcut[input.name]) {
                                 input.value = editedShortcut[input.name];
                             }
                             else {
-                                input.value = '';
+                                input.value = "";
                             }
                             ;
                         });
-                        form.querySelector('input[type="checkbox"]').checked = editedShortcut.show_on_mobile;
-                        form.querySelector('input[type="file"]').value = '';
+                        form.querySelector("input[type=\"checkbox\"]").checked = editedShortcut.show_on_mobile;
+                        form.querySelector("input[type=\"file\"]").value = "";
                     };
                 });
-                const submitButton = form.querySelector('button.ok-button');
+                const submitButton = form.querySelector("button.ok-button");
                 submitButton.onclick = function (ev) {
                     return __awaiter(this, void 0, void 0, function* () {
                         ev.preventDefault();
-                        if (form.querySelector(`input[name="alt"]`).value === '')
+                        if (form.querySelector("input[name=\"alt\"]").value === "")
                             return;
-                        if (form.querySelector(`input[name="href"]`).value === '')
+                        if (form.querySelector("input[name=\"href\"]").value === "")
                             return;
-                        if (form.querySelector(`input[name="image"]`).files.length === 0)
+                        if (form.querySelector("input[name=\"image\"]").files.length === 0)
                             return;
                         const formData = new FormData();
-                        formData.append('image', inputFile.files[0]);
-                        formData.append('path', 'icons/dynamic/');
+                        formData.append("image", inputFile.files[0]);
+                        formData.append("path", "icons/dynamic/");
                         const response = yield fetch(`${server}image/small`, {
-                            method: 'POST',
+                            method: "POST",
                             body: formData
                         });
                         if (response.status === 200) {
@@ -429,25 +435,25 @@ export class CloudStorageData {
                                 title: parendData.title,
                                 children: [
                                     {
-                                        alt: document.querySelector('input[name="alt"]').value,
-                                        id: CustomFunctions.normalize(document.querySelector('input[name="alt"]').value),
+                                        alt: document.querySelector("input[name=\"alt\"]").value,
+                                        id: CustomFunctions.normalize(document.querySelector("input[name=\"alt\"]").value),
                                         index: parendData.children,
-                                        href: document.querySelector('input[name="href"]').value,
-                                        img: `https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/${json['newFile']}`,
-                                        floatingLabel: document.querySelector('input[name="floatingLabel"]').value,
-                                        show_on_mobile: document.querySelector('input[name="show_on_mobile"]').value.toString() === 'on' ? true : false,
+                                        href: document.querySelector("input[name=\"href\"]").value,
+                                        img: `https://storage.googleapis.com/statisticshock_github_io_public/icons/dynamic/${json["newFile"]}`,
+                                        floatingLabel: document.querySelector("input[name=\"floatingLabel\"]").value,
+                                        show_on_mobile: document.querySelector("input[name=\"show_on_mobile\"]").value.toString() === "on" ? true : false,
                                     }
                                 ],
                             };
                             const request = yield fetch(`${server}shortcuts`, {
-                                method: 'POST',
+                                method: "POST",
                                 headers: {
-                                    'Content-type': 'application/json'
+                                    "Content-type": "application/json"
                                 },
                                 body: JSON.stringify(postBody),
                             });
                             if (request.ok) {
-                                alert('Atalho criado.');
+                                alert("Atalho criado.");
                                 CloudStorageData.json.shortcuts.filter((folder) => folder.id === parendData.id)[0].children.push(postBody.children[0]);
                             }
                             ;
@@ -461,38 +467,38 @@ export class CloudStorageData {
     }
     ;
     static handleShortcutEditToggle() {
-        const toggleButton = document.querySelector('button#shortcuts-edit-mode');
-        const shotcuts = document.querySelector('section#shortcuts');
-        const blocks = Array.from(shotcuts.querySelectorAll('block-container block'));
+        const toggleButton = document.querySelector("button#shortcuts-edit-mode");
+        const shotcuts = document.querySelector("section#shortcuts");
+        const blocks = Array.from(shotcuts.querySelectorAll("block-container block"));
         toggleButton.onclick = (ev) => {
-            shotcuts.classList.toggle('edit-mode');
-            toggleButton.classList.toggle('trigger');
-            toggleButton.classList.toggle('check');
+            shotcuts.classList.toggle("edit-mode");
+            toggleButton.classList.toggle("trigger");
+            toggleButton.classList.toggle("check");
         };
         blocks.forEach((block) => {
-            block.addEventListener('mouseenter', (ev) => {
-                if (document.body.classList.contains('has-hover')) {
-                    block.setAttribute('selected', 'true');
+            block.addEventListener("mouseenter", (ev) => {
+                if (document.body.classList.contains("has-hover")) {
+                    block.setAttribute("selected", "true");
                 }
                 ;
             });
-            block.addEventListener('mouseleave', (ev) => {
-                if (document.body.classList.contains('has-hover')) {
-                    block.setAttribute('selected', 'false');
+            block.addEventListener("mouseleave", (ev) => {
+                if (document.body.classList.contains("has-hover")) {
+                    block.setAttribute("selected", "false");
                 }
                 ;
             });
-            block.addEventListener('click', (ev) => {
+            block.addEventListener("click", (ev) => {
                 const target = (ev.target || ev.touches[0].target);
-                if (!target.closest('a') || shotcuts.classList.contains('edit-mode')) {
+                if (!target.closest("a") || shotcuts.classList.contains("edit-mode")) {
                     ev.preventDefault();
                 }
                 if (!ev.touches)
                     return;
-                block.setAttribute('selected', (!Boolean(block.getAttribute('selected') || "false")).toString());
+                block.setAttribute("selected", (!Boolean(block.getAttribute("selected") || "false")).toString());
                 blocks.forEach((el) => {
                     if (el !== block) {
-                        el.setAttribute('selected', 'false');
+                        el.setAttribute("selected", "false");
                     }
                     ;
                 });
@@ -501,10 +507,10 @@ export class CloudStorageData {
     }
     ;
     static handleGamingEditToggle() {
-        const toggleButton = document.querySelector('button#gaming-edit-mode');
+        const toggleButton = document.querySelector("button#gaming-edit-mode");
         toggleButton.onclick = (ev) => {
-            toggleButton.classList.toggle('trigger');
-            toggleButton.classList.toggle('check');
+            toggleButton.classList.toggle("trigger");
+            toggleButton.classList.toggle("check");
         };
         /* TODO */
     }
@@ -515,12 +521,12 @@ class ExternalData {
     static addRetroAchievementsAwards() {
         return __awaiter(this, void 0, void 0, function* () {
             const data = yield fetch(`${server}retroachievements/pt-BR/`).then((res) => res.json());
-            const retroAchievements = document.querySelector('#gaming retroachievements');
-            new TemplateConstructor(document.querySelector('#ra-template'), [data]).insert(retroAchievements);
+            const retroAchievements = document.querySelector("#gaming retroachievements");
+            new TemplateConstructor(document.querySelector("#ra-template"), [data]).insert(retroAchievements);
             data.awards.filter((award) => award.allData.some((data) => {
-                return data.awardType.includes('Platinado');
+                return data.awardType.includes("Platinado");
             })).forEach((award) => {
-                document.querySelector('#ra-award-' + award.awardData).classList.add('mastered');
+                document.querySelector("#ra-award-" + award.awardData).classList.add("mastered");
             });
         });
     }
@@ -544,15 +550,15 @@ class ExternalData {
                     return /watching|reading|completed|on\_hold/.test(entry.status);
                 });
                 this.MALData = MALData;
-                const malContainer = document.querySelector('#my-anime-list my-anime-list');
-                new TemplateConstructor(document.querySelector('#myanimelist-template'), MALData.sort((a, b) => -new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime()).slice(0, 40)).insert(malContainer);
+                const malContainer = document.querySelector("#my-anime-list my-anime-list");
+                new TemplateConstructor(document.querySelector("#myanimelist-template"), MALData.sort((a, b) => -new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime()).slice(0, 40)).insert(malContainer);
             });
         });
     }
     ;
 }
 ;
-window.addEventListener('load', onLoadFunctions, true);
+window.addEventListener("load", onLoadFunctions, true);
 function onLoadFunctions(ev) {
     return __awaiter(this, void 0, void 0, function* () {
         PageBuilding.makeSwitchesSlide();
@@ -570,7 +576,7 @@ function onLoadFunctions(ev) {
         PageBuilding.createSkeletons();
         ExternalSearch.redditSearchTrigger();
         ExternalSearch.wikipediaSearchTrigger();
-        if ((window.location.hostname === 'statisticshock.github.io') ? true : toggleExternalDataLoad) {
+        if ((window.location.hostname === "statisticshock.github.io") ? true : toggleExternalDataLoad) {
             yield CloudStorageData.load();
             yield Promise.all([
                 Promise.all([
@@ -579,7 +585,7 @@ function onLoadFunctions(ev) {
                     ExternalData.scrapeMyAnimeList(),
                     ExternalData.addRetroAchievementsAwards(),
                 ]).then((res) => {
-                    PageBuilding.deleteSkeletons(['#shortcuts ', 'header ', '#my-anime-list my-anime-list', 'gaming-container ', '#my-figure-collection ']);
+                    PageBuilding.deleteSkeletons(["#shortcuts ", "header ", "#my-anime-list my-anime-list", "gaming-container ", "#my-figure-collection "]);
                 }),
             ]);
         }
@@ -588,16 +594,16 @@ function onLoadFunctions(ev) {
         CloudStorageData.handleGamingEditToggle();
         PageBuilding.openLinksInNewTab();
         PageBuilding.stopImageDrag();
-        setTimeout(() => window.dispatchEvent(new Event('resize')), 250);
+        setTimeout(() => window.dispatchEvent(new Event("resize")), 250);
     });
 }
 ;
-window.addEventListener('resize', onResizeFunctions, true);
+window.addEventListener("resize", onResizeFunctions, true);
 function onResizeFunctions(ev) {
     //
 }
 ;
-window.addEventListener('scroll', onScrollFunctions, true);
+window.addEventListener("scroll", onScrollFunctions, true);
 function onScrollFunctions(ev) {
     //
 }
