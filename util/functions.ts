@@ -69,12 +69,14 @@ export default class CustomFunctions {
 
 	static getValueToProperType (value: string): string|number|boolean|Date {
 		try {
-			if (value.match(/(true|false)/i)) return value.toLowerCase() === 'true';
-		
-			if (!isNaN(Number(value))) return Number(value);
-			
-			const date = new Date(value);
-			if (!(value.match(/[a-zA-Z]/)) && !isNaN(date.getTime()) && date.getTime() > 1000 * 60 * 60 * 24 * 365 * 10) return date;
+			if (/^true|false$/i.test(value))
+				return value.toLowerCase() === 'true';
+
+			if (/^\d{1,2}\/\d{1,2}\/(?:\d{2}|\d{4})(?: +\d{1,2}:\d{1,2}(?::\d{1,2})?)?$/.test(value))
+				return new Date(value);
+
+			if (!isNaN(Number(value)))
+				return Number(value);
 
 			return value;
 		} catch (err) {
@@ -86,8 +88,6 @@ export default class CustomFunctions {
 		if (csv.length - 1 < 0) return {message: 'Empty'};
 		else if (csv[0].length === 0) return {message: 'Empty'};
 
-		const numRows: number = csv.length - 1;
-		const numColumns = csv[0].length;
 		const headers: Array<string> = csv[0].map((value) => typeof value === 'object' ? Intl.DateTimeFormat('pt-BR').format(value) : value.toString());
 		
 		type keysData = {

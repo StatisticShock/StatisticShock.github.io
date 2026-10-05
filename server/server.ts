@@ -10,8 +10,7 @@ import ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
 import multer from "multer";
 import * as ra from "@retroachievements/api";
 import CustomFunctions from "../util/functions.js";
-import fs, { stat } from "fs";
-import util from "util";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import ejs from "ejs";
@@ -20,10 +19,8 @@ import { typeOfEndpoints } from "./endpoints.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const unlink = util.promisify(fs.unlink);
-
 const app: express.Application = express();
-const PORT = process.env.PORT || 2810;
+const PORT = process.env.PORT || 3000;
 
 const { RA_API_KEY, RA_USERNAME } = process.env;
 const userObject: object = {username: RA_USERNAME};
@@ -235,7 +232,7 @@ app.get("/contents(/:type)?", async (req: express.Request, res: express.Response
 	try {
 		if (type) {
 			await workbook.sheetsByTitle[type].loadHeaderRow();
-			await loadContent(workbook.sheetsByTitle[type])
+			await loadContent(workbook.sheetsByTitle[type]);
 		} else {
 			for (const worksheet of workbook.sheetsByIndex) {
 				await worksheet.loadHeaderRow();
