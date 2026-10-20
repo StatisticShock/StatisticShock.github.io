@@ -70,22 +70,9 @@ class PageBuilding extends PageBuildingImport {
             new TemplateConstructor(document.querySelector("#mfc-template"), Array(maxIcons).fill(sample)).insert(mfc);
         }
         ;
-        function createMalSkeletons() {
-            const mal = document.querySelector("#my-anime-list my-anime-list");
-            const maxIcons = 20;
-            const sample = {
-                joker: "skeleton",
-                rank: " . . .",
-                title: ". . .",
-                jokerContainer: "skeleton-container",
-                main_picture_large: "./icon/blank.svg"
-            };
-            new TemplateConstructor(document.querySelector("#myanimelist-template"), Array(maxIcons).fill(sample)).insert(mal);
-        }
         createShortcutSkeletons();
         createGamecardSkeletons();
         createMfcSkeletons();
-        createMalSkeletons();
     }
     ;
 }
@@ -531,31 +518,6 @@ class ExternalData {
         });
     }
     ;
-    static scrapeMyAnimeList() {
-        return __awaiter(this, void 0, void 0, function* () {
-            function scrapeDataFromMAL() {
-                return __awaiter(this, arguments, void 0, function* ({ offset = 0, limit = 100, nsfw = false, status = undefined } = {}) {
-                    const animeData = (yield fetch(`${server}myanimelist/animelist/HikariMontgomery?offset=${offset}&limit=${limit}&nsfw=${nsfw}${status ? `&status=${status}` : ""}`)
-                        .then(response => response.json()));
-                    const mangaData = (yield fetch(`${server}myanimelist/mangalist/HikariMontgomery?offset=${offset}&limit=${limit}&nsfw=${nsfw}${status ? `&status=${status}` : ""}`)
-                        .then(response => response.json()));
-                    const response = [];
-                    animeData.concat(mangaData).forEach((entry) => response.push(entry));
-                    return response;
-                });
-            }
-            ;
-            scrapeDataFromMAL().then((res) => {
-                const MALData = res.filter((entry) => {
-                    return /watching|reading|completed|on\_hold/.test(entry.status);
-                });
-                this.MALData = MALData;
-                const malContainer = document.querySelector("#my-anime-list my-anime-list");
-                new TemplateConstructor(document.querySelector("#myanimelist-template"), MALData.sort((a, b) => -new Date(a.updated_at).getTime() + new Date(b.updated_at).getTime()).slice(0, 40)).insert(malContainer);
-            });
-        });
-    }
-    ;
 }
 ;
 window.addEventListener("load", onLoadFunctions, true);
@@ -582,10 +544,9 @@ function onLoadFunctions(ev) {
                 Promise.all([
                     CloudStorageData.loadContentFromJson(),
                     CloudStorageData.handleEdits(),
-                    ExternalData.scrapeMyAnimeList(),
                     ExternalData.addRetroAchievementsAwards(),
                 ]).then((res) => {
-                    PageBuilding.deleteSkeletons(["#shortcuts ", "header ", "#my-anime-list my-anime-list", "gaming-container ", "#my-figure-collection "]);
+                    PageBuilding.deleteSkeletons(["#shortcuts ", "header ", "gaming-container ", "#my-figure-collection "]);
                 }),
             ]);
         }

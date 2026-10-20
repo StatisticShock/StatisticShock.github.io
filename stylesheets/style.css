@@ -764,58 +764,6 @@ body.home {
 			}
 		}
 
-		& #my-anime-list {
-			& my-anime-list {
-				display: grid;
-				grid-template-columns: repeat(auto-fill, max(calc(20% - 10px), calc(10vh - 10px)));
-				gap: 10px;
-
-				& a {
-					position: relative;
-					aspect-ratio: 3 / 4;
-					border-radius: 1em;
-					overflow: hidden;
-
-					& top-text, & bottom-text {
-						z-index: 1;
-						position: absolute;
-						background-color: var(--pink-custom);
-						color: white;
-						padding: 0.25em;
-						width: 80%;
-						text-align: center;
-						font-size: 0.75em;
-					}
-
-					& top-text {
-						top: 0;
-						left: 0;
-						border-bottom-right-radius: 1em;
-					}
-
-					& bottom-text {
-						bottom: 0;
-						right: 0;
-						border-top-left-radius: 1em;
-						
-					}
-
-					& img {
-						position: relative;
-						width: 100%;
-						height: 100%;
-						transition: filter 0.3s ease;
-					}
-				}
-
-				& a.manga {
-					& img {
-						filter: saturate(0);
-					}
-				}
-			}
-		}
-
 		& #my-figure-collection {
 			width: calc(100vw - 20px);
 			position: relative;
@@ -1147,16 +1095,6 @@ body.home.has-hover {
 				}
 			}
 		}
-
-		& #my-anime-list {
-			& my-anime-list {
-				& a:hover {
-					& img {
-						filter: none;
-					}
-				}
-			}
-		}
 	}
 }
 
@@ -1182,12 +1120,6 @@ body.home.has-hover {
 					& gaming {
 						flex: 0 0 90px;
 					}
-				}
-			}
-
-			& #my-anime-list {
-				& my-anime-list {
-					grid-template-columns: 1fr 1fr;
 				}
 			}
 		}
